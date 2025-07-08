@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaigns: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          current_amount: number | null
+          description: string | null
+          end_date: string | null
+          goal_amount: number
+          id: string
+          image_url: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          current_amount?: number | null
+          description?: string | null
+          end_date?: string | null
+          goal_amount: number
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          current_amount?: number | null
+          description?: string | null
+          end_date?: string | null
+          goal_amount?: number
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

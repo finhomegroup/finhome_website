@@ -41,6 +41,10 @@ const Header = () => {
     navigate('/auth');
   };
 
+  const handleStartCampaign = () => {
+    navigate('/create-campaign');
+  };
+
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,7 +133,10 @@ const Header = () => {
                 </Button>
               </>
             )}
-            <Button className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white">
+            <Button 
+              onClick={handleStartCampaign}
+              className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white"
+            >
               Start a Campaign
             </Button>
           </div>
@@ -218,7 +225,10 @@ const Header = () => {
                     </Button>
                   </>
                 )}
-                <Button className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white">
+                <Button 
+                  onClick={handleStartCampaign}
+                  className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white"
+                >
                   Start a Campaign
                 </Button>
               </div>
