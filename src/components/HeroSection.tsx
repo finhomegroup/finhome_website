@@ -1,0 +1,117 @@
+
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Play, TrendingUp, Users, DollarSign } from 'lucide-react';
+
+const HeroSection = () => {
+  return (
+    <section className="relative bg-gradient-to-br from-brand-50 via-white to-brand-100 overflow-hidden">
+      <div className="absolute inset-0 bg-hero-gradient opacity-10"></div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="animate-fade-in">
+            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+              Bring Your
+              <span className="block bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">
+                Creative Ideas
+              </span>
+              to Life
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              Join thousands of creators who have successfully funded their projects through our platform. 
+              From innovative tech to creative arts, make your dreams a reality.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white px-8 py-4 text-lg"
+              >
+                Start Your Campaign
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-brand-600 text-brand-600 hover:bg-brand-50 px-8 py-4 text-lg"
+              >
+                <Play className="h-5 w-5 mr-2" />
+                Watch Demo
+              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <DollarSign className="h-6 w-6 text-success-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">$2.4M+</div>
+                <div className="text-sm text-gray-600">Raised</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Users className="h-6 w-6 text-brand-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">15K+</div>
+                <div className="text-sm text-gray-600">Backers</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-6 w-6 text-success-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">89%</div>
+                <div className="text-sm text-gray-600">Success Rate</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Content - Hero Image Placeholder */}
+          <div className="relative animate-scale-in">
+            <div className="bg-gradient-to-br from-brand-100 to-brand-200 rounded-2xl p-8 shadow-2xl">
+              <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-brand-600 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="font-semibold text-gray-900">Smart Watch Pro</h3>
+                    <p className="text-sm text-gray-600">Technology</p>
+                  </div>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                  <div className="bg-gradient-to-r from-brand-600 to-brand-700 h-2 rounded-full" style={{width: '75%'}}></div>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">$75,000 raised</span>
+                  <span className="font-semibold text-gray-900">75% funded</span>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-success-600 rounded-lg flex items-center justify-center">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="font-semibold text-gray-900">Community Garden</h3>
+                    <p className="text-sm text-gray-600">Community</p>
+                  </div>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                  <div className="bg-gradient-to-r from-success-600 to-success-700 h-2 rounded-full" style={{width: '100%'}}></div>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">$25,000 raised</span>
+                  <span className="font-semibold text-success-600">Funded!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default HeroSection;
