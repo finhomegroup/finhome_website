@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Heart, Share2, Clock, Users, MapPin } from 'lucide-react';
 
@@ -19,6 +20,7 @@ interface CampaignCardProps {
 }
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
+  id,
   title,
   description,
   category,
@@ -31,13 +33,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   creator,
   featured = false
 }) => {
+  const navigate = useNavigate();
   const progressPercentage = (currentAmount / goalAmount) * 100;
   const isFullyFunded = progressPercentage >= 100;
+
+  const handleViewCampaign = () => {
+    navigate(`/campaign/${id}`);
+  };
 
   return (
     <div className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 ${featured ? 'ring-2 ring-brand-200' : ''}`}>
       {/* Image */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden cursor-pointer" onClick={handleViewCampaign}>
         <div 
           className="w-full h-full bg-gradient-to-br from-brand-100 to-brand-200 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
           style={{backgroundImage: `url(${imageUrl})`}}
@@ -82,7 +89,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           {location}
         </div>
         
-        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors">
+        <h3 
+          className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors cursor-pointer"
+          onClick={handleViewCampaign}
+        >
           {title}
         </h3>
         
@@ -136,6 +146,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
         {/* Action Button */}
         <Button 
+          onClick={handleViewCampaign}
           className="w-full bg-brand-600 hover:bg-brand-700 text-white"
           disabled={daysLeft === 0 && !isFullyFunded}
         >
