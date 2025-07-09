@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -45,14 +44,26 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     <div className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 ${featured ? 'ring-2 ring-brand-200' : ''}`}>
       {/* Image */}
       <div className="relative h-48 overflow-hidden cursor-pointer" onClick={handleViewCampaign}>
+        {imageUrl ? (
+          <img 
+            src={imageUrl} 
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              // Fallback to gradient background if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        
+        {/* Fallback gradient when no image or image fails to load */}
         <div 
-          className="w-full h-full bg-gradient-to-br from-brand-100 to-brand-200 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
-          style={{backgroundImage: `url(${imageUrl})`}}
+          className={`w-full h-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center ${imageUrl ? 'hidden' : 'flex'}`}
         >
-          {/* Fallback gradient when no image */}
-          <div className="w-full h-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
-            <span className="text-white text-lg font-semibold">{title.charAt(0)}</span>
-          </div>
+          <span className="text-white text-lg font-semibold">{title.charAt(0)}</span>
         </div>
         
         {/* Category Badge */}
