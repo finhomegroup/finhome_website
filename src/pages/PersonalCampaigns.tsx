@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Save, Send } from 'lucide-react';
+import { ArrowLeft, Edit, Save, Send, Eye, EyeOff } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ReactQuill from 'react-quill';
@@ -151,9 +151,40 @@ const PersonalCampaigns = () => {
         return 'bg-gray-100 text-gray-800';
       case 'rejected':
         return 'bg-red-100 text-red-800';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800';
+      case 'cancelled':
+        return 'bg-gray-100 text-gray-600';
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getStatusText = (status: string | null) => {
+    switch (status) {
+      case 'active':
+        return 'Active';
+      case 'pending_approval':
+        return 'Pending Approval';
+      case 'draft':
+        return 'Draft';
+      case 'rejected':
+        return 'Rejected';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return 'Draft';
+    }
+  };
+
+  const canSubmitForApproval = (status: string | null) => {
+    return status === 'draft' || status === 'rejected' || status === null;
+  };
+
+  const canEdit = (status: string | null) => {
+    return status === 'draft' || status === 'rejected' || status === null;
   };
 
   const quillModules = {
@@ -201,8 +232,45 @@ const PersonalCampaigns = () => {
             Back to Home
           </Button>
           <h1 className="text-3xl font-bold text-gray-900">My Campaigns</h1>
-          <p className="text-gray-600 mt-2">Manage your fundraising campaigns</p>
+          <p className="text-gray-600 mt-2">
+            Manage your fundraising campaigns. You can edit draft campaigns and submit them for admin approval.
+          </p>
         </div>
+
+        {/* Status Legend */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Campaign Status Guide</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-gray-100 text-gray-800">Draft</Badge>
+                <span>Editable, not visible to public</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-yellow-100 text-yellow-800">Pending Approval</Badge>
+                <span>Submitted for admin review</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-green-100 text-green-800">Active</Badge>
+                <span>Live and accepting donations</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-red-100 text-red-800">Rejected</Badge>
+                <span>Needs revision, can be resubmitted</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-blue-100 text-blue-800">Completed</Badge>
+                <span>Goal reached or campaign ended</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-gray-100 text-gray-600">Cancelled</Badge>
+                <span>Campaign cancelled by owner</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -222,7 +290,7 @@ const PersonalCampaigns = () => {
               <Card key={campaign.id}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <div>
+                    <div className="flex-1">
                       <CardTitle className="flex items-center gap-2">
                         {editingCampaign === campaign.id ? (
                           <Input
@@ -236,10 +304,22 @@ const PersonalCampaigns = () => {
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge className={getStatusColor(campaign.status)}>
-                          {campaign.status || 'draft'}
+                          {getStatusText(campaign.status)}
                         </Badge>
                         {campaign.category && (
                           <Badge variant="outline">{campaign.category}</Badge>
+                        )}
+                        {campaign.status === 'active' && (
+                          <div className="flex items-center gap-1 text-green-600">
+                            <Eye className="h-4 w-4" />
+                            <span className="text-sm">Visible to public</span>
+                          </div>
+                        )}
+                        {(campaign.status === 'draft' || campaign.status === 'rejected') && (
+                          <div className="flex items-center gap-1 text-gray-500">
+                            <EyeOff className="h-4 w-4" />
+                            <span className="text-sm">Not visible to public</span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -265,17 +345,20 @@ const PersonalCampaigns = () => {
                         </>
                       ) : (
                         <>
-                          <Button 
-                            variant="outline"
-                            onClick={() => handleEdit(campaign)}
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                          {campaign.status !== 'pending_approval' && campaign.status !== 'active' && (
+                          {canEdit(campaign.status) && (
+                            <Button 
+                              variant="outline"
+                              onClick={() => handleEdit(campaign)}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </Button>
+                          )}
+                          {canSubmitForApproval(campaign.status) && (
                             <Button 
                               onClick={() => handleSubmitForApproval(campaign.id)}
                               disabled={submitForApprovalMutation.isPending}
+                              className="bg-blue-600 hover:bg-blue-700"
                             >
                               <Send className="h-4 w-4 mr-2" />
                               Send to Admin
