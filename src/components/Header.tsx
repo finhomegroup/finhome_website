@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Search, Menu, X, Heart, User, LogOut } from 'lucide-react';
@@ -103,6 +102,10 @@ const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => navigate('/my-campaigns')}>
+                      <User className="mr-2 h-4 w-4" />
+                      My Campaigns
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       Profile
@@ -190,9 +193,9 @@ const Header = () => {
                         {user.user_metadata?.full_name || user.email}
                       </span>
                     </div>
-                    <Button variant="ghost" size="sm" className="justify-start">
-                      <Heart className="h-4 w-4 mr-2" />
-                      Saved
+                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => navigate('/my-campaigns')}>
+                      <User className="h-4 w-4 mr-2" />
+                      My Campaigns
                     </Button>
                     <Button variant="ghost" size="sm" className="justify-start">
                       <User className="h-4 w-4 mr-2" />
