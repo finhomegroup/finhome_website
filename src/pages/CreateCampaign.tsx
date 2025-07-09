@@ -9,7 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const CreateCampaign = () => {
   const { user } = useAuth();
@@ -30,6 +32,13 @@ const CreateCampaign = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleDescriptionChange = (content: string) => {
+    setFormData(prev => ({
+      ...prev,
+      description: content
     }));
   };
 
@@ -101,6 +110,16 @@ const CreateCampaign = () => {
     );
   }
 
+  const quillModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      ['link', 'image'],
+      [{ 'align': [] }],
+      ['clean']
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -139,15 +158,25 @@ const CreateCampaign = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Tell your story and explain why people should support your campaign"
-                  rows={6}
-                />
+                <Label htmlFor="description">
+                  Story <span className="text-red-500">*</span>
+                </Label>
+                <p className="text-sm text-gray-600 mb-3">
+                  Tell potential contributors more about your campaign. Provide details that will motivate people to contribute. A good pitch is compelling, informative, and easy to digest.
+                </p>
+                <div className="border rounded-md">
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.description}
+                    onChange={handleDescriptionChange}
+                    modules={quillModules}
+                    placeholder="Tell your story and explain why people should support your campaign"
+                    style={{ minHeight: '200px' }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Images that are intended to span the width of the story section should have a minimum width of 695 pixels. Images wider than 695 pixels will be resized proportionally.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
