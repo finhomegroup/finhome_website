@@ -1,90 +1,89 @@
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import CampaignCard from './CampaignCard';
 
 const CampaignsGrid = () => {
-  // Mock data for campaigns
-  const campaigns = [
-    {
-      id: '1',
-      title: 'Revolutionary Smart Home Device',
-      description: 'An AI-powered device that learns your routines and automates your entire home for maximum efficiency and comfort.',
-      category: 'Technology',
-      location: 'San Francisco, CA',
-      imageUrl: '',
-      currentAmount: 125000,
-      goalAmount: 200000,
-      backers: 847,
-      daysLeft: 15,
-      creator: 'TechInnovate Team',
-      featured: true
+  const { data: campaigns, isLoading, error } = useQuery({
+    queryKey: ['campaigns'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
     },
-    {
-      id: '2',
-      title: 'Sustainable Urban Farming Kit',
-      description: 'Grow fresh vegetables in your apartment with our compact, soil-free growing system powered by renewable energy.',
-      category: 'Environment',
-      location: 'Portland, OR',
-      imageUrl: '',
-      currentAmount: 75000,
-      goalAmount: 100000,
-      backers: 523,
-      daysLeft: 8,
-      creator: 'GreenGrow Solutions'
-    },
-    {
-      id: '3',
-      title: 'Independent Art Documentary',
-      description: 'Following emerging artists in rural communities and how they\'re transforming their local art scenes.',
-      category: 'Film',
-      location: 'Austin, TX',
-      imageUrl: '',
-      currentAmount: 45000,
-      goalAmount: 80000,
-      backers: 321,
-      daysLeft: 22,
-      creator: 'Sarah Mitchell'
-    },
-    {
-      id: '4',
-      title: 'Community Makerspace',
-      description: 'A collaborative workspace equipped with 3D printers, woodworking tools, and electronics for local creators.',
-      category: 'Community',
-      location: 'Denver, CO',
-      imageUrl: '',
-      currentAmount: 180000,
-      goalAmount: 150000,
-      backers: 956,
-      daysLeft: 5,
-      creator: 'Denver Makers Collective'
-    },
-    {
-      id: '5',
-      title: 'Eco-Friendly Travel Gear',
-      description: 'Lightweight, durable travel accessories made from recycled ocean plastic and sustainable materials.',
-      category: 'Product',
-      location: 'Seattle, WA',
-      imageUrl: '',
-      currentAmount: 32000,
-      goalAmount: 60000,
-      backers: 198,
-      daysLeft: 18,
-      creator: 'EcoNomad'
-    },
-    {
-      id: '6',
-      title: 'Local Music Festival',
-      description: 'Supporting local musicians and bringing the community together for a weekend of music, food, and art.',
-      category: 'Music',
-      location: 'Nashville, TN',
-      imageUrl: '',
-      currentAmount: 28000,
-      goalAmount: 50000,
-      backers: 342,
-      daysLeft: 12,
-      creator: 'Music City Collective'
-    }
-  ];
+  });
+
+  const formatCampaignData = (campaign: any) => {
+    // Calculate days left from end_date
+    const daysLeft = campaign.end_date 
+      ? Math.max(0, Math.ceil((new Date(campaign.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+      : 30; // Default to 30 days if no end date
+
+    // Calculate backers (for now, we'll use a placeholder since we don't have a backers table yet)
+    const backers = Math.floor(Math.random() * 500) + 50; // Temporary placeholder
+
+    return {
+      id: campaign.id,
+      title: campaign.title,
+      description: campaign.description || '',
+      category: campaign.category || 'General',
+      location: 'Various Locations', // Placeholder since we don't have location in the schema
+      imageUrl: campaign.image_url || '',
+      currentAmount: campaign.current_amount || 0,
+      goalAmount: campaign.goal_amount,
+      backers: backers,
+      daysLeft: daysLeft,
+      creator: 'Campaign Creator', // Placeholder since we don't have creator info linked yet
+      featured: false
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Discover Amazing Projects
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              From cutting-edge technology to community initiatives, explore campaigns that are making a difference
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-4 w-3/4"></div>
+                <div className="h-2 bg-gray-200 rounded mb-4"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Discover Amazing Projects
+          </h2>
+          <p className="text-red-600 mb-4">Failed to load campaigns. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-gray-50">
@@ -112,20 +111,29 @@ const CampaignsGrid = () => {
         </div>
 
         {/* Campaigns Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {campaigns.map((campaign) => (
-            <div key={campaign.id} className="animate-fade-in">
-              <CampaignCard {...campaign} />
-            </div>
-          ))}
-        </div>
+        {campaigns && campaigns.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {campaigns.map((campaign) => (
+              <div key={campaign.id} className="animate-fade-in">
+                <CampaignCard {...formatCampaignData(campaign)} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg mb-4">No campaigns found.</p>
+            <p className="text-gray-500">Be the first to create a campaign and make a difference!</p>
+          </div>
+        )}
 
-        {/* Load More Button */}
-        <div className="text-center mt-12">
-          <button className="px-8 py-3 bg-white border-2 border-brand-600 text-brand-600 rounded-lg hover:bg-brand-600 hover:text-white transition-colors font-medium">
-            Load More Campaigns
-          </button>
-        </div>
+        {/* Load More Button - Hidden for now since we're showing all campaigns */}
+        {campaigns && campaigns.length > 6 && (
+          <div className="text-center mt-12">
+            <button className="px-8 py-3 bg-white border-2 border-brand-600 text-brand-600 rounded-lg hover:bg-brand-600 hover:text-white transition-colors font-medium">
+              Load More Campaigns
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
