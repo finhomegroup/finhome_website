@@ -5,11 +5,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminLayout } from "@/components/layouts/AdminLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateCampaign from "./pages/CreateCampaign";
 import CampaignDetail from "./pages/CampaignDetail";
 import PersonalCampaigns from "./pages/PersonalCampaigns";
+import AdminDashboard from "./pages/AdminDashboard";
+import StartupsManagement from "./pages/StartupsManagement";
+import UsersManagement from "./pages/UsersManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +31,14 @@ const App = () => (
             <Route path="/create-campaign" element={<CreateCampaign />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
             <Route path="/my-campaigns" element={<PersonalCampaigns />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="startups" element={<StartupsManagement />} />
+              <Route path="users" element={<UsersManagement />} />
+            </Route>
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

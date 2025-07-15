@@ -59,6 +59,41 @@ export type Database = {
         }
         Relationships: []
       }
+      investments: {
+        Row: {
+          amount: number
+          campaign_id: string
+          created_at: string
+          id: string
+          investment_date: string
+          investor_id: string
+        }
+        Insert: {
+          amount: number
+          campaign_id: string
+          created_at?: string
+          id?: string
+          investment_date?: string
+          investor_id: string
+        }
+        Update: {
+          amount?: number
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          investment_date?: string
+          investor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -89,15 +124,109 @@ export type Database = {
         }
         Relationships: []
       }
+      startups: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          founded_date: string | null
+          id: string
+          industry: string | null
+          mentor_id: string | null
+          revenue: number | null
+          stage: Database["public"]["Enums"]["campaign_stage"] | null
+          startup_name: string
+          team_size: number | null
+          updated_at: string
+          valuation: number | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          founded_date?: string | null
+          id?: string
+          industry?: string | null
+          mentor_id?: string | null
+          revenue?: number | null
+          stage?: Database["public"]["Enums"]["campaign_stage"] | null
+          startup_name: string
+          team_size?: number | null
+          updated_at?: string
+          valuation?: number | null
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          founded_date?: string | null
+          id?: string
+          industry?: string | null
+          mentor_id?: string | null
+          revenue?: number | null
+          stage?: Database["public"]["Enums"]["campaign_stage"] | null
+          startup_name?: string
+          team_size?: number | null
+          updated_at?: string
+          valuation?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startups_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      dashboard_stats: {
+        Row: {
+          active_campaigns: number | null
+          active_mentors: number | null
+          total_investments: number | null
+          total_raised: number | null
+          total_startups: number | null
+          total_users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff" | "mentor" | "investor" | "user"
+      campaign_stage: "seed" | "series_a" | "series_b" | "series_c" | "ipo"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -224,6 +353,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff", "mentor", "investor", "user"],
+      campaign_stage: ["seed", "series_a", "series_b", "series_c", "ipo"],
+    },
   },
 } as const
