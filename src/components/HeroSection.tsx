@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Play, TrendingUp, Users, DollarSign } from 'lucide-react';
@@ -80,45 +81,7 @@ const HeroSection = () => {
 
           {/* Right Content - Hero Image Placeholder */}
           <div className="relative animate-scale-in">
-            <div className="bg-gradient-to-br from-brand-100 to-brand-200 rounded-2xl p-8 shadow-2xl">
-              <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-brand-600 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900">Smart Watch Pro</h3>
-                    <p className="text-sm text-gray-600">Technology</p>
-                  </div>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                  <div className="bg-gradient-to-r from-brand-600 to-brand-700 h-2 rounded-full" style={{width: '75%'}}></div>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">$75,000 raised</span>
-                  <span className="font-semibold text-gray-900">75% funded</span>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-success-600 rounded-lg flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900">Community Garden</h3>
-                    <p className="text-sm text-gray-600">Community</p>
-                  </div>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                  <div className="bg-gradient-to-r from-success-600 to-success-700 h-2 rounded-full" style={{width: '100%'}}></div>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">$25,000 raised</span>
-                  <span className="font-semibold text-success-600">Funded!</span>
-                </div>
-              </div>
-            </div>
+            {/* Removed the selected div element */}
           </div>
         </div>
       </div>
