@@ -1,51 +1,23 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useUserRole, isAdminOrStaff } from '@/hooks/useUserRole';
 
-export const DesktopNavigation = () => {
-  const { user } = useAuth();
-  const { data: userRoles } = useUserRole();
-
+const DesktopNavigation = () => {
   return (
     <nav className="hidden md:flex items-center space-x-8">
-      <NavLink
-        to="/"
-        className={({ isActive }) =>
-          `text-sm font-medium transition-colors hover:text-primary ${
-            isActive ? 'text-primary' : 'text-muted-foreground'
-          }`
-        }
-      >
-        Home
-      </NavLink>
-      
-      {user && (
-        <NavLink
-          to="/my-campaigns"
-          className={({ isActive }) =>
-            `text-sm font-medium transition-colors hover:text-primary ${
-              isActive ? 'text-primary' : 'text-muted-foreground'
-            }`
-          }
-        >
-          My Campaigns
-        </NavLink>
-      )}
-      
-      {user && userRoles && isAdminOrStaff(userRoles) && (
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            `text-sm font-medium transition-colors hover:text-primary ${
-              isActive ? 'text-primary' : 'text-muted-foreground'
-            }`
-          }
-        >
-          Dashboard
-        </NavLink>
-      )}
+      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
+        Investors
+      </a>
+      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
+        Partners
+      </a>
+      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
+        Mentors
+      </a>
+      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
+        Events
+      </a>
     </nav>
   );
 };
+
+export default DesktopNavigation;

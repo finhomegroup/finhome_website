@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Logo from './header/Logo';
-import { DesktopNavigation } from './header/DesktopNavigation';
+import DesktopNavigation from './header/DesktopNavigation';
 import SearchBar from './header/SearchBar';
 import UserMenu from './header/UserMenu';
 import AuthButtons from './header/AuthButtons';

@@ -5,15 +5,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateCampaign from "./pages/CreateCampaign";
 import CampaignDetail from "./pages/CampaignDetail";
 import PersonalCampaigns from "./pages/PersonalCampaigns";
-import Dashboard from "./pages/Dashboard";
-import DashboardStartups from "./pages/DashboardStartups";
-import DashboardUsers from "./pages/DashboardUsers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,14 +27,6 @@ const App = () => (
             <Route path="/create-campaign" element={<CreateCampaign />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
             <Route path="/my-campaigns" element={<PersonalCampaigns />} />
-            
-            {/* Dashboard Routes */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="startups" element={<DashboardStartups />} />
-              <Route path="users" element={<DashboardUsers />} />
-            </Route>
-            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
