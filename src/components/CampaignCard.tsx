@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,11 @@ interface CampaignCardProps {
   creator: string;
   featured?: boolean;
 }
+
+// Helper function to strip HTML tags
+const stripHtmlTags = (html: string): string => {
+  return html.replace(/<[^>]*>/g, '').trim();
+};
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
   id,
@@ -39,6 +45,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const handleViewCampaign = () => {
     navigate(`/campaign/${id}`);
   };
+
+  // Clean the description by removing HTML tags
+  const cleanDescription = stripHtmlTags(description || '');
 
   return (
     <div className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 ${featured ? 'ring-2 ring-brand-200' : ''}`}>
@@ -108,7 +117,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </h3>
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-          {description}
+          {cleanDescription}
         </p>
         
         <div className="text-sm text-gray-500 mb-4">
