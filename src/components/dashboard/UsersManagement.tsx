@@ -8,6 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Eye, Edit, UserCog } from 'lucide-react';
 
+interface UserRole {
+  role: string;
+}
+
+interface User {
+  id: string;
+  full_name: string | null;
+  username: string | null;
+  created_at: string | null;
+  user_roles: UserRole[];
+}
+
 export const UsersManagement: React.FC = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ['users-management'],
@@ -19,14 +31,14 @@ export const UsersManagement: React.FC = () => {
           full_name,
           username,
           created_at,
-          user_roles (
+          user_roles!inner (
             role
           )
         `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data as User[];
     },
   });
 
@@ -72,7 +84,7 @@ export const UsersManagement: React.FC = () => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {new Date(user.created_at || '').toLocaleDateString('vi-VN')}
+                  {user.created_at ? new Date(user.created_at).toLocaleDateString('vi-VN') : 'N/A'}
                 </TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
