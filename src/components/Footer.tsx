@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Heart, Twitter, Facebook, Instagram, Linkedin } from 'lucide-react';
 
@@ -10,7 +9,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <h3 className="text-2xl font-bold bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent">
-              FundFlow
+              VLIC
             </h3>
             <p className="text-gray-400">
               Empowering creators and innovators to bring their ideas to life through community-powered funding.
@@ -69,7 +68,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
               <p className="text-gray-400 text-sm">
-                © 2024 FundFlow. All rights reserved.
+                © 2024 VLIC. All rights reserved.
               </p>
               <div className="flex space-x-6 text-sm">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
