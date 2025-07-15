@@ -19,7 +19,6 @@ const HeroSection = () => {
           type="video/mp4"
         />
       </video>
-      <div className="absolute inset-0 bg-hero-gradient opacity-10"></div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
