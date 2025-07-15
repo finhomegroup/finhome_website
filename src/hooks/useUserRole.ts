@@ -52,15 +52,16 @@ export const useUserRole = () => {
       }
     };
 
-    // Reset loading state when user/session changes
+    // Only fetch role when we have user and session
     if (user && session) {
       setLoading(true);
       fetchUserRole();
     } else {
+      // Clear role and stop loading when no user/session
       setRole('user');
       setLoading(false);
     }
-  }, [user, session]);
+  }, [user?.id, session]); // Changed dependency to user?.id to be more specific
 
   console.log('useUserRole hook - User ID:', user?.id, 'Role:', role, 'Loading:', loading, 'IsAdmin:', role === 'admin'); // Debug log
 
