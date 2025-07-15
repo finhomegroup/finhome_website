@@ -8,6 +8,8 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 export const AdminLayout: React.FC = () => {
   const { role, loading } = useUserRole();
 
+  console.log('AdminLayout - Role:', role, 'Loading:', loading); // Debug log
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -17,6 +19,7 @@ export const AdminLayout: React.FC = () => {
   }
 
   if (role !== 'admin' && role !== 'staff') {
+    console.log('Access denied - redirecting to home. Current role:', role); // Debug log
     return <Navigate to="/" replace />;
   }
 

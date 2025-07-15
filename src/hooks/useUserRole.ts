@@ -12,13 +12,18 @@ export const useUserRole = () => {
 
   useEffect(() => {
     const fetchUserRole = async () => {
+      console.log('fetchUserRole - User:', user); // Debug log
+      
       if (!user) {
+        console.log('No user found, setting role to user'); // Debug log
         setRole('user');
         setLoading(false);
         return;
       }
 
       try {
+        console.log('Fetching role for user ID:', user.id); // Debug log
+        
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
@@ -29,6 +34,7 @@ export const useUserRole = () => {
           console.error('Error fetching user role:', error);
           setRole('user');
         } else {
+          console.log('User role fetched:', data.role); // Debug log
           setRole(data.role as UserRole);
         }
       } catch (error) {
@@ -41,6 +47,8 @@ export const useUserRole = () => {
 
     fetchUserRole();
   }, [user]);
+
+  console.log('useUserRole hook - Role:', role, 'Loading:', loading, 'IsAdmin:', role === 'admin'); // Debug log
 
   return { role, loading, isAdmin: role === 'admin', isStaff: role === 'staff' };
 };
