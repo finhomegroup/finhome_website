@@ -41,7 +41,7 @@ export const useUserRole = () => {
             setRole('user');
           }
         } else {
-          console.log('User role fetched:', data.role); // Debug log
+          console.log('User role fetched successfully:', data.role); // Debug log
           setRole(data.role as UserRole);
         }
       } catch (error) {
@@ -52,10 +52,17 @@ export const useUserRole = () => {
       }
     };
 
-    fetchUserRole();
+    // Reset loading state when user/session changes
+    if (user && session) {
+      setLoading(true);
+      fetchUserRole();
+    } else {
+      setRole('user');
+      setLoading(false);
+    }
   }, [user, session]);
 
-  console.log('useUserRole hook - Role:', role, 'Loading:', loading, 'IsAdmin:', role === 'admin'); // Debug log
+  console.log('useUserRole hook - User ID:', user?.id, 'Role:', role, 'Loading:', loading, 'IsAdmin:', role === 'admin'); // Debug log
 
   return { role, loading, isAdmin: role === 'admin', isStaff: role === 'staff' };
 };
