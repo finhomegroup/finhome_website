@@ -8,14 +8,15 @@ type UserRole = 'admin' | 'staff' | 'mentor' | 'investor' | 'user';
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>('user');
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   useEffect(() => {
     const fetchUserRole = async () => {
       console.log('fetchUserRole - User:', user); // Debug log
+      console.log('fetchUserRole - Session:', session); // Debug log
       
-      if (!user) {
-        console.log('No user found, setting role to user'); // Debug log
+      if (!user || !session) {
+        console.log('No user or session found, setting role to user'); // Debug log
         setRole('user');
         setLoading(false);
         return;
@@ -32,7 +33,13 @@ export const useUserRole = () => {
 
         if (error) {
           console.error('Error fetching user role:', error);
-          setRole('user');
+          // Check if it's a "no rows" error
+          if (error.code === 'PGRST116') {
+            console.log('No role found for user, defaulting to user role');
+            setRole('user');
+          } else {
+            setRole('user');
+          }
         } else {
           console.log('User role fetched:', data.role); // Debug log
           setRole(data.role as UserRole);
@@ -46,7 +53,7 @@ export const useUserRole = () => {
     };
 
     fetchUserRole();
-  }, [user]);
+  }, [user, session]);
 
   console.log('useUserRole hook - Role:', role, 'Loading:', loading, 'IsAdmin:', role === 'admin'); // Debug log
 

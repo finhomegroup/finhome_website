@@ -2,15 +2,18 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useAuth } from '@/contexts/AuthContext';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
 export const AdminLayout: React.FC = () => {
   const { role, loading } = useUserRole();
+  const { user, loading: authLoading } = useAuth();
 
-  console.log('AdminLayout - Role:', role, 'Loading:', loading); // Debug log
+  console.log('AdminLayout - Role:', role, 'Loading:', loading, 'User:', user?.email, 'AuthLoading:', authLoading); // Debug log
 
-  if (loading) {
+  // Show loading while auth or role is loading
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -18,10 +21,19 @@ export const AdminLayout: React.FC = () => {
     );
   }
 
+  // Redirect to auth if not logged in
+  if (!user) {
+    console.log('No user found - redirecting to auth'); // Debug log
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Check admin/staff access
   if (role !== 'admin' && role !== 'staff') {
     console.log('Access denied - redirecting to home. Current role:', role); // Debug log
     return <Navigate to="/" replace />;
   }
+
+  console.log('Access granted - rendering admin layout'); // Debug log
 
   return (
     <div className="min-h-screen bg-gray-50">
