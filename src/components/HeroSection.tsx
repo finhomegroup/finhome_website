@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Play, TrendingUp, Users, DollarSign } from 'lucide-react';
@@ -12,7 +11,7 @@ const HeroSection = () => {
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-20"
+        className="absolute inset-0 w-full h-full object-cover"
       >
         <source
           src="https://cdn.prod.website-files.com/63f3e085b054e9e3120238f1/6441ca38ca57b7e1bace784f_Website%20Header-transcode.mp4"
