@@ -16,23 +16,17 @@ import {
 } from '@/components/ui/table';
 import { Search, Building2, Users, DollarSign, Calendar } from 'lucide-react';
 
-interface Startup {
+interface Campaign {
   id: string;
-  startup_name: string;
-  industry: string | null;
-  stage: string | null;
-  valuation: number | null;
-  employees_count: number;
-  founded_date: string | null;
-  is_active: boolean;
+  title: string;
+  category: string | null;
+  status: string | null;
+  goal_amount: number;
+  current_amount: number | null;
+  end_date: string | null;
   created_at: string;
-  founder_id: string;
-  mentor_id: string | null;
+  user_id: string;
   profiles: {
-    full_name: string | null;
-    email: string;
-  } | null;
-  mentor_profile: {
     full_name: string | null;
     email: string;
   } | null;
@@ -41,36 +35,33 @@ interface Startup {
 export const StartupsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: startups, isLoading } = useQuery({
-    queryKey: ['dashboard-startups'],
+  const { data: campaigns, isLoading } = useQuery({
+    queryKey: ['dashboard-campaigns'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('startups')
+        .from('campaigns')
         .select(`
           *,
-          profiles!startups_founder_id_fkey(full_name),
-          mentor_profile:profiles!startups_mentor_id_fkey(full_name)
+          profiles!campaigns_user_id_fkey(full_name, email)
         `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as Startup[];
+      return data as Campaign[];
     },
   });
 
-  const filteredStartups = startups?.filter(startup =>
-    startup.startup_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (startup.industry && startup.industry.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredCampaigns = campaigns?.filter(campaign =>
+    campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (campaign.category && campaign.category.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const getStageColor = (stage: string | null) => {
-    switch (stage) {
-      case 'idea': return 'bg-gray-100 text-gray-800';
-      case 'seed': return 'bg-blue-100 text-blue-800';
-      case 'series_a': return 'bg-green-100 text-green-800';
-      case 'series_b': return 'bg-yellow-100 text-yellow-800';
-      case 'series_c': return 'bg-purple-100 text-purple-800';
-      case 'ipo': return 'bg-gold-100 text-gold-800';
+  const getStatusColor = (status: string | null) => {
+    switch (status) {
+      case 'draft': return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -90,9 +81,9 @@ export const StartupsManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Startups Management</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Campaigns Management</h2>
           <p className="text-muted-foreground">
-            Manage and monitor all startup projects
+            Manage and monitor all campaign projects
           </p>
         </div>
       </div>
@@ -104,7 +95,7 @@ export const StartupsManagement = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search startups..."
+                placeholder="Search campaigns..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -114,74 +105,85 @@ export const StartupsManagement = () => {
         </CardHeader>
       </Card>
 
-      {/* Startups Table */}
+      {/* Campaigns Table */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Building2 className="mr-2 h-5 w-5" />
-            All Startups ({filteredStartups?.length || 0})
+            All Campaigns ({filteredCampaigns?.length || 0})
           </CardTitle>
           <CardDescription>
-            Complete list of registered startups
+            Complete list of all campaigns
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Startup Name</TableHead>
-                <TableHead>Industry</TableHead>
-                <TableHead>Stage</TableHead>
-                <TableHead>Founder</TableHead>
-                <TableHead>Mentor</TableHead>
-                <TableHead>Employees</TableHead>
-                <TableHead>Valuation</TableHead>
+                <TableHead>Campaign Name</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Creator</TableHead>
+                <TableHead>Goal Amount</TableHead>
+                <TableHead>Raised Amount</TableHead>
+                <TableHead>Progress</TableHead>
+                <TableHead>End Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredStartups?.map((startup) => (
-                <TableRow key={startup.id}>
+              {filteredCampaigns?.map((campaign) => (
+                <TableRow key={campaign.id}>
                   <TableCell className="font-medium">
                     <div>
-                      <div className="font-semibold">{startup.startup_name}</div>
+                      <div className="font-semibold">{campaign.title}</div>
                       <div className="text-sm text-muted-foreground">
-                        Founded: {startup.founded_date ? new Date(startup.founded_date).toLocaleDateString() : 'N/A'}
+                        Created: {new Date(campaign.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{startup.industry || 'N/A'}</TableCell>
+                  <TableCell>{campaign.category || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge className={getStageColor(startup.stage)}>
-                      {startup.stage?.replace('_', ' ').toUpperCase() || 'IDEA'}
+                    <Badge className={getStatusColor(campaign.status)}>
+                      {campaign.status?.toUpperCase() || 'DRAFT'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {startup.profiles?.full_name || 'Unknown'}
-                  </TableCell>
-                  <TableCell>
-                    {startup.mentor_profile?.full_name || 'No mentor assigned'}
+                    {campaign.profiles?.full_name || campaign.profiles?.email || 'Unknown'}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <Users className="mr-1 h-4 w-4" />
-                      {startup.employees_count}
+                      <DollarSign className="mr-1 h-4 w-4" />
+                      {Number(campaign.goal_amount).toLocaleString()}
                     </div>
                   </TableCell>
                   <TableCell>
-                    {startup.valuation ? (
-                      <div className="flex items-center">
-                        <DollarSign className="mr-1 h-4 w-4" />
-                        {Number(startup.valuation).toLocaleString()}
-                      </div>
-                    ) : (
-                      'N/A'
-                    )}
+                    <div className="flex items-center">
+                      <DollarSign className="mr-1 h-4 w-4" />
+                      {Number(campaign.current_amount || 0).toLocaleString()}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={startup.is_active ? 'default' : 'secondary'}>
-                      {startup.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full" 
+                        style={{ 
+                          width: `${Math.min(((campaign.current_amount || 0) / campaign.goal_amount) * 100, 100)}%` 
+                        }}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {Math.round(((campaign.current_amount || 0) / campaign.goal_amount) * 100)}%
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {campaign.end_date ? (
+                      <div className="flex items-center">
+                        <Calendar className="mr-1 h-4 w-4" />
+                        {new Date(campaign.end_date).toLocaleDateString()}
+                      </div>
+                    ) : (
+                      'No end date'
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

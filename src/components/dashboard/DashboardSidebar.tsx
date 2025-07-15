@@ -21,7 +21,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { UserRole } from '@/hooks/useUserRole';
 
@@ -46,7 +45,6 @@ const staffMenuItems = [
 ];
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userRoles }) => {
-  const { collapsed } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -58,7 +56,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userRoles })
     isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50";
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible>
+    <Sidebar className="w-64" collapsible="icon">
       <SidebarTrigger className="m-2 self-end" />
       
       <SidebarContent>
@@ -70,7 +68,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userRoles })
                 <SidebarMenuButton asChild>
                   <NavLink to="/" className={getNavCls}>
                     <Home className="mr-2 h-4 w-4" />
-                    {!collapsed && <span>Home</span>}
+                    <span>Home</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -87,7 +85,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userRoles })
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

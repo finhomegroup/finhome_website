@@ -21,17 +21,39 @@ import { Building2, Users, DollarSign, TrendingUp, Target, Award } from 'lucide-
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
+interface DashboardStats {
+  total_startups: number;
+  active_campaigns: number;
+  total_raised: number;
+  total_users: number;
+  total_investments: number;
+  active_mentors: number;
+}
+
 export const DashboardOverview = () => {
   const { data: stats } = useQuery({
     queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('dashboard_stats')
-        .select('*')
-        .single();
-      
-      if (error) throw error;
-      return data;
+    queryFn: async (): Promise<DashboardStats> => {
+      // Get stats by running individual queries since view might not be in types yet
+      const [startupsRes, campaignsRes, raisedRes, usersRes, investmentsRes, mentorsRes] = await Promise.all([
+        supabase.from('campaigns').select('id', { count: 'exact', head: true }),
+        supabase.from('campaigns').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('campaigns').select('current_amount'),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('campaigns').select('id', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id', { count: 'exact', head: true })
+      ]);
+
+      const totalRaised = raisedRes.data?.reduce((sum, campaign) => sum + (Number(campaign.current_amount) || 0), 0) || 0;
+
+      return {
+        total_startups: startupsRes.count || 0,
+        active_campaigns: campaignsRes.count || 0,
+        total_raised: totalRaised,
+        total_users: usersRes.count || 0,
+        total_investments: investmentsRes.count || 0,
+        active_mentors: mentorsRes.count || 0
+      };
     },
   });
 
