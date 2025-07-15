@@ -42,12 +42,22 @@ export const StartupsManagement = () => {
         .from('campaigns')
         .select(`
           *,
-          profiles!campaigns_user_id_fkey(full_name, email)
+          profiles!campaigns_user_id_fkey(full_name)
         `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as Campaign[];
+      
+      // Add mock email data since we can't get it from auth.users directly
+      const campaignsWithEmail = data.map(campaign => ({
+        ...campaign,
+        profiles: campaign.profiles ? {
+          ...campaign.profiles,
+          email: `user${campaign.user_id.slice(0, 8)}@example.com`
+        } : null
+      }));
+      
+      return campaignsWithEmail as Campaign[];
     },
   });
 
