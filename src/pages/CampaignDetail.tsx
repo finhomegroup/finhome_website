@@ -11,6 +11,11 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+// Helper function to strip HTML tags
+const stripHtmlTags = (html: string): string => {
+  return html.replace(/<[^>]*>/g, '').trim();
+};
+
 const CampaignDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -69,6 +74,9 @@ const CampaignDetail = () => {
     ? Math.max(0, Math.ceil((new Date(campaign.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
 
+  // Clean the description by removing HTML tags
+  const cleanDescription = stripHtmlTags(campaign.description || '');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -117,7 +125,7 @@ const CampaignDetail = () => {
                   {campaign.title}
                 </h1>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  {campaign.description || 'No description available for this campaign.'}
+                  {cleanDescription || 'No description available for this campaign.'}
                 </p>
               </div>
 
@@ -128,7 +136,7 @@ const CampaignDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">
-                    {campaign.description || 'The campaign creator hasn\'t added a detailed story yet.'}
+                    {cleanDescription || 'The campaign creator hasn\'t added a detailed story yet.'}
                   </p>
                 </CardContent>
               </Card>
