@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -124,9 +123,6 @@ const CampaignDetail = () => {
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                   {campaign.title}
                 </h1>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  {cleanDescription || 'No description available for this campaign.'}
-                </p>
               </div>
 
               {/* Campaign Story */}
