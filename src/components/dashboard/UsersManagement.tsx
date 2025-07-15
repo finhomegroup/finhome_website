@@ -8,16 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Eye, Edit, UserCog } from 'lucide-react';
 
-interface UserRole {
-  role: string;
-}
-
 interface User {
   id: string;
   full_name: string | null;
   username: string | null;
   created_at: string | null;
-  user_roles: UserRole[];
+  role: string;
 }
 
 export const UsersManagement: React.FC = () => {
@@ -30,15 +26,26 @@ export const UsersManagement: React.FC = () => {
           id,
           full_name,
           username,
-          created_at,
-          user_roles!inner (
-            role
-          )
+          created_at
         `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as User[];
+
+      // Get user roles separately
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+
+      if (rolesError) throw rolesError;
+
+      // Merge the data
+      const usersWithRoles = data.map(user => ({
+        ...user,
+        role: userRoles.find(role => role.user_id === user.id)?.role || 'user'
+      }));
+
+      return usersWithRoles as User[];
     },
   });
 
@@ -80,7 +87,7 @@ export const UsersManagement: React.FC = () => {
                 <TableCell>{user.username || 'N/A'}</TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {user.user_roles?.[0]?.role || 'user'}
+                    {user.role}
                   </Badge>
                 </TableCell>
                 <TableCell>
