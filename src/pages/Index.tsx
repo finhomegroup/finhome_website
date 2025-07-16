@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import PortfolioPerformance from '@/components/PortfolioPerformance';
+import TestimonialSection from '@/components/TestimonialSection';
 import CampaignsGrid from '@/components/CampaignsGrid';
 import Footer from '@/components/Footer';
 
@@ -12,6 +13,7 @@ const Index = () => {
       <Header />
       <HeroSection />
       <PortfolioPerformance />
+      <TestimonialSection />
       <CampaignsGrid />
       <Footer />
     </div>
