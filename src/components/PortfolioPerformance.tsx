@@ -4,7 +4,7 @@ import { AnimatedNumber } from '@/components/ui/animated-number';
 const PortfolioPerformance = () => {
   return (
     <section 
-      className="py-16 bg-gray-50 relative"
+      className="py-16 bg-gray-50 relative min-h-[600px] lg:min-h-[600px]"
       style={{
         backgroundImage: 'url(https://cdn.prod.website-files.com/63f3e085b054e9e3120238f1/64467bfae94cbf19454041ab_Growth%20Number%20Background%201.png)',
         backgroundSize: 'cover',
@@ -18,7 +18,7 @@ const PortfolioPerformance = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <div className="text-center mb-12">
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 animate-fade-in">
+          <h2 className="text-6xl lg:text-6xl font-extrabold text-gray-900 mb-4 animate-fade-in">
             PORTFOLIO PERFORMANCE
           </h2>
         </div>
