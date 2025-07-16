@@ -20,7 +20,7 @@ const TestimonialSection = () => {
           </div>
           
           {/* Right side - Testimonial content */}
-          <div className="text-white">
+          <div className="text-black">
             <div className="max-w-2xl ml-auto">
               <blockquote className="text-lg lg:text-xl leading-relaxed mb-8">
                 "VLIC plays a vital role for investors by helping them decode the 'entrepreneurial DNA', thereby reducing the failure rate of startups in their portfolios.
