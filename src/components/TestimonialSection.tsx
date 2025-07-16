@@ -4,7 +4,7 @@ import React from 'react';
 const TestimonialSection = () => {
   return (
     <section 
-      className="py-16 relative overflow-hidden"
+      className="py-24 lg:py-32 relative overflow-hidden min-h-[600px] lg:min-h-[700px]"
       style={{
         backgroundImage: 'url(/lovable-uploads/ac0671bc-fb2e-4be0-8b4d-16de78ffe24b.png)',
         backgroundSize: 'cover',
@@ -12,11 +12,8 @@ const TestimonialSection = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-teal-600/80"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
           {/* Left side - can be used for additional content if needed */}
           <div className="hidden lg:block">
             {/* This space can be used for additional visual elements */}
