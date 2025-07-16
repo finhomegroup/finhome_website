@@ -12,6 +12,9 @@ const TestimonialSection = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
+      {/* Gray overlay */}
+      <div className="absolute inset-0 py-16 bg-gray-50 bg-opacity-70"></div>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 h-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
           {/* Left side - can be used for additional content if needed */}
