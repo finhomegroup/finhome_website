@@ -26,6 +26,28 @@ interface Campaign {
   end_date: string | null;
   created_at: string;
   updated_at: string | null;
+  startup_data?: any; // JSONB field containing extended startup data
+  // Extended startup fields that get merged from startup_data
+  competitionName?: string;
+  projectFields?: string[];
+  startDate?: string;
+  completionLevel?: string;
+  projectStatus?: string;
+  hasBusinessLicense?: 'yes' | 'no' | '';
+  taxId?: string;
+  leader?: any;
+  teammates?: any[];
+  achievements?: any[];
+  investments?: any[];
+  sponsorships?: any[];
+  pitchDeck?: File | null;
+  pitchDeckFileName?: string;
+  projectDetailsFile?: File | null;
+  projectDetailsFileName?: string;
+  websiteLink?: string;
+  fanpageLink?: string;
+  youtubeLink?: string;
+  mediaLink?: string;
 }
 
 const PersonalCampaigns = () => {
@@ -48,7 +70,12 @@ const PersonalCampaigns = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as Campaign[];
+      
+      // Merge startup_data fields back into campaign objects
+      return data.map(campaign => ({
+        ...campaign,
+        ...((campaign as any).startup_data || {}) // Merge startup_data fields
+      })) as Campaign[];
     },
     enabled: !!user,
   });

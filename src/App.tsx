@@ -1,4 +1,6 @@
 
+import { StagewiseToolbar } from '@stagewise/toolbar-react';
+import ReactPlugin from '@stagewise-plugins/react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,9 +10,12 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Events from "./pages/Events";
 import CreateCampaign from "./pages/CreateCampaign";
 import CampaignDetail from "./pages/CampaignDetail";
 import PersonalCampaigns from "./pages/PersonalCampaigns";
+import MentorProfile from "./pages/MentorProfile";
+import LecturerProfile from "./pages/LecturerProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import StartupsManagement from "./pages/StartupsManagement";
 import UsersManagement from "./pages/UsersManagement";
@@ -28,9 +33,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/create-campaign" element={<CreateCampaign />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
             <Route path="/my-campaigns" element={<PersonalCampaigns />} />
+            <Route path="/mentor-profile" element={<MentorProfile />} />
+            <Route path="/lecturer-profile" element={<LecturerProfile />} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
@@ -44,6 +52,14 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        
+        {/* Stagewise Toolbar */}
+        <StagewiseToolbar 
+          config={{
+            plugins: [ReactPlugin]
+          }}
+          enabled={true}
+        />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

@@ -38,7 +38,7 @@ const TestimonialSection = () => {
                   Ngô Cao Hoài Linh
                 </div>
                 <div className="text-lg opacity-90">
-                  CEO of SSC - VLU
+                Director of VLIC
                 </div>
               </div>
             </div>

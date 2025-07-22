@@ -8,9 +8,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent">
-              VLIC
-            </h3>
+            <img 
+              src="/vlu_logo.png" 
+              alt="VLU Logo" 
+              className="h-8 w-auto"
+            />
             <p className="text-gray-400">
               Empowering creators and innovators to bring their ideas to life through community-powered funding.
             </p>

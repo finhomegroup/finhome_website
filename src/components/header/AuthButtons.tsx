@@ -22,7 +22,7 @@ const AuthButtons = () => {
       <Button 
         onClick={handleAuthClick}
         size="sm"
-        className="bg-brand-600 hover:bg-brand-700"
+        className="bg-brand-600 hover:bg-brand-700 rounded-full"
       >
         Sign up
       </Button>

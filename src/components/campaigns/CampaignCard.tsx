@@ -21,6 +21,25 @@ interface Campaign {
   end_date: string | null;
   created_at: string;
   updated_at: string | null;
+  // Extended startup fields
+  projectFields?: string[];
+  startDate?: string;
+  completionLevel?: string;
+  projectStatus?: string;
+  hasBusinessLicense?: 'yes' | 'no' | '';
+  leader?: any;
+  teammates?: any[];
+  achievements?: any[];
+  investments?: any[];
+  sponsorships?: any[];
+  pitchDeck?: File | null;
+  pitchDeckFileName?: string;
+  projectDetailsFile?: File | null;
+  projectDetailsFileName?: string;
+  websiteLink?: string;
+  fanpageLink?: string;
+  youtubeLink?: string;
+  mediaLink?: string;
 }
 
 interface CampaignCardProps {
@@ -89,7 +108,7 @@ export const CampaignCard = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <CampaignFormFields
             campaign={campaign}
             editForm={editForm}

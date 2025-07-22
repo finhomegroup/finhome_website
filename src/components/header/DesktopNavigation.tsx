@@ -1,21 +1,18 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DesktopNavigation = () => {
+  const navigate = useNavigate();
+
   return (
-    <nav className="hidden md:flex items-center space-x-8">
-      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
-        Investors
-      </a>
-      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
-        Partners
-      </a>
-      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
-        Mentors
-      </a>
-      <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium">
+    <nav className="hidden md:flex items-center space-x-8 ml-12">
+      <button 
+        onClick={() => navigate('/events')} 
+        className="text-gray-700 hover:text-brand-600 transition-colors font-medium"
+      >
         Events
-      </a>
+      </button>
     </nav>
   );
 };

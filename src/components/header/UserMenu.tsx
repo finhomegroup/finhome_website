@@ -40,11 +40,6 @@ const UserMenu = () => {
 
   return (
     <>
-      <Button variant="ghost" size="sm" className="text-gray-700">
-        <Heart className="h-4 w-4 mr-2" />
-        Saved
-      </Button>
-      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="text-gray-700">

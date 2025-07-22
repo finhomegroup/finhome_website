@@ -4,6 +4,8 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import PortfolioPerformance from '@/components/PortfolioPerformance';
 import TestimonialSection from '@/components/TestimonialSection';
+import MentorFeature from '@/components/MentorFeature';
+import Partners from '@/components/Partners';
 import CampaignsGrid from '@/components/CampaignsGrid';
 import Footer from '@/components/Footer';
 
@@ -12,8 +14,10 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <HeroSection />
-      <PortfolioPerformance />
       <TestimonialSection />
+      <PortfolioPerformance />
+      <MentorFeature />
+      <Partners />
       <CampaignsGrid />
       <Footer />
     </div>

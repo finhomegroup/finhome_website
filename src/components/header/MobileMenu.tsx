@@ -55,6 +55,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
           />
         </div>
         <nav className="flex flex-col space-y-2">
+          <button 
+            onClick={() => navigate('/events')} 
+            className="text-gray-700 hover:text-brand-600 transition-colors font-medium py-2 text-left"
+          >
+            Events
+          </button>
           <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium py-2">
             Discover
           </a>
@@ -108,7 +114,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
               <Button 
                 onClick={handleAuthClick}
                 size="sm"
-                className="bg-brand-600 hover:bg-brand-700"
+                className="bg-brand-600 hover:bg-brand-700 rounded-full"
               >
                 Sign up
               </Button>
@@ -116,7 +122,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
           )}
           <Button 
             onClick={handleStartCampaign}
-            className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white"
+                            className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-full"
           >
             Start a Campaign
           </Button>

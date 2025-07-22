@@ -42,6 +42,7 @@ export const CampaignActionButtons = ({
         <Button 
           onClick={onSave}
           disabled={isUpdating}
+          className="rounded-full"
         >
           <Save className="h-4 w-4 mr-2" />
           Save
@@ -49,6 +50,7 @@ export const CampaignActionButtons = ({
         <Button 
           variant="outline"
           onClick={onCancel}
+          className="rounded-full"
         >
           Cancel
         </Button>
@@ -62,6 +64,7 @@ export const CampaignActionButtons = ({
         <Button 
           variant="outline"
           onClick={onEdit}
+          className="rounded-full"
         >
           <Edit className="h-4 w-4 mr-2" />
           Edit
@@ -71,7 +74,7 @@ export const CampaignActionButtons = ({
         <Button 
           onClick={onSubmitForApproval}
           disabled={isSubmitting}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-red-600 hover:bg-red-700 rounded-full"
         >
           <Send className="h-4 w-4 mr-2" />
           Send to Admin

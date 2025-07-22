@@ -4,9 +4,11 @@ import React from 'react';
 const Logo = () => {
   return (
     <div className="flex-shrink-0">
-      <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">
-        VLIC
-      </h1>
+      <img 
+        src="/vlu_logo.png" 
+        alt="VLU Logo" 
+        className="h-8 w-auto"
+      />
     </div>
   );
 };
