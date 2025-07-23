@@ -22,3 +22,24 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Stagewise development files
+.stagewise/
+stagewise.config.*
+*.stagewise.*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build artifacts
+build/
+out/
+
+# AWS Amplify specific
+amplify/
+amplify.yml
+amplify-buildspec.yml
