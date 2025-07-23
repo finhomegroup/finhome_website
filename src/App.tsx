@@ -1,6 +1,4 @@
 
-import { StagewiseToolbar } from '@stagewise/toolbar-react';
-import ReactPlugin from '@stagewise-plugins/react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
+import StagewiseWrapper from "@/components/StagewiseWrapper";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Events from "./pages/Events";
@@ -52,14 +51,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-        
-        {/* Stagewise Toolbar */}
-        <StagewiseToolbar 
-          config={{
-            plugins: [ReactPlugin]
-          }}
-          enabled={true}
-        />
+        <StagewiseWrapper />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

@@ -5,6 +5,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  base: '/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -21,5 +22,12 @@ export default defineConfig(({ mode }) => ({
         '@stagewise-plugins/react'
       ] : [],
     },
+    // Ensure proper chunking for production
+    chunkSizeWarningLimit: 1000,
+  },
+  // Add server configuration for development
+  server: {
+    port: 3000,
+    host: true,
   },
 }));
