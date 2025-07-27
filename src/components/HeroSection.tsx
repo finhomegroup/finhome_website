@@ -17,7 +17,7 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source
-          src="/vlic_video.mp4"
+          src="https://n8nskilluptest.s3.ap-southeast-1.amazonaws.com/vlic_video.mp4"
           type="video/mp4"
         />
         {/* Fallback for browsers that don't support video */}
