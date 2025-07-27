@@ -13,6 +13,12 @@ const DesktopNavigation = () => {
       >
         Events
       </button>
+      <button 
+        onClick={() => navigate('/mentors')} 
+        className="text-gray-700 hover:text-brand-600 transition-colors font-medium"
+      >
+        Mentors
+      </button>
     </nav>
   );
 };

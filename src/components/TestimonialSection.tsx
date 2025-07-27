@@ -4,12 +4,9 @@ import React from 'react';
 const TestimonialSection = () => {
   return (
     <section 
-      className="py-24 lg:py-32 relative overflow-hidden min-h-[600px] lg:min-h-[700px]"
+      className="py-24 lg:py-32 relative overflow-hidden min-h-[500px] lg:min-h-[700px] bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: 'url(/lovable-uploads/ac0671bc-fb2e-4be0-8b4d-16de78ffe24b.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundImage: 'url(/lovable-uploads/ac0671bc-fb2e-4be0-8b4d-16de78ffe24b.png)'
       }}
     >
       {/* Gray overlay */}
@@ -24,7 +21,7 @@ const TestimonialSection = () => {
           
           {/* Right side - Testimonial content */}
           <div className="text-black">
-            <div className="max-w-2xl ml-auto">
+            <div className="max-w-2xl lg:ml-auto">
               <blockquote className="text-lg lg:text-2xl leading-relaxed mb-8 text-justify">
                 "VLIC plays a vital role for investors by helping them decode the 'entrepreneurial DNA', thereby reducing the failure rate of startups in their portfolios.
               </blockquote>

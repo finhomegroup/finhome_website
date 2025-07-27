@@ -1,0 +1,92 @@
+Thiết kế CSDL cho Hệ thống Quản lý Dự án Khởi nghiệp Sinh viên
+Hệ thống quản lý dự án khởi nghiệp sinh viên cần cơ sở dữ liệu lưu trữ thông tin về sinh viên, dự án khởi nghiệp, giảng viên/mentor hướng dẫn, doanh nghiệp đối tác, các cuộc thi và hoạt động tài trợ/đầu tư. Dựa trên các biểu mẫu dữ liệu trong các tệp PDF (student, partner, mentorlecturer), chúng tôi thiết kế các bảng chính như sau:
+Các bảng chính và trường thông tin
+1. Bảng Sinh viên (Students): Lưu thông tin sinh viên tham gia các dự án khởi nghiệp. Mỗi sinh viên có các thuộc tính chính như: họ tên, MSSV (mã số sinh viên), giới tính, email, số điện thoại, khoa/viện, ngành học và trường đại học. Theo biểu mẫu, sinh viên được ghi nhận cả trường hợp nội bộ (ĐH Văn Lang) hay sinh viên trường khác. Ngoài ra có thể lưu link CV nếu có.
+PK: student_id (mã định danh sinh viên, tự tăng).
+MSSV: Mã số sinh viên (duy nhất).
+Họ tên: Bao gồm trường "Họ và tên lót" + "Tên" ghép lại.
+Giới tính: Nam/Nữ.
+Email, SĐT: Thông tin liên hệ của sinh viên.
+Trường: Tên trường đại học (mặc định “ĐH Văn Lang”, hoặc ghi tên trường khác nếu không thuộc VLU).
+Khoa, Ngành: Khoa và ngành học của sinh viên.
+CV: Đường dẫn file CV của sinh viên (nếu có).
+2. Bảng Dự án (Projects): Lưu thông tin các dự án/ý tưởng khởi nghiệp của sinh viên. Các trường quan trọng gồm tên dự án, mô tả ngắn gọn, lĩnh vực, ngày bắt đầu, giai đoạn phát triển, tình trạng hoạt động, v.v. Mỗi dự án cũng có thể có mentor doanh nghiệp và giảng viên hướng dẫn.
+PK: project_id (mã dự án, tự tăng).
+Tên dự án: Tên dự án hoặc ý tưởng khởi nghiệp.
+Mô tả: Mô tả ngắn gọn về dự án (ý tưởng chính, sản phẩm...).
+Lĩnh vực: Lĩnh vực/ngành nghề của dự án (có thể chọn nhiều lĩnh vực, ví dụ tối đa 3 lĩnh vực như trong biểu mẫu; trong CSDL có thể thiết kế bảng phụ để lưu đa trị nếu cần).
+Ngày bắt đầu: Ngày khởi động dự án (dd/mm/yyyy).
+Giai đoạn (Mức độ hoàn thiện): Giai đoạn phát triển hiện tại của dự án, ví dụ: Ideation, MVP, Traction, Growth. (Có thể dùng kiểu enum hoặc bảng tra cứu cho các giá trị này).
+Đăng ký kinh doanh: Dự án đã đăng ký thành lập doanh nghiệp hay chưa (Có/Chưa), kèm thông tin mã số thuế nếu có.
+Tình trạng: Trạng thái hoạt động hiện tại của dự án – Đang hoạt động hoặc Đã dừng (nếu đã dừng thì lưu thêm ngày dừng hoạt động).
+Website, Fanpage, Youtube: Các đường link truyền thông của dự án (nếu có).
+Tài liệu dự án: Link tới file pitch deck, thông tin chi tiết dự án, tài liệu đính kèm khác.
+Hình ảnh đại diện: Link tới file ảnh đại diện của dự án (nếu có).
+Quan hệ ngoại: mentor_id (FK tới bảng Mentor, người hướng dẫn doanh nghiệp nếu có) và lecturer_id (FK tới bảng Giảng viên, người hướng dẫn nội bộ) – mỗi dự án có thể gắn với một mentor doanh nghiệp và một giảng viên phụ trách. Các trường này có thể để NULL nếu dự án không có mentor/giảng viên.
+3. Bảng Giảng viên (Lecturers): Lưu thông tin giảng viên trong trường tham gia hướng dẫn khởi nghiệp.
+PK: lecturer_id.
+Họ tên: Tên giảng viên (tách cột Họ và Tên nếu cần như biểu mẫu).
+Giới tính.
+Học hàm/Học vị: Chức danh khoa học hoặc học vị cao nhất (ví dụ: ThS, TS, PGS, GS).
+Đơn vị: Khoa/Viện/Phòng ban giảng viên trực thuộc.
+SĐT, Email: Thông tin liên hệ.
+Kinh nghiệm: Kinh nghiệm làm việc (đặc biệt liên quan khởi nghiệp).
+Thành tích: Thành tích, giải thưởng của giảng viên (nếu có).
+Ghi chú khác: Ví dụ môn học khởi nghiệp phụ trách (nếu giảng viên có dạy học phần khởi nghiệp nào).
+Quan hệ: Một giảng viên có thể hướng dẫn nhiều dự án. Bảng Project sẽ có khóa ngoại lecturer_id trỏ sang bảng này để thể hiện mỗi dự án do giảng viên nào phụ trách.
+4. Bảng Mentor (Mentors): Lưu thông tin mentor doanh nghiệp (người hướng dẫn từ doanh nghiệp bên ngoài).
+PK: mentor_id.
+Họ tên: Tên mentor.
+Giới tính, Học vị: Giới tính và học vị (nếu có, ví dụ MBA…).
+Công ty: Tên doanh nghiệp nơi mentor đang công tác.
+Chức vụ: Chức danh/Vị trí tại doanh nghiệp đó của mentor (ví dụ: CEO, Trưởng phòng…).
+Website công ty: Link website hoặc fanpage của doanh nghiệp mentor.
+SĐT, Email: Thông tin liên hệ của mentor.
+Thành tích: Thành tích/kinh nghiệm nổi bật của mentor (ví dụ: dự án từng hướng dẫn thành công, giải thưởng cá nhân).
+Hồ sơ: Link profile hoặc portfolio (LinkedIn, v.v.) của mentor.
+Quan hệ: Một mentor có thể hướng dẫn nhiều dự án. Bảng Project có khóa ngoại mentor_id trỏ sang bảng này để liên kết dự án với mentor (nếu dự án có mentor doanh nghiệp tham gia).
+5. Bảng Doanh nghiệp Đối tác (Partner Companies): Lưu thông tin các doanh nghiệp đối tác của trường trong hoạt động khởi nghiệp. Mỗi bản ghi tương ứng một công ty.
+PK: partner_id.
+Tên doanh nghiệp: Tên đầy đủ của công ty đối tác.
+Mã số thuế: Mã số thuế của doanh nghiệp (nếu có).
+Trụ sở chính: Địa chỉ trụ sở chính (tỉnh/thành phố).
+Lĩnh vực hoạt động: Ngành nghề kinh doanh chính của công ty.
+Loại hình doanh nghiệp: Ví dụ: Startup, SME, Tập đoàn....
+Ký kết hợp tác: Doanh nghiệp đã ký MOU hợp tác với trường chưa (Yes/No).
+Chương trình đã tham gia: Danh sách các chương trình/sự kiện khởi nghiệp của trường mà DN đã tham gia hoặc liên kết (có thể lưu dạng text mô tả).
+Số đội SV được hỗ trợ: Số lượng nhóm/dự án sinh viên mà doanh nghiệp đã tham gia hướng dẫn hỗ trợ (thống kê).
+Thông tin người đại diện: Mỗi đối tác có thể kèm thông tin liên hệ người đại diện: họ tên, chức vụ, học vị (nếu cần), điện thoại, email. Các cột này lưu người liên hệ chính của công ty với trường.
+Quan hệ: Doanh nghiệp đối tác có thể gắn với nhiều hoạt động: cung cấp mentor (thông qua bảng Mentor nếu người của công ty), tài trợ hoặc đầu tư cho dự án (qua bảng Tài trợ/Đầu tư bên dưới).
+6. Bảng Cuộc thi (Competitions): Lưu thông tin các cuộc thi khởi nghiệp mà sinh viên tham gia.
+PK: competition_id.
+Tên cuộc thi: Tên sự kiện/cuộc thi khởi nghiệp (ví dụ: “Ra Khơi 2023”, “SV Startup”...).
+Năm tổ chức: Năm diễn ra cuộc thi (để phân biệt các mùa giải).
+Quy mô/Phân loại: Phân loại cuộc thi (trong trường hay ngoài trường, cấp tỉnh/quốc gia…) – có thể lưu cờ hoặc enum (ví dụ: Internal/External) để phục vụ thống kê.
+Đơn vị tổ chức: (Tùy chọn) Tên trường/đơn vị tổ chức cuộc thi.
+Mô tả: Thông tin bổ sung về cuộc thi (nếu cần).
+Quan hệ: Một cuộc thi có thể có nhiều dự án tham gia, và một dự án có thể tham gia nhiều cuộc thi khác nhau. Quan hệ N-N này được quản lý qua bảng phụ Project_Competition.
+7. Bảng Tài trợ/Đầu tư (Funding): Lưu thông tin các khoản tài trợ, hỗ trợ hoặc đầu tư dành cho dự án. Mỗi bản ghi đại diện cho một lần tài trợ/đầu tư từ một cá nhân hoặc tổ chức cho một dự án cụ thể.
+PK: fund_id.
+FK project_id: Khoá ngoại tới dự án được nhận tài trợ/đầu tư.
+FK partner_id: Khoá ngoại tới doanh nghiệp tài trợ (nếu nguồn tài trợ là từ một công ty đối tác). Trường này có thể NULL nếu nhà tài trợ là cá nhân không có trong bảng đối tác.
+Tên nhà tài trợ/đầu tư: Tên tổ chức hoặc cá nhân cấp vốn (trường hợp là cá nhân, lưu tên trực tiếp; nếu là tổ chức trùng với bảng đối tác thì dùng khóa ngoại như trên).
+Loại hỗ trợ: Phân loại hình thức hỗ trợ: Đầu tư (đổi cổ phần, góp vốn...) hay Tài trợ/Hỗ trợ (tài trợ không hoàn lại, tài trợ cơ sở vật chất, mentor, v.v.) – có thể dùng field enum để ghi nhận loại.
+Nội dung/Hình thức: Mô tả thêm về hình thức đầu tư hoặc nội dung tài trợ. Ví dụ: đầu tư lấy % cổ phần, hay tài trợ cơ sở hạ tầng gì... (trích từ trường "Hình thức" đối với đầu tư, hoặc "Nội dung hỗ trợ" đối với tài trợ).
+Giá trị: Số tiền đầu tư hoặc giá trị tài trợ (VNĐ).
+Thời điểm: (Tùy chọn) Ngày nhận đầu tư/tài trợ.
+Thiết lập các mối quan hệ giữa các bảng
+Các bảng trên được liên kết với nhau bằng các ràng buộc khóa ngoại, đảm bảo mô hình dữ liệu trực quan và tránh trùng lặp thông tin:
+Quan hệ Dự án – Sinh viên: Mối quan hệ nhiều-nhiều (N-N), do một dự án có thể có nhiều sinh viên tham gia, và một sinh viên có thể tham gia nhiều dự án (qua các giai đoạn khác nhau). Để quản lý, ta tạo bảng trung gian Project_Student với khóa ngoại project_id và student_id để liên kết sinh viên với dự án. Bảng này cũng có cột role để chỉ vai trò của sinh viên trong nhóm (Leader hoặc Member). Ví dụ, mỗi dự án sẽ có một sinh viên là Leader (trưởng nhóm) và các thành viên khác. Ràng buộc unique (project_id, student_id) đảm bảo một sinh viên không được khai trùng trong cùng một dự án.
+Quan hệ Dự án – Giảng viên: Mỗi dự án có một giảng viên hướng dẫn (1-N từ giảng viên sang dự án). Trong bảng Projects, cột lecturer_id liên kết tới bảng Giảng viên, cho biết ai là người hướng dẫn chính thức từ phía trường cho dự án đó. Một giảng viên có thể hướng dẫn nhiều dự án khác nhau (ví dụ một giảng viên phụ trách nhiều nhóm sinh viên) – đây là quan hệ một-nhiều.
+Quan hệ Dự án – Mentor doanh nghiệp: Tương tự, mỗi dự án có thể có một mentor từ doanh nghiệp (1-N từ mentor sang dự án). Bảng Projects có cột mentor_id (có thể NULL nếu dự án không có mentor doanh nghiệp) trỏ tới bảng Mentors. Một mentor có thể cố vấn cho nhiều dự án khởi nghiệp. (Lưu ý: Nếu hệ thống cho phép hơn một mentor doanh nghiệp trên một dự án, có thể cần bảng trung gian, nhưng ở đây giả định mỗi dự án chỉ có một mentor chính).
+Quan hệ Sinh viên – Cuộc thi: Sinh viên tham gia cuộc thi chủ yếu thông qua dự án của họ. Do đó không có quan hệ trực tiếp giữa sinh viên và cuộc thi, mà thông qua dự án: dự án nào tham gia cuộc thi nào thì sinh viên trong dự án đó được tính là tham gia cuộc thi đó.
+Quan hệ Dự án – Cuộc thi: Là quan hệ nhiều-nhiều, vì một dự án có thể tham gia nhiều cuộc thi, và mỗi cuộc thi có thể có nhiều dự án tham gia. Để chuẩn hóa, tạo bảng Project_Competition (bảng “tham gia cuộc thi”) với khóa ngoại project_id và competition_id để liệt kê các lần tham gia. Bảng này còn lưu thành tích đạt được và giải thưởng (giá trị giải thưởng) của dự án trong cuộc thi đó. Ví dụ: Dự án A tham gia “Cuộc thi X 2023” đạt giải Nhất, giá trị giải thưởng 50 triệu. Mỗi cặp (project, competition) là một bản ghi duy nhất trong Project_Competition.
+Quan hệ Dự án – Doanh nghiệp đối tác (Tài trợ/Hỗ trợ): Một dự án có thể nhận hỗ trợ từ nhiều doanh nghiệp/nhà đầu tư khác nhau, và mỗi doanh nghiệp có thể tài trợ/hỗ trợ nhiều dự án. Đây là quan hệ N-N được quản lý qua bảng Funding (Tài trợ/Đầu tư). Mỗi bản ghi Funding gắn một project với một đối tác (hoặc cá nhân) cùng giá trị, loại hình hỗ trợ. Ví dụ: Dự án A nhận đầu tư 100 triệu từ Quỹ XYZ, đồng thời nhận tài trợ 50 triệu từ Công ty ABC – sẽ có hai bản ghi tương ứng trong bảng Funding liên kết tới dự án A.
+Quan hệ Mentor – Doanh nghiệp: Trong bảng Mentor có lưu thông tin công ty của mentor. Để tránh dư thừa, có thể liên kết Mentor.company với bảng Partner nếu tất cả mentor đều thuộc các công ty đối tác. Tuy nhiên, không phải mọi mentor đều đến từ công ty đã ký hợp tác, nên trường company của mentor hiện tại lưu dạng text. Ta có thể sau này chuẩn hóa bằng cách: nếu company trùng với một đối tác trong bảng Partner, thì thiết lập khóa ngoại hoặc ít nhất tham chiếu logic.
+Tất cả các mối quan hệ trên được thiết kế tuân thủ chuẩn 3NF, loại bỏ trùng lặp dữ liệu. Các thông tin lặp như danh sách thành viên dự án, nhiều cuộc thi tham gia, nhiều khoản tài trợ... được tách ra bảng riêng thay vì lưu trong một cột dạng chuỗi hay nhiều cột lặp lại. Điều này đảm bảo tính toàn vẹn và dễ mở rộng của CSDL (dễ thêm mới khoản tài trợ, thêm thành viên mà không phải thay đổi cấu trúc bảng dự án).
+Sơ đồ ERD toàn bộ hệ thống
+Dưới đây là sơ đồ ERD mô tả các thực thể chính và quan hệ giữa chúng trong hệ thống quản lý dự án khởi nghiệp sinh viên: Sơ đồ ERD của CSDL, thể hiện các bảng (màu xanh) và bảng quan hệ N-N (màu xanh lá) cùng các khóa chính, khóa ngoại. (Chú thích: Quan hệ N-N được thể hiện qua các bảng trung gian Project_Student, Project_Competition, Funding. Ký hiệu PK, FK chỉ khóa chính, khóa ngoại tương ứng. Ví dụ: một sinh viên có thể thuộc nhiều dự án qua Project_Student; một project có nhiều bản ghi Funding thể hiện nhận hỗ trợ từ nhiều nguồn).
+Triển khai trên Supabase và phân quyền người dùng
+Triển khai bảng: Với Supabase (nền tảng PostgreSQL), các bảng trên được tạo bằng câu lệnh SQL DDL hoặc qua giao diện Supabase. Mỗi bảng sẽ có khóa chính dạng SERIAL (hoặc UUID) cho cột ID chính. Các cột được định nghĩa kiểu dữ liệu phù hợp: ví dụ VARCHAR/TEXT cho tên, INT cho mã số, DATE cho ngày, BOOLEAN cho các cờ Có/Không, NUMERIC cho số tiền, v.v. Các ràng buộc CHECK có thể được áp dụng cho các trường nhận giá trị hữu hạn (ví dụ trường stage chỉ nhận Ideation/MVP/Traction/Growth), hoặc status chỉ nhận “Đang hoạt động/Đã dừng”. Mọi khóa ngoại đều được thiết lập với REFERENCES để đảm bảo toàn vẹn: ví dụ project_id INTEGER REFERENCES projects(project_id) trong bảng Project_Student. Nên đánh index trên các cột khóa ngoại để tối ưu truy vấn (Supabase/Postgres tự động index khóa chính, ta có thể tạo index cho project_id trong Project_Student, v.v.). Ngoài ra, các ràng buộc UNIQUE được thêm cho những trường cần duy nhất như MSSV của sinh viên, mã số thuế doanh nghiệp, v.v. để đảm bảo không trùng lặp dữ liệu. Phân quyền & xác thực: Supabase cung cấp sẵn bảng auth.users quản lý tài khoản người dùng. Ta có thể thiết kế bảng Profiles (hoặc mở rộng bảng sinh viên/mentor) để lưu vai trò (role) của từng người dùng. Chẳng hạn, bảng Profiles gồm: id (UUID, trùng với user id trong auth), email, role (giá trị: admin, student, mentor, partner) và khóa ngoại tham chiếu tới bảng tương ứng (ví dụ profile nào role=student thì student_id trỏ sang bảng Sinh viên) để biết profile này gắn với thông tin sinh viên nào. Khi tạo tài khoản, tùy thuộc vào loại người dùng mà nhập liệu vào bảng tương ứng và gán role phù hợp. Ví dụ: một sinh viên đăng ký thì tạo một user với role “student” và liên kết đến bản ghi Sinh viên của họ; tương tự cho mentor doanh nghiệp hoặc tài khoản đại diện doanh nghiệp (role “business”). Tài khoản admin có quyền cao nhất để quản trị. Bảo mật truy cập (RLS): Supabase cho phép kích hoạt Row Level Security để kiểm soát quyền xem/sửa dữ liệu theo vai trò. Ta định nghĩa các chính sách (policy) cho từng bảng:
+Với bảng Projects: Sinh viên chỉ được xem các dự án mà mình thuộc nhóm (dựa trên Project_Student và user id khớp với student_id); Mentor chỉ xem dự án mà mình là mentor; Doanh nghiệp chỉ xem dự án mà công ty họ có tài trợ hoặc mentor tham gia; Admin được phép xem tất cả. Tương tự với bảng Students: mỗi sinh viên chỉ xem được thông tin của chính mình, nhưng admin hoặc cán bộ quản lý được xem tất cả.
+Các bảng quan hệ như Project_Student, Funding cũng thiết lập policy để đảm bảo user chỉ thấy bản ghi liên quan (VD: mentor hoặc sinh viên chỉ thấy funding của dự án mình liên quan).

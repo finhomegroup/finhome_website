@@ -1,10 +1,20 @@
 import React from 'react';
 
 const Partners = () => {
-  const partners = Array.from({ length: 12 }, (_, i) => ({
+  const partners = Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
     image: `/partner${(i + 1).toString().padStart(2, '0')}.png`,
-    name: `Partner ${i + 1}`
+    name: `Partner ${i + 1}`,
+    url: i === 0 ? 'https://vnei.edu.vn/' : 
+         i === 1 ? 'https://vietnam.zonestartups.com/' :
+         i === 2 ? 'https://nhipcaudautu.vn/' :
+         i === 3 ? 'https://dariu.org/' :
+         i === 4 ? 'https://aimacademy.vn/' :
+         i === 5 ? 'https://jaxtina.com/' :
+         i === 6 ? 'https://www.coderschool.vn/vi' :
+         i === 7 ? 'https://rocketreach.co/pythera-ai-profile_b721584ec458d4f4' : 
+         i === 8 ? 'https://www.coursera.org/' : 
+         i === 9 ? 'https://novaedu.vn/' :undefined
   }));
 
   return (
@@ -15,11 +25,12 @@ const Partners = () => {
         </h2>
         
         <div className="mt-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center">
+          <div className="grid grid-cols-5 gap-8 items-center justify-items-center">
             {partners.map((partner) => (
               <div
                 key={partner.id}
-                className="flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 w-full h-24"
+                className={`flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 w-full h-24 ${partner.url ? 'cursor-pointer' : ''}`}
+                onClick={() => partner.url && window.open(partner.url, '_blank')}
               >
                 <img
                   src={partner.image}

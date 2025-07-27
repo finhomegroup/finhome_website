@@ -10,6 +10,7 @@ import StagewiseWrapper from "@/components/StagewiseWrapper";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Events from "./pages/Events";
+import Mentors from "./pages/Mentors";
 import CreateCampaign from "./pages/CreateCampaign";
 import CampaignDetail from "./pages/CampaignDetail";
 import PersonalCampaigns from "./pages/PersonalCampaigns";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/mentors" element={<Mentors />} />
             <Route path="/create-campaign" element={<CreateCampaign />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
             <Route path="/my-campaigns" element={<PersonalCampaigns />} />

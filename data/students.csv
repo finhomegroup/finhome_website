@@ -1,0 +1,3 @@
+﻿last_name,first_name,gender,ethnicity,student_id_code,phone,email,school_type,university,faculty,major,other_school_name,other_faculty_name,other_major_name,cv_url
+Nguyễn Văn,A,Nam,Kinh,20123456,909123456,vana@example.com,van_lang,ĐH Văn Lang,Khoa CNTT,Kỹ thuật phần mềm,,,,
+Trần Thị,B,Nữ,Kinh,20123457,909123457,thib@example.com,van_lang,ĐH Văn Lang,Khoa Kinh tế,Quản trị kinh doanh,,,,https://cv.com/b 
