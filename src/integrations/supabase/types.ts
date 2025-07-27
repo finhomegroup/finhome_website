@@ -201,6 +201,75 @@ export type Database = {
         }
         Relationships: []
       }
+      data_total: {
+        Row: {
+          STT: string
+          "Phân loại": string | null
+          "Tên chương trình/cuộc thi": string | null
+          "Năm học": string | null
+          "Tên đề tài/dự án/ý tưởng": string | null
+          "Mô tả": string | null
+          MSSV: string | null
+          "Họ và tên lót": string | null
+          "Tên": string | null
+          "Chức vụ": string | null
+          "SĐT": string | null
+          Mail: string | null
+          Khoa: string | null
+          Trường: string | null
+          Link: string | null
+          "Kết quả ": string | null
+          "Giá trị giải thưởng ": number | null
+          "Kinh phí VLU hỗ trợ phát triển": number | null
+          "Ghi chú": string | null
+          "Khoa/Viện phụ trách": string | null
+        }
+        Insert: {
+          STT: string
+          "Phân loại"?: string | null
+          "Tên chương trình/cuộc thi"?: string | null
+          "Năm học"?: string | null
+          "Tên đề tài/dự án/ý tưởng"?: string | null
+          "Mô tả"?: string | null
+          MSSV?: string | null
+          "Họ và tên lót"?: string | null
+          "Tên"?: string | null
+          "Chức vụ"?: string | null
+          "SĐT"?: string | null
+          Mail?: string | null
+          Khoa?: string | null
+          Trường?: string | null
+          Link?: string | null
+          "Kết quả "?: string | null
+          "Giá trị giải thưởng "?: number | null
+          "Kinh phí VLU hỗ trợ phát triển"?: number | null
+          "Ghi chú"?: string | null
+          "Khoa/Viện phụ trách"?: string | null
+        }
+        Update: {
+          STT?: string
+          "Phân loại"?: string | null
+          "Tên chương trình/cuộc thi"?: string | null
+          "Năm học"?: string | null
+          "Tên đề tài/dự án/ý tưởng"?: string | null
+          "Mô tả"?: string | null
+          MSSV?: string | null
+          "Họ và tên lót"?: string | null
+          "Tên"?: string | null
+          "Chức vụ"?: string | null
+          "SĐT"?: string | null
+          Mail?: string | null
+          Khoa?: string | null
+          Trường?: string | null
+          Link?: string | null
+          "Kết quả "?: string | null
+          "Giá trị giải thưởng "?: number | null
+          "Kinh phí VLU hỗ trợ phát triển"?: number | null
+          "Ghi chú"?: string | null
+          "Khoa/Viện phụ trách"?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       dashboard_stats: {

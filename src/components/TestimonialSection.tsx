@@ -3,20 +3,21 @@ import React from 'react';
 
 const TestimonialSection = () => {
   return (
-    <section 
-      className="py-24 lg:py-32 relative overflow-hidden min-h-[500px] lg:min-h-[700px] bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: 'url(/lovable-uploads/ac0671bc-fb2e-4be0-8b4d-16de78ffe24b.png)'
-      }}
-    >
+                   <section 
+        className="py-8 lg:py-12 relative overflow-hidden bg-white"
+      >
       {/* Gray overlay */}
       <div className="absolute inset-0 py-16 bg-gray-50 bg-opacity-20"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 h-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-          {/* Left side - can be used for additional content if needed */}
-          <div className="hidden lg:block">
-            {/* This space can be used for additional visual elements */}
+          {/* Left side - Image */}
+          <div className="hidden lg:block flex items-center justify-center">
+            <img 
+              src="/thaylinh.png" 
+              alt="Ngô Cao Hoài Linh" 
+              className="max-w-full h-auto object-contain scale-75"
+            />
           </div>
           
           {/* Right side - Testimonial content */}

@@ -96,7 +96,7 @@ const Mentors = () => {
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Our Mentors
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-nowrap">
               Connect with experienced professionals who can guide you through your startup journey
             </p>
           </div>

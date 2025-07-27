@@ -27,47 +27,49 @@ const PortfolioPerformance = () => {
           {/* First Row */}
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={1600}
+              value={50}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2500}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Startups
+              Startup Ideas / Year
             </div>
           </div>
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={150}
+              value={5}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2000}
             />
-            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Cohorts
+            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600 whitespace-nowrap">
+              Student Startup Launched
             </div>
           </div>
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={76}
-              suffix="%"
+              value={70}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2200}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Active
+              Awards & Recognitions
             </div>
           </div>
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={42}
-              suffix="%"
+              value={30}
+              prefix="$"
+              suffix="K+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={1800}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Female-Led
+              Prizes & Seed Funding
             </div>
           </div>
         </div>
@@ -76,41 +78,37 @@ const PortfolioPerformance = () => {
           {/* Second Row */}
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={76}
-              suffix="%"
+              value={1000}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2300}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Funded Post-Accelerator
+              Students Engaged / Year
             </div>
           </div>
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={1.7}
-              prefix="£"
-              suffix="M"
-              decimals={1}
+              value={3}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2600}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Average Funding
+              Competitions / Year
             </div>
           </div>
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={5.6}
-              prefix="£"
-              suffix="B"
-              decimals={1}
+              value={10}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={3000}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Total Portfolio Valuation
+              Partner
             </div>
           </div>
         </div>
