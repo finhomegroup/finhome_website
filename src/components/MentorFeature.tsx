@@ -13,45 +13,59 @@ const MentorFeature = () => {
   const mentors: Mentor[] = [
     { 
       id: 1, 
-      image: '/mentor01.png',
-      name: 'Stephanie Bailey',
-      title: 'Chief Marketing Officer',
-      tags: ['Marketing Strategy', 'Marketing', 'Startup']
+      image: '/mentor_vlic_01.png',
+      name: 'Pham Bao Khanh Quynh',
+      title: 'Former Brand Creative Director',
+      tags: ['VinFast EU & North US']
     },
     { 
       id: 2, 
-      image: '/mentor02.png',
-      name: 'Michael Chen',
-      title: 'Senior Product Manager',
-      tags: ['Product Strategy', 'UX Design', 'Agile']
+      image: '/mentor_vlic_02.png',
+      name: 'Le Thi Bich Phuong',
+      title: 'Vice Director',
+      tags: ['Van Hanh General Hospital']
     },
     { 
       id: 3, 
-      image: '/mentor03.png',
-      name: 'Sarah Johnson',
-      title: 'Tech Lead & Architect',
-      tags: ['Cloud Computing', 'Leadership']
+      image: '/mentor_vlic_03.png',
+      name: 'Pham Thi Dieu Anh',
+      title: 'Managing Director',
+      tags: ['AIM ACADEMY Vietnam']
     },
     { 
       id: 4, 
-      image: '/mentor04.png',
-      name: 'David Rodriguez',
-      title: 'Business Development Director',
-      tags: ['Sales Strategy', 'Partnerships', 'Growth']
+      image: '/mentor_vlic_04.png',
+      name: 'Tran Kim Duy Lan',
+      title: 'Accelerator Program Development Partner',
+      tags: ['Expara Investment Fund']
     },
     { 
       id: 5, 
-      image: '/mentor05.png',
-      name: 'Emily Zhang',
-      title: 'Data Science Manager',
-      tags: ['Machine Learning', 'Analytics', 'AI Strategy']
+      image: '/mentor_vlic_05.png',
+      name: 'Le Minh Hung',
+      title: 'Director',
+      tags: ['MH Solution']
     },
     { 
       id: 6, 
-      image: '/mentor06.png',
-      name: 'James Wilson',
-      title: 'Startup Founder & CEO',
-      tags: ['Entrepreneurship', 'Fundraising', 'Scaling']
+      image: '/mentor_vlic_06.png',
+      name: 'Bui Xuan Cuong',
+      title: 'CEO',
+      tags: ['MOZ Tech']
+    },
+    { 
+      id: 7, 
+      image: '/mentor_vlic_07.png',
+      name: 'Nguyen Duc Hoai',
+      title: 'CEO',
+      tags: ['Bizino']
+    },
+    { 
+      id: 8, 
+      image: '/mentor_vlic_08.png',
+      name: 'Nguyen Son Tung',
+      title: 'CTO',
+      tags: ['RALLY AI PTE LTD']
     },
   ];
 

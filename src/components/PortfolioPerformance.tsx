@@ -27,7 +27,7 @@ const PortfolioPerformance = () => {
           {/* First Row */}
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={50}
+              value={80}
               suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
               duration={2500}
@@ -62,14 +62,13 @@ const PortfolioPerformance = () => {
           
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={30}
-              prefix="$"
-              suffix="K+"
+              value={3}
+              suffix="+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
-              duration={1800}
+              duration={2600}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Prizes & Seed Funding
+              Competitions / Year
             </div>
           </div>
         </div>
@@ -88,15 +87,17 @@ const PortfolioPerformance = () => {
             </div>
           </div>
           
+          
           <div className="text-center transform hover:scale-105 transition-transform duration-300">
             <AnimatedNumber
-              value={3}
-              suffix="+"
+              value={30}
+              prefix="$"
+              suffix="K+"
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
-              duration={2600}
+              duration={1800}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-              Competitions / Year
+              Prizes & Seed Funding
             </div>
           </div>
           
@@ -109,6 +110,57 @@ const PortfolioPerformance = () => {
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
               Partner
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+          {/* Third Row */}
+          <div className="text-center transform hover:scale-105 transition-transform duration-300">
+            <AnimatedNumber
+              value={47}
+              suffix="%"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
+              duration={2400}
+            />
+            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
+            Female-Led
+            </div>
+          </div>
+          
+          <div className="text-center transform hover:scale-105 transition-transform duration-300">
+            <AnimatedNumber
+              value={20}
+              suffix="+"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
+              duration={2700}
+            />
+            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
+              Mentors
+            </div>
+          </div>
+
+          <div className="text-center transform hover:scale-105 transition-transform duration-300">
+            <AnimatedNumber
+              value={10}
+              suffix="K+"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
+              duration={2700}
+            />
+            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
+            Course Graduates
+            </div>
+          </div>
+          
+          <div className="text-center transform hover:scale-105 transition-transform duration-300">
+            <AnimatedNumber
+              value={30}
+              suffix="+"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-2"
+              duration={3200}
+            />
+            <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
+            Startup Courses
             </div>
           </div>
         </div>

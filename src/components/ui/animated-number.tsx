@@ -68,7 +68,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
     if (decimals > 0) {
       return num.toFixed(decimals);
     }
-    return Math.floor(num).toLocaleString();
+    return Math.floor(num).toString();
   };
 
   return (

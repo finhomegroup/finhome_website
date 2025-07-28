@@ -31,7 +31,6 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? <UserMenu /> : <AuthButtons />}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -57,6 +56,7 @@ const Header = () => {
             >
               Start a Campaign
             </Button>
+            {user ? <UserMenu /> : <AuthButtons />}
           </div>
 
           {/* Mobile Menu Button */}

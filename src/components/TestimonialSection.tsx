@@ -15,7 +15,7 @@ const TestimonialSection = () => {
           <div className="flex items-center justify-center order-2 lg:order-1">
             <img 
               src="/thaylinh.png" 
-              alt="Ngô Cao Hoài Linh" 
+              alt="Ngo Cao Hoai Linh" 
               className="max-w-full h-auto object-contain scale-75 lg:scale-75 scale-50"
             />
           </div>
@@ -33,7 +33,7 @@ const TestimonialSection = () => {
               
               <div className="text-center lg:text-right">
                 <div className="text-lg sm:text-xl lg:text-3xl font-bold mb-2">
-                  Ngô Cao Hoài Linh
+                  Mr. Ngo Cao Hoai Linh
                 </div>
                 <div className="text-base sm:text-lg opacity-90">
                 Director of VLIC
