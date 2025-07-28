@@ -48,6 +48,22 @@ const tableStyles = `
       font-size: 0.875rem;
     }
   }
+  
+  /* Mobile table optimizations */
+  @media (max-width: 640px) {
+    .table-responsive {
+      font-size: 0.75rem;
+    }
+    
+    .table-cell-mobile {
+      padding: 0.5rem 0.25rem !important;
+    }
+    
+    .table-header-mobile {
+      padding: 0.5rem 0.25rem !important;
+      font-size: 0.75rem !important;
+    }
+  }
 `;
 
 const CampaignsGrid = () => {
@@ -236,7 +252,7 @@ const CampaignsGrid = () => {
           </p>
           
           {/* Category Filters */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 px-2">
             {[
               { id: 'all', label: 'All' },
               { id: 'technology', label: 'Technology' },
@@ -248,7 +264,7 @@ const CampaignsGrid = () => {
             ].map((category) => (
               <button
                 key={category.id}
-                className="px-6 py-2 rounded-full border border-gray-300 bg-white text-gray-700 font-medium text-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-red-600 hover:text-white hover:border-red-600"
+                className="px-3 sm:px-6 py-2 rounded-full border border-gray-300 bg-white text-gray-700 font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-red-600 hover:text-white hover:border-red-600"
                 onClick={() => {
                   // TODO: Implement category filtering logic
                   console.log('Selected category:', category.id);
@@ -265,51 +281,55 @@ const CampaignsGrid = () => {
                  {/* Projects Table */}
          {sortedAndPaginatedData.paginatedData && sortedAndPaginatedData.paginatedData.length > 0 ? (
            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-             <div className="overflow-x-auto">
+             <div className="overflow-x-auto table-responsive">
                <Table className="min-w-full">
                              <TableHeader>
                                    <TableRow>
-                    <TableHead className="w-[120px] min-w-[120px]">
+                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Tên chương trình/cuộc thi')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        Program/Competition
+                        <span className="hidden sm:inline">Program/Competition</span>
+                        <span className="sm:hidden">Program</span>
                         {getSortIcon('Tên chương trình/cuộc thi')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[200px] min-w-[200px]">
+                    <TableHead className="w-[200px] min-w-[200px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Tên đề tài/dự án/ý tưởng')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        Project Title
+                        <span className="hidden sm:inline">Project Title</span>
+                        <span className="sm:hidden">Title</span>
                         {getSortIcon('Tên đề tài/dự án/ý tưởng')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px]">
+                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Họ và tên lót')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        First & Middle Name
+                        <span className="hidden sm:inline">First & Middle Name</span>
+                        <span className="sm:hidden">First Name</span>
                         {getSortIcon('Họ và tên lót')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[80px] min-w-[80px]">
+                    <TableHead className="w-[80px] min-w-[80px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Tên')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        Last Name
+                        <span className="hidden sm:inline">Last Name</span>
+                        <span className="sm:hidden">Last</span>
                         {getSortIcon('Tên')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[140px] min-w-[140px]">
+                    <TableHead className="w-[140px] min-w-[140px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Khoa')}
@@ -319,17 +339,18 @@ const CampaignsGrid = () => {
                         {getSortIcon('Khoa')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[150px] min-w-[150px]">
+                    <TableHead className="w-[150px] min-w-[150px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Trường')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        University
+                        <span className="hidden sm:inline">University</span>
+                        <span className="sm:hidden">Uni</span>
                         {getSortIcon('Trường')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[100px] min-w-[100px] text-center">
+                    <TableHead className="w-[100px] min-w-[100px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Kết quả ')}
@@ -339,33 +360,36 @@ const CampaignsGrid = () => {
                         {getSortIcon('Kết quả ')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] text-center">
+                    <TableHead className="w-[120px] min-w-[120px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Giá trị giải thưởng ')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        Prize Value
+                        <span className="hidden sm:inline">Prize Value</span>
+                        <span className="sm:hidden">Prize</span>
                         {getSortIcon('Giá trị giải thưởng ')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[140px] min-w-[140px] text-center">
+                    <TableHead className="w-[140px] min-w-[140px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Kinh phí VLU hỗ trợ phát triển')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        VLU Development Funding
+                        <span className="hidden sm:inline">VLU Development Funding</span>
+                        <span className="sm:hidden">VLU Funding</span>
                         {getSortIcon('Kinh phí VLU hỗ trợ phát triển')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] text-center">
+                    <TableHead className="w-[120px] min-w-[120px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('Năm học')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
-                        Academic Year
+                        <span className="hidden sm:inline">Academic Year</span>
+                        <span className="sm:hidden">Year</span>
                         {getSortIcon('Năm học')}
                       </Button>
                     </TableHead>
@@ -377,43 +401,43 @@ const CampaignsGrid = () => {
                   
                                      return (
                                                                <TableRow key={campaign.STT} className="hover:bg-gray-50">
-                                               <TableCell className="w-[120px] min-w-[120px] align-top">
+                                               <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
                           <div className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
                             {formattedCampaign.program || 'N/A'}
                           </div>
                         </TableCell>
                         
-                        <TableCell className="w-[200px] min-w-[200px] align-top">
+                        <TableCell className="w-[200px] min-w-[200px] align-top table-cell-mobile">
                           <div className="font-medium text-gray-900 text-sm line-clamp-3 leading-tight">
                             {formattedCampaign.projectTitle || formattedCampaign.title || 'N/A'}
                           </div>
                         </TableCell>
                        
-                       <TableCell className="w-[120px] min-w-[120px] align-top">
+                       <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-700 line-clamp-2 leading-tight">
                            {formattedCampaign.firstMiddleName || 'N/A'}
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[80px] min-w-[80px] align-top">
+                       <TableCell className="w-[80px] min-w-[80px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-700 font-medium">
                            {formattedCampaign.lastName || 'N/A'}
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[140px] min-w-[140px] align-top">
+                       <TableCell className="w-[140px] min-w-[140px] align-top table-cell-mobile">
                          <Badge variant="secondary" className="text-xs line-clamp-2 leading-tight">
                            {formattedCampaign.faculty || 'N/A'}
                          </Badge>
                        </TableCell>
                        
-                       <TableCell className="w-[150px] min-w-[150px] align-top">
+                       <TableCell className="w-[150px] min-w-[150px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-600 line-clamp-2 leading-tight">
                            {formattedCampaign.university || 'N/A'}
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[100px] min-w-[100px] text-center align-top">
+                       <TableCell className="w-[100px] min-w-[100px] text-center align-top table-cell-mobile">
                          <Badge 
                            variant={formattedCampaign.result?.includes('Giải') ? 'default' : 'secondary'}
                            className="text-xs line-clamp-2 leading-tight"
@@ -422,7 +446,7 @@ const CampaignsGrid = () => {
                          </Badge>
                        </TableCell>
                        
-                       <TableCell className="w-[120px] min-w-[120px] text-center align-top">
+                       <TableCell className="w-[120px] min-w-[120px] text-center align-top table-cell-mobile">
                          <span className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">
                            {formattedCampaign.prizeValue ? 
                              `${parseInt(formattedCampaign.prizeValue).toLocaleString()} VND` : 
@@ -431,13 +455,13 @@ const CampaignsGrid = () => {
                          </span>
                        </TableCell>
                        
-                                               <TableCell className="w-[140px] min-w-[140px] text-center align-top">
+                                               <TableCell className="w-[140px] min-w-[140px] text-center align-top table-cell-mobile">
                           <span className="text-sm text-gray-600 line-clamp-2 leading-tight">
                             {formattedCampaign.vluFunding || 'N/A'}
                           </span>
                         </TableCell>
                         
-                        <TableCell className="w-[120px] min-w-[120px] text-center align-top">
+                        <TableCell className="w-[120px] min-w-[120px] text-center align-top table-cell-mobile">
                           <span className="text-sm text-gray-600 whitespace-nowrap">
                             {formattedCampaign.academicYear || 'N/A'}
                           </span>
@@ -458,81 +482,159 @@ const CampaignsGrid = () => {
 
          {/* Pagination Controls */}
          {sortedAndPaginatedData.totalPages > 1 && (
-           <div className="flex items-center justify-between mt-8 bg-white rounded-lg shadow-sm p-4">
-             <div className="text-sm text-gray-600">
-               Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedAndPaginatedData.sortedData.length)} of {sortedAndPaginatedData.sortedData.length} projects
+           <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
+             {/* Mobile Layout */}
+             <div className="block sm:hidden">
+               <div className="flex flex-col items-center space-y-4">
+                 <div className="text-sm text-gray-600 text-center">
+                   Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedAndPaginatedData.sortedData.length)} of {sortedAndPaginatedData.sortedData.length} projects
+                 </div>
+                 
+                 <div className="flex items-center justify-center space-x-1">
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     onClick={handlePreviousPage}
+                     disabled={currentPage === 1}
+                     className="flex items-center space-x-1 px-2"
+                   >
+                     <ChevronLeft className="h-4 w-4" />
+                     <span className="hidden xs:inline">Prev</span>
+                   </Button>
+                   
+                   <div className="flex items-center space-x-1">
+                     {(() => {
+                       const totalPages = sortedAndPaginatedData.totalPages;
+                       const maxVisiblePages = 3; // Reduced for mobile
+                       
+                       if (totalPages <= maxVisiblePages) {
+                         return Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                           <Button
+                             key={page}
+                             variant={currentPage === page ? "default" : "outline"}
+                             size="sm"
+                             onClick={() => setCurrentPage(page)}
+                             className="w-8 h-8 p-0 text-xs"
+                           >
+                             {page}
+                           </Button>
+                         ));
+                       } else {
+                         let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                         let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                         
+                         if (endPage - startPage < maxVisiblePages - 1) {
+                           startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                         }
+                         
+                         const pages = [];
+                         for (let i = startPage; i <= endPage; i++) {
+                           pages.push(i);
+                         }
+                         
+                         return pages.map((page) => (
+                           <Button
+                             key={page}
+                             variant={currentPage === page ? "default" : "outline"}
+                             size="sm"
+                             onClick={() => setCurrentPage(page)}
+                             className="w-8 h-8 p-0 text-xs"
+                           >
+                             {page}
+                           </Button>
+                         ));
+                       }
+                     })()}
+                   </div>
+                   
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     onClick={handleNextPage}
+                     disabled={currentPage === sortedAndPaginatedData.totalPages}
+                     className="flex items-center space-x-1 px-2"
+                   >
+                     <span className="hidden xs:inline">Next</span>
+                     <ChevronRight className="h-4 w-4" />
+                   </Button>
+                 </div>
+               </div>
              </div>
              
-             <div className="flex items-center space-x-2">
-               <Button
-                 variant="outline"
-                 size="sm"
-                 onClick={handlePreviousPage}
-                 disabled={currentPage === 1}
-                 className="flex items-center space-x-1"
-               >
-                 <ChevronLeft className="h-4 w-4" />
-                 <span>Previous</span>
-               </Button>
+             {/* Desktop Layout */}
+             <div className="hidden sm:flex items-center justify-between">
+               <div className="text-sm text-gray-600">
+                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedAndPaginatedData.sortedData.length)} of {sortedAndPaginatedData.sortedData.length} projects
+               </div>
                
-                               <div className="flex items-center space-x-1">
-                  {(() => {
-                    const totalPages = sortedAndPaginatedData.totalPages;
-                    const maxVisiblePages = 5;
-                    
-                    if (totalPages <= maxVisiblePages) {
-                      // Show all pages if total is 5 or less
-                      return Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {page}
-                        </Button>
-                      ));
-                    } else {
-                      // Show only 5 pages with smart positioning
-                      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                      
-                      // Adjust if we're near the end
-                      if (endPage - startPage < maxVisiblePages - 1) {
-                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                      }
-                      
-                      const pages = [];
-                      for (let i = startPage; i <= endPage; i++) {
-                        pages.push(i);
-                      }
-                      
-                      return pages.map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {page}
-                        </Button>
-                      ));
-                    }
-                  })()}
-                </div>
-               
-               <Button
-                 variant="outline"
-                 size="sm"
-                 onClick={handleNextPage}
-                 disabled={currentPage === sortedAndPaginatedData.totalPages}
-                 className="flex items-center space-x-1"
-               >
-                 <span>Next</span>
-                 <ChevronRight className="h-4 w-4" />
-               </Button>
+               <div className="flex items-center space-x-2">
+                 <Button
+                   variant="outline"
+                   size="sm"
+                   onClick={handlePreviousPage}
+                   disabled={currentPage === 1}
+                   className="flex items-center space-x-1"
+                 >
+                   <ChevronLeft className="h-4 w-4" />
+                   <span>Previous</span>
+                 </Button>
+                 
+                 <div className="flex items-center space-x-1">
+                   {(() => {
+                     const totalPages = sortedAndPaginatedData.totalPages;
+                     const maxVisiblePages = 5;
+                     
+                     if (totalPages <= maxVisiblePages) {
+                       return Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                         <Button
+                           key={page}
+                           variant={currentPage === page ? "default" : "outline"}
+                           size="sm"
+                           onClick={() => setCurrentPage(page)}
+                           className="w-8 h-8 p-0"
+                         >
+                           {page}
+                         </Button>
+                       ));
+                     } else {
+                       let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                       let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                       
+                       if (endPage - startPage < maxVisiblePages - 1) {
+                         startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                       }
+                       
+                       const pages = [];
+                       for (let i = startPage; i <= endPage; i++) {
+                         pages.push(i);
+                       }
+                       
+                       return pages.map((page) => (
+                         <Button
+                           key={page}
+                           variant={currentPage === page ? "default" : "outline"}
+                           size="sm"
+                           onClick={() => setCurrentPage(page)}
+                           className="w-8 h-8 p-0"
+                         >
+                           {page}
+                         </Button>
+                       ));
+                     }
+                   })()}
+                 </div>
+                 
+                 <Button
+                   variant="outline"
+                   size="sm"
+                   onClick={handleNextPage}
+                   disabled={currentPage === sortedAndPaginatedData.totalPages}
+                   className="flex items-center space-x-1"
+                 >
+                   <span>Next</span>
+                   <ChevronRight className="h-4 w-4" />
+                 </Button>
+               </div>
              </div>
            </div>
          )}
