@@ -48,6 +48,9 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => navigate('/lecturer-profile')}>
                   Lecturer's profile
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/ai-chatbot')}>
+                  AI chatbot
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <Button 

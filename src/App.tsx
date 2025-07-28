@@ -16,6 +16,7 @@ import CampaignDetail from "./pages/CampaignDetail";
 import PersonalCampaigns from "./pages/PersonalCampaigns";
 import MentorProfile from "./pages/MentorProfile";
 import LecturerProfile from "./pages/LecturerProfile";
+import AIChatbot from "./pages/AIChatbot";
 import AdminDashboard from "./pages/AdminDashboard";
 import StartupsManagement from "./pages/StartupsManagement";
 import UsersManagement from "./pages/UsersManagement";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/my-campaigns" element={<PersonalCampaigns />} />
             <Route path="/mentor-profile" element={<MentorProfile />} />
             <Route path="/lecturer-profile" element={<LecturerProfile />} />
+            <Route path="/ai-chatbot" element={<AIChatbot />} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
