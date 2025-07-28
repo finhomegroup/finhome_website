@@ -254,17 +254,21 @@ const CampaignsGrid = () => {
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 px-2">
             {[
-              { id: 'all', label: 'All' },
-              { id: 'technology', label: 'Technology' },
-              { id: 'environment', label: 'Environment' },
-              { id: 'film', label: 'Film' },
-              { id: 'community', label: 'Community' },
-              { id: 'product', label: 'Product' },
-              { id: 'music', label: 'Music' }
+              { id: 'all', label: 'All', color: '#fec443' },
+              { id: 'technology', label: 'Technology', color: '#3b387d' },
+              { id: 'environment', label: 'Environment', color: '#00a9a5' },
+              { id: 'film', label: 'Film', color: '#f7a4a4' },
+              { id: 'community', label: 'Community', color: '#00664f' },
+              { id: 'product', label: 'Product', color: '#458fcd' },
+              { id: 'music', label: 'Music', color: '#f36d2f' }
             ].map((category) => (
               <button
                 key={category.id}
-                className="px-3 sm:px-6 py-2 rounded-full border border-gray-300 bg-white text-gray-700 font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-red-600 hover:text-white hover:border-red-600"
+                className="px-3 sm:px-6 py-2 rounded-full border font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:shadow-md text-white"
+                style={{
+                  backgroundColor: category.color,
+                  borderColor: category.color
+                }}
                 onClick={() => {
                   // TODO: Implement category filtering logic
                   console.log('Selected category:', category.id);

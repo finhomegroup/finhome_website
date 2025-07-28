@@ -89,28 +89,31 @@ const MentorFeature = () => {
                 target.src = getFallbackImage(mentor.id);
               }}
             />
-            {mentor.name && mentor.title && (
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-center items-end p-6">
-                <h3 className="text-white text-xl font-bold mb-1 text-right">
-                  {mentor.name}
-                </h3>
-                <p className="text-gray-200 text-sm mb-3 text-right">
-                  {mentor.title}
-                </p>
-                {mentor.tags && (
-                  <div className="flex flex-wrap gap-2 justify-end">
-                    {mentor.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm text-white rounded-full border border-white/30"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                         {mentor.name && mentor.title && (
+               <div className="absolute inset-0 flex flex-col justify-center items-end p-6">
+                 <h3 className="text-black text-xl font-bold mb-1 text-right">
+                   {mentor.name}
+                 </h3>
+                 <p className="text-black text-sm mb-3 text-right">
+                   {mentor.title}
+                 </p>
+                 {mentor.tags && (
+                   <div className="flex flex-wrap gap-2 justify-end mb-4">
+                     {mentor.tags.map((tag, index) => (
+                       <span
+                         key={index}
+                         className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full border border-gray-200"
+                       >
+                         {tag}
+                       </span>
+                     ))}
+                   </div>
+                 )}
+                 <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-300">
+                   Book now
+                 </button>
+               </div>
+             )}
           </div>
         </CardContent>
       </Card>

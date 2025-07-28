@@ -160,7 +160,7 @@ const PortfolioPerformance = () => {
               duration={3200}
             />
             <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-brand-600">
-            Startup Courses
+            Innovation Course
             </div>
           </div>
         </div>

@@ -13,12 +13,12 @@ const Events = () => {
   const events = [
     {
       id: 1,
-      title: 'Startup Launchpad 2025',
-      organizer: 'Vietnam Startup Network',
-      date: '20 Jan 2025',
-      time: '08:00 - 17:00',
-      location: 'INNOVEX Convention Center',
-      description: 'The ultimate startup pitch competition! Connect with VCs, angel investors, and mentors. Top 10 startups will receive funding up to $500K.',
+      title: 'VLU Mentor Networking Day 2025',
+      organizer: 'Van Lang Incubation Center',
+      date: '28 July 2025',
+      time: '13:30 - 17:00',
+      location: 'Building J - Van Lang University',
+      description: 'An event connecting mentors, businesses, and student startups to promote the innovation ecosystem at Van Lang through project showcases, sharing sessions, and strategic partnership signings.',
       tags: ['Startup', 'Pitch', 'Investment'],
       icon: Rocket,
       iconBg: 'bg-blue-100',
@@ -30,7 +30,7 @@ const Events = () => {
       id: 2,
       title: 'Innovation Hackathon 2025',
       organizer: 'Saigon Innovation Hub',
-      date: '15 Feb 2025',
+      date: '15 Jun 2025',
       time: '48 Hours',
       location: 'Saigon Hi-Tech Park',
       description: '48-hour non-stop hackathon for aspiring entrepreneurs. Build your MVP from scratch with mentorship from successful founders.',
@@ -45,7 +45,7 @@ const Events = () => {
       id: 3,
       title: 'Startup Funding Bootcamp',
       organizer: 'Tech Angels Vietnam',
-      date: '10 Mar 2025',
+      date: '10 May 2025',
       time: '09:00 - 16:00',
       location: 'Hub@Innovation',
       description: 'Learn how to secure funding for your startup from leading VCs and angel investors. Master the art of pitching and valuation.',
@@ -60,7 +60,7 @@ const Events = () => {
       id: 4,
       title: 'Founders Meetup & Networking',
       organizer: 'Vietnam Founders Network',
-      date: '25 Apr 2025',
+      date: '25 April 2025',
       time: '18:30 - 21:00',
       location: 'Dreamplex Coworking Space',
       description: 'Monthly gathering of startup founders, co-founders, and aspiring entrepreneurs. Share experiences, find co-founders, and build your network.',
@@ -70,11 +70,26 @@ const Events = () => {
       iconColor: 'text-purple-600',
       tagBg: 'bg-purple-100',
       tagColor: 'text-purple-700'
+    },
+    {
+      id: 6,
+      title: 'Startup Launchpad 2025',
+      organizer: 'Vietnam Startup Network',
+      date: '20 Feb 2025',
+      time: '13:30 - 17:00',
+      location: 'INNOVEX Convention Center',
+      description: 'The ultimate startup pitch competition! Connect with VCs, angel investors, and mentors. Top 10 startups will receive funding up to $500K.',
+      tags: ['Startup', 'Pitch', 'Investment'],
+      icon: Rocket,
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
+      tagBg: 'bg-blue-100',
+      tagColor: 'text-blue-700'
     }
   ];
 
   const trendingEvents = [
-    { title: 'Global AI Summit', date: '25 May 2025', location: 'Virtual', icon: Flame, iconBg: 'bg-red-100', iconColor: 'text-red-600' },
+    { title: 'Networking Day', date: '28 July 2025', location: 'VLU', icon: Flame, iconBg: 'bg-red-100', iconColor: 'text-red-600' },
     { title: 'City Marathon', date: '2 Jun 2025', location: 'Downtown', icon: Users, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
     { title: 'Sustainability Expo', date: '15 Jun 2025', location: 'Green Center', icon: Lightbulb, iconBg: 'bg-green-100', iconColor: 'text-green-600' }
   ];
