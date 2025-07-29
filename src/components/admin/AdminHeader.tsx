@@ -10,11 +10,14 @@ export const AdminHeader: React.FC = () => {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">VLIC Dashboard</h1>
-          <p className="text-sm text-gray-600">Vietnam Startup Incubator</p>
+        <div className="flex items-center min-w-0 flex-1">
+          <img 
+            src="/vlic_logo.svg" 
+            alt="VLIC Logo" 
+            className="h-12 w-auto"
+          />
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 flex-shrink-0">
           <Button variant="ghost" size="sm">
             <Bell className="h-4 w-4" />
           </Button>
