@@ -12,8 +12,8 @@ export const AdminHeader: React.FC = () => {
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center min-w-0 flex-1">
           <img 
-            src="/vlic_logo.svg" 
-            alt="VLIC Logo" 
+            src="/vlu_logo.png" 
+            alt="VLU Logo" 
             className="h-12 w-auto"
           />
         </div>

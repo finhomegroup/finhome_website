@@ -12,7 +12,7 @@ const Partners = () => {
          i === 4 ? 'https://aimacademy.vn/' :
          i === 5 ? 'https://jaxtina.com/' :
          i === 6 ? 'https://www.coderschool.vn/vi' :
-         i === 7 ? 'https://rocketreach.co/pythera-ai-profile_b721584ec458d4f4' : 
+         i === 7 ? 'https://simpleenglish.com.vn/' : 
          i === 8 ? 'https://www.coursera.org/' : 
          i === 9 ? 'https://novaedu.vn/' :
          i === 10 ? 'https://vnei.edu.vn/' :

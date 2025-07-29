@@ -9,7 +9,7 @@ const Logo = () => {
         <img 
           src="/vlu_logo.png" 
           alt="VLU Logo" 
-          className="h-8 w-auto cursor-pointer"
+          className="h-12 w-auto cursor-pointer"
         />
       </Link>
     </div>
