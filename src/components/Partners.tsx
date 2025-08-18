@@ -22,7 +22,7 @@ const Partners = () => {
   return (
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-3xl lg:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
           Partners
         </h2>
         <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">

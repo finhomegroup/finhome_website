@@ -125,7 +125,7 @@ const MentorFeature = () => {
       aria-label="Meet our mentors showcase"
     >
       <div className="container mx-auto px-4 text-center mb-12">
-                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
            Top Mentors and Lectures at VLIC
          </h2>
                  <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">

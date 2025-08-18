@@ -163,7 +163,7 @@ const CampaignsGrid = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl lg:text-4xl xl:text-5xl font-semibold text-gray-900 mb-4">
               VLIC Project Portfolio
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -206,10 +206,10 @@ const CampaignsGrid = () => {
   return (
     <section className="py-16 bg-gray-50">
       <style dangerouslySetInnerHTML={{ __html: tableStyles }} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900">
+          <h2 className="text-3xl lg:text-4xl xl:text-5xl font-semibold text-gray-900 mb-4">
             VLIC Project Portfolio
           </h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2 py-3">
@@ -229,7 +229,7 @@ const CampaignsGrid = () => {
             ].map((category) => (
               <button
                 key={category.id}
-                className="px-3 sm:px-6 py-2 rounded-full border font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:shadow-md text-white"
+                className="px-3 sm:px-6 py-2 rounded-full border font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105 hover:shadow-md text-white w-36 sm:w-36"
                 style={{
                   backgroundColor: category.color,
                   borderColor: category.color
@@ -254,7 +254,7 @@ const CampaignsGrid = () => {
                <Table className="min-w-full">
                              <TableHeader>
                                    <TableRow>
-                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
+                    <TableHead className="w-[100px] min-w-[100px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('programCompetition')}
@@ -265,7 +265,7 @@ const CampaignsGrid = () => {
                         {getSortIcon('programCompetition')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
+                    <TableHead className="w-[80px] min-w-[80px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('projectTitle')}
@@ -276,7 +276,7 @@ const CampaignsGrid = () => {
                         {getSortIcon('projectTitle')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[100px] min-w-[100px] table-header-mobile">
+                    <TableHead className="w-[80px] min-w-[80px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('firstName')}
@@ -287,7 +287,7 @@ const CampaignsGrid = () => {
                         {getSortIcon('firstName')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[40px] min-w-[40px] table-header-mobile">
+                    <TableHead className="w-[30px] min-w-[30px] table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('lastName')}
@@ -298,7 +298,7 @@ const CampaignsGrid = () => {
                         {getSortIcon('lastName')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
+                    <TableHead className="w-[180px] min-w-[180px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('faculty')}
@@ -329,7 +329,7 @@ const CampaignsGrid = () => {
                         {getSortIcon('result')}
                       </Button>
                     </TableHead>
-                    <TableHead className="w-[100px] min-w-[100px] text-center table-header-mobile">
+                    <TableHead className="w-[180px] min-w-[180px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort('prizeValue')}
@@ -370,7 +370,7 @@ const CampaignsGrid = () => {
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
+                       <TableCell className="w-[120px] min-w-[120px] text-center align-top table-cell-mobile">
                          <Badge className={`text-xs line-clamp-2 leading-tight ${getFacultyBadgeColor()}`}>
                            {campaign.faculty || 'N/A'}
                          </Badge>

@@ -24,10 +24,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={80}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2500}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Startup Ideas / Year
               </div>
             </div>
@@ -35,10 +35,10 @@ const PortfolioPerformance = () => {
             <div className="text-center transform hover:scale-105 transition-transform duration-300">
               <AnimatedNumber
                 value={5}
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2000}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 whitespace-nowrap">
+              <div className="text-lg sm:text-xl text-gray-600 whitespace-nowrap">
                 Student Startup Launched
               </div>
             </div>
@@ -47,10 +47,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={70}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2200}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Awards & Recognitions
               </div>
             </div>
@@ -59,10 +59,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={3}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2600}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Competitions / Year
               </div>
             </div>
@@ -74,10 +74,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={1000}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2300}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Students Engaged / Year
               </div>
             </div>
@@ -102,10 +102,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={10}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={3000}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Partner
               </div>
             </div>
@@ -117,10 +117,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={47}
                 suffix="%"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2400}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
               Female-Led
               </div>
             </div>
@@ -129,10 +129,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={20}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2700}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
                 Mentors
               </div>
             </div>
@@ -141,10 +141,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={10}
                 suffix="K+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={2700}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
               Course Graduates
               </div>
             </div>
@@ -153,10 +153,10 @@ const PortfolioPerformance = () => {
               <AnimatedNumber
                 value={30}
                 suffix="+"
-                className="text-4xl sm:text-4xl text-gray-900 mb-2"
+                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
                 duration={3200}
               />
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
+              <div className="text-lg sm:text-xl text-gray-600">
               Innovation Course
               </div>
             </div>

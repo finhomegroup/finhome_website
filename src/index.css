@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Maison Neue font */
+@font-face {
+    font-family: 'Maison Neue';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Maison Neue'), url('https://fonts.cdnfonts.com/s/29652/MaisonNeueExtendedBook.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Maison Neue Demi';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Maison Neue Demi'), url('https://fonts.cdnfonts.com/s/29652/MaisonNeueExtendedDemi.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Maison Neue Bold';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Maison Neue Bold'), url('https://fonts.cdnfonts.com/s/29652/MaisonNeueExtendedBold.woff') format('woff');
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
@@ -64,9 +86,6 @@ All colors MUST be HSL.
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
@@ -94,6 +113,22 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 400 !important;
+  }
+  
+  /* Force normal font-weight for all text unless explicitly overridden */
+  p, span, div, h1, h2, h3, h4, h5, h6, a, button, input, textarea, label {
+    font-weight: 400 !important;
+  }
+  
+  /* Only apply bold/semibold when explicitly requested */
+  .font-bold, .font-semibold {
+    font-weight: 600 !important;
+  }
+  
+  .font-medium {
+    font-weight: 500 !important;
   }
   
   /* Global video styles for mobile compatibility */
@@ -201,5 +236,15 @@ All colors MUST be HSL.
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  
+  .font-demi {
+    font-family: 'Maison Neue Demi', 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 600 !important;
+  }
+  
+  .font-demi-bold {
+    font-family: 'Maison Neue Bold', 'Maison Neue Demi', 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 700 !important;
   }
 }

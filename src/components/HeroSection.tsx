@@ -6,7 +6,7 @@ import { TypeAnimation } from 'react-type-animation';
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden min-h-screen -mt-16 pt-16">
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-48">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-48">
         <div className="text-center">
           <div className="animate-fade-in">
             {/* Badge with icon and text */}
@@ -16,12 +16,12 @@ const HeroSection = () => {
             </div>
             
             <h1 className="mb-4 sm:mb-6">
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-demi text-gray-900 leading-tight whitespace-nowrap overflow-hidden">
                 <span>
                   The <span className="text-red-600">#1</span> Startup Launchpad
                 </span>
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mt-1 sm:mt-2">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-demi text-gray-900 leading-tight mt-1 sm:mt-2 whitespace-nowrap overflow-hidden">
                 <TypeAnimation
                   sequence={[
                     "for Pioneers in South East Asia",
@@ -33,7 +33,7 @@ const HeroSection = () => {
                   cursor={false}
                 />
               </div>
-              <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
                 <TypeAnimation
                   sequence={[
                     "Build bold ideas with top mentors and real-world projects, all from\nthe heart of Southeast Asia's most dynamic innovation hub",
