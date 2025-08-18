@@ -1,89 +1,30 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Play, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { Play, TrendingUp, Users, DollarSign, Radio } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-white overflow-hidden min-h-screen">
-      <style dangerouslySetInnerHTML={{ __html: `
-        /* Video optimizations for better scaling */
-        video {
-          object-fit: cover !important;
-          object-position: center !important;
-          width: 100% !important;
-          height: 90% !important;
-          background: transparent !important;
-        }
-        
-        /* Mobile video optimizations */
-        @media (max-width: 768px) {
-          video {
-            object-fit: cover !important;
-            object-position: center !important;
-            width: 100% !important;
-            height: 90% !important;
-            background: transparent !important;
-          }
-        }
-        
-        /* Hide fallback by default, show only if video fails */
-        .video-fallback {
-          display: none;
-        }
-        
-        /* Ensure video plays on mobile */
-        video::-webkit-media-controls {
-          display: none !important;
-        }
-        
-        video::-webkit-media-controls-panel {
-          display: none !important;
-        }
-      ` }} />
-      {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="absolute inset-0 w-full h-full object-cover bg-transparent"
-        onLoadStart={() => {
-          // Hide fallback when video starts loading
-          const fallback = document.querySelector('.video-fallback');
-          if (fallback) {
-            (fallback as HTMLElement).style.display = 'none';
-          }
-        }}
-        onError={() => {
-          // Show fallback if video fails to load
-          const fallback = document.querySelector('.video-fallback');
-          if (fallback) {
-            (fallback as HTMLElement).style.display = 'block';
-          }
-        }}
-      >
-        <source
-          src="https://n8nskilluptest.s3.ap-southeast-1.amazonaws.com/vlic_video_final.mp4"
-          type="video/mp4"
-        />
-        {/* Fallback for browsers that don't support video */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100"></div>
-      </video>
-      
-      {/* Fallback background for devices that don't support video - only show if video fails to load */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 video-fallback"></div>
-      
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-48">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+    <section className="relative overflow-hidden min-h-screen -mt-16 pt-16">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-48">
+        <div className="text-center">
           <div className="animate-fade-in">
-            <h1 className="mb-6">
-              <div className="text-3xl lg:text-8xl font-extrabold text-white leading-tight">
+            {/* Badge with icon and text */}
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6 shadow-sm border border-gray-200">
+              <Radio className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-600" />
+              <span className="text-xs sm:text-sm lg:text-base xl:text-lg font-medium text-gray-700">Van Lang Incubation Center</span>
+            </div>
+            
+            <h1 className="mb-4 sm:mb-6">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
+                <span>
+                  The <span className="text-red-600">#1</span> Startup Launchpad
+                </span>
+              </div>
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mt-1 sm:mt-2">
                 <TypeAnimation
                   sequence={[
-                    "VLIC",
+                    "for Pioneers in South East Asia",
                     2000,
                   ]}
                   speed={50}
@@ -92,38 +33,33 @@ const HeroSection = () => {
                   cursor={false}
                 />
               </div>
-              <div className="text-2xl lg:text-4xl font-extrabold text-white leading-tight mt-2 whitespace-nowrap">
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
                 <TypeAnimation
                   sequence={[
-                    "THE #1 STARTUP LAUNCHPAD FOR PIONEERS",
+                    "Build bold ideas with top mentors and real-world projects, all from\nthe heart of Southeast Asia's most dynamic innovation hub",
                     2000,
                   ]}
                   speed={50}
                   wrapper="span"
                   repeat={Infinity}
                   cursor={false}
-                />
-              </div>
-              <div className="text-2xl lg:text-4xl font-extrabold text-white leading-tight mt-2">
-                <TypeAnimation
-                  sequence={[
-                    "in South East Asia",
-                    2000,
-                  ]}
-                  speed={50}
-                  wrapper="span"
-                  repeat={Infinity}
-                  cursor={false}
+                  style={{ whiteSpace: 'pre-line' }}
                 />
               </div>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mt-6 sm:mt-8">
+              <Button className="px-6 py-3 text-base sm:text-lg font-semibold bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Project
+              </Button>
+              <Button className="px-6 py-3 text-base sm:text-lg font-semibold bg-gray-800 hover:bg-gray-900 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Mentors
+              </Button>
+            </div>
+            
+            <p className="text-sm sm:text-base lg:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed mt-6 sm:mt-8">
             </p>
-          </div>
-
-          {/* Right Content - Hero Image Placeholder */}
-          <div className="relative animate-scale-in">
-            {/* Removed the selected div element */}
           </div>
         </div>
       </div>

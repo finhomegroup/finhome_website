@@ -1,8 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Heart, Share2, Clock, Users, MapPin, Eye, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { campaignsMockData, getResultBadgeColor, getFacultyBadgeColor, CampaignData } from '@/data/campaignsMock';
 
 // Custom CSS for table optimization
 const tableStyles = `
@@ -69,22 +68,14 @@ const tableStyles = `
 const CampaignsGrid = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortField, setSortField] = useState('Giá trị giải thưởng ');
+  const [sortField, setSortField] = useState('prizeValue');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const itemsPerPage = 10;
   
-  const { data: campaigns, isLoading, error } = useQuery({
-    queryKey: ['data_total'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('data_total')
-        .select('*')
-        .order('STT', { ascending: true });
-      
-      if (error) throw error;
-      return data;
-    },
-  });
+  // Use mock data instead of Supabase query
+  const campaigns = campaignsMockData;
+  const isLoading = false;
+  const error = null;
 
   // Sort data by selected field and direction, handle pagination
   const sortedAndPaginatedData = useMemo(() => {
@@ -92,11 +83,11 @@ const CampaignsGrid = () => {
     
     // Sort by selected field and direction
     const sortedData = [...campaigns].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
+      let aValue: any = a[sortField as keyof CampaignData];
+      let bValue: any = b[sortField as keyof CampaignData];
       
       // Handle numeric values
-      if (sortField === 'Giá trị giải thưởng ' || sortField === 'STT') {
+      if (sortField === 'prizeValue' || sortField === 'id') {
         aValue = aValue || 0;
         bValue = bValue || 0;
         return sortDirection === 'desc' ? bValue - aValue : aValue - bValue;
@@ -121,33 +112,7 @@ const CampaignsGrid = () => {
     return { sortedData, paginatedData, totalPages };
   }, [campaigns, currentPage, sortField, sortDirection]);
 
-  const formatCampaignData = (campaign: any) => {
-    return {
-      id: campaign.STT,
-      title: campaign['Tên đề tài/dự án/ý tưởng'] || '',
-      description: campaign['Mô tả'] || '',
-      category: campaign['Phân loại'] || 'General',
-      location: 'Various Locations',
-      imageUrl: '',
-      currentAmount: 0,
-      goalAmount: 0,
-      backers: 0,
-      daysLeft: 30,
-      creator: `${campaign['Họ và tên lót'] || ''} ${campaign['Tên'] || ''}`.trim(),
-      featured: false,
-      // New fields for data_total structure
-      program: campaign['Tên chương trình/cuộc thi'] || '',
-      academicYear: campaign['Năm học'] || '',
-      projectTitle: campaign['Tên đề tài/dự án/ý tưởng'] || '',
-      firstMiddleName: campaign['Họ và tên lót'] || '',
-      lastName: campaign['Tên'] || '',
-      faculty: campaign['Khoa'] || '',
-      university: campaign['Trường'] || '',
-      result: campaign['Kết quả '] || '', // Note the space after "Kết quả"
-      prizeValue: campaign['Giá trị giải thưởng '] || 0, // Note the space after "Giá trị giải thưởng"
-      vluFunding: campaign['Kinh phí VLU hỗ trợ phát triển'] || 0
-    };
-  };
+
 
   const handleViewCampaign = (campaignId: string) => {
     navigate(`/campaign/${campaignId}`);
@@ -244,11 +209,11 @@ const CampaignsGrid = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900">
             VLIC Project Portfolio
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Explore innovative projects and competitions from Van Lang University students
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2 py-3">
+            Explore innovative projects and competitions <br />from Van Lang University students
           </p>
           
           {/* Category Filters */}
@@ -292,184 +257,144 @@ const CampaignsGrid = () => {
                     <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
                       <Button
                         variant="ghost"
-                        onClick={() => handleSort('Tên chương trình/cuộc thi')}
+                        onClick={() => handleSort('programCompetition')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
                         <span className="hidden sm:inline">Program/Competition</span>
                         <span className="sm:hidden">Program</span>
-                        {getSortIcon('Tên chương trình/cuộc thi')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[200px] min-w-[200px] table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Tên đề tài/dự án/ý tưởng')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        <span className="hidden sm:inline">Project Title</span>
-                        <span className="sm:hidden">Title</span>
-                        {getSortIcon('Tên đề tài/dự án/ý tưởng')}
+                        {getSortIcon('programCompetition')}
                       </Button>
                     </TableHead>
                     <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
                       <Button
                         variant="ghost"
-                        onClick={() => handleSort('Họ và tên lót')}
+                        onClick={() => handleSort('projectTitle')}
+                        className="h-auto p-0 font-semibold hover:bg-transparent"
+                      >
+                        <span className="hidden sm:inline">Project Title</span>
+                        <span className="sm:hidden">Title</span>
+                        {getSortIcon('projectTitle')}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="w-[100px] min-w-[100px] table-header-mobile">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort('firstName')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
                         <span className="hidden sm:inline">First & Middle Name</span>
                         <span className="sm:hidden">First Name</span>
-                        {getSortIcon('Họ và tên lót')}
+                        {getSortIcon('firstName')}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="w-[40px] min-w-[40px] table-header-mobile">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort('lastName')}
+                        className="h-auto p-0 font-semibold hover:bg-transparent"
+                      >
+                        <span className="hidden sm:inline">Last Name</span>
+                        <span className="sm:hidden">Last</span>
+                        {getSortIcon('lastName')}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="w-[120px] min-w-[120px] table-header-mobile">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort('faculty')}
+                        className="h-auto p-0 font-semibold hover:bg-transparent"
+                      >
+                        Faculty
+                        {getSortIcon('faculty')}
                       </Button>
                     </TableHead>
                     <TableHead className="w-[80px] min-w-[80px] table-header-mobile">
                       <Button
                         variant="ghost"
-                        onClick={() => handleSort('Tên')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        <span className="hidden sm:inline">Last Name</span>
-                        <span className="sm:hidden">Last</span>
-                        {getSortIcon('Tên')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[140px] min-w-[140px] table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Khoa')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        Faculty
-                        {getSortIcon('Khoa')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[150px] min-w-[150px] table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Trường')}
+                        onClick={() => handleSort('university')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
                         <span className="hidden sm:inline">University</span>
                         <span className="sm:hidden">Uni</span>
-                        {getSortIcon('Trường')}
+                        {getSortIcon('university')}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="w-[120px] min-w-[120px] text-center table-header-mobile">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort('result')}
+                        className="h-auto p-0 font-semibold hover:bg-transparent"
+                      >
+                        Result
+                        {getSortIcon('result')}
                       </Button>
                     </TableHead>
                     <TableHead className="w-[100px] min-w-[100px] text-center table-header-mobile">
                       <Button
                         variant="ghost"
-                        onClick={() => handleSort('Kết quả ')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        Result
-                        {getSortIcon('Kết quả ')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] text-center table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Giá trị giải thưởng ')}
+                        onClick={() => handleSort('prizeValue')}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                       >
                         <span className="hidden sm:inline">Prize Value</span>
                         <span className="sm:hidden">Prize</span>
-                        {getSortIcon('Giá trị giải thưởng ')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[140px] min-w-[140px] text-center table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Kinh phí VLU hỗ trợ phát triển')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        <span className="hidden sm:inline">VLU Development Funding</span>
-                        <span className="sm:hidden">VLU Funding</span>
-                        {getSortIcon('Kinh phí VLU hỗ trợ phát triển')}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="w-[120px] min-w-[120px] text-center table-header-mobile">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort('Năm học')}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                      >
-                        <span className="hidden sm:inline">Academic Year</span>
-                        <span className="sm:hidden">Year</span>
-                        {getSortIcon('Năm học')}
+                        {getSortIcon('prizeValue')}
                       </Button>
                     </TableHead>
                   </TableRow>
                </TableHeader>
                              <TableBody>
                  {sortedAndPaginatedData.paginatedData.map((campaign, index) => {
-                   const formattedCampaign = formatCampaignData(campaign);
-                  
                                      return (
-                                                               <TableRow key={campaign.STT} className="hover:bg-gray-50">
+                                                               <TableRow key={campaign.id} className="hover:bg-gray-50">
                                                <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
                           <div className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
-                            {formattedCampaign.program || 'N/A'}
+                            {campaign.programCompetition || 'N/A'}
                           </div>
                         </TableCell>
                         
-                        <TableCell className="w-[200px] min-w-[200px] align-top table-cell-mobile">
+                        <TableCell className="w-[60px] min-w-[60px] align-top table-cell-mobile">
                           <div className="font-medium text-gray-900 text-sm line-clamp-3 leading-tight">
-                            {formattedCampaign.projectTitle || formattedCampaign.title || 'N/A'}
+                            {campaign.projectTitle || 'N/A'}
                           </div>
                         </TableCell>
                        
-                       <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
+                       <TableCell className="w-[100px] min-w-[100px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-700 line-clamp-2 leading-tight">
-                           {formattedCampaign.firstMiddleName || 'N/A'}
+                           {campaign.firstName || 'N/A'}
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[80px] min-w-[80px] align-top table-cell-mobile">
+                       <TableCell className="w-[60px] min-w-[60px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-700 font-medium">
-                           {formattedCampaign.lastName || 'N/A'}
+                           {campaign.lastName || 'N/A'}
                          </span>
                        </TableCell>
                        
-                       <TableCell className="w-[140px] min-w-[140px] align-top table-cell-mobile">
-                         <Badge variant="secondary" className="text-xs line-clamp-2 leading-tight">
-                           {formattedCampaign.faculty || 'N/A'}
+                       <TableCell className="w-[120px] min-w-[120px] align-top table-cell-mobile">
+                         <Badge className={`text-xs line-clamp-2 leading-tight ${getFacultyBadgeColor()}`}>
+                           {campaign.faculty || 'N/A'}
                          </Badge>
                        </TableCell>
                        
-                       <TableCell className="w-[150px] min-w-[150px] align-top table-cell-mobile">
+                       <TableCell className="w-[80px] min-w-[80px] align-top table-cell-mobile">
                          <span className="text-sm text-gray-600 line-clamp-2 leading-tight">
-                           {formattedCampaign.university || 'N/A'}
+                           {campaign.university || 'N/A'}
                          </span>
                        </TableCell>
                        
                        <TableCell className="w-[100px] min-w-[100px] text-center align-top table-cell-mobile">
-                         <Badge 
-                           variant={formattedCampaign.result?.includes('Giải') ? 'default' : 'secondary'}
-                           className="text-xs line-clamp-2 leading-tight"
-                         >
-                           {formattedCampaign.result || 'N/A'}
-                         </Badge>
+                         <div className="flex justify-center">
+                           <Badge className={`text-xs line-clamp-2 leading-tight ${getResultBadgeColor(campaign.result)}`}>
+                             {campaign.result || 'N/A'}
+                           </Badge>
+                         </div>
                        </TableCell>
                        
-                       <TableCell className="w-[120px] min-w-[120px] text-center align-top table-cell-mobile">
+                       <TableCell className="w-[100px] min-w-[100px] text-center align-top table-cell-mobile">
                          <span className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">
-                           {formattedCampaign.prizeValue ? 
-                             `${parseInt(formattedCampaign.prizeValue).toLocaleString()} VND` : 
-                             'N/A'
-                           }
+                           {campaign.prizeValue || 'N/A'}
                          </span>
                        </TableCell>
-                       
-                                               <TableCell className="w-[140px] min-w-[140px] text-center align-top table-cell-mobile">
-                          <span className="text-sm text-gray-600 line-clamp-2 leading-tight">
-                            {formattedCampaign.vluFunding || 'N/A'}
-                          </span>
-                        </TableCell>
-                        
-                        <TableCell className="w-[120px] min-w-[120px] text-center align-top table-cell-mobile">
-                          <span className="text-sm text-gray-600 whitespace-nowrap">
-                            {formattedCampaign.academicYear || 'N/A'}
-                          </span>
-                        </TableCell>
                       </TableRow>
                   );
                                  })}

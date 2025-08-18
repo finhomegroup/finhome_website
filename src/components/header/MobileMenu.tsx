@@ -61,15 +61,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
           >
             Events
           </button>
-          <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium py-2">
-            Discover
-          </a>
-          <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium py-2">
-            Categories
-          </a>
-          <a href="#" className="text-gray-700 hover:text-brand-600 transition-colors font-medium py-2">
-            How it Works
-          </a>
         </nav>
         <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
           {user ? (

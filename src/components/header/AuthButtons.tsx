@@ -16,6 +16,7 @@ const AuthButtons = () => {
         onClick={handleAuthClick}
         variant="ghost" 
         size="sm"
+        className="rounded-full"
       >
         Log in
       </Button>

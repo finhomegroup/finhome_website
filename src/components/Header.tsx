@@ -22,20 +22,31 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Logo />
-          <DesktopNavigation />
-          <SearchBar />
+    <header className="w-full py-3 flex justify-center sticky top-0 z-50 relative">
+             <div className="flex items-center w-full max-w-7xl px-6 py-2 rounded-full bg-white shadow-sm">
+        <div className="flex items-center justify-between w-full">
+          {/* Logo - Responsive sizing */}
+          <div className="flex-shrink-0">
+            <Logo />
+          </div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center">
+            <DesktopNavigation />
+          </div>
+          
+          {/* Search Bar - Hidden on very small screens */}
+          <div className="hidden sm:flex items-center flex-1 max-w-md mx-4">
+            <SearchBar />
+          </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline"
-                  className="border-brand-600 text-brand-600 hover:bg-brand-50 rounded-full"
+                  className="border-brand-600 text-brand-600 hover:bg-brand-50 rounded-full text-sm"
                 >
                   Mentor/Lecturer
                   <ChevronDown className="h-4 w-4 ml-1" />
@@ -55,7 +66,7 @@ const Header = () => {
             </DropdownMenu>
             <Button 
               onClick={handleStartCampaign}
-              className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-full"
+              className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-full text-sm"
             >
               Start a Campaign
             </Button>
@@ -63,17 +74,17 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
-
         <MobileMenu isOpen={isMenuOpen} />
       </div>
     </header>

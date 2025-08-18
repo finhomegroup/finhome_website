@@ -95,6 +95,104 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Global video styles for mobile compatibility */
+  video {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Ensure videos work properly on iOS */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+  
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+  
+  video::-webkit-media-controls-play-button {
+    display: none !important;
+  }
+  
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
+  
+  /* Force video to be visible on mobile */
+  @media (max-width: 768px) {
+    video {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+  
+  /* iOS specific video fixes */
+  @supports (-webkit-touch-callout: none) {
+    video {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+  }
+  
+  /* Android specific video fixes */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    video {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  /* Additional mobile video optimizations */
+  @media (max-width: 768px) {
+    .hero-video {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      z-index: 0 !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+  
+  /* Responsive logo styles */
+  .logo-container img {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Mobile logo optimizations */
+  @media (max-width: 640px) {
+    .logo-container img {
+      max-width: 120px;
+      height: auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .logo-container img {
+      max-width: 100px;
+      height: auto;
+    }
+  }
+  
+  /* Ensure logo doesn't overflow on very small screens */
+  @media (max-width: 360px) {
+    .logo-container img {
+      max-width: 80px;
+      height: auto;
+    }
+  }
 }
 
 @layer utilities {

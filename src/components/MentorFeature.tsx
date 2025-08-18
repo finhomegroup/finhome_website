@@ -125,18 +125,33 @@ const MentorFeature = () => {
       aria-label="Meet our mentors showcase"
     >
       <div className="container mx-auto px-4 text-center mb-12">
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-          Top Mentors and Lectures at VLIC
-        </h2>
+                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+           Top Mentors and Lectures at VLIC
+         </h2>
+                 <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
+           Guiding your startup journey with real-world insights<br />
+           and personal mentorship
+         </div>
+         <div className="mt-4">
+           <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+             Book a meeting
+           </button>
+         </div>
       </div>
-      <div className="relative">
-        <div className="marquee-container">
-          <div className="marquee-track">
-            <div className="marquee-content">{renderMentors()}</div>
-            <div className="marquee-content">{renderMentors("dup-")}</div>
-          </div>
-        </div>
-      </div>
+             <div className="relative">
+         {/* Left gradient overlay */}
+         <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+         
+         {/* Right gradient overlay */}
+         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+         
+         <div className="marquee-container">
+           <div className="marquee-track">
+             <div className="marquee-content">{renderMentors()}</div>
+             <div className="marquee-content">{renderMentors("dup-")}</div>
+           </div>
+         </div>
+       </div>
 
       <style
         dangerouslySetInnerHTML={{
