@@ -6,6 +6,7 @@ interface Mentor {
   image: string;
   name?: string;
   title?: string;
+  info?: string;
   tags?: string[];
 }
 
@@ -16,6 +17,7 @@ const MentorFeature = () => {
       image: '/mentor_vlic_01.png',
       name: 'Pham Bao Khanh Quynh',
       title: 'Former Brand Creative Director',
+      info: 'Expert in automotive branding and international market expansion. Specialized in creative strategy, brand positioning, and building global brand presence.',
       tags: ['VinFast EU & North US']
     },
     { 
@@ -23,6 +25,7 @@ const MentorFeature = () => {
       image: '/mentor_vlic_02.png',
       name: 'Le Thi Bich Phuong',
       title: 'Vice Director',
+      info: 'Healthcare industry leader with expertise in hospital management and healthcare innovation. Specialized in operational excellence and digital health transformation.',
       tags: ['Van Hanh General Hospital']
     },
     { 
@@ -30,6 +33,7 @@ const MentorFeature = () => {
       image: '/mentor_vlic_03.png',
       name: 'Pham Thi Dieu Anh',
       title: 'Managing Director',
+      info: 'Expert in scaling technology startups and digital transformation. Specialized in product strategy, market expansion, and building high-performing teams.',
       tags: ['AIM ACADEMY Vietnam']
     },
     { 
@@ -37,6 +41,7 @@ const MentorFeature = () => {
       image: '/mentor_vlic_04.png',
       name: 'Tran Kim Duy Lan',
       title: 'Accelerator Program Development Partner',
+      info: 'Investment and startup acceleration expert with deep knowledge in venture capital and startup ecosystem development. Specialized in funding strategies and business scaling.',
       tags: ['Expara Investment Fund']
     },
     { 
@@ -44,28 +49,8 @@ const MentorFeature = () => {
       image: '/mentor_vlic_05.png',
       name: 'Le Minh Hung',
       title: 'Director',
+      info: 'Technology solutions architect with extensive experience in software development and digital innovation. Specialized in system design and technology consulting.',
       tags: ['MH Solution']
-    },
-    { 
-      id: 6, 
-      image: '/mentor_vlic_06.png',
-      name: 'Bui Xuan Cuong',
-      title: 'CEO',
-      tags: ['MOZ Tech']
-    },
-    { 
-      id: 7, 
-      image: '/mentor_vlic_07.png',
-      name: 'Nguyen Duc Hoai',
-      title: 'CEO',
-      tags: ['Bizino']
-    },
-    { 
-      id: 8, 
-      image: '/mentor_vlic_08.png',
-      name: 'Nguyen Son Tung',
-      title: 'CTO',
-      tags: ['RALLY AI PTE LTD']
     },
   ];
 
@@ -76,10 +61,11 @@ const MentorFeature = () => {
     mentors.map((mentor) => (
       <Card
         key={`${prefix}${mentor.id}`}
-        className="flex-shrink-0 w-96 md:w-[28rem] lg:w-[32rem] mx-6 md:mx-8 overflow-hidden hover:shadow-lg transition-shadow"
+        className="flex-shrink-0 w-80 md:w-96 mx-6 md:mx-8 overflow-hidden hover:shadow-lg transition-shadow bg-white"
       >
         <CardContent className="p-0">
-          <div className="aspect-video w-full relative">
+          {/* Image section */}
+          <div className="aspect-auto w-full relative">
             <img
               src={mentor.image}
               alt={`Mentor profile ${mentor.id}`}
@@ -89,32 +75,36 @@ const MentorFeature = () => {
                 target.src = getFallbackImage(mentor.id);
               }}
             />
-                         {mentor.name && mentor.title && (
-               <div className="absolute inset-0 flex flex-col justify-center items-end p-6">
-                 <h3 className="text-black text-xl font-bold mb-1 text-right">
-                   {mentor.name}
-                 </h3>
-                 <p className="text-black text-sm mb-3 text-right">
-                   {mentor.title}
-                 </p>
-                 {mentor.tags && (
-                   <div className="flex flex-wrap gap-2 justify-end mb-4">
-                     {mentor.tags.map((tag, index) => (
-                       <span
-                         key={index}
-                         className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full border border-gray-200"
-                       >
-                         {tag}
-                       </span>
-                     ))}
-                   </div>
-                 )}
-                 <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-medium text-sm transition-colors duration-300">
-                   Book now
-                 </button>
-               </div>
-             )}
           </div>
+          
+          {/* Info section below image */}
+          {mentor.name && mentor.title && (
+            <div className="p-6 text-left">
+              <h3 className="text-gray-900 text-xl font-bold mb-2">
+                {mentor.name}
+              </h3>
+              <p className="text-gray-600 text-sm mb-3">
+                {mentor.title}
+              </p>
+              {mentor.info && (
+                <p className="text-gray-500 text-sm mb-3 leading-relaxed">
+                  {mentor.info}
+                </p>
+              )}
+              {mentor.tags && (
+                <div className="flex flex-wrap gap-2 justify-left">
+                  {mentor.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full border border-gray-200"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     ));

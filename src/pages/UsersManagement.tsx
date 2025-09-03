@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UsersManagement } from '@/components/dashboard/UsersManagement';
+import { UsersManagement } from '@/components/admin/dashboard';
 
 const UsersManagementPage: React.FC = () => {
   return (

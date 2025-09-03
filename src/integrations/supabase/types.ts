@@ -270,6 +270,90 @@ export type Database = {
         }
         Relationships: []
       }
+      aug_data_total_break: {
+        Row: {
+          id: string
+          stt: number
+          linh_vuc: string | null
+          status: string | null
+          ten_chuong_trinh: string | null
+          trong_ngoai: string | null
+          nam_hoc: string | null
+          link_hinh_anh: string | null
+          ten_de_tai: string | null
+          mo_ta: string | null
+          mssv: string | null
+          ho_ten_lot: string | null
+          ten: string | null
+          chuc_vu: string | null
+          sdt: string | null
+          mail: string | null
+          khoa: string | null
+          truong: string | null
+          link: string | null
+          ket_qua: string | null
+          gia_tri_giai_thuong: number | null
+          kinh_phi_vlu: number | null
+          ghi_chu: string | null
+          khoa_vien_phu_trach: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          stt: number
+          linh_vuc?: string | null
+          status?: string | null
+          ten_chuong_trinh?: string | null
+          trong_ngoai?: string | null
+          nam_hoc?: string | null
+          link_hinh_anh?: string | null
+          ten_de_tai?: string | null
+          mo_ta?: string | null
+          mssv?: string | null
+          ho_ten_lot?: string | null
+          ten?: string | null
+          chuc_vu?: string | null
+          sdt?: string | null
+          mail?: string | null
+          khoa?: string | null
+          truong?: string | null
+          link?: string | null
+          ket_qua?: string | null
+          gia_tri_giai_thuong?: number | null
+          kinh_phi_vlu?: number | null
+          ghi_chu?: string | null
+          khoa_vien_phu_trach?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          stt?: number
+          linh_vuc?: string | null
+          status?: string | null
+          ten_chuong_trinh?: string | null
+          trong_ngoai?: string | null
+          nam_hoc?: string | null
+          link_hinh_anh?: string | null
+          ten_de_tai?: string | null
+          mo_ta?: string | null
+          mssv?: string | null
+          ho_ten_lot?: string | null
+          ten?: string | null
+          chuc_vu?: string | null
+          sdt?: string | null
+          mail?: string | null
+          khoa?: string | null
+          truong?: string | null
+          link?: string | null
+          ket_qua?: string | null
+          gia_tri_giai_thuong?: number | null
+          kinh_phi_vlu?: number | null
+          ghi_chu?: string | null
+          khoa_vien_phu_trach?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       dashboard_stats: {

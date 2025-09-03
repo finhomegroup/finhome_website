@@ -10,7 +10,7 @@ const SearchBar = () => {
         <input
           type="text"
           placeholder="Search campaigns..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-400 outline-none"
         />
       </div>
     </div>

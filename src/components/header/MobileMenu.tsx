@@ -37,10 +37,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
     navigate('/auth');
   };
 
-  const handleStartCampaign = () => {
-    navigate('/create-campaign');
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -111,12 +107,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
               </Button>
             </>
           )}
-          <Button 
-            onClick={handleStartCampaign}
-                            className="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-full"
-          >
-            Start a Campaign
-          </Button>
         </div>
       </div>
     </div>

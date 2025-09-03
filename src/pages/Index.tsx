@@ -6,6 +6,7 @@ import TestimonialSection from '@/components/TestimonialSection';
 import MentorFeature from '@/components/MentorFeature';
 import Partners from '@/components/Partners';
 import CampaignsGrid from '@/components/CampaignsGrid';
+import ThrivingStartups from '@/components/ThrivingStartups';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
       <MentorFeature />
       <Partners />
       <CampaignsGrid />
+      <ThrivingStartups />
       <Footer />
     </div>
   );

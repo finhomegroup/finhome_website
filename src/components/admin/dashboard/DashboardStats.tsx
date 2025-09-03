@@ -3,9 +3,9 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { Building2, TrendingUp, Users, DollarSign, Trophy, Award, Lightbulb } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, ComposedChart, Legend } from 'recharts';
 
 // Tạo supabase client không generic để truy vấn bảng data_total
 const supabaseRaw = createClient(
@@ -139,39 +139,36 @@ export const DashboardStats: React.FC = () => {
     },
   });
 
-  // Lấy dữ liệu top 5 startups theo giá trị giải thưởng
-  const { data: topStartupsData, isLoading: isLoadingTopStartups } = useQuery({
-    queryKey: ['top-startups'],
+  // Lấy dữ liệu số lượng sinh viên tham gia theo năm học
+  const { data: studentsData, isLoading: isLoadingStudents } = useQuery({
+    queryKey: ['students-by-year'],
     queryFn: async () => {
       const { data, error } = await supabaseRaw
         .from('data_total')
-        .select('"Tên đề tài/dự án/ý tưởng", "Họ và tên lót", "Tên", "Giá trị giải thưởng ", "MSSV"')
-        .not('"Giá trị giải thưởng "', 'is', null)
-        .gt('"Giá trị giải thưởng "', 0)
-        .order('"Giá trị giải thưởng "', { ascending: false })
-        .limit(5);
-      
+        .select('"Năm học", "MSSV"');
       if (error) throw error;
-      
-      const result = (data ?? []).map((row: any, index: number) => {
-        const projectName = row['Tên đề tài/dự án/ý tưởng']?.trim();
-        const leaderName = `${row['Họ và tên lót']?.trim() || ''} ${row['Tên']?.trim() || ''}`.trim();
-        
-        return {
-          rank: index + 1,
-          name: (projectName || `Dự án ${index + 1}`).substring(0, 20) + (projectName && projectName.length > 20 ? '...' : ''),
-          leader: leaderName || 'Không có tên',
-          prize: Number(row['Giá trị giải thưởng '] ?? 0),
-          mssv: row['MSSV']?.trim() || ''
-        };
+      // Gom nhóm theo năm học và đếm số sinh viên unique
+      const studentsByYear: Record<string, Set<string>> = {};
+      (data ?? []).forEach((row: any) => {
+        const year = row['Năm học']?.trim() || 'Khác';
+        const mssv = row['MSSV']?.trim();
+        if (mssv) {
+          if (!studentsByYear[year]) {
+            studentsByYear[year] = new Set();
+          }
+          studentsByYear[year].add(mssv);
+        }
       });
       
-      console.log('Top startups data:', result);
-      return result;
+      return Object.entries(studentsByYear)
+        .map(([year, students]) => ({ year, count: students.size }))
+        .sort((a, b) => a.year.localeCompare(b.year, 'vi', { numeric: true }));
     },
   });
 
-  if (isLoadingStartups || isLoadingStats || isLoadingUsers || isLoadingRaised) {
+
+
+  if (isLoadingStartups || isLoadingStats || isLoadingUsers || isLoadingRaised || isLoadingPrograms || isLoadingProjects || isLoadingStudents) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
@@ -190,28 +187,36 @@ export const DashboardStats: React.FC = () => {
 
   const statItems = [
     {
-      title: 'Total Raised',
-      value: `₫${Number(totalRaised || 0).toLocaleString('vi-VN')}`,
-      icon: DollarSign,
-      color: 'text-emerald-600',
+      title: 'Total Startup',
+      subtitle: 'Entrepreneurial projects',
+      value: '250',
+      icon: Lightbulb,
+      iconColor: 'text-yellow-600',
+      iconBg: 'bg-yellow-50',
     },
     {
-      title: 'Total Startups',
-      value: totalStartups || 0,
-      icon: Building2,
-      color: 'text-blue-600',
-    },
-    {
-      title: 'Active Campaigns',
-      value: totalStartups || 0, // Sử dụng lại số nhóm trưởng
-      icon: TrendingUp,
-      color: 'text-green-600',
-    },
-    {
-      title: 'Total Users',
-      value: totalUsers || 0,
+      title: 'Total students',
+      subtitle: 'Participation in Startup',
+      value: '188',
       icon: Users,
-      color: 'text-purple-600',
+      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-50',
+    },
+    {
+      title: 'Competitions',
+      subtitle: 'Startup competitions held',
+      value: '4',
+      icon: Trophy,
+      iconColor: 'text-orange-600',
+      iconBg: 'bg-orange-50',
+    },
+    {
+      title: 'Active Projects',
+      subtitle: 'Ongoing Startup Projects',
+      value: '10',
+      icon: Award,
+      iconColor: 'text-green-600',
+      iconBg: 'bg-green-50',
     },
   ];
 
@@ -219,134 +224,91 @@ export const DashboardStats: React.FC = () => {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statItems.map((item) => (
-          <Card key={item.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {item.title}
-              </CardTitle>
-              <item.icon className={`h-4 w-4 ${item.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{item.value}</div>
+          <Card key={item.title} className="bg-white border border-gray-200 h-full">
+            <CardContent className="p-6 h-full">
+              <div className="flex items-start space-x-4 h-full">
+                <div className={`${item.iconBg} p-3 rounded-lg flex-shrink-0`}>
+                  <item.icon className={`h-6 w-6 ${item.iconColor}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">{item.value}</div>
+                  <div className="text-sm font-medium text-gray-700 mb-1 leading-tight">{item.title}</div>
+                  <div className="text-xs text-gray-500 leading-tight">{item.subtitle}</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      {/* Card Revenue Over Time */}
+
+
+      {/* Card Combined Programs, Projects and Students by Year */}
       <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Over Time</CardTitle>
+            <CardTitle>Number of competitions/ projects and student participation</CardTitle>
+            <p className="text-sm text-gray-600">
+            Số lượng cuộc thi/ dự án và sinh viên tham gia
+            </p>
           </CardHeader>
           <CardContent>
-            <div style={{ width: '100%', height: 320 }}>
-              <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={revenueData ?? []} margin={{ top: 16, right: 32, left: 60, bottom: 0 }}>
+            <div style={{ width: '100%', height: 400 }}>
+              <ResponsiveContainer width="100%" height={400}>
+                <ComposedChart 
+                  data={programsData?.map((program, index) => ({
+                    year: program.year,
+                    programs: program.count,
+                    projects: projectsData?.[index]?.count || 0,
+                    students: studentsData?.[index]?.count || 0
+                  })) ?? []} 
+                  margin={{ top: 16, right: 32, left: 60, bottom: 0 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="year" />
                   <YAxis 
-                    tickFormatter={v => `${(v / 1000000).toFixed(1)}M`}
+                    yAxisId="left"
                     width={50}
                     axisLine={false}
                     tickLine={false}
+                    label={{ value: 'Số lượng cuộc thi/ dự án', angle: -90, position: 'insideLeft' }}
                   />
-                  <Tooltip formatter={v => `₫${Number(v).toLocaleString('vi-VN')}`} />
-                  <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot />
-                </LineChart>
+                  <YAxis 
+                    yAxisId="right"
+                    orientation="right"
+                    width={50}
+                    axisLine={false}
+                    tickLine={false}
+                    label={{ value: 'Số lượng sinh viên', angle: 90, position: 'insideRight' }}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (name === 'programs') return [`${value} cuộc thi`, 'Tổng số cuộc thi'];
+                      if (name === 'projects') return [`${value} dự án`, 'Tổng số dự án'];
+                      if (name === 'students') return [`${value} sinh viên`, 'Tổng số sinh viên tham gia'];
+                      return [value, name];
+                    }}
+                    labelFormatter={(label) => `Năm: ${label}`}
+                  />
+                  <Bar yAxisId="left" dataKey="programs" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Tổng số cuộc thi" />
+                  <Bar yAxisId="left" dataKey="projects" fill="#4ECDC4" radius={[4, 4, 0, 0]} name="Tổng số dự án" />
+                  <Line 
+                    yAxisId="right" 
+                    type="monotone" 
+                    dataKey="students" 
+                    stroke="#ef4444" 
+                    strokeWidth={3} 
+                    dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
+                    name="Tổng số sinh viên tham gia"
+                  />
+                  <Legend />
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Card Programs/Competitions by Year */}
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Programs/Competitions by Year</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ width: '100%', height: 320 }}>
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={programsData ?? []} margin={{ top: 16, right: 32, left: 60, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis 
-                    width={50}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip formatter={v => `${v} programs`} />
-                  <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Card Projects by Year */}
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Projects by Year</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ width: '100%', height: 320 }}>
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={projectsData ?? []} margin={{ top: 16, right: 32, left: 60, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis 
-                    width={50}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip formatter={v => `${v} projects`} />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Card Top 5 Performance Startups */}
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Performing Startups</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topStartupsData?.map((startup, index) => (
-                <div key={startup.mssv} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
-                      <span className="text-sm font-semibold text-red-600">#{startup.rank}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">{startup.name}</h4>
-                      <p className="text-sm text-gray-500">{startup.leader}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                      <span className="font-semibold text-gray-900">
-                        ₫{startup.prize.toLocaleString('vi-VN')}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      {startup.mssv}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </>
   );
 };

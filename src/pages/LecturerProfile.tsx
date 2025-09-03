@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Plus, Trash2, X, User, Award, Building2, Phone, Mail, BookOpen, Briefcase, Layers, Calendar as CalendarIcon } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+
 
 interface AdditionalProject {
   id: string;
@@ -158,12 +157,10 @@ const LecturerProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="max-w-5xl mx-auto px-4 py-10">
         <Button
           variant="ghost"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/admin/mentors')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -650,8 +647,6 @@ const LecturerProfile = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Footer />
     </div>
   );
 };

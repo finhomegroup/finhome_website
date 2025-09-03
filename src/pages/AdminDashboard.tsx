@@ -1,10 +1,19 @@
 
 import React from 'react';
-import { DashboardStats } from '@/components/dashboard/DashboardStats';
-import { RevenueChart } from '@/components/dashboard/RevenueChart';
-import { StartupStageChart } from '@/components/dashboard/StartupStageChart';
-import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
-import { TopStartups } from '@/components/dashboard/TopStartups';
+import {
+  DashboardStats,
+  NumberProjectbyFields,
+  ProjectCards,
+  StartupStageChart,
+  ProjectSurvivalDuration,
+  FundingCards,
+  FundingInvestmentChart,
+  CompetitionCards,
+  CompetitionAwardsChart,
+  StudentParticipationTable,
+  TopStartupsAndGender,
+  ActivityTimeline
+} from '@/components/admin/dashboard';
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -18,15 +27,28 @@ const AdminDashboard: React.FC = () => {
 
       <DashboardStats />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueChart />
-        <StartupStageChart />
-      </div>
+      <NumberProjectbyFields />
+
+      <TopStartupsAndGender />
+
+      <ProjectCards />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ActivityTimeline />
-        <TopStartups />
+        <StartupStageChart />
+        <ProjectSurvivalDuration />
       </div>
+
+      <FundingCards />
+
+      <FundingInvestmentChart />
+
+      <CompetitionCards />
+
+      <CompetitionAwardsChart />
+
+      <StudentParticipationTable />
+
+      <ActivityTimeline />
     </div>
   );
 };

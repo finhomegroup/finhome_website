@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Plus, Trash2, User, Building2, Award, Phone, Mail, LinkIcon, Briefcase } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+
 
 interface Project {
   id: string;
@@ -113,12 +112,10 @@ const MentorProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="max-w-5xl mx-auto px-4 py-8">
         <Button
           variant="ghost"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/admin/mentors')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -426,8 +423,6 @@ const MentorProfile = () => {
           </CardContent>
         </Card>
       </div>
-
-      <Footer />
     </div>
   );
 };

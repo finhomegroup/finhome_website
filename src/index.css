@@ -113,8 +113,12 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
     font-weight: 400 !important;
+    font-feature-settings: 'liga' 1, 'calt' 1, 'ss01' 1, 'ss02' 1, 'ss03' 1, 'ss04' 1, 'ss05' 1, 'ss06' 1, 'ss07' 1, 'ss08' 1, 'ss09' 1, 'ss10' 1, 'ss11' 1, 'ss12' 1, 'ss13' 1, 'ss14' 1, 'ss15' 1, 'ss16' 1, 'ss17' 1, 'ss18' 1, 'ss19' 1, 'ss20' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   /* Force normal font-weight for all text unless explicitly overridden */
@@ -239,12 +243,12 @@ All colors MUST be HSL.
   }
   
   .font-demi {
-    font-family: 'Maison Neue Demi', 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
     font-weight: 600 !important;
   }
   
   .font-demi-bold {
-    font-family: 'Maison Neue Bold', 'Maison Neue Demi', 'Maison Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
     font-weight: 700 !important;
   }
 }

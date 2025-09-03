@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Heart, User, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
@@ -42,14 +42,12 @@ const UserMenu = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-gray-700">
-            <Avatar className="h-6 w-6 mr-2">
-              <AvatarImage src={user.user_metadata?.avatar_url} />
-              <AvatarFallback>
-                {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            {user.user_metadata?.full_name || 'Account'}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="rounded-full p-2 hover:bg-gray-100 text-gray-600 hover:text-gray-800"
+          >
+            <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

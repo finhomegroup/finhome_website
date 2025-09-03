@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminSidebar, AdminHeader } from '@/components/admin/layout';
+import HappyChatbot from '@/components/admin/HappyChatbot';
 
 export const AdminLayout: React.FC = () => {
   // Temporarily disable authentication checks for testing
@@ -49,6 +49,8 @@ export const AdminLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      {/* AI Chatbot - Only visible in admin pages */}
+      <HappyChatbot />
     </div>
   );
 };
