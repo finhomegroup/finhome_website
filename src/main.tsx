@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
+// import App from './App.tsx'
+import App from './TestApp.tsx'
 import './index.css'
 import { checkEnvironment } from './utils/env.ts'
 

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLIC Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-bottom: 1rem; }
+        .status { margin: 1rem 0; }
+        .success { color: #4ade80; }
+        .error { color: #ef4444; }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 VLIC System Test</h1>
+        <div class="status success">✅ Static files working</div>
+        <div class="status success">✅ CSS loading</div>
+        <div class="status success">✅ Domain accessible</div>
+        
+        <div id="js-test" class="status error">❌ JavaScript not loaded</div>
+        
+        <button onclick="testLocalStorage()">Test LocalStorage</button>
+        <button onclick="testFetch()">Test Network</button>
+        <button onclick="window.location.href='/'">Go to Main Site</button>
+        
+        <div id="results" style="margin-top: 1rem;"></div>
+    </div>
+
+    <script>
+        // Test JavaScript
+        document.getElementById('js-test').innerHTML = '<span class="success">✅ JavaScript working</span>';
+        
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'ok');
+                localStorage.removeItem('test');
+                showResult('LocalStorage: ✅ Working');
+            } catch(e) {
+                showResult('LocalStorage: ❌ ' + e.message);
+            }
+        }
+        
+        function testFetch() {
+            fetch('/favicon.ico')
+                .then(r => showResult('Network: ✅ Working'))
+                .catch(e => showResult('Network: ❌ ' + e.message));
+        }
+        
+        function showResult(text) {
+            document.getElementById('results').innerHTML += '<div>' + text + '</div>';
+        }
+        
+        // Auto-test on load
+        setTimeout(() => {
+            testLocalStorage();
+            testFetch();
+        }, 1000);
+    </script>
+</body>
+</html>
