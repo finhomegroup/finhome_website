@@ -2,15 +2,24 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://oxfekjjqaeyjkzmhodhb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZmVrampxYWV5amt6bWhvZGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5ODM0NTEsImV4cCI6MjA2NzU1OTQ1MX0.t9uTB9geW5bYa1MTsDv18QesPh0Y23WOAMgnrKY6Tig";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://oxfekjjqaeyjkzmhodhb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZmVrampxYWV5amt6bWhvZGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5ODM0NTEsImV4cCI6MjA2NzU1OTQ1MX0.t9uTB9geW5bYa1MTsDv18QesPh0Y23WOAMgnrKY6Tig";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Safe localStorage access
+const getStorage = () => {
+  try {
+    return typeof window !== 'undefined' ? localStorage : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: getStorage(),
     persistSession: true,
     autoRefreshToken: true,
   }
