@@ -10,7 +10,7 @@
     "build:analyze": "vite build --mode production && start dist/bundle-analyzer.html",
     "build:optimized": "npm run lint && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview --host 0.0.0.0 --port 4173"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
