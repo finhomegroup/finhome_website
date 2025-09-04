@@ -36,10 +36,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('@radix-ui')) {
               return 'ui-vendor';
             }
-            // Isolate recharts to prevent circular dependencies
-            if (id.includes('recharts') || id.includes('d3-') || id.includes('victory-')) {
-              return 'chart-vendor';
-            }
             if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
               return 'form-vendor';
             }
