@@ -422,7 +422,7 @@ const MentorsLecturers = () => {
                  <img
                    src={mentor.image}
                    alt={mentor.name}
-                   className="w-full h-full object-fill"
+                   className="w-full h-full object-contain"
                    onError={(e) => {
                      const target = e.target as HTMLImageElement;
                      target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e5e7eb"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%236b7280" font-size="24"%3E' + mentor.name.charAt(0) + '%3C/text%3E%3C/svg%3E';

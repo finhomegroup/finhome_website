@@ -1,16 +1,12 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Lazy load Lottie component to reduce initial bundle size
-const DotLottieReact = lazy(() => 
-  import('@lottiefiles/dotlottie-react')
-    .then(module => ({ default: module.DotLottieReact }))
-    .catch(() => ({ default: () => null }))
-);
+// Direct import Lottie component
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface Message {
   role: 'user' | 'bot';
@@ -271,23 +267,19 @@ const HappyChatbot: React.FC = () => {
         )}
         onClick={toggleChat}
       >
-        <Suspense fallback={
-          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center rounded-full">
-            <div className="text-white text-2xl">🎈</div>
-          </div>
-        }>
-          <DotLottieReact
-            src="https://lottie.host/b804e51b-04f6-49da-b002-2be499a1b47d/7t7x9k834N.lottie"
-            loop
-            autoplay
-            style={{
-              width: "100%",
-              height: "100%",
-              imageRendering: "pixelated",
-              transform: "translateZ(0)",
-            }}
-          />
-        </Suspense>
+        <DotLottieReact
+          src="https://lottie.host/b804e51b-04f6-49da-b002-2be499a1b47d/7t7x9k834N.lottie"
+          loop
+          autoplay
+          style={{
+            width: "100%",
+            height: "100%",
+            imageRendering: "pixelated",
+            transform: "translateZ(0)",
+          }}
+          onLoad={() => console.log('✅ Lottie animation loaded successfully!')}
+          onError={(error) => console.error('❌ Lottie animation error:', error)}
+        />
       </div>
 
       {/* Chat Box */}

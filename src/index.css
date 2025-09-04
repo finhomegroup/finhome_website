@@ -121,18 +121,37 @@ All colors MUST be HSL.
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Force normal font-weight for all text unless explicitly overridden */
-  p, span, div, h1, h2, h3, h4, h5, h6, a, button, input, textarea, label {
+  /* Font weight utilities with proper specificity */
+  .font-normal {
     font-weight: 400 !important;
-  }
-  
-  /* Only apply bold/semibold when explicitly requested */
-  .font-bold, .font-semibold {
-    font-weight: 600 !important;
   }
   
   .font-medium {
     font-weight: 500 !important;
+  }
+  
+  .font-semibold {
+    font-weight: 600 !important;
+  }
+  
+  .font-bold {
+    font-weight: 700 !important;
+  }
+  
+  .font-extrabold {
+    font-weight: 800 !important;
+  }
+  
+  .font-demi {
+    font-weight: 600 !important;
+  }
+  
+  .font-demi-bold {
+    font-weight: 700 !important;
+  }
+
+  .font-demi-extrabold {
+    font-weight: 800 !important;
   }
   
   /* Global video styles for mobile compatibility */
@@ -242,13 +261,4 @@ All colors MUST be HSL.
     overflow: hidden;
   }
   
-  .font-demi {
-    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
-    font-weight: 600 !important;
-  }
-  
-  .font-demi-bold {
-    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
-    font-weight: 700 !important;
-  }
 }

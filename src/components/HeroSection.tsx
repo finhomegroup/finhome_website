@@ -16,12 +16,12 @@ const HeroSection = () => {
             </div>
             
             <h1 className="mb-4 sm:mb-6">
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-demi text-gray-900 leading-tight whitespace-nowrap overflow-hidden">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold text-gray-900 leading-tight whitespace-nowrap overflow-hidden">
                 <span>
                   The <span className="text-red-600">#1</span> Startup Launchpad
                 </span>
               </div>
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-demi text-gray-900 leading-tight mt-1 sm:mt-2 whitespace-nowrap overflow-hidden">
+              <div className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold text-gray-900 leading-tight mt-1 sm:mt-2 whitespace-nowrap overflow-hidden">
                 <TypeAnimation
                   sequence={[
                     "for Pioneers in South East Asia",
