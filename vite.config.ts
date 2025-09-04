@@ -36,7 +36,8 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('@radix-ui')) {
               return 'ui-vendor';
             }
-            if (id.includes('recharts')) {
+            // Isolate recharts to prevent circular dependencies
+            if (id.includes('recharts') || id.includes('d3-') || id.includes('victory-')) {
               return 'chart-vendor';
             }
             if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
@@ -105,7 +106,8 @@ export default defineConfig(({ mode }) => ({
       '@radix-ui/react-select',
       'lucide-react',
       'clsx',
-      'tailwind-merge'
+      'tailwind-merge',
+      'recharts'
     ],
     exclude: []
   },
