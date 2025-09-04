@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,26 +8,28 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 
-// Direct imports instead of lazy loading
+// Mixed approach - lazy load some heavy components, direct import others
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Events from "./pages/Events";
 import Mentors from "./pages/Mentors";
-import CreateCampaign from "./pages/CreateCampaign";
-import CampaignDetail from "./pages/CampaignDetail";
-import PersonalCampaigns from "./pages/PersonalCampaigns";
-import MentorProfile from "./pages/MentorProfile";
-import LecturerProfile from "./pages/LecturerProfile";
-
-import Admin from "./pages/Admin";
-import AdminDashboard from "./pages/AdminDashboard";
-import TrackingStartups from "./pages/TrackingStartups";
-import MentorsLecturers from "./pages/MentorsLecturers";
-import CourseCurriculum from "./pages/CourseCurriculum";
-import UsersManagement from "./pages/UsersManagement";
-import EntrepreneurshipPage from "./pages/Entrepreneurship";
-import IncubationProgramPage from "./pages/IncubationProgram";
 import NotFound from "./pages/NotFound";
+
+// Lazy load heavier admin components to avoid circular deps
+const CreateCampaign = React.lazy(() => import("./pages/CreateCampaign"));
+const CampaignDetail = React.lazy(() => import("./pages/CampaignDetail"));
+const PersonalCampaigns = React.lazy(() => import("./pages/PersonalCampaigns"));
+const MentorProfile = React.lazy(() => import("./pages/MentorProfile"));
+const LecturerProfile = React.lazy(() => import("./pages/LecturerProfile"));
+
+const Admin = React.lazy(() => import("./pages/Admin"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
+const TrackingStartups = React.lazy(() => import("./pages/TrackingStartups"));
+const MentorsLecturers = React.lazy(() => import("./pages/MentorsLecturers"));
+const CourseCurriculum = React.lazy(() => import("./pages/CourseCurriculum"));
+const UsersManagement = React.lazy(() => import("./pages/UsersManagement"));
+const EntrepreneurshipPage = React.lazy(() => import("./pages/Entrepreneurship"));
+const IncubationProgramPage = React.lazy(() => import("./pages/IncubationProgram"));
 
 
 const queryClient = new QueryClient();
@@ -39,6 +41,11 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+            </div>
+          }>
             <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -78,6 +85,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
