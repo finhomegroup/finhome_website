@@ -23,16 +23,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  define: {
-    // Disable stagewise in production
-    __STAGEWISE_ENABLED__: mode === 'development',
-  },
   build: {
     rollupOptions: {
-      external: mode === 'production' ? [
-        '@stagewise/toolbar-react',
-        '@stagewise-plugins/react'
-      ] : [],
+      external: [],
       output: {
         manualChunks: (id) => {
           // Vendor chunks
@@ -74,7 +67,7 @@ export default defineConfig(({ mode }) => ({
         },
         // Optimize chunk naming
         chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop().replace('.tsx', '').replace('.ts', '') : 'chunk';
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 'chunk';
           return `assets/[name]-[hash].js`;
         },
         assetFileNames: 'assets/[name]-[hash].[ext]'
@@ -114,10 +107,7 @@ export default defineConfig(({ mode }) => ({
       'clsx',
       'tailwind-merge'
     ],
-    exclude: [
-      '@stagewise/toolbar-react',
-      '@stagewise-plugins/react'
-    ]
+    exclude: []
   },
   // Add server configuration for development
   server: {
