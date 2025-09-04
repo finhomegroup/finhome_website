@@ -24,88 +24,13 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    rollupOptions: {
-      external: [],
-      output: {
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
-              return 'form-vendor';
-            }
-            if (id.includes('@supabase') || id.includes('@tanstack/react-query')) {
-              return 'supabase-vendor';
-            }
-            if (id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority') || id.includes('date-fns')) {
-              return 'utils';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            return 'vendor';
-          }
-          
-          // App chunks
-          if (id.includes('src/components/admin')) {
-            return 'admin';
-          }
-          if (id.includes('src/pages')) {
-            return 'pages';
-          }
-          if (id.includes('src/components/ui')) {
-            return 'ui';
-          }
-        },
-        // Optimize chunk naming
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 'chunk';
-          return `assets/[name]-[hash].js`;
-        },
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    },
-    // Optimize bundle size
+    // Simplified build config without manual chunk optimization
     chunkSizeWarningLimit: 1000,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-      },
-    },
-    // Enable source maps for debugging in production
     sourcemap: mode === 'development',
-    // Optimize CSS
-    cssCodeSplit: true,
-    // Set target for better compatibility
-    target: 'es2015',
-    // Enable tree shaking
-    treeshake: {
-      preset: 'recommended',
-      moduleSideEffects: false,
-    }
   },
-  // Optimize dependencies
+  // Minimal dependency optimization
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-select',
-      'lucide-react',
-      'clsx',
-      'tailwind-merge',
-      'recharts'
-    ],
-    exclude: []
+    include: ['react', 'react-dom']
   },
   // Add server configuration for development
   server: {
