@@ -11,17 +11,17 @@ const Logo = () => {
           alt="VLU Logo" 
           className="hidden sm:block h-6 sm:h-8 md:h-10 lg:h-12 w-auto cursor-pointer transition-all duration-200 hover:scale-105"
           style={{
-            maxHeight: '48px',
-            minHeight: '24px'
+            maxHeight: '26px',
+            minHeight: '12px'
           }}
         />
         <img 
-          src="/vlu_logo_mobile.png" 
+          src="/vlu_logo.png" 
           alt="VLU Logo Mobile" 
           className="block sm:hidden h-6 w-auto cursor-pointer transition-all duration-200 hover:scale-105"
           style={{
-            maxHeight: '24px',
-            minHeight: '20px'
+            maxHeight: '18px',
+            minHeight: '12px'
           }}
         />
       </Link>

@@ -17,7 +17,7 @@ const Footer = () => {
                />
              </div>
              <p className="text-gray-300 text-xs sm:text-sm">
-               Van Lang Incubation Center
+               Finhome - Real Estate Financing Platform
              </p>
            </div>
 
@@ -25,7 +25,7 @@ const Footer = () => {
            <div className="text-center">
              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Email</h3>
              <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-             vlic@vlu.edu.vn
+             support@finhome.group.vn
              </p>
            </div>
 
@@ -33,7 +33,7 @@ const Footer = () => {
            <div className="text-center">
              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Contact</h3>
              <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-               028 7109 9224
+               028 7109 9999
              </p>
            </div>
 
@@ -56,7 +56,7 @@ const Footer = () => {
                  </div>
                    <div className="mt-6 sm:mt-8 border-t border-gray-700 pt-6 sm:pt-8">
             <p className="text-center text-gray-400 text-xs sm:text-sm">
-              © {new Date().getFullYear()} VLIC – powered by VLU. All rights reserved.
+              © {new Date().getFullYear()} Finhome – powered by VIB. All rights reserved.
             </p>
           </div>
        </div>

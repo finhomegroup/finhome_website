@@ -1,37 +1,15 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Search, User, LogOut } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MobileMenuProps {
   isOpen: boolean;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
-  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Signed out successfully",
-        description: "You have been signed out of your account.",
-      });
-      navigate('/');
-    } catch (error) {
-      toast({
-        title: "Error signing out",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleAuthClick = () => {
     navigate('/auth');
@@ -59,54 +37,20 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
           </button>
         </nav>
         <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-          {user ? (
-            <>
-              <div className="flex items-center space-x-2 px-2 py-1">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback>
-                    {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium">
-                  {user.user_metadata?.full_name || user.email}
-                </span>
-              </div>
-              <Button variant="ghost" size="sm" className="justify-start" onClick={() => navigate('/my-campaigns')}>
-                <User className="h-4 w-4 mr-2" />
-                My Campaigns
-              </Button>
-              <Button variant="ghost" size="sm" className="justify-start">
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </Button>
-              <Button 
-                onClick={handleSignOut}
-                variant="outline" 
-                size="sm"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button 
-                onClick={handleAuthClick}
-                variant="ghost" 
-                size="sm"
-              >
-                Log in
-              </Button>
-              <Button 
-                onClick={handleAuthClick}
-                size="sm"
-                className="bg-brand-600 hover:bg-brand-700 rounded-full"
-              >
-                Sign up
-              </Button>
-            </>
-          )}
+          <Button 
+            onClick={handleAuthClick}
+            variant="ghost" 
+            size="sm"
+          >
+            Log in
+          </Button>
+          <Button 
+            onClick={handleAuthClick}
+            size="sm"
+            className="bg-brand-600 hover:bg-brand-700 rounded-full"
+          >
+            Sign up
+          </Button>
         </div>
       </div>
     </div>

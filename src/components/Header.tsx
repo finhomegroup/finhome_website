@@ -2,18 +2,15 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 
 import Logo from './header/Logo';
 import DesktopNavigation from './header/DesktopNavigation';
 import SearchBar from './header/SearchBar';
-import UserMenu from './header/UserMenu';
 import AuthButtons from './header/AuthButtons';
 import MobileMenu from './header/MobileMenu';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useAuth();
 
 
   return (
@@ -37,7 +34,7 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3 lg:space-x-4 ml-4">
-            {user ? <UserMenu /> : <AuthButtons />}
+            <AuthButtons />
           </div>
 
           {/* Mobile Menu Button */}

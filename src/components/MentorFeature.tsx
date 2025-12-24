@@ -11,46 +11,99 @@ interface Mentor {
 }
 
 const MentorFeature = () => {
-  const mentors: Mentor[] = [
+  // Cập nhật kiểu dữ liệu để chấp nhận JSX (ReactNode)
+  // Nếu bạn đang dùng TypeScript, interface Mentor cần sửa field 'title' và 'info' thành: React.ReactNode
+  const mentors = [
     { 
       id: 1, 
-      image: '/mentor_vlic_01.png',
-      name: 'Pham Bao Khanh Quynh',
-      title: 'Former Brand Creative Director',
-      info: 'Expert in automotive branding and international market expansion. Specialized in creative strategy, brand positioning, and building global brand presence.',
-      tags: ['VinFast EU & North US']
+      image: '/mentor_vlic_01.png', 
+      name: 'Phân khu thấp tầng - KĐT Vinhomes Green Paradise',
+      // Sử dụng thẻ <strong> để in đậm và fragment <> để bọc nội dung
+      title: (
+        <>
+          <strong>Vị trí:</strong> xã Cần Giờ, Thành phố Hồ Chí Minh
+        </>
+      ),
+      info: (
+        <>
+          <strong>Diện tích dự án:</strong> 2850 ha
+          <br />
+          <span className="text-sm text-gray-500">(Khu đô thị du lịch lấn biển Cần Giờ)</span>
+        </>
+      ),
+      tags: ['Đang mở bán']
     },
     { 
       id: 2, 
       image: '/mentor_vlic_02.png',
-      name: 'Le Thi Bich Phuong',
-      title: 'Vice Director',
-      info: 'Healthcare industry leader with expertise in hospital management and healthcare innovation. Specialized in operational excellence and digital health transformation.',
-      tags: ['Van Hanh General Hospital']
+      name: 'Dự án Greenera Southmark',
+      title: (
+        <>
+          <strong>Vị trí:</strong> Số 486 đường Ngọc Hồi, xã Thanh Trì, Hà Nội
+        </>
+      ),
+      info: (
+        <>
+          <strong>Diện tích dự án:</strong> 2,5 ha
+          <br />
+          <span className="text-sm text-gray-500">(Dự án Khu nhà ở tại thị trấn Văn Điển)</span>
+        </>
+      ),
+      tags: ['Đang mở bán']
     },
     { 
       id: 3, 
       image: '/mentor_vlic_03.png',
-      name: 'Pham Thi Dieu Anh',
-      title: 'Managing Director',
-      info: 'Expert in scaling technology startups and digital transformation. Specialized in product strategy, market expansion, and building high-performing teams.',
-      tags: ['AIM ACADEMY Vietnam']
+      name: 'Phân khu Legend - KĐT Sunshine Legend City',
+      title: (
+        <>
+          <strong>Vị trí:</strong> Đường Tố Quyên, xã Nghĩa Trụ, tỉnh Hưng Yên
+        </>
+      ),
+      info: (
+        <>
+          <strong>Diện tích dự án:</strong> 49.9 ha
+          <br />
+          <span className="text-sm text-gray-500">(Thuộc Khu A - Khu đô thị Modus)</span>
+        </>
+      ),
+      tags: ['Đang mở bán']
     },
     { 
       id: 4, 
       image: '/mentor_vlic_04.png',
-      name: 'Tran Kim Duy Lan',
-      title: 'Accelerator Program Development Partner',
-      info: 'Investment and startup acceleration expert with deep knowledge in venture capital and startup ecosystem development. Specialized in funding strategies and business scaling.',
-      tags: ['Expara Investment Fund']
+      name: 'Dự án BenHill (Chung cư cao tầng Đồi Ben)',
+      title: (
+        <>
+          <strong>Vị trí:</strong> KDC Thuận Giao 2, P. Thuận An, TP. HCM
+        </>
+      ),
+      info: (
+        <>
+          <strong>Diện tích dự án:</strong> 0.7302 ha
+          <br />
+          <span className="text-sm text-gray-500">(Tọa lạc tại đường Thuận Giao 25)</span>
+        </>
+      ),
+      tags: ['Đang mở bán']
     },
     { 
       id: 5, 
       image: '/mentor_vlic_05.png',
-      name: 'Le Minh Hung',
-      title: 'Director',
-      info: 'Technology solutions architect with extensive experience in software development and digital innovation. Specialized in system design and technology consulting.',
-      tags: ['MH Solution']
+      name: 'Dự án Solaria Rise - KĐT Waterpoint Nam Long',
+      title: (
+        <>
+          <strong>Vị trí:</strong> Xã An Thạnh, huyện Bến Lức, tỉnh Long An
+        </>
+      ),
+      info: (
+        <>
+          <strong>Diện tích dự án:</strong> 3.1 ha
+          <br />
+          <span className="text-sm text-gray-500">(Thuộc Khu đô thị mới Vàm Cỏ Đông)</span>
+        </>
+      ),
+      tags: ['Đang mở bán']
     },
   ];
 
@@ -61,15 +114,15 @@ const MentorFeature = () => {
     mentors.map((mentor) => (
       <Card
         key={`${prefix}${mentor.id}`}
-        className="flex-shrink-0 w-80 md:w-96 mx-6 md:mx-8 overflow-hidden hover:shadow-lg transition-shadow bg-white"
+        className="flex-shrink-0 w-80 md:w-96 h-full mx-6 md:mx-8 overflow-hidden hover:shadow-lg transition-shadow bg-white flex flex-col"
       >
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex flex-col h-full">
           {/* Image section */}
-          <div className="aspect-auto w-full relative">
+          <div className="aspect-auto w-full relative flex-shrink-0">
             <img
               src={mentor.image}
               alt={`Mentor profile ${mentor.id}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = getFallbackImage(mentor.id);
@@ -79,20 +132,20 @@ const MentorFeature = () => {
           
           {/* Info section below image */}
           {mentor.name && mentor.title && (
-            <div className="p-6 text-left">
-              <h3 className="text-gray-900 text-xl font-bold mb-2">
+            <div className="p-6 text-left flex-grow flex flex-col">
+              <h3 className="text-gray-900 text-xl font-bold mb-2 min-h-[56px]">
                 {mentor.name}
               </h3>
-              <p className="text-gray-600 text-sm mb-3">
+              <p className="text-gray-600 text-sm mb-3 min-h-[40px]">
                 {mentor.title}
               </p>
               {mentor.info && (
-                <p className="text-gray-500 text-sm mb-3 leading-relaxed">
+                <p className="text-gray-500 text-sm mb-3 leading-relaxed min-h-[60px]">
                   {mentor.info}
                 </p>
               )}
               {mentor.tags && (
-                <div className="flex flex-wrap gap-2 justify-left">
+                <div className="flex flex-wrap gap-2 justify-left mt-auto">
                   {mentor.tags.map((tag, index) => (
                     <span
                       key={index}
@@ -116,15 +169,14 @@ const MentorFeature = () => {
     >
       <div className="container mx-auto px-4 text-center mb-12">
                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
-           Top Mentors and Lectures at VLIC
+                 Real Estate Project Evaluation and Analysis
          </h2>
                  <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-           Guiding your startup journey with real-world insights<br />
-           and personal mentorship
+                 1000+ real estate projects are waiting for you to discover.
          </div>
          <div className="mt-4">
-           <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
-             Book a meeting
+           <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+           Get In-depth Analysis
            </button>
          </div>
       </div>

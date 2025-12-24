@@ -8,16 +8,14 @@ const DesktopNavigation = () => {
   return (
     <nav className="flex items-center space-x-8 ml-4">
       <button 
-        onClick={() => navigate('/mentors')} 
         className="text-gray-700 hover:text-brand-600 transition-colors font-medium"
       >
-        Mentors
+        Features
       </button>
       <button 
-        onClick={() => navigate('/events')} 
         className="text-gray-700 hover:text-brand-600 transition-colors font-medium"
       >
-        Events
+        About Us
       </button>
     </nav>
   );

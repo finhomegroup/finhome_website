@@ -89,7 +89,7 @@ export const campaignsMockData: CampaignData[] = [
 // Helper function to get result badge color
 export const getResultBadgeColor = (result: string): string => {
   const specialPrizes = ["Giải Đặc biệt", "Giải Nhất", "Giải nhì", "Giải nhất"];
-  return specialPrizes.includes(result) ? "bg-red-600 text-white" : "bg-gray-100 text-gray-700";
+  return specialPrizes.includes(result) ? "bg-[#3CB550] text-white" : "bg-gray-100 text-gray-700";
 };
 
 // Helper function to format faculty badge

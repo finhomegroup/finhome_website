@@ -277,7 +277,7 @@ const MentorsLecturers = () => {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="bg-red-600 hover:bg-red-700 flex items-center space-x-2">
+                  <Button className="bg-[#3CB550] hover:bg-[#2d9a42] flex items-center space-x-2">
                     <span>Mentor/Lecturer</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
@@ -389,7 +389,7 @@ const MentorsLecturers = () => {
               <button
                 onClick={() => setViewMode('grid')}
                 className={`relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                  viewMode === 'grid' ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'
+                  viewMode === 'grid' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 <LayoutGrid className="h-5 w-5 mr-2" />
@@ -398,7 +398,7 @@ const MentorsLecturers = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                  viewMode === 'list' ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'
+                  viewMode === 'list' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 <List className="h-5 w-5 mr-2" />
@@ -530,7 +530,7 @@ const MentorsLecturers = () => {
                    </Button>
                    <Button 
                      size="sm" 
-                     className="flex-1 flex items-center justify-center space-x-1 h-9 bg-red-600 hover:bg-red-700"
+                     className="flex-1 flex items-center justify-center space-x-1 h-9 bg-[#3CB550] hover:bg-[#2d9a42]"
                    >
                      <MessageCircle className="w-3 h-3" />
                      <span className="text-xs">Contact</span>

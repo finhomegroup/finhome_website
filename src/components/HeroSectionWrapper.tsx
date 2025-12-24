@@ -4,7 +4,7 @@ import HeroSection from './HeroSection';
 
 const HeroSectionWrapper = () => {
   return (
-    <div className="relative" style={{ backgroundImage: 'url(/bg_hero.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="relative">
       <Header />
       <HeroSection />
     </div>

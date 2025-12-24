@@ -17,50 +17,50 @@ const ThrivingStartups = () => {
     {
       id: 1,
       name: "Sarah Chen",
-      title: "Co-founder",
-      company: "AI Adventures",
+      title: "Property Investor",
+      company: "Downtown Portfolio",
       avatar: "/ava_mentor01.png",
-      testimonial: "The VLIC incubation program was a turning point for us. In just five months, we went from prototype to paying customers, thanks to their hands-on approach. The program's mentors helped us avoid costly mistakes, and their networking events connected us with early adopters and partners."
+      testimonial: "Finhome made my first investment property purchase seamless. The platform's transparent loan process and competitive rates helped me secure financing in just two weeks. Their team guided me through every step, and now I'm building a profitable real estate portfolio."
     },
     {
       id: 2,
       name: "Minh Pham",
-      title: "Founder",
-      company: "HealthTech Solutions",
+      title: "First-Time Homebuyer",
+      company: "Happy Homeowner",
       avatar: "/ava_mentor02.png",
-      testimonial: "The VLIC ecosystem was instrumental in our success. We went from a concept to a secured pilot partnership with a local clinic, thanks to their support and network."
+      testimonial: "I was honestly pretty stressed about buying my first home, but Finhome made everything so much easier. They handled all the heavy lifting, from finding the right place to getting my loan approved."
     },
     {
       id: 3,
       name: "Emily Rodriguez",
-      title: "CEO",
-      company: "TechFlow",
+      title: "Real Estate Developer",
+      company: "Urban Living Projects",
       avatar: "/ava_mentor03.png",
-      testimonial: "Thanks to this program, we now have a working MVP, validated user insights, and the confidence to grow beyond university walls."
+      testimonial: "Finhome's bridge financing solution enabled us to acquire and develop three residential projects this year. Their fast approval process and flexible terms gave us the competitive edge we needed in a hot market."
     },
     {
       id: 4,
       name: "David Nguyen",
-      title: "Co-founder",
-      company: "AI Solutions",
+      title: "Property Flipper",
+      company: "Renovation Ventures",
       avatar: "/ava_mentor04.png",
-      testimonial: "VLIC provided us with the mentorship and resources we needed to transform our AI research into a viable business model."
+      testimonial: "The speed and efficiency of Finhome's financing is unmatched. I've completed 12 successful flips using their platform, with an average ROI of 25%. Their streamlined process means I can move quickly on opportunities."
     },
     {
       id: 5,
       name: "Lisa Wang",
-      title: "Founder",
-      company: "FinTech Innovations",
+      title: "Multi-Property Owner",
+      company: "Coastal Rentals",
       avatar: "/ava_mentor05.png",
-      testimonial: "The networking opportunities at VLIC connected us with investors who believed in our vision from day one."
+      testimonial: "Managing financing for multiple properties used to be a nightmare. Finhome's dashboard lets me track all my mortgages in one place, and their refinancing options have saved me thousands in interest payments."
     },
     {
       id: 6,
       name: "James Kim",
-      title: "CEO",
-      company: "GreenTech Ventures",
+      title: "Commercial Investor",
+      company: "Retail Space Holdings",
       avatar: "/ava_mentor06.png",
-      testimonial: "VLIC's structured program helped us navigate the challenges of scaling our sustainable technology startup."
+      testimonial: "Finhome's commercial real estate financing helped me expand my portfolio from residential to commercial properties. Their expert advisors understand the market and structured a loan that perfectly fit my investment strategy."
     }
   ];
 
@@ -80,11 +80,11 @@ const ThrivingStartups = () => {
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
-            Our Thriving Startups
+            Success Stories
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-            Hear from founders who've accelerated their growth<br />
-            through the VLIC innovation ecosystem
+            Real stories from investors and homeowners<br />
+            who achieved their dreams with Finhome
           </div>
         </div>
 
@@ -95,7 +95,7 @@ const ThrivingStartups = () => {
                               <img
                   src={founder.avatar}
                   alt={`${founder.name} avatar`}
-                  className="w-10 h-10 md:w-16 md:h-16 rounded-full object-contain border-2 border-gray-200 hover:border-red-500 transition-colors duration-300"
+                  className="w-10 h-10 md:w-16 md:h-16 rounded-full object-contain border-2 border-gray-200 hover:border-[#3CB550] transition-colors duration-300"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Ccircle cx="40" cy="40" r="40" fill="%23e5e7eb"/%3E%3Ctext x="40" y="45" text-anchor="middle" dy=".3em" fill="%239ca3af" font-size="12"%3E${founder.name.split(' ').map(n => n[0]).join('')}%3C/text%3E%3C/svg%3E`;
@@ -130,12 +130,12 @@ const ThrivingStartups = () => {
 
             {/* Center Card (Main) - Expanded Width */}
             <div className="flex-1 md:flex-2 lg:flex-3 max-w-none md:max-w-2xl lg:max-w-4xl scale-100 transition-all duration-300">
-              <div className="bg-gray-50 p-8 md:p-12 lg:p-16 rounded-lg border-2 border-red-200 shadow-lg relative">
+              <div className="bg-gray-50 p-8 md:p-12 lg:p-16 rounded-lg border-2 border-green-200 shadow-lg relative">
                 {/* Red corner brackets */}
-                <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-red-500"></div>
-                <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-red-500"></div>
-                <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-red-500"></div>
-                <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-red-500"></div>
+                <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-[#3CB550]"></div>
+                <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-[#3CB550]"></div>
+                <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-[#3CB550]"></div>
+                <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-[#3CB550]"></div>
                 
                 <div className="text-justify">
                   <blockquote className="text-gray-700 text-base md:text-md leading-relaxed mb-6">
@@ -186,10 +186,10 @@ const ThrivingStartups = () => {
           <div className="flex justify-center items-center gap-4 mt-8">
             <button
               onClick={prevTestimonial}
-              className="p-3 rounded-full border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors duration-200"
+              className="p-3 rounded-full bg-gray-100 border border-gray-300 hover:border-[#3CB550] hover:bg-green-50 transition-colors duration-200 group"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft className="w-6 h-6 text-gray-600" />
+              <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-[#3CB550] transition-colors duration-200" />
             </button>
             
             {/* Pagination Dots */}
@@ -199,7 +199,7 @@ const ThrivingStartups = () => {
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    index === currentIndex ? 'bg-red-500' : 'bg-gray-300 hover:bg-gray-400'
+                    index === currentIndex ? 'bg-[#3CB550]' : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
@@ -208,10 +208,10 @@ const ThrivingStartups = () => {
             
             <button
               onClick={nextTestimonial}
-              className="p-3 rounded-full border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors duration-200"
+              className="p-3 rounded-full bg-gray-100 border border-gray-300 hover:border-[#3CB550] hover:bg-green-50 transition-colors duration-200 group"
               aria-label="Next testimonial"
             >
-              <ChevronRight className="w-6 h-6 text-gray-600" />
+              <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-[#3CB550] transition-colors duration-200" />
             </button>
           </div>
         </div>
