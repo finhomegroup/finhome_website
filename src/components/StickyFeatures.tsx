@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import DotHalftone, { FillDefinition } from '@/components/DotHalftone';
 
 interface FeatureItem {
   label: string;
@@ -14,33 +15,33 @@ interface FeatureItem {
 const features: FeatureItem[] = [
   {
     label: 'SMART INVESTMENT',
-    title: 'Grow your wealth easily',
+    title: 'Compass',
     description:
-      'Launch investment campaigns in minutes and drive more revenue. Skip the learning curve with ready-made templates, guided automation and intuitive tools anyone can master.',
-    linkText: 'Learn more',
+      'A personal compass that turns your finances into a clear path, where home decisions feel grounded, safe, and certain.',
+    linkText: 'Sign up free',
     linkHref: '#',
-    imageSrc: '/images/features/multichannel.webp',
+    imageSrc: '/images/features/Compass.png',
     imageAlt: 'SMART INVESTMENT',
   },
   {
-    label: 'ALL-IN-ONE SOLUTION',
-    title: 'Built to scale with you',
+    label: 'OPPORTUNITY RADAR',
+    title: 'Lighthouse',
     description:
-      'As your business expands, invest more, automate more and engage across new channels. Manage the entire customer journey from one powerful platform—for marketing, sales, CRM and loyalty.',
-    linkText: 'Sign up free',
-    linkHref: '#',
-    imageSrc: '/images/features/all-in-one.webp',
-    imageAlt: 'ALL-IN-ONE SOLUTION',
-  },
-  {
-    label: 'AI-FIRST PLATFORM',
-    title: 'Accelerate with AI',
-    description:
-      'Work smarter and faster with FinHome AI. Optimize every campaign with personalized product recommendations, ideal send times, and clear insights into what drives results.',
+      'A guiding light that reveals where real estate opportunity is rising, so every move is made with clarity, not guesswork.',
     linkText: 'Learn more',
     linkHref: '#',
-    imageSrc: '/images/features/optimize.webp',
-    imageAlt: 'AI PLATFORM',
+    imageSrc: '/images/features/Lighthouse.png',
+    imageAlt: 'OPPORTUNITY RADAR',
+  },
+  {
+    label: 'CAPITAL CONNECT',
+    title: 'Harbour',
+    description:
+      'Harbor brings verified buyers, investors, and lenders into a safe harbor, where capital flows smoothly, deals close cleanly, and move with confidence.',
+    linkText: 'Get access',
+    linkHref: '#',
+    imageSrc: '/images/features/Harbour.png',
+    imageAlt: 'CAPITAL CONNECT',
   },
 ];
 
@@ -62,10 +63,54 @@ const ArrowIcon: React.FC = () => (
   </svg>
 );
 
+const CornerDotSVG = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="2" cy="2" r="2" fill="#3CB550" />
+    <circle cx="10" cy="2" r="2" fill="#3CB550" />
+    <circle cx="10" cy="10" r="2" fill="#3CB550" />
+  </svg>
+);
+
 export const StickyFeatures: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isTransitioningRef = useRef(false);
+  const [nextVisualIndex, setNextVisualIndex] = useState<number | undefined>(undefined);
+
+  // Định nghĩa màu gradient cho từng feature
+  const fillsByIndex: FillDefinition[] = [
+    {
+      type: 'radial',
+      colorA: 'rgba(60, 181, 80, 1)',
+      colorB: 'rgba(45, 154, 66, 0.1)',
+      center: { x: 0.5, y: 0.5 },
+      radius: 0.6,
+    },
+    {
+      type: 'radial',
+      colorA: 'rgba(34, 197, 94, 1)',
+      colorB: 'rgba(20, 184, 166, 0.1)',
+      center: { x: 0.5, y: 0.5 },
+      radius: 0.6,
+    },
+    {
+      type: 'radial',
+      colorA: 'rgba(16, 185, 129, 1)',
+      colorB: 'rgba(5, 150, 105, 0.1)',
+      center: { x: 0.5, y: 0.5 },
+      radius: 0.6,
+    },
+  ];
+
+  const handleHalftoneTransitionComplete = () => {
+    if (nextVisualIndex !== undefined) {
+      setPrevIndex(nextVisualIndex);
+      setNextVisualIndex(undefined);
+    }
+    isTransitioningRef.current = false;
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,23 +135,40 @@ export const StickyFeatures: React.FC = () => {
         }
       });
 
-      setActiveIndex(closestIndex);
+      if (closestIndex !== activeIndex) {
+        setActiveIndex(closestIndex);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [activeIndex]);
+
+  // Handle image transition when activeIndex changes
+  useEffect(() => {
+    if (activeIndex === prevIndex) return;
+    
+    const schedule = () => {
+      if (!isTransitioningRef.current && nextVisualIndex === undefined) {
+        setNextVisualIndex(activeIndex);
+        isTransitioningRef.current = true;
+      }
+    };
+    
+    Promise.resolve().then(schedule);
+  }, [activeIndex, prevIndex, nextVisualIndex]);
 
   return (
     <section className="relative py-12 md:py-24 bg-white">
-      <div className="container mx-auto px-4 md:px-6" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
         <div className="relative">
-          {/* Content Section (Left) */}
-          <div className="lg:grid lg:grid-cols-2 lg:gap-12">
-            {/* Text Content */}
-            <div className="lg:col-span-1">
+          <div className="px-0 md:px-6">
+            {/* Content Section (Left) */}
+            <div className="grid grid-cols-12 gap-5 md:gap-10 lg:gap-5">
+              {/* Text Content */}
+              <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2">
               {features.map((feature, index) => (
                 <div
                   key={index}
@@ -149,41 +211,74 @@ export const StickyFeatures: React.FC = () => {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
 
-            {/* Sticky Images Section (Right) */}
-            <div className="hidden lg:block lg:col-span-1">
-              <div
-                className="sticky"
+              {/* Sticky Images Section (Right) - With DotHalftone */}
+              <div className="hidden lg:block col-span-12 md:col-span-6 lg:col-span-6 md:col-start-7 lg:col-start-7">
+                <div
+                className="sticky flex items-center justify-center"
                 style={{
-                  height: '500px',
-                  top: 'calc(50vh - 250px)',
+                  height: '600px',
+                  top: 'calc(50vh - 300px)',
                 }}
               >
-                {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className={`absolute inset-0 transition-opacity duration-500 ${
-                      activeIndex === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                    }`}
-                  >
-                    <picture className="block w-full h-full">
-                      <img
-                        alt={feature.imageAlt}
-                        className="w-full h-full object-contain rounded-2xl"
-                        loading="lazy"
-                        src={feature.imageSrc}
-                        title={feature.title}
-                      />
-                    </picture>
+                <div className="relative w-full max-w-[500px] h-full mx-auto">
+                  {/* Corner Dots - Outer Frame */}
+                  <div className="absolute inset-0 pointer-events-none z-10 transition-all duration-1000">
+                    <div className="absolute -top-6 -left-6 w-3 h-3 rotate-90">
+                      <CornerDotSVG />
+                    </div>
+                    <div className="absolute -top-6 -right-6 w-3 h-3 rotate-180">
+                      <CornerDotSVG />
+                    </div>
+                    <div className="absolute -bottom-6 -left-6 w-3 h-3">
+                      <CornerDotSVG />
+                    </div>
+                    <div className="absolute -bottom-6 -right-6 w-3 h-3 -rotate-90">
+                      <CornerDotSVG />
+                    </div>
                   </div>
-                ))}
+
+                  {/* Dot Grid Background */}
+                  <div 
+                    className="absolute -inset-48 z-0"
+                    style={{
+                      backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(209 213 219) 1px, transparent 1px)',
+                      backgroundSize: '8px 8px',
+                      backgroundRepeat: 'repeat',
+                      backgroundPosition: '3px 3px',
+                      mask: 'radial-gradient(ellipse at center, black 0%, black 25%, rgba(0,0,0,0.8) 35%, rgba(0,0,0,0.4) 50%, transparent 70%)',
+                      WebkitMask: 'radial-gradient(ellipse at center, black 0%, black 25%, rgba(0,0,0,0.8) 35%, rgba(0,0,0,0.4) 50%, transparent 70%)',
+                    }}
+                  />
+
+                  {/* DotHalftone Effect - Centered between corner dots */}
+                  <div className="absolute inset-0 flex items-center justify-center p-6">
+                    <DotHalftone
+                      src={features[prevIndex].imageSrc}
+                      nextSrc={nextVisualIndex !== undefined ? features[nextVisualIndex].imageSrc : undefined}
+                      columns={56}
+                      rows={75}
+                      cellSize={8}
+                      transitionDuration={750}
+                      rippleEffect
+                      rippleIntensity={0.12}
+                      rippleFrequency={12.0}
+                      objectFit="contain"
+                      fill={fillsByIndex[prevIndex]}
+                      nextFill={nextVisualIndex !== undefined ? fillsByIndex[nextVisualIndex] : undefined}
+                      fillTransitionDuration={500}
+                      onTransitionComplete={handleHalftoneTransitionComplete}
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
-          </div>
 
-          {/* Mobile Images (Below content on mobile) */}
-          <div className="lg:hidden space-y-8 mt-8">
+            {/* Mobile Images (Below content on mobile) */}
+            <div className="lg:hidden space-y-8 mt-8">
             {features.map((feature, index) => (
               <div key={index} className="w-full">
                 <picture className="block w-full">
@@ -197,6 +292,7 @@ export const StickyFeatures: React.FC = () => {
                 </picture>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>

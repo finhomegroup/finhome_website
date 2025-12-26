@@ -19,8 +19,8 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
   const columns = 250;
   const cellSize = 8;
   const startScale = 2.0;
-  const panFrom = useMemo(() => ({ x: -0.33, y: 0.16 }), []);
-  const panTo = useMemo(() => ({ x: -0.27, y: 0.09 }), []);
+  const panFrom = useMemo(() => ({ x: -0.27, y: 0.09 }), []);
+  const panTo = useMemo(() => ({ x: -0.33, y: 0.16 }), []);
   const pathDurationMs = 3000;
   const pathDelayMs = 2000;
 
@@ -75,14 +75,14 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
     () => ({ x: (londonCellCol + 0.5) / columns, y: 1 - (londonCellRow + 0.5) / rows }),
     [londonCellCol, londonCellRow, columns, rows]
   );
-  const [rippleCenterUV, setRippleCenterUV] = useState(nycUV);
+  const [rippleCenterUV, setRippleCenterUV] = useState(londonUV);
   const pivotAdjust = useMemo(() => ({ x: 0.26, y: 0.21 }), []);
   const visualPivot = useMemo(
     () => ({
-      x: Math.min(1, Math.max(0, nycUV.x + pivotAdjust.x)),
-      y: Math.min(1, Math.max(0, nycUV.y + pivotAdjust.y)),
+      x: Math.min(1, Math.max(0, londonUV.x + pivotAdjust.x)),
+      y: Math.min(1, Math.max(0, londonUV.y + pivotAdjust.y)),
     }),
-    [nycUV, pivotAdjust]
+    [londonUV, pivotAdjust]
   );
   const rafRef = useRef<number | null>(null);
   const hoverTimerRef = useRef<number | null>(null);
@@ -149,7 +149,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
         rafRef.current = null;
         setAnimatedPathCells(pathCellsFull);
         setTimeout(() => {
-          setRippleCenterUV(londonUV);
+          setRippleCenterUV(nycUV);
           setRippleNonce((n) => n + 1);
         }, 80);
         setPathDone(true);
@@ -168,13 +168,17 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
 
   // Keep the NYC→London path persistent after intro
 
-  // Seed NYC & London as initial alt overlays once mounted
+  // Seed only London as initial alt overlay once mounted
   useEffect(() => {
     setAltOverlayCells([
-      { row: nycCellRow, col: nycCellCol },
       { row: londonCellRow, col: londonCellCol },
     ]);
-  }, []);
+    // Trigger initial ripple at London after a short delay
+    setTimeout(() => {
+      setRippleCenterUV(londonUV);
+      setRippleNonce((n) => n + 1);
+    }, 500);
+  }, [londonCellRow, londonCellCol, londonUV]);
 
   // Additional cities to progressively light up (rough approximations in grid space)
   const additionalCityCells = useMemo<OverlayCell[]>(() => {
@@ -256,7 +260,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       transformBezierPanX={bezierPanX}
       transformBezierPanY={bezierPanY}
       revealEnabled
-      revealCenterUV={{ x: (nycCellCol + 0.5) / columns, y: 1 - (nycCellRow + 0.5) / rows }}
+      revealCenterUV={{ x: (londonCellCol + 0.5) / columns, y: 1 - (londonCellRow + 0.5) / rows }}
       revealDurationMs={5000}
       revealDelayMs={260}
       revealFeatherCellsStart={0}
@@ -272,7 +276,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
         }),
         []
       )}
-      overlayCells={animatedPathCells}
+      overlayCells={[]}
       overlayCellsAlt={[
         ...altOverlayCells,
         ...(SHOW_ALL_CITY_MARKERS ? additionalCityCells : []),

@@ -12,8 +12,7 @@ const PortfolioPerformance = () => {
             Platform Performance
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-            Trusted platform connecting investors with<br />
-            premium real estate opportunities
+          Connecting investors to premium real estate assets
           </div>
         </div>
         
@@ -69,7 +68,7 @@ const PortfolioPerformance = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 lg:gap-32 mt-12">
             {/* Second Row */}
             <div className="text-center transform hover:scale-105 transition-transform duration-300">
               <AnimatedNumber
@@ -97,57 +96,6 @@ const PortfolioPerformance = () => {
                  </div>
                </div>
              </div>
-            
-            <div className="text-center transform hover:scale-105 transition-transform duration-300">
-              <AnimatedNumber
-                value={30}
-                suffix="+"
-                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
-                duration={3000}
-              />
-              <div className="text-lg sm:text-xl text-gray-600">
-                Partner Banks
-              </div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-            {/* Third Row */}
-            <div className="text-center transform hover:scale-105 transition-transform duration-300">
-              <AnimatedNumber
-                value={24}
-                suffix="/7"
-                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
-                duration={2400}
-              />
-              <div className="text-lg sm:text-xl text-gray-600">
-              Customer Support
-              </div>
-            </div>
-            
-            <div className="text-center transform hover:scale-105 transition-transform duration-300">
-              <AnimatedNumber
-                value={100}
-                suffix="+"
-                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
-                duration={2700}
-              />
-              <div className="text-lg sm:text-xl text-gray-600">
-                Real Estate Agents
-              </div>
-            </div>
-
-            <div className="text-center transform hover:scale-105 transition-transform duration-300">
-              <AnimatedNumber
-                value={45}
-                suffix="+"
-                className="text-4xl font-semibold sm:text-4xl text-gray-900 mb-2"
-                duration={2700}
-              />
-              <div className="text-lg sm:text-xl text-gray-600">
-              Cities Covered
-              </div>
-            </div>
             
             <div className="text-center transform hover:scale-105 transition-transform duration-300">
               <AnimatedNumber

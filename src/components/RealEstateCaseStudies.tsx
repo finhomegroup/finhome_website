@@ -319,8 +319,8 @@ export const RealEstateCaseStudies: React.FC = () => {
   }, [handleScroll]);
 
   return (
-    <section className="py-0 md:py-0 md:px-3">
-      <div className="container mx-auto px-0 pt-[72px] md:pt-36">
+    <section className="py-0 md:py-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[72px] md:pt-36">
         <div className="overflow-hidden z-[6] rounded-none md:rounded-xl md:bg-[#fbfbfc] md:shadow-[0_0_20px_0_#fff_inset,0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset] p-6 md:p-0 min-h-[720px] flex flex-col transition-[border-radius] duration-500">
           {/* Tabs */}
           <div className="relative flex-shrink-0">
@@ -335,7 +335,7 @@ export const RealEstateCaseStudies: React.FC = () => {
               {caseStudies.map((c, i) => (
                 <button
                   key={i}
-                  className={`border-none flex flex-shrink-0 flex-grow items-center justify-center rounded-lg px-8 py-3 text-gray-800 cursor-pointer transition-all duration-200 ${
+                  className={`border-none flex flex-shrink-0 flex-grow items-center justify-center rounded-full px-8 py-3 text-gray-800 cursor-pointer transition-all duration-200 ${
                     i === activeIndex
                       ? 'shadow-[0_0_0_1px_rgba(0,0,0,0.05)_inset,0_-1px_0_rgba(0,0,0,0.1)_inset,0px_-48px_24px_-24px_rgba(0,0,0,0.02)_inset,0px_4px_8px_0px_rgba(0,0,0,0.05),0px_2px_4px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(0,0,0,0.05)]'
                       : 'hover:bg-gray-800/5'
@@ -396,7 +396,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                             {caseStudies[prevIndex].projects.map((project, idx) => (
                               <div
                                 key={idx}
-                                className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-lg text-sm font-medium text-gray-800"
+                                className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
                               >
                                 {project.name}
                               </div>
@@ -432,7 +432,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                           {caseStudies[activeIndex].projects.map((project, idx) => (
                             <div
                               key={idx}
-                              className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-lg text-sm font-medium text-gray-800"
+                              className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
                             >
                               {project.name}
                             </div>

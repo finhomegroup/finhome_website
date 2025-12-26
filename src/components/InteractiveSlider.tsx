@@ -1,79 +1,43 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
-interface SliderItem {
-  title: string;
-  href: string;
-  imageSrc: string;
-  imageAlt: string;
+interface BankOffer {
+  bankName: string;
+  bankLogo: string;
+  interestRate: string;
+  interestPeriod: string;
+  promotion: string;
+  promotionPeriod: string;
+  promotionColor: string;
 }
 
-const sliderItems: SliderItem[] = [
+const bankOffers: BankOffer[] = [
   {
-    title: 'Đầu tư căn hộ',
-    href: '#',
-    imageSrc: '/images/slider/apartment-investment.webp',
-    imageAlt: 'Đầu tư căn hộ',
+    bankName: 'ACB',
+    bankLogo: '/images/slider/acb.jpg',
+    interestRate: '6.2%',
+    interestPeriod: 'Year',
+    promotion: '5',
+    promotionPeriod: 'Months',
+    promotionColor: '#3CB550',
   },
   {
-    title: 'Đầu tư biệt thự',
-    href: '#',
-    imageSrc: '/images/slider/villa-investment.webp',
-    imageAlt: 'Đầu tư biệt thự',
+    bankName: 'VIB',
+    bankLogo: '/images/slider/vib.jpg',
+    interestRate: '5.2%',
+    interestPeriod: 'Year',
+    promotion: '12',
+    promotionPeriod: 'Months',
+    promotionColor: '#3CB550',
   },
   {
-    title: 'Đầu tư shophouse',
-    href: '#',
-    imageSrc: '/images/slider/shophouse-investment.webp',
-    imageAlt: 'Đầu tư shophouse',
-  },
-  {
-    title: 'Đầu tư condotel',
-    href: '#',
-    imageSrc: '/images/slider/condotel-investment.webp',
-    imageAlt: 'Đầu tư condotel',
-  },
-  {
-    title: 'Đầu tư đất nền',
-    href: '#',
-    imageSrc: '/images/slider/land-investment.webp',
-    imageAlt: 'Đầu tư đất nền',
-  },
-  {
-    title: 'Đầu tư resort',
-    href: '#',
-    imageSrc: '/images/slider/resort-investment.webp',
-    imageAlt: 'Đầu tư resort',
-  },
-  {
-    title: 'Đầu tư officetel',
-    href: '#',
-    imageSrc: '/images/slider/officetel-investment.webp',
-    imageAlt: 'Đầu tư officetel',
-  },
-  {
-    title: 'Đầu tư căn hộ dịch vụ',
-    href: '#',
-    imageSrc: '/images/slider/service-apartment.webp',
-    imageAlt: 'Đầu tư căn hộ dịch vụ',
-  },
-  {
-    title: 'Đầu tư nhà phố',
-    href: '#',
-    imageSrc: '/images/slider/townhouse-investment.webp',
-    imageAlt: 'Đầu tư nhà phố',
-  },
-  {
-    title: 'Đầu tư cao ốc văn phòng',
-    href: '#',
-    imageSrc: '/images/slider/office-building.webp',
-    imageAlt: 'Đầu tư cao ốc văn phòng',
-  },
-  {
-    title: 'Đầu tư trung tâm thương mại',
-    href: '#',
-    imageSrc: '/images/slider/shopping-mall.webp',
-    imageAlt: 'Đầu tư trung tâm thương mại',
+    bankName: 'Techcombank',
+    bankLogo: '/images/slider/techcombank.jpg',
+    interestRate: '5.5%',
+    interestPeriod: 'Year',
+    promotion: '3',
+    promotionPeriod: 'Months',
+    promotionColor: '#3CB550',
   },
 ];
 
@@ -96,121 +60,74 @@ const ArrowIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export const InteractiveSlider: React.FC = () => {
-  const sliderRef = useRef<HTMLUListElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScrollButtons = () => {
-    if (!sliderRef.current) return;
-
-    const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-
-  useEffect(() => {
-    checkScrollButtons();
-    const slider = sliderRef.current;
-    if (!slider) return;
-
-    slider.addEventListener('scroll', checkScrollButtons, { passive: true });
-    window.addEventListener('resize', checkScrollButtons);
-
-    return () => {
-      slider.removeEventListener('scroll', checkScrollButtons);
-      window.removeEventListener('resize', checkScrollButtons);
-    };
-  }, []);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (!sliderRef.current) return;
-
-    const scrollAmount = sliderRef.current.clientWidth * 0.8;
-    const newScrollLeft =
-      direction === 'left'
-        ? sliderRef.current.scrollLeft - scrollAmount
-        : sliderRef.current.scrollLeft + scrollAmount;
-
-    sliderRef.current.scrollTo({
-      left: newScrollLeft,
-      behavior: 'smooth',
-    });
-  };
 
   return (
     <section className="py-12 md:py-24 bg-white" aria-labelledby="interactive-heading">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="mb-8 md:mb-12 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900" id="interactive-heading">
             Invest your way
           </h2>
+          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
+            Attractive compound interest rates for townhouses and land plots
+          </div>
+          <div className="mt-4">
+            <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+              Request Consultation
+            </button>
+          </div>
         </div>
 
-        {/* Slider Container */}
-        <div className="relative" aria-roledescription="carousel" aria-label="Interactive Feature slider">
-          {/* Slider */}
-          <ul
-            ref={sliderRef}
-            id="slider-container"
-            aria-describedby="slider-instructions"
-            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-none scroll-smooth pb-4"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
-          >
-            {sliderItems.map((item, index) => (
-              <li key={index} className="flex-shrink-0 w-[280px] md:w-[320px]">
-                <div className="relative overflow-hidden rounded-2xl group">
-                  {/* Border overlay */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-[#2d9a42] pointer-events-none z-10 transition-colors duration-150" />
-                  
-                  {/* Image Container */}
-                  <div className="relative aspect-[4/5] overflow-hidden">
-                    <img
-                      alt={item.imageAlt}
-                      src={item.imageSrc}
-                      className="w-full h-full object-scale-down"
-                      loading="lazy"
-                    />
-                  </div>
+        {/* Bank Cards Container - Compact Layout */}
+        <div className="flex justify-between gap-8 px-8">
+          {bankOffers.map((offer, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 rounded-2xl p-4 border-2 border-transparent hover:border-[#3CB550] hover:shadow-md transition-all duration-300 flex-1"
+            >
+              {/* Bank Logo Header */}
+              <div className="mb-4">
+                <div className="bg-white rounded-xl px-6 py-3 shadow-sm flex items-center justify-center">
+                  <img 
+                    src={offer.bankLogo} 
+                    alt={offer.bankName}
+                    className="h-8 w-auto object-contain"
+                  />
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
 
-          {/* Left Button */}
-          <button
-            onClick={() => scroll('left')}
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 transition-all duration-300 ${
-              canScrollLeft ? 'opacity-100 hover:scale-110' : 'opacity-0 pointer-events-none'
-            }`}
-            aria-label="Scroll left"
-            aria-controls="slider-container"
-            data-testid="interactive-icon-slider-button-left"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-900" />
-          </button>
+              {/* Two Column Layout: Interest Rate & Promotion */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Interest Rate Box */}
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">Interest Rate</div>
+                  <div className="text-3xl font-semibold text-gray-900 mb-0.5">{offer.interestRate}</div>
+                  <div className="text-xs text-gray-600">{offer.interestPeriod}</div>
+                </div>
 
-          {/* Right Button */}
-          <button
-            onClick={() => scroll('right')}
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 transition-all duration-300 ${
-              canScrollRight ? 'opacity-100 hover:scale-110' : 'opacity-0 pointer-events-none'
-            }`}
-            aria-label="Scroll right"
-            aria-controls="slider-container"
-            data-testid="interactive-icon-slider-button-right"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-900" />
-          </button>
+                {/* Promotion Box */}
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">Promotion</div>
+                  <div 
+                    className="text-4xl font-semibold mb-0.5"
+                    style={{ color: offer.promotionColor }}
+                  >
+                    {offer.promotion}
+                  </div>
+                  <div className="text-xs text-gray-600">{offer.promotionPeriod}</div>
+                </div>
+              </div>
 
-          {/* Screen reader instructions */}
-          <div id="slider-instructions" className="sr-only">
-            Use arrow keys to navigate between slider cards
-          </div>
-          <div className="sr-only" aria-live="polite"></div>
+              {/* View Details Button - Bottom Right */}
+              <div className="flex justify-end">
+                <button className="py-1.5 px-4 border border-gray-300 rounded-full text-xs text-gray-700 hover:bg-white transition-colors duration-200 flex items-center gap-1.5">
+                  <span>View Details</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
