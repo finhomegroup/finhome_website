@@ -272,7 +272,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       fill={useMemo(
         () => ({
           angleDeg: -75,
-          stops: ['#9FCFBA', '#8BC7BF', '#97CAEB', '#91C0E7', '#8CB6E4', '#89ACE0', '#9AAFE3'],
+          stops: ['#d8faa1', '#a9f153', '#3fd564', '#3cb450'],
         }),
         []
       )}
@@ -290,8 +290,8 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       overlayTempFadeInMs={350}
       overlayTempFadeOutMs={1000}
       overlayTempFadeDelayMs={0}
-      overlayColor="#7D8DAE"
-      overlayColorAlt="#111A4A"
+      overlayColor="#3fd564"
+      overlayColorAlt="#3cb450"
       overlayMinDotDiameterPx={4}
       rippleEnabled
       rippleCenterUV={rippleCenterUV}
@@ -304,7 +304,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       objectFit="cover"
       visualPivotUV={visualPivot}
       overlayCrossEnabled={false}
-      dotScale={0.9}
+      dotScale={0.8}
       minDotDiameterPx={4}
       binaryThreshold={0.42}
       hoverEnabled={hoverActive}
