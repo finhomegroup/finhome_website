@@ -83,8 +83,8 @@ const ThrivingStartups = () => {
             Success Stories
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-            Real stories from investors and homeowners<br />
-            who achieved their dreams with Finhome
+            Trusted by professional investors and first-time buyers<br />
+            using Vietnam's first data-driven REFI platform
           </div>
         </div>
 

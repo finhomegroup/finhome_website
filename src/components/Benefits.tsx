@@ -7,28 +7,62 @@ interface ServiceCard {
   title: string;
   description: string;
   buttonText: string;
+  sub_title?: string;
+  sub_description?: string;
+  label?: string;
 }
 
-const ServiceCardItem: React.FC<ServiceCard> = ({ icon, title, description, buttonText }) => (
-  <div className="group bg-gradient-to-br from-[#010300] to-[#010300] hover:from-green-400 hover:to-green-600 rounded-2xl p-6 transition-all duration-300 cursor-pointer">
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex items-start gap-4 flex-1">
-        <div className="w-14 h-14 bg-green-500 group-hover:bg-white rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300">
-          <img src={icon} alt={title} className="w-8 h-8" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-white text-xl font-bold mb-2 group-hover:text-gray-900 transition-colors duration-300">
-            {title}
-          </h3>
-          <p className="text-gray-300 text-sm group-hover:text-gray-800 transition-colors duration-300">
-            {description}
-          </p>
-        </div>
+const ServiceCardItem: React.FC<ServiceCard> = ({
+  icon,
+  title,
+  description,
+  buttonText,
+  sub_title,
+  sub_description,
+  label,
+}) => (
+  <div className="group bg-white/95 rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
+    <div className="flex items-start gap-4">
+      <div className="hidden sm:flex w-12 h-12 bg-[#E6F7EC] rounded-full items-center justify-center flex-shrink-0">
+        <img src={icon} alt={title} className="w-7 h-7" />
       </div>
-      <button className="text-white text-sm font-medium group-hover:text-gray-900 transition-colors duration-300 flex items-center gap-2 whitespace-nowrap">
-        {buttonText}
-        <span>→</span>
-      </button>
+      <div className="flex-1">
+        {label && (
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-[#3CB550] uppercase mb-1">
+            {label}
+          </p>
+        )}
+        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          {title}
+        </h3>
+        <p className="text-gray-600 text-sm sm:text-base mb-4">
+          {description}
+        </p>
+
+        {sub_title && (
+          <div className="mb-4">
+            <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
+              {sub_title}
+            </button>
+          </div>
+        )}
+
+        {sub_description && (
+          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
+            {sub_description}
+          </p>
+        )}
+
+        <button
+          className={
+            buttonText === 'Find your safe zone'
+              ? 'inline-flex items-center px-6 py-2.5 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300'
+              : 'inline-flex items-center px-6 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 text-sm sm:text-base font-medium shadow-sm hover:border-[#3CB550] transition-colors duration-200'
+          }
+        >
+          {buttonText}
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -39,22 +73,31 @@ const Benefits: React.FC = () => {
       id: 1,
       icon: '/icons/lighthouse.png',
       title: 'Lighthouse',
-      description: 'Portfolio analytics & advanced leverage management.',
-      buttonText: 'View Dashboard'
+      description: 'A guiding light that reveals where real estate opportunity is rising, so every move is made with clarity, not guesswork.',
+      buttonText: 'See your portfolio',
+      label: 'OPPORTUNITY RADAR',
+      sub_title: 'Find your safe zone before you find a home',
+      sub_description: "Compass analyzes your income, debts, spending, and goals to map out what's truly safe, from price range and borrowing power to which homes fit your financial reality, like a financial compass guiding you with no sales, no guesswork, just clear boundaries that protect you.",
     },
     {
       id: 2,
       icon: '/icons/compass.png',
       title: 'Compass',
-      description: 'Navigate your home buying journey with clarity.',
-      buttonText: 'Start Searching'
+      description: 'A personal compass that turns your finances into a clear path, where home decisions feel grounded, safe, and certain.',
+      buttonText: 'Find your safe zone',
+      label: 'FINANCIAL CLARITY',
+      sub_title:'A steady light that reveals the real story behind your properties',
+      sub_description: "Lighthouse maps your entire real estate portfolio and turns it into a living financial picture, showing how cashflow, debt, market shifts, and refinancing risk interact across everything you own.",
     },
     {
       id: 3,
       icon: '/icons/harbor.png',
       title: 'Harbor',
-      description: 'The integrated platform for partners, agents, and contractors.',
-      buttonText: 'Learn More'
+      description: 'Harbor brings verified buyers, investors, and lenders into a safe harbor, where capital flows smoothly and deals close cleanly.',
+      buttonText: 'Enter our harbor',
+      label: 'CAPITAL CONNECT',
+      sub_title:'A safe harbor where verified capital meets real estate',
+      sub_description: "Harbor connects only financially verified buyers, investors, banks, and developers, using FinHome's data to make sure every deal begins with real financial readiness, not promises.",
     }
   ];
 

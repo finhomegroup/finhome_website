@@ -6,6 +6,8 @@ interface FeatureItem {
   label: string;
   title: string;
   description: string;
+  sub_title?: string;
+  sub_description?: string;
   linkText: string;
   linkHref: string;
   imageSrc: string;
@@ -14,32 +16,38 @@ interface FeatureItem {
 
 const features: FeatureItem[] = [
   {
-    label: 'SMART INVESTMENT',
+    label: 'FINANCIAL CLARITY',
     title: 'Compass',
     description:
       'A personal compass that turns your finances into a clear path, where home decisions feel grounded, safe, and certain.',
-    linkText: 'Sign up free',
+    linkText: 'Find your safe zone',
+    sub_title:'A steady light that reveals the real story behind your properties',
+    sub_description: "Lighthouse maps your entire real estate portfolio and turns it into a living financial picture, showing how cashflow, debt, market shifts, and refinancing risk interact across everything you own.",
     linkHref: '#',
     imageSrc: '/images/features/Compass.png',
-    imageAlt: 'SMART INVESTMENT',
+    imageAlt: 'FINANCIAL CLARITY',
   },
   {
     label: 'OPPORTUNITY RADAR',
     title: 'Lighthouse',
     description:
       'A guiding light that reveals where real estate opportunity is rising, so every move is made with clarity, not guesswork.',
-    linkText: 'Learn more',
+    linkText: 'See your portfolio',
+    sub_title: 'Find your safe zone before you find a home',
+    sub_description: "Compass analyzes your income, debts, spending, and goals to map out what's truly safe, from price range and borrowing power to which homes fit your financial reality, like a financial compass guiding you with no sales, no guesswork, just clear boundaries that protect you.",
     linkHref: '#',
     imageSrc: '/images/features/Lighthouse.png',
     imageAlt: 'OPPORTUNITY RADAR',
   },
   {
     label: 'CAPITAL CONNECT',
-    title: 'Harbour',
+    title: 'Harbor',
     description:
       'Harbor brings verified buyers, investors, and lenders into a safe harbor, where capital flows smoothly, deals close cleanly, and move with confidence.',
-    linkText: 'Get access',
+    linkText: 'Enter our harbor',
     linkHref: '#',
+    sub_title:'A safe harbor where verified capital meets real estate',
+    sub_description: "Harbor connects only financially verified buyers, investors, banks, and developers, using FinHome's data to make sure every deal begins with real financial readiness, not promises.",
     imageSrc: '/images/features/Harbour.png',
     imageAlt: 'CAPITAL CONNECT',
   },
@@ -193,6 +201,20 @@ export const StickyFeatures: React.FC = () => {
                     <div className="text-lg text-gray-600 leading-relaxed">
                       <p>{feature.description}</p>
                     </div>
+
+                    {feature.sub_title && (
+                      <div className="mb-4">
+                        <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
+                          {feature.sub_title}
+                        </button>
+                      </div>
+                    )}
+
+                    {feature.sub_description && (
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
+                        {feature.sub_description}
+                      </p>
+                    )}
 
                     {/* Link */}
                     <div className="pt-4">

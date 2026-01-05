@@ -33,9 +33,9 @@ const HeroSection = () => {
             
             <h1 className="mb-4 sm:mb-6">
               <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl  font-semibold text-gray-900 leading-tight whitespace-nowrap overflow-hidden">
-              <TypeAnimation
+                <TypeAnimation
                   sequence={[
-                    "Build wealth with",
+                    "Buy with clarity",
                     2000,
                   ]}
                   speed={50}
@@ -47,7 +47,7 @@ const HeroSection = () => {
               <div className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mt-1 sm:mt-2 whitespace-nowrap overflow-hidden">
                 <TypeAnimation
                   sequence={[
-                    "intelligent real estate.",
+                    "Live with peace",
                     2000,
                   ]}
                   speed={50}
@@ -59,7 +59,7 @@ const HeroSection = () => {
               <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl text-left">
                 <TypeAnimation
                   sequence={[
-                    "The modern platform for fractional ownership. \nAccess institutional-quality commercial and residential deals \nwith as little as $500.",
+                    "FinHome is the financial operating system for every home\nand property decision, helping you see what you can afford,\nwhat is safe, and what truly builds wealth.",
                     2000,
                   ]}
                   speed={50}

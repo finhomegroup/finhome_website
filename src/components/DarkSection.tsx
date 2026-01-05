@@ -56,8 +56,14 @@ const DarkSection = () => {
                 </div>
               </div>
               
-              {/* Right side - Empty space for visual balance */}
-              <div className="hidden lg:block"></div>
+              {/* Right side - Orbit image */}
+              <div className="flex justify-center items-center mt-8 lg:mt-0">
+                <img
+                  src="/finhome_orbit.png"
+                  alt="Finhome ecosystem with Compass, Harbor and Lighthouse"
+                  className="w-full max-w-2xl h-auto"
+                />
+              </div>
             </div>
           </div>
         </div>

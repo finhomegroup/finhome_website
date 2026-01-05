@@ -12,7 +12,7 @@ const PortfolioPerformance = () => {
             Platform Performance
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-          Connecting investors to premium real estate assets
+            Connecting investors to premium real estate assets
           </div>
         </div>
         
@@ -27,7 +27,7 @@ const PortfolioPerformance = () => {
                 duration={2500}
               />
               <div className="text-lg sm:text-xl text-gray-600">
-                Property Listings
+                Homes Analyzed
               </div>
             </div>
             
@@ -39,7 +39,7 @@ const PortfolioPerformance = () => {
                 duration={2000}
               />
               <div className="text-lg sm:text-xl text-gray-600 whitespace-nowrap">
-                Total Transaction Value
+                Risk Signals Processed
               </div>
             </div>
             
@@ -51,7 +51,7 @@ const PortfolioPerformance = () => {
                 duration={2200}
               />
               <div className="text-lg sm:text-xl text-gray-600">
-                Customer Satisfaction
+                Active Portfolios
               </div>
             </div>
             
@@ -63,7 +63,7 @@ const PortfolioPerformance = () => {
                 duration={2600}
               />
               <div className="text-lg sm:text-xl text-gray-600">
-                Years in Business
+                Profitable Homes
               </div>
             </div>
           </div>
@@ -78,7 +78,7 @@ const PortfolioPerformance = () => {
                 duration={2300}
               />
               <div className="text-lg sm:text-xl text-gray-600">
-                Active Investors
+                Capital Tracked
               </div>
             </div>
             
@@ -92,7 +92,7 @@ const PortfolioPerformance = () => {
                    duration={1800}
                  />
                  <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
-                   Average ROI
+                   Safe-Zone Decisions
                  </div>
                </div>
              </div>
@@ -105,7 +105,7 @@ const PortfolioPerformance = () => {
                 duration={3200}
               />
               <div className="text-lg sm:text-xl text-gray-600">
-              Loan Approval Rate
+              Verified Capital Matches
               </div>
             </div>
           </div>

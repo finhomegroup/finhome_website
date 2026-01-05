@@ -5,8 +5,8 @@ interface Mentor {
   id: number;
   image: string;
   name?: string;
-  title?: string;
-  info?: string;
+  title?: React.ReactNode;
+  info?: React.ReactNode;
   tags?: string[];
 }
 
@@ -169,14 +169,14 @@ const MentorFeature = () => {
     >
       <div className="container mx-auto px-4 text-center mb-12">
                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
-                 Real Estate Project Evaluation and Analysis
+                 Your Path in Real Estate
          </h2>
                  <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-                 1000+ real estate projects are waiting for you to discover.
+                 Real estate opportunities waiting to be matched with your financial path.
          </div>
          <div className="mt-4">
            <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
-           Get In-depth Analysis
+           Explore your path
            </button>
          </div>
       </div>
