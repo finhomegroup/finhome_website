@@ -335,7 +335,7 @@ export const RealEstateCaseStudies: React.FC = () => {
               {caseStudies.map((c, i) => (
                 <button
                   key={i}
-                  className={`border-none flex flex-shrink-0 flex-grow items-center justify-center rounded-full px-8 py-3 text-gray-800 cursor-pointer transition-all duration-200 ${
+                  className={`border-none flex flex-shrink-0 flex-grow-0 md:flex-grow items-center justify-center rounded-full px-4 sm:px-6 md:px-8 py-2 md:py-3 text-sm sm:text-base md:text-lg text-gray-800 cursor-pointer transition-all duration-200 ${
                     i === activeIndex
                       ? 'shadow-[0_0_0_1px_rgba(0,0,0,0.05)_inset,0_-1px_0_rgba(0,0,0,0.1)_inset,0px_-48px_24px_-24px_rgba(0,0,0,0.02)_inset,0px_4px_8px_0px_rgba(0,0,0,0.05),0px_2px_4px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(0,0,0,0.05)]'
                       : 'hover:bg-gray-800/5'
@@ -348,7 +348,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                   aria-label={c.title}
                   title={c.title}
                 >
-                  <span className="text-lg font-semibold">{c.logo}</span>
+                  <span className="font-semibold">{c.logo}</span>
                 </button>
               ))}
             </div>
@@ -356,7 +356,7 @@ export const RealEstateCaseStudies: React.FC = () => {
             {/* Scroll Buttons */}
             {showFade && !isAtEnd && (
               <button
-                className="absolute top-1 right-4 flex items-center justify-center w-9 h-9 rounded-full border-none bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.15)] cursor-pointer z-[2] transition-all duration-200"
+                className="absolute top-1 right-4 hidden md:flex items-center justify-center w-9 h-9 rounded-full border-none bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.15)] cursor-pointer z-[2] transition-all duration-200"
                 onClick={scrollTabsToEnd}
                 aria-label="Scroll tabs right"
               >
@@ -365,7 +365,7 @@ export const RealEstateCaseStudies: React.FC = () => {
             )}
             {showFade && !isAtStart && (
               <button
-                className="absolute top-1 left-4 flex items-center justify-center w-9 h-9 rounded-full border-none bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.15)] cursor-pointer z-[2] transition-all duration-200"
+                className="absolute top-1 left-4 hidden md:flex items-center justify-center w-9 h-9 rounded-full border-none bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.15)] cursor-pointer z-[2] transition-all duration-200"
                 onClick={scrollTabsToStart}
                 aria-label="Scroll tabs left"
               >
@@ -376,13 +376,13 @@ export const RealEstateCaseStudies: React.FC = () => {
 
           {/* Content */}
           <div className="px-0 md:px-6 pb-0 md:pb-6 flex-1 flex flex-col min-h-0 relative">
-            <div className="grid grid-cols-12 gap-5 md:gap-10 lg:gap-5 h-full flex-1">
+            <div className="grid grid-cols-12 gap-3 sm:gap-5 md:gap-10 lg:gap-5 h-full flex-1">
               {/* Text Content */}
               <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2 flex flex-col min-h-0 flex-1 relative">
                 {/* Previous Content (Exiting) */}
                 {prevIndex !== null && (
                   <div
-                    className={`absolute top-0 left-0 right-0 bottom-0 py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                    className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
                       isExitingContent ? 'opacity-0 -translate-x-[100px]' : 'opacity-100 translate-x-0'
                     }`}
                   >
@@ -418,7 +418,7 @@ export const RealEstateCaseStudies: React.FC = () => {
 
                 {/* Current Content (Entering) */}
                 <div
-                  className={`absolute top-0 left-0 right-0 bottom-0 py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                  className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
                     isAnimating ? 'opacity-0 translate-x-[100px]' : 'opacity-100 translate-x-0'
                   }`}
                 >
@@ -453,9 +453,10 @@ export const RealEstateCaseStudies: React.FC = () => {
               </div>
 
               {/* Visual Content */}
-              <div className="col-span-12 md:col-span-6 lg:col-span-4 md:col-start-7 lg:col-start-8 relative">
+              <div className="col-span-12 md:col-span-6 lg:col-span-4 md:col-start-7 lg:col-start-8 relative mt-0 md:mt-0">
+                {/* DotHalftone Background - Hidden on mobile, visible on tablet+ */}
                 <div
-                  className="relative z-0 flex items-center justify-center h-[360px] sm:h-[480px] md:absolute md:inset-[-96px_0_-24px_0] md:pt-24 md:w-[1200px] md:h-auto md:-ml-[50%] lg:-ml-[100%] rounded-t-xl md:rounded-none overflow-hidden"
+                  className="hidden md:flex absolute z-0 items-center justify-center md:inset-[-96px_0_-24px_0] md:pt-24 md:w-[1200px] md:h-auto md:-ml-[50%] lg:-ml-[100%] overflow-hidden"
                   style={{
                     mask: 'radial-gradient(circle, black 30%, transparent 70%)',
                     WebkitMask: 'radial-gradient(circle, black 30%, transparent 70%)',
@@ -501,12 +502,22 @@ export const RealEstateCaseStudies: React.FC = () => {
                     fillTransitionDuration={500}
                     fillTrigger={fillTick}
                     style={{ pointerEvents: 'none' }}
-                    className="logo-dots top-[calc(50%+1px)] left-[5px] sm:top-[calc(50%+5px)] md:top-[97px] md:left-[33px]"
+                    className="logo-dots md:top-[97px] md:left-[33px]"
                     onTransitionComplete={handleHalftoneTransitionComplete}
                   />
                 </div>
 
-                <div className="h-full flex flex-col justify-center">
+                {/* Mobile-only simplified background */}
+                <div
+                  className="md:hidden absolute inset-0 z-0 overflow-hidden rounded-xl"
+                  style={{
+                    background: `radial-gradient(circle at center, ${csColor.dotColor}15 0%, transparent 70%)`,
+                  }}
+                />
+
+                {/* Cards Container */}
+                <div className="relative z-10 h-auto md:h-full flex flex-col items-center justify-center py-4 md:py-0">
+                  <div className="scale-[0.7] sm:scale-[0.85] md:scale-100 origin-center md:origin-top">
                   {prevIndex !== null && isExiting && csPrev ? (
                     <AnimatedScene
                       key={`scene-exit-${prevIndex}-${activeIndex}`}
@@ -522,6 +533,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                       play
                     />
                   )}
+                  </div>
                 </div>
               </div>
             </div>

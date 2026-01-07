@@ -16,8 +16,8 @@ const DataDrivenInvesting: React.FC = () => {
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Left text content */}
-          <div className="w-full max-w-2xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
+          <div className="w-full">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3 md:whitespace-nowrap">
               Data-driven Home & Investing
             </h2>
             <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 mb-6">

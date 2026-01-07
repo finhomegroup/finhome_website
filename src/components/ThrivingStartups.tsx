@@ -20,7 +20,7 @@ const ThrivingStartups = () => {
       title: "Property Investor",
       company: "Downtown Portfolio",
       avatar: "/ava_mentor01.png",
-      testimonial: "Finhome made my first investment property purchase seamless. The platform's transparent loan process and competitive rates helped me secure financing in just two weeks. Their team guided me through every step, and now I'm building a profitable real estate portfolio."
+      testimonial: "FinHome is the first platform in Vietnam that lets me invest using real data and global REFI standards. With Lighthouse, I can see cashfiow, leverage, and refinancing risk clearly, so my entire property portfolio is optimized, not guessed, across every single investment I own."
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ const ThrivingStartups = () => {
       title: "First-Time Homebuyer",
       company: "Happy Homeowner",
       avatar: "/ava_mentor02.png",
-      testimonial: "I was honestly pretty stressed about buying my first home, but Finhome made everything so much easier. They handled all the heavy lifting, from finding the right place to getting my loan approved."
+      testimonial: "For the first time, I could clearly see what I could afford and which homes were actually safe to buy.Compass showed me my real budget, fair price, and basic legal risks, so I stopp…"
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ const ThrivingStartups = () => {
       title: "Real Estate Developer",
       company: "Urban Living Projects",
       avatar: "/ava_mentor03.png",
-      testimonial: "Finhome's bridge financing solution enabled us to acquire and develop three residential projects this year. Their fast approval process and flexible terms gave us the competitive edge we needed in a hot market."
+      testimonial: "Instead of chasing random leads, I now work with a stream of buyers who are already financially verified and ready to transact. Harbor connects me only with clients who have been risk-chec..."
     },
     {
       id: 4,
@@ -60,7 +60,7 @@ const ThrivingStartups = () => {
       title: "Commercial Investor",
       company: "Retail Space Holdings",
       avatar: "/ava_mentor06.png",
-      testimonial: "Finhome's commercial real estate financing helped me expand my portfolio from residential to commercial properties. Their expert advisors understand the market and structured a loan that perfectly fit my investment strategy."
+      testimonial: "Instead of chasing random leads, I now work with a stream of buyers who are already financially verified and ready to transact. Harbor connects me only with clients who have been risk-chec..."
     }
   ];
 

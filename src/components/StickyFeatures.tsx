@@ -169,7 +169,7 @@ export const StickyFeatures: React.FC = () => {
   }, [activeIndex, prevIndex, nextVisualIndex]);
 
   return (
-    <section className="relative py-12 md:py-24 bg-white">
+    <section className="relative py-12 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
         <div className="relative">
           <div className="px-0 md:px-6">
@@ -220,14 +220,10 @@ export const StickyFeatures: React.FC = () => {
                     <div className="pt-4">
                       <a
                         href={feature.linkHref}
-                        className="group inline-flex items-center text-base font-medium text-[#3CB550] hover:text-[#2d9a42] transition-colors duration-300"
+                        className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                         rel="noreferrer"
                       >
-                        <span className="relative">
-                          {feature.linkText}
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#3CB550] transition-all duration-300 group-hover:w-full" />
-                        </span>
-                        <ArrowIcon />
+                        <span>{feature.linkText}</span>
                       </a>
                     </div>
                   </div>
@@ -300,7 +296,7 @@ export const StickyFeatures: React.FC = () => {
             </div>
 
             {/* Mobile Images (Below content on mobile) */}
-            <div className="lg:hidden space-y-8 mt-8">
+            <div className="hidden space-y-8 mt-8">
             {features.map((feature, index) => (
               <div key={index} className="w-full">
                 <picture className="block w-full">

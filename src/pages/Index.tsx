@@ -22,13 +22,15 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <HeroSectionWrapper />
       <HomeTrapSection />
-      
-      <MentorFeature />
-      <PortfolioPerformance />
-      <RealEstateCaseStudies />
       <FinhomeEcosystem />
       <StickyFeatures />
-      <DataDrivenInvesting />
+     <DataDrivenInvesting/>
+      <MentorFeature />
+      
+      <PortfolioPerformance />
+
+      <RealEstateCaseStudies />
+    
       <InteractiveSlider />
       {/* <TestimonialSection /> */}
       {/* <DarkSection /> */}
