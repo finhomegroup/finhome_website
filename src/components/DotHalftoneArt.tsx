@@ -350,12 +350,12 @@ const fragmentShaderSource = `
       selectedRadius = mix(u_revealMinRadiusPx, selectedRadius, revealMaskInner);
     }
 
-    // Edge fade: compute explicit 20-cell band fades in canvas space (independent of pan/scale)
+    // Edge fade: compute explicit band fades in canvas space (independent of pan/scale)
     float edgeMask = 1.0;
     if (u_edgeFadeStrength > 0.0) {
       // Use v_texCoord (canvas UV) so fades always occur at actual canvas edges
-      float bandX = 65.0 / u_columns;
-      float bandY = 45.0 / u_rows;
+      float bandX = 40.0 / u_columns;
+      float bandY = 40.0 / u_rows;
       float leftFade = smoothstep(0.0, bandX, v_texCoord.x);
       float rightFade = smoothstep(0.0, bandX, 1.0 - v_texCoord.x);
       float bottomFade = smoothstep(0.0, bandY, v_texCoord.y);

@@ -268,7 +268,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       revealBezier={[1, 0, 0.8, 1]}
       edgeFadeStrength={1}
       edgeFadeFeatherCellsStart={6}
-      edgeFadeFeatherCellsEnd={16}
+      edgeFadeFeatherCellsEnd={35}
       fill={useMemo(
         () => ({
           angleDeg: -75,
@@ -304,7 +304,7 @@ export const DotHalftoneHero: React.FC<DotHalftoneHeroProps> = ({ style }) => {
       objectFit="cover"
       visualPivotUV={visualPivot}
       overlayCrossEnabled={false}
-      dotScale={0.8}
+      dotScale={0.9}
       minDotDiameterPx={4}
       binaryThreshold={0.42}
       hoverEnabled={hoverActive}

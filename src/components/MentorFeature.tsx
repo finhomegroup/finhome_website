@@ -164,7 +164,7 @@ const MentorFeature = () => {
 
   return (
     <section 
-      className="py-16 bg-gray-50 overflow-hidden"
+      className="py-16 bg-white overflow-hidden"
       aria-label="Meet our mentors showcase"
     >
       <div className="container mx-auto px-4 text-center mb-12">
@@ -181,11 +181,11 @@ const MentorFeature = () => {
          </div>
       </div>
              <div className="relative">
-         {/* Left gradient overlay */}
-         <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-         
-         {/* Right gradient overlay */}
-         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+        {/* Left gradient overlay */}
+        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+        
+        {/* Right gradient overlay */}
+        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
          
          <div className="marquee-container">
            <div className="marquee-track">
