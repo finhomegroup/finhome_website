@@ -91,22 +91,22 @@ export const StickyFeatures: React.FC = () => {
   const fillsByIndex: FillDefinition[] = [
     {
       type: 'radial',
-      colorA: 'rgba(60, 181, 80, 1)',
-      colorB: 'rgba(45, 154, 66, 0.1)',
+      colorA: '#a9f153',
+      colorB: 'rgba(169, 241, 83, 0.1)',
       center: { x: 0.5, y: 0.5 },
       radius: 0.6,
     },
     {
       type: 'radial',
-      colorA: 'rgba(34, 197, 94, 1)',
-      colorB: 'rgba(20, 184, 166, 0.1)',
+      colorA: '#a9f153',
+      colorB: 'rgba(169, 241, 83, 0.1)',
       center: { x: 0.5, y: 0.5 },
       radius: 0.6,
     },
     {
       type: 'radial',
-      colorA: 'rgba(16, 185, 129, 1)',
-      colorB: 'rgba(5, 150, 105, 0.1)',
+      colorA: '#a9f153',
+      colorB: 'rgba(169, 241, 83, 0.1)',
       center: { x: 0.5, y: 0.5 },
       radius: 0.6,
     },
