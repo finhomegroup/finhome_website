@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# FinHome - Real Estate Platform
 
-## Project info
+Ứng dụng web về bất động sản với giao diện hiện đại và tương tác, cung cấp thông tin về các dự án bất động sản, đánh giá và phân tích chuyên sâu.
 
-**URL**: https://lovable.dev/projects/51cb7bf6-5690-406d-b256-73c9ad9b7b93
+## Tính năng
 
-## How can I edit this code?
+- **Hero Section với Dot Halftone Art**: Hiệu ứng hình ảnh dot halftone tương tác với animation mượt mà
+- **Interactive Slider**: Hiển thị các ưu đãi lãi suất từ các ngân hàng
+- **Real Estate Projects**: Danh sách và chi tiết các dự án bất động sản
+- **Project Evaluation**: Đánh giá và phân tích chuyên sâu các dự án bất động sản
+- **Case Studies**: Nghiên cứu tình huống về các dự án bất động sản
 
-There are several ways of editing your application.
+## Yêu cầu hệ thống
 
-**Use Lovable**
+- Node.js (phiên bản 18 trở lên)
+- npm hoặc yarn
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/51cb7bf6-5690-406d-b256-73c9ad9b7b93) and start prompting.
+## Cài đặt
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Clone repository**
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
 git clone <YOUR_GIT_URL>
+cd finhome
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Cài đặt dependencies**
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. **Chạy development server**
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Ứng dụng sẽ chạy tại `http://localhost:5173` (hoặc port khác nếu 5173 đã được sử dụng)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Chạy development server
+- `npm run build` - Build ứng dụng cho production
+- `npm run preview` - Preview build production
+- `npm run lint` - Chạy linter để kiểm tra code
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Công nghệ sử dụng
 
-## What technologies are used for this project?
+- **Vite** - Build tool và development server
+- **TypeScript** - Type-safe JavaScript
+- **React** - UI library
+- **shadcn-ui** - Component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **WebGL** - Rendering cho dot halftone effects
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Phát triển
 
-## How can I deploy this project?
+### Thêm component mới
 
-Simply open [Lovable](https://lovable.dev/projects/51cb7bf6-5690-406d-b256-73c9ad9b7b93) and click on Share -> Publish.
+Tạo file component mới trong thư mục `src/components/` và import vào các file cần sử dụng.
 
-## Can I connect a custom domain to my Lovable project?
+### Styling
 
-Yes, you can!
+Dự án sử dụng Tailwind CSS cho styling. Tham khảo [Tailwind CSS Documentation](https://tailwindcss.com/docs) để biết thêm chi tiết.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### TypeScript
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Tất cả code nên được viết bằng TypeScript. Đảm bảo định nghĩa types cho props và state của components.
+
+## Build cho Production
+
+```bash
+npm run build
+```
+
+Files đã build sẽ được tạo trong thư mục `dist/`.
+
+## Deploy
+
+Sau khi build, bạn có thể deploy thư mục `dist/` lên bất kỳ static hosting service nào như:
+
+- Vercel
+- Netlify
+- GitHub Pages
+- AWS S3 + CloudFront
+
