@@ -1,13 +1,12 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BankOffer {
   bankName: string;
   bankLogo: string;
   interestRate: string;
-  interestPeriod: string;
   promotion: string;
-  promotionPeriod: string;
   promotionColor: string;
 }
 
@@ -16,27 +15,21 @@ const bankOffers: BankOffer[] = [
     bankName: 'ACB',
     bankLogo: '/images/slider/acb.jpg',
     interestRate: '6.2%',
-    interestPeriod: 'Year',
     promotion: '5',
-    promotionPeriod: 'Months',
     promotionColor: '#3CB550',
   },
   {
     bankName: 'VIB',
     bankLogo: '/images/slider/vib.jpg',
     interestRate: '5.2%',
-    interestPeriod: 'Year',
     promotion: '12',
-    promotionPeriod: 'Months',
     promotionColor: '#3CB550',
   },
   {
     bankName: 'Techcombank',
     bankLogo: '/images/slider/techcombank.jpg',
     interestRate: '5.5%',
-    interestPeriod: 'Year',
     promotion: '3',
-    promotionPeriod: 'Months',
     promotionColor: '#3CB550',
   },
 ];
@@ -60,6 +53,7 @@ const ArrowIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export const InteractiveSlider: React.FC = () => {
+  const { t } = useLanguage();
 
   return (
     <section className="py-12 md:py-24 bg-white" aria-labelledby="interactive-heading">
@@ -67,14 +61,14 @@ export const InteractiveSlider: React.FC = () => {
         {/* Heading */}
         <div className="mb-8 md:mb-12 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900" id="interactive-heading">
-            Invest your way
+            {t.slider.title}
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-            Attractive compound interest rates for townhouses and land plots
+            {t.slider.subtitle}
           </div>
           <div className="mt-4">
             <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
-              Request Consultation
+              {t.slider.cta}
             </button>
           </div>
         </div>
@@ -101,28 +95,28 @@ export const InteractiveSlider: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                 {/* Interest Rate Box */}
                 <div className="bg-white rounded-lg p-2.5 sm:p-3 text-center">
-                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">Interest Rate</div>
+                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">{t.slider.interestRate}</div>
                   <div className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-0.5">{offer.interestRate}</div>
-                  <div className="text-[11px] sm:text-xs text-gray-600">{offer.interestPeriod}</div>
+                  <div className="text-[11px] sm:text-xs text-gray-600">{t.slider.year}</div>
                 </div>
 
                 {/* Promotion Box */}
                 <div className="bg-white rounded-lg p-2.5 sm:p-3 text-center">
-                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">Promotion</div>
+                  <div className="text-[10px] text-gray-500 uppercase mb-1 tracking-wide">{t.slider.promotion}</div>
                   <div 
                     className="text-3xl sm:text-4xl font-semibold mb-0.5"
                     style={{ color: offer.promotionColor }}
                   >
                     {offer.promotion}
                   </div>
-                  <div className="text-[11px] sm:text-xs text-gray-600">{offer.promotionPeriod}</div>
+                  <div className="text-[11px] sm:text-xs text-gray-600">{t.slider.months}</div>
                 </div>
               </div>
 
               {/* View Details Button - Bottom Right */}
               <div className="flex justify-end">
                 <button className="py-1 px-3 sm:py-1.5 sm:px-4 border border-gray-300 rounded-full text-[11px] sm:text-xs text-gray-700 hover:bg-white transition-colors duration-200 flex items-center gap-1.5">
-                  <span>View Details</span>
+                  <span>{t.slider.viewDetails}</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>

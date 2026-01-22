@@ -111,6 +111,13 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif !important;
@@ -259,6 +266,12 @@ All colors MUST be HSL.
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  
+  /* Force SVG stroke color to stay dark */
+  .force-stroke-dark svg,
+  .force-stroke-dark svg path {
+    stroke: #111827 !important;
   }
   
   /* Accessibility: Skip to content link */

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import DotHalftone, { FillDefinition } from '@/components/DotHalftone';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FeatureItem {
   label: string;
@@ -13,45 +14,6 @@ interface FeatureItem {
   imageSrc: string;
   imageAlt: string;
 }
-
-const features: FeatureItem[] = [
-  {
-    label: 'FINANCIAL CLARITY',
-    title: 'Compass',
-    description:
-      'A personal compass that turns your finances into a clear path, where home decisions feel grounded, safe, and certain.',
-    linkText: 'Find your safe zone',
-    sub_title:'A steady light that reveals the real story behind your properties',
-    sub_description: "Lighthouse maps your entire real estate portfolio and turns it into a living financial picture, showing how cashflow, debt, market shifts, and refinancing risk interact across everything you own.",
-    linkHref: '#',
-    imageSrc: '/images/features/Compass.png',
-    imageAlt: 'FINANCIAL CLARITY',
-  },
-  {
-    label: 'OPPORTUNITY RADAR',
-    title: 'Lighthouse',
-    description:
-      'A guiding light that reveals where real estate opportunity is rising, so every move is made with clarity, not guesswork.',
-    linkText: 'See your portfolio',
-    sub_title: 'Find your safe zone before you find a home',
-    sub_description: "Compass analyzes your income, debts, spending, and goals to map out what's truly safe, from price range and borrowing power to which homes fit your financial reality, like a financial compass guiding you with no sales, no guesswork, just clear boundaries that protect you.",
-    linkHref: '#',
-    imageSrc: '/images/features/Lighthouse.png',
-    imageAlt: 'OPPORTUNITY RADAR',
-  },
-  {
-    label: 'CAPITAL CONNECT',
-    title: 'Harbor',
-    description:
-      'Harbor brings verified buyers, investors, and lenders into a safe harbor, where capital flows smoothly, deals close cleanly, and move with confidence.',
-    linkText: 'Enter our harbor',
-    linkHref: '#',
-    sub_title:'A safe harbor where verified capital meets real estate',
-    sub_description: "Harbor connects only financially verified buyers, investors, banks, and developers, using FinHome's data to make sure every deal begins with real financial readiness, not promises.",
-    imageSrc: '/images/features/Harbour.png',
-    imageAlt: 'CAPITAL CONNECT',
-  },
-];
 
 const ArrowIcon: React.FC = () => (
   <svg
@@ -80,12 +42,50 @@ const CornerDotSVG = () => (
 );
 
 export const StickyFeatures: React.FC = () => {
+  const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isTransitioningRef = useRef(false);
   const [nextVisualIndex, setNextVisualIndex] = useState<number | undefined>(undefined);
+
+  // Generate features from translations
+  const features: FeatureItem[] = [
+    {
+      label: t.features.compass.label,
+      title: t.features.compass.title,
+      description: t.features.compass.description,
+      linkText: t.features.compass.linkText,
+      sub_title: t.features.compass.subTitle,
+      sub_description: t.features.compass.subDescription,
+      linkHref: '#',
+      imageSrc: '/images/features/Compass.png',
+      imageAlt: t.features.compass.label,
+    },
+    {
+      label: t.features.lighthouse.label,
+      title: t.features.lighthouse.title,
+      description: t.features.lighthouse.description,
+      linkText: t.features.lighthouse.linkText,
+      sub_title: t.features.lighthouse.subTitle,
+      sub_description: t.features.lighthouse.subDescription,
+      linkHref: '#',
+      imageSrc: '/images/features/Lighthouse.png',
+      imageAlt: t.features.lighthouse.label,
+    },
+    {
+      label: t.features.harbor.label,
+      title: t.features.harbor.title,
+      description: t.features.harbor.description,
+      linkText: t.features.harbor.linkText,
+      sub_title: t.features.harbor.subTitle,
+      sub_description: t.features.harbor.subDescription,
+      linkHref: '#',
+      imageSrc: '/images/features/Harbour.png',
+      imageAlt: t.features.harbor.label,
+    },
+  ];
 
   // Định nghĩa màu gradient cho từng feature
   const fillsByIndex: FillDefinition[] = [
@@ -177,69 +177,69 @@ export const StickyFeatures: React.FC = () => {
             <div className="grid grid-cols-12 gap-5 md:gap-10 lg:gap-5">
               {/* Text Content */}
               <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  ref={(el) => (itemRefs.current[index] = el)}
-                  className={`py-12 md:py-16 transition-opacity duration-500 ${
-                    activeIndex === index ? 'opacity-100' : 'opacity-30'
-                  }`}
-                  data-index={index}
-                >
-                  <div className="space-y-6">
-                    {/* Label */}
-                    <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
-                      {feature.label}
-                    </span>
+                {features.map((feature, index) => (
+                  <div
+                    key={index}
+                    ref={(el) => (itemRefs.current[index] = el)}
+                    className={`py-12 md:py-16 transition-opacity duration-500 ${
+                      activeIndex === index ? 'opacity-100' : 'opacity-30'
+                    }`}
+                    data-index={index}
+                  >
+                    <div className="space-y-6">
+                      {/* Label */}
+                      <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
+                        {feature.label}
+                      </span>
 
-                    {/* Title */}
-                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                      {feature.title}
-                    </h3>
+                      {/* Title */}
+                      <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                        {feature.title}
+                      </h3>
 
-                    {/* Description */}
-                    <div className="text-lg text-gray-600 leading-relaxed">
-                      <p>{feature.description}</p>
-                    </div>
-
-                    {feature.sub_title && (
-                      <div className="mb-4">
-                        <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
-                          {feature.sub_title}
-                        </button>
+                      {/* Description */}
+                      <div className="text-lg text-gray-600 leading-relaxed">
+                        <p>{feature.description}</p>
                       </div>
-                    )}
 
-                    {feature.sub_description && (
-                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
-                        {feature.sub_description}
-                      </p>
-                    )}
+                      {feature.sub_title && (
+                        <div className="mb-4">
+                          <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
+                            {feature.sub_title}
+                          </button>
+                        </div>
+                      )}
 
-                    {/* Link */}
-                    <div className="pt-4">
-                      <a
-                        href={feature.linkHref}
-                        className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-                        rel="noreferrer"
-                      >
-                        <span>{feature.linkText}</span>
-                      </a>
+                      {feature.sub_description && (
+                        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
+                          {feature.sub_description}
+                        </p>
+                      )}
+
+                      {/* Link */}
+                      <div className="pt-4">
+                        <a
+                          href={feature.linkHref}
+                          className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                          rel="noreferrer"
+                        >
+                          <span>{feature.linkText}</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
 
               {/* Sticky Images Section (Right) - With DotHalftone */}
               <div className="hidden lg:block col-span-12 md:col-span-6 lg:col-span-6 md:col-start-7 lg:col-start-7">
                 <div
-                className="sticky flex items-center justify-center"
-                style={{
-                  height: '600px',
-                  top: 'calc(50vh - 300px)',
-                }}
-              >
+                  className="sticky flex items-center justify-center"
+                  style={{
+                    height: '600px',
+                    top: 'calc(50vh - 300px)',
+                  }}
+                >
                 <div className="relative w-full max-w-[500px] h-full mx-auto">
                   {/* Corner Dots - Outer Frame */}
                   <div className="absolute inset-0 pointer-events-none z-10 transition-all duration-1000">
@@ -292,24 +292,24 @@ export const StickyFeatures: React.FC = () => {
                   </div>
                 </div>
               </div>
-              </div>
+            </div>
             </div>
 
             {/* Mobile Images (Below content on mobile) */}
-            <div className="hidden space-y-8 mt-8">
-            {features.map((feature, index) => (
-              <div key={index} className="w-full">
-                <picture className="block w-full">
-                  <img
-                    alt={feature.imageAlt}
-                    className="w-full h-auto object-contain rounded-2xl"
-                    loading="lazy"
-                    src={feature.imageSrc}
-                    title={feature.title}
-                  />
-                </picture>
-              </div>
-            ))}
+            <div className="lg:hidden space-y-8 mt-8">
+              {features.map((feature, index) => (
+                <div key={index} className="w-full">
+                  <picture className="block w-full">
+                    <img
+                      alt={feature.imageAlt}
+                      className="w-full h-auto object-contain rounded-2xl"
+                      loading="lazy"
+                      src={feature.imageSrc}
+                      title={feature.title}
+                    />
+                  </picture>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -319,4 +319,3 @@ export const StickyFeatures: React.FC = () => {
 };
 
 export default StickyFeatures;
-

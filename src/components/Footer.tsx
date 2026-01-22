@@ -1,9 +1,12 @@
 import React from 'react';
 import { Facebook, Instagram, Linkedin, Send, Twitter } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
+  const { t } = useLanguage();
+  
   return (
-    <footer className="text-white w-full" style={{ backgroundColor: '#252525' }}>
+    <footer id="contact" className="text-white w-full" style={{ backgroundColor: '#252525' }}>
       <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 justify-items-center">
@@ -17,13 +20,13 @@ const Footer = () => {
                 />
               </div>
               <p className="text-gray-300 text-xs sm:text-sm">
-                Finhome - Real Estate Financing Platform
+                {t.footer.description}
               </p>
             </div>
 
             {/* Quick Links */}
             <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Email</h3>
+              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">{t.common.email}</h3>
               <p className="text-gray-300 hover:text-white text-sm sm:text-base">
                 support@finhome.group
               </p>
@@ -31,7 +34,7 @@ const Footer = () => {
 
             {/* Contact */}
             <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Contact</h3>
+              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">{t.common.contact}</h3>
               <p className="text-gray-300 hover:text-white text-sm sm:text-base">
                 0963 177 497
               </p>
@@ -41,8 +44,8 @@ const Footer = () => {
 
             {/* Contact Info */}
             <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-1">Subscribe</h3>
-              <p className="text-gray-400 mb-3 sm:mb-4 text-xs sm:text-sm">Get the latest updates and career tips</p>
+              <h3 className="text-base sm:text-lg mb-1">{t.common.subscribe}</h3>
+              <p className="text-gray-400 mb-3 sm:mb-4 text-xs sm:text-sm">{t.footer.subscribeDescription}</p>
               <form className="flex justify-center">
                 <div
                   className="flex items-center w-full max-w-xs sm:max-w-sm rounded-full border border-gray-600 px-4 sm:px-5 py-2 sm:py-2.5"
@@ -50,18 +53,18 @@ const Footer = () => {
                 >
                   <input
                     type="email"
-                    placeholder="Your email address"
+                    placeholder={t.common.yourEmailAddress}
                     className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none text-sm sm:text-base"
                   />
                   <button
                     type="submit"
                     className="ml-3 inline-flex items-center gap-3 text-gray-200 hover:text-white transition-colors min-h-[44px] px-3"
-                    aria-label="Subscribe to newsletter"
+                    aria-label={t.common.subscribe}
                   >
                     <span className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-600">
                       <Send className="w-4 h-4" />
                     </span>
-                    <span className="text-sm sm:text-base font-semibold">Sent</span>
+                    <span className="text-sm sm:text-base font-semibold">{t.common.sent}</span>
                   </button>
                 </div>
               </form>
@@ -86,18 +89,18 @@ const Footer = () => {
           <div className="mt-8 border-t border-gray-700 pt-6">
             <div className="flex flex-col gap-4 sm:gap-5 md:flex-row md:items-center md:justify-between">
               <p className="text-center md:text-left text-gray-400 text-xs sm:text-sm">
-                © {new Date().getFullYear()} Finhome. All rights reserved.
+                © {new Date().getFullYear()} Finhome. {t.common.allRightsReserved}.
               </p>
 
               <div className="flex items-center justify-center md:justify-end gap-6 text-xs sm:text-sm">
                 <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  Privacy Policy
+                  {t.common.privacyPolicy}
                 </a>
                 <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  Terms of Service
+                  {t.common.termsOfService}
                 </a>
                 <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  Cookie Policy
+                  {t.common.cookiePolicy}
                 </a>
               </div>
             </div>

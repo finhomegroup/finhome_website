@@ -8,6 +8,7 @@ import DesktopNavigation from './header/DesktopNavigation';
 import SearchBar from './header/SearchBar';
 import AuthButtons from './header/AuthButtons';
 import MobileMenu from './header/MobileMenu';
+import LanguageSwitcher from './header/LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,8 +34,8 @@ const Header = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-3 lg:space-x-4 ml-4">
-            <AuthButtons />
+          <div className="hidden md:flex items-center ml-4">
+            <LanguageSwitcher />
           </div>
 
           {/* Mobile Menu Button */}

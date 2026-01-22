@@ -2,9 +2,11 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AuthButtons = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleAuthClick = () => {
     navigate('/auth');
@@ -18,14 +20,14 @@ const AuthButtons = () => {
         size="sm"
         className="rounded-full"
       >
-        Log in
+        {t.common.logIn}
       </Button>
       <Button 
         onClick={handleAuthClick}
         size="sm"
         className="bg-brand-600 hover:bg-brand-700 rounded-full"
       >
-        Sign up
+        {t.common.signUp}
       </Button>
     </>
   );

@@ -1,56 +1,65 @@
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const HomeTrapSection: React.FC = () => {
+  const { t, language } = useLanguage();
+  
+  // Change image based on language
+  const imageSrc = language === 'vi' ? '/Asset_2.png' : '/1-01.png';
+  
   return (
-    <section className="relative py-24 bg-white overflow-hidden">
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-3">
-            When Home Becomes A Trap
+    <section id="home-trap" className="relative bg-white overflow-hidden">
+      <div className="relative max-w-6xl mx-auto px-4 pt-4 sm:px-6 lg:px-8  sm:py-16 lg:py-20">
+        {/* Header Section - Left aligned */}
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2 sm:mb-6">
+            {t.homeTrap.title}
           </h2>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            The real risk is not choosing the wrong home,
-            <br className="hidden sm:block" />
-            it's not seeing the risk at all.
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 leading-relaxed max-w-3xl">
+            {t.homeTrap.subtitle}
           </p>
         </div>
 
-        <div className="relative max-w-5xl mt-10 lg:mt-12">
-          <div className="lg:hidden max-w-md mx-auto text-left mb-8">
-            <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed mb-4">
-              In one of the world's fastest-moving property markets, buying a home means navigating a maze of prices,
-              sales agents, interest rates, legal details, and financial promises.
+        {/* Content Section */}
+        <div className="relative">
+          {/* Description text - shown on mobile above image, on desktop as overlay */}
+          <div className="lg:hidden mb-2">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+              {t.homeTrap.description1}
             </p>
-            <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed mb-6">
-              Most people are forced to guess. Some get lucky. Many quietly fall into debt traps they never intended.
-            </p>
-
-            <button className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-xs sm:text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-              You deserve clarity
-            </button>
+            {t.homeTrap.description2 && (
+              <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                {t.homeTrap.description2}
+              </p>
+            )}
+            {/* <button className="inline-flex items-center px-6 py-3 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+              {t.homeTrap.cta}
+            </button> */}
           </div>
 
-          {/* Large background illustration */}
-          <img
-            src="/1-01.png"
-            alt="Home risk map illustration"
-            className="w-full max-w-3xl h-auto mx-auto lg:ml-auto lg:mr-0"
-          />
+          {/* Image Container */}
+          <div className="relative w-full">
+            <img
+              src={imageSrc}
+              alt="Home risk map illustration"
+              className="w-full max-w-4xl h-auto mx-auto lg:ml-auto lg:mr-0"
+            />
 
-          {/* Text overlay on image */}
-          <div className="hidden lg:flex absolute inset-y-0 left-0 items-center">
-            <div className="max-w-md px-4 sm:px-6 py-4 sm:py-6 m-4 sm:m-8">
-              <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed mb-4">
-                In one of the world's fastest-moving property markets, buying a home means navigating a maze of prices,
-                sales agents, interest rates, legal details, and financial promises.
-              </p>
-              <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed mb-6">
-                Most people are forced to guess. Some get lucky. Many quietly fall into debt traps they never intended.
-              </p>
-
-              <button className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-xs sm:text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-                You deserve clarity
-              </button>
+            {/* Text overlay on image - Desktop only */}
+            <div className="hidden lg:block absolute inset-y-0 left-0 items-center">
+              <div className="max-w-lg px-6 sm:px-8 py-6 sm:py-8 m-6 sm:m-8">
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                  {t.homeTrap.description1}
+                </p>
+                {t.homeTrap.description2 && (
+                  <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                    {t.homeTrap.description2}
+                  </p>
+                )}
+                {/* <button className="inline-flex items-center px-6 py-3 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                  {t.homeTrap.cta}
+                </button> */}
+              </div>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface MobileMenuProps {
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleAuthClick = () => {
     navigate('/auth');
@@ -42,14 +44,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen }) => {
             variant="ghost" 
             size="sm"
           >
-            Log in
+            {t.common.logIn}
           </Button>
           <Button 
             onClick={handleAuthClick}
             size="sm"
             className="bg-brand-600 hover:bg-brand-700 rounded-full"
           >
-            Sign up
+            {t.common.signUp}
           </Button>
         </div>
       </div>
