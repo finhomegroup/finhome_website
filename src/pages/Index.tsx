@@ -16,30 +16,35 @@ import StickyFeatures from '@/components/StickyFeatures';
 import DataDrivenInvesting from '@/components/DataDrivenInvesting';
 import InteractiveSlider from '@/components/InteractiveSlider';
 import Footer from '@/components/Footer';
+import { useSEO } from '@/hooks/use-seo';
 
 const Index = () => {
+  useSEO();
+  
   return (
     <div className="min-h-screen bg-white">
       <HeroSectionWrapper />
-      <HomeTrapSection />
-      <FinhomeEcosystem />
-      <StickyFeatures />
-     <DataDrivenInvesting/>
-      <MentorFeature />
-      
-      <PortfolioPerformance />
+      <main id="main-content">
+        <HomeTrapSection />
+        <FinhomeEcosystem />
+        <StickyFeatures />
+        <DataDrivenInvesting/>
+        <MentorFeature />
+        
+        <PortfolioPerformance />
 
-      <RealEstateCaseStudies />
-    
-      <InteractiveSlider />
-      {/* <TestimonialSection /> */}
-      {/* <DarkSection /> */}
+        <RealEstateCaseStudies />
       
-      
-      {/* <Benefits /> */}
-      {/* <CampaignsGrid /> */}
-      <ThrivingStartups />
-      <Partners />
+        <InteractiveSlider />
+        {/* <TestimonialSection /> */}
+        {/* <DarkSection /> */}
+        
+        
+        {/* <Benefits /> */}
+        {/* <CampaignsGrid /> */}
+        <ThrivingStartups />
+        <Partners />
+      </main>
       <Footer />
     </div>
   );

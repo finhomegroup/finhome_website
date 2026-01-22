@@ -261,4 +261,55 @@ All colors MUST be HSL.
     overflow: hidden;
   }
   
+  /* Accessibility: Skip to content link */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  .sr-only:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    z-index: 9999;
+  }
+  
+  /* Ensure minimum touch target size (44x44px) */
+  button, a, input[type="button"], input[type="submit"], [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Exception for inline links and small icons */
+  a:not([class*="button"]):not([class*="btn"]),
+  button:has(svg:only-child) {
+    min-height: auto;
+    min-width: auto;
+  }
+  
+  /* Keyboard navigation: Focus visible styles */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  
+  /* Skip link focus styles */
+  a:focus-visible {
+    outline: 3px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+  
 }

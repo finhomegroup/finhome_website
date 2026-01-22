@@ -6,18 +6,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-// Mixed approach - lazy load some heavy components, direct import others
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
+// Route-based code splitting for better performance
+const Index = React.lazy(() => import("./pages/Index"));
+const Auth = React.lazy(() => import("./pages/Auth"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const MentorsLecturers = React.lazy(() => import("./pages/MentorsLecturers"));
 
-// Lazy load heavier components to avoid circular deps
 // Note: Uncomment these when the corresponding page files are created
 // const CampaignDetail = React.lazy(() => import("./pages/CampaignDetail"));
 // const MentorProfile = React.lazy(() => import("./pages/MentorProfile"));
 // const LecturerProfile = React.lazy(() => import("./pages/LecturerProfile"));
 // const TrackingStartups = React.lazy(() => import("./pages/TrackingStartups"));
-const MentorsLecturers = React.lazy(() => import("./pages/MentorsLecturers"));
 // const CourseCurriculum = React.lazy(() => import("./pages/CourseCurriculum"));
 
 

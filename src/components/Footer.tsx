@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="text-center">
               <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Email</h3>
               <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-                support@finhome.group.vn
+                support@finhome.group
               </p>
             </div>
 
@@ -33,7 +33,7 @@ const Footer = () => {
             <div className="text-center">
               <h3 className="text-base sm:text-lg mb-2 sm:mb-4">Contact</h3>
               <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-                028 7109 9999
+                0963 177 497
               </p>
             </div>
 
@@ -55,8 +55,8 @@ const Footer = () => {
                   />
                   <button
                     type="submit"
-                    className="ml-3 inline-flex items-center gap-3 text-gray-200 hover:text-white transition-colors"
-                    aria-label="Subscribe"
+                    className="ml-3 inline-flex items-center gap-3 text-gray-200 hover:text-white transition-colors min-h-[44px] px-3"
+                    aria-label="Subscribe to newsletter"
                   >
                     <span className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-600">
                       <Send className="w-4 h-4" />
@@ -69,16 +69,16 @@ const Footer = () => {
           </div>
 
           <div className="mt-8 flex items-center justify-center md:justify-start gap-4">
-            <a href="#" className="text-gray-300 hover:text-white transition-colors" aria-label="X">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="X (Twitter)">
               <Twitter className="w-5 h-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors" aria-label="LinkedIn">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="LinkedIn">
               <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors" aria-label="Facebook">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Facebook">
               <Facebook className="w-5 h-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors" aria-label="Instagram">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Instagram">
               <Instagram className="w-5 h-5" />
             </a>
           </div>
@@ -86,7 +86,7 @@ const Footer = () => {
           <div className="mt-8 border-t border-gray-700 pt-6">
             <div className="flex flex-col gap-4 sm:gap-5 md:flex-row md:items-center md:justify-between">
               <p className="text-center md:text-left text-gray-400 text-xs sm:text-sm">
-                © {new Date().getFullYear()} Finhome – powered by VIB. All rights reserved.
+                © {new Date().getFullYear()} Finhome. All rights reserved.
               </p>
 
               <div className="flex items-center justify-center md:justify-end gap-6 text-xs sm:text-sm">

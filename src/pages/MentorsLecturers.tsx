@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { useSEO } from '@/hooks/use-seo';
 
 interface Mentor {
   id: number;
@@ -29,6 +30,7 @@ interface Mentor {
 }
 
 const MentorsLecturers = () => {
+  useSEO();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<'all' | 'mentor' | 'lecturer'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -632,7 +634,7 @@ const MentorsLecturers = () => {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 };
 
