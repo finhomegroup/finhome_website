@@ -85,16 +85,17 @@ export const en = {
   // Data Driven Investing
   dataDriven: {
     title: 'Start with data',
-    subtitle: 'Data makes every buying and investment decision',
+    subtitle: 'Data makes the foundation',
+    subtitleLine2: 'for every buying and investment decision',
     description: 'FinHome integrates real estate and market data into a financial platform. With REFI, every buying or investment decision is viewed in a long-term context, helping you escape the maze of debt, price bubbles, timing pressure, and potential legal risks.',
     cta: 'Determine risk appetite',
   },
 
   // Interactive Slider
   slider: {
-    title: 'Invest your way',
-    subtitle: 'Attractive compound interest rates for townhouses and land plots',
-    cta: 'Request Consultation',
+    title: 'Financial Harbor',
+    subtitle: 'A safe space for transparent transactions and efficiently invested capital flows',
+    cta: 'Dock safely at the harbor',
     year: 'Year',
     months: 'Months',
     interestRate: 'Interest Rate',
@@ -102,9 +103,71 @@ export const en = {
     viewDetails: 'View Details',
   },
 
+  // Portfolio Performance
+  portfolio: {
+    title: 'From Data to Impact',
+    subtitle: 'Where real-time insight becomes real-world financial confidence',
+    metrics: {
+      homesAnalyzed: 'Homes Analyzed',
+      riskSignals: 'Risk Signals Processed',
+      profitableHomes: 'Profitable Homes',
+      activePortfolios: 'Active Portfolios',
+      safeDecisions: 'Safe-Zone Decisions',
+      verifiedMatches: 'Verified Capital Matches',
+    },
+  },
+
+  // Case Studies
+  caseStudies: {
+    refiScore: 'REFI Score Evaluation',
+    journey: {
+      title: 'Real Estate Journey',
+      description: 'Real estate opportunities waiting to be connected with your financial picture',
+      cta: 'Start Journey',
+    },
+  },
+
+  // Mentor Feature
+  mentorFeature: {
+    title: 'Your Path in Real Estate',
+    description: 'Real estate opportunities waiting to be matched with your financial path',
+    cta: 'Explore your path',
+  },
+
+  // Testimonials
+  testimonials: {
+    title: 'User Experience',
+    subtitle: 'Trusted by first-time homebuyers and professional investors',
+  },
+
+  // Partners
+  partners: {
+    title: 'Partners of FinHome',
+    description: 'FinHome collaborates with partners to optimize processes, conditions, and financial experiences for buyers and investors',
+  },
+
+  // Join Experience
+  joinExperience: {
+    title: 'Join the Experience',
+    description: 'FinHome is in the preparation phase for launch. Register to be among the first to experience breakthrough features.',
+    emailPlaceholder: 'Enter your email',
+    button: 'Sign Up',
+    signupCount: 'Over 1,000 people have registered to experience',
+  },
+
   // Footer
   footer: {
-    description: 'Finhome - Real Estate Financing Platform',
-    subscribeDescription: 'Get the latest updates and career tips',
+    contact: 'Contact',
+    address: '51 Nguyen Thi Minh Khai, District 1, Ho Chi Minh City',
+    email: 'support@finhome.group',
+    phone: 'Real Estate Consultant: 0963 177 497',
+    features: 'Features',
+    featureCompass: 'Financial Compass',
+    featureLighthouse: 'Financial Lighthouse',
+    featureHarbor: 'Financial Harbor',
+    aboutUs: 'About Us',
+    privacyPolicy: 'Privacy Policy',
+    termsOfUse: 'Terms of Use',
+    allRightsReserved: 'All rights reserved',
   },
 };

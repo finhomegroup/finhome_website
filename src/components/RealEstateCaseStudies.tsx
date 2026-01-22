@@ -3,6 +3,7 @@ import { SceneConfig } from './real-estate-cards/Scene';
 import { AnimatedScene, SceneLayout } from './real-estate-cards/AnimatedScene';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DotHalftone from './DotHalftone';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Project {
   name: string;
@@ -12,10 +13,15 @@ interface CaseStudyData {
   slug: string;
   logo: string;
   title: string;
+  titleVi?: string;
   description: string;
   projects: Project[];
   quote: string;
+  quoteVi?: string;
   author: string;
+  authorVi?: string;
+  refiScore?: number;
+  projectDetail?: string;
   activeBgColor: string;
   activeIconColor: string;
   dotColor: string;
@@ -26,11 +32,16 @@ const caseStudies: CaseStudyData[] = [
     slug: 'vinhomes',
     logo: 'Vinhomes',
     title: 'Vinhomes uses FinHome to manage premium real estate portfolio',
+    titleVi: 'FinHome phân tích các dự án Vinhomes bằng chuẩn dữ liệu tài chính',
     description:
       'Vinhomes integrates FinHome platform to provide smart real estate investment solutions for customers. With FinHome, Vinhomes maintains full control of customer experience for apartment, villa, and shophouse projects.',
     projects: [{ name: 'Premium Apartments' }, { name: 'Villas' }, { name: 'Shophouses' }],
     quote: 'FinHome helps us completely digitize the real estate investment process.',
+    quoteVi: 'Dưới góc nhìn REFI, các dự án Vinhomes được chúng tôi đánh giá không chỉ bằng giá bán, mà bằng khả năng chi trả, rủi ro và hiệu quả tài chính dài hạn, hỗ trợ người dùng đưa ra quyết định phù hợp và bền vững.',
     author: 'John Nguyen, CEO, Vinhomes',
+    authorVi: 'Thai Vin - Founder & REFI Architect, FinHome',
+    refiScore: 8.9,
+    projectDetail: 'Premium Apartments · Vinhomes Grand Park',
     activeBgColor: '#3CB550',
     activeIconColor: '#ffffff',
     dotColor: '#5CC76B',
@@ -82,6 +93,7 @@ const caseStudies: CaseStudyData[] = [
 ];
 
 export const RealEstateCaseStudies: React.FC = () => {
+  const { t, language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFade, setShowFade] = useState(false);
   const [isAtEnd, setIsAtEnd] = useState(false);
@@ -102,6 +114,11 @@ export const RealEstateCaseStudies: React.FC = () => {
   const csCurrent = caseStudies[displayIndex];
   const csColor = caseStudies[colorIndex];
   const csPrev = prevIndex !== null ? caseStudies[prevIndex] : null;
+
+  // Helper functions to get localized text
+  const getTitle = (cs: CaseStudyData) => (language === 'vi' && cs.titleVi ? cs.titleVi : cs.title);
+  const getQuote = (cs: CaseStudyData) => (language === 'vi' && cs.quoteVi ? cs.quoteVi : cs.quote);
+  const getAuthor = (cs: CaseStudyData) => (language === 'vi' && cs.authorVi ? cs.authorVi : cs.author);
 
   const currentImageSrc = `/images/case-studies/${caseStudies[displayIndex].slug}.jpg`;
   const nextImageSrc =
@@ -320,13 +337,13 @@ export const RealEstateCaseStudies: React.FC = () => {
 
   return (
     <section className="py-0 md:py-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[72px] md:pt-36">
-        <div className="overflow-hidden z-[6] rounded-none md:rounded-xl md:bg-[#fbfbfc] md:shadow-[0_0_20px_0_#fff_inset,0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset] p-6 md:p-0 min-h-[720px] flex flex-col transition-[border-radius] duration-500">
+      <div className="max-w-7xl mx-auto  sm:px-6 lg:px-8  md:pt-36">
+        <div className="overflow-hidden z-[6] rounded-none md:rounded-xl md:bg-[#fbfbfc] md:shadow-[0_0_20px_0_#fff_inset,0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset] p-4 md:p-0 min-h-[720px] flex flex-col transition-[border-radius] duration-500">
           {/* Tabs */}
           <div className="relative flex-shrink-0">
             <div
               ref={tabsRef}
-              className="relative flex w-full gap-4 p-0 md:px-6 pb-6 justify-center overflow-x-auto scrollbar-none z-[1]"
+              className="relative flex w-full gap-2 md:gap-4 p-0 md:px-6  justify-center overflow-x-auto scrollbar-none z-[1]"
               style={{
                 mask: showFade && !isAtEnd ? 'linear-gradient(to right, black calc(100% - 24px), transparent)' : 'none',
                 WebkitMask: showFade && !isAtEnd ? 'linear-gradient(to right, black calc(100% - 24px), transparent)' : 'none',
@@ -335,11 +352,10 @@ export const RealEstateCaseStudies: React.FC = () => {
               {caseStudies.map((c, i) => (
                 <button
                   key={i}
-                  className={`border-none flex flex-shrink-0 flex-grow-0 md:flex-grow items-center justify-center rounded-full px-4 sm:px-6 md:px-8 py-2 md:py-3 text-sm sm:text-base md:text-lg text-gray-800 cursor-pointer transition-all duration-200 ${
-                    i === activeIndex
+                  className={`border-none flex flex-shrink-0 flex-grow-0 md:flex-grow items-center justify-center rounded-full px-2.5 sm:px-4 md:px-8 py-1.5 md:py-3 text-xs sm:text-sm md:text-lg text-gray-800 cursor-pointer transition-all duration-200 ${i === activeIndex
                       ? 'shadow-[0_0_0_1px_rgba(0,0,0,0.05)_inset,0_-1px_0_rgba(0,0,0,0.1)_inset,0px_-48px_24px_-24px_rgba(0,0,0,0.02)_inset,0px_4px_8px_0px_rgba(0,0,0,0.05),0px_2px_4px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(0,0,0,0.05)]'
                       : 'hover:bg-gray-800/5'
-                  }`}
+                    }`}
                   style={{
                     backgroundColor: i === activeIndex ? c.activeBgColor : 'transparent',
                     color: i === activeIndex ? c.activeIconColor : 'inherit',
@@ -348,7 +364,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                   aria-label={c.title}
                   title={c.title}
                 >
-                  <span className="font-semibold">{c.logo}</span>
+                  <span className="font-semibold whitespace-nowrap">{c.logo}</span>
                 </button>
               ))}
             </div>
@@ -379,21 +395,174 @@ export const RealEstateCaseStudies: React.FC = () => {
             <div className="grid grid-cols-12 gap-3 sm:gap-5 md:gap-10 lg:gap-5 h-full flex-1">
               {/* Text Content */}
               <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2 flex flex-col min-h-0 flex-1 relative">
-                {/* Previous Content (Exiting) */}
-                {prevIndex !== null && (
+                {/* Mobile Layout */}
+                <div className="md:hidden space-y-6 py-6 px-4">
+                  {/* DotHalftone and AnimatedScene for Mobile */}
+                  <div className="relative w-full h-[300px] rounded-xl overflow-hidden">
+                    {/* Mobile-only simplified background */}
+                    <div
+                      className="absolute inset-0 z-0 overflow-hidden rounded-xl"
+                      style={{
+                        background: `radial-gradient(circle at center, ${csColor.dotColor}15 0%, transparent 70%)`,
+                      }}
+                    />
+                    {/* DotHalftone Background for Mobile */}
+                    <div
+                      className="absolute z-0 items-center justify-center inset-0 overflow-hidden"
+                      style={{
+                        mask: 'radial-gradient(circle, black 30%, transparent 70%)',
+                        WebkitMask: 'radial-gradient(circle, black 30%, transparent 70%)',
+                      }}
+                    >
+                      {/* Gradient Background Layer */}
+                      <div
+                        className="absolute inset-0 transition-colors duration-500"
+                        style={{
+                          background: `radial-gradient(circle at center, ${csColor.dotColor}40 0%, ${csColor.dotColor}20 30%, ${csColor.dotColor}10 50%, transparent 70%)`,
+                        }}
+                      />
+                      {/* Dot Pattern Overlay */}
+                      <div
+                        className="absolute inset-0 opacity-40 transition-colors duration-500"
+                        style={{
+                          backgroundColor: csColor.dotColor,
+                          maskImage: 'radial-gradient(circle at 1px 1px, #000 1px, transparent 1px)',
+                          maskSize: '8px 8px',
+                          maskPosition: 'center',
+                          maskRepeat: 'repeat',
+                          WebkitMaskImage: 'radial-gradient(circle at 1px 1px, #000 1px, transparent 1px)',
+                          WebkitMaskSize: '8px 8px',
+                          WebkitMaskPosition: 'center',
+                          WebkitMaskRepeat: 'repeat',
+                        }}
+                      />
+                      <DotHalftone
+                        src={currentImageSrc}
+                        nextSrc={nextVisualIndex !== undefined ? nextImageSrc : undefined}
+                        rows={100}
+                        columns={100}
+                        cellSize={8}
+                        transitionDuration={750}
+                        rippleEffect
+                        rippleIntensity={0.12}
+                        rippleFrequency={12.0}
+                        objectFit="contain"
+                        fill={currentFill}
+                        nextFill={nextFill}
+                        fillTransitionDuration={500}
+                        fillTrigger={fillTick}
+                        style={{ pointerEvents: 'none' }}
+                        className="logo-dots"
+                        onTransitionComplete={handleHalftoneTransitionComplete}
+                      />
+                    </div>
+                    {/* Cards Container */}
+                    <div className="relative z-10 h-full flex flex-col items-center justify-center">
+                      <div className="scale-[0.7] sm:scale-[0.85] origin-center">
+                        {prevIndex !== null && isExiting && csPrev ? (
+                          <AnimatedScene
+                            key={`scene-exit-${prevIndex}-${activeIndex}`}
+                            {...getSceneDefinition(prevIndex, csPrev, csPrev.activeBgColor)}
+                            mode="exit"
+                            play
+                          />
+                        ) : (
+                          <AnimatedScene
+                            key={`scene-enter-${activeIndex}`}
+                            {...getSceneDefinition(activeIndex, caseStudies[activeIndex], csActive.activeBgColor)}
+                            mode="enter"
+                            play
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title - Mobile */}
+                  <h3 className="text-2xl font-bold text-gray-900 leading-tight">
+                    {getTitle(csActive)}
+                  </h3>
+
+                  {/* Project Buttons - Mobile */}
+                  {csActive.projects && (
+                    <div className="flex flex-wrap gap-3">
+                      {csActive.projects.map((project, idx) => (
+                        <button
+                          key={idx}
+                          className={`px-4 py-2 border border-gray-300 rounded-full text-sm font-medium transition-colors ${idx === 0
+                              ? 'bg-gray-100 text-gray-700'
+                              : 'bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                          {project.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Quote - Mobile */}
+                  <div className="relative">
+                    <div className="text-6xl font-bold text-gray-300 leading-none mb-2">"</div>
+                    <p className="text-base text-gray-600 leading-relaxed -mt-4 pl-2">
+                      {getQuote(csActive)}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-4">
+                      {getAuthor(csActive)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden md:block">
+                  {/* Previous Content (Exiting) */}
+                  {prevIndex !== null && csPrev && (
+                    <div
+                      className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isExitingContent ? 'opacity-0 -translate-x-[100px]' : 'opacity-100 translate-x-0'
+                        }`}
+                    >
+                      <div className="flex flex-col gap-12 flex-1 min-h-0 h-full">
+                        <div className="flex-auto">
+                          <h3 className="text-[28px] font-medium text-gray-800 tracking-tight max-w-[425px]">
+                            {getTitle(csPrev)}
+                          </h3>
+                          {csPrev.projects && (
+                            <div className="flex flex-wrap gap-2 mt-5">
+                              {csPrev.projects.map((project, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
+                                >
+                                  {project.name}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <blockquote className="before:content-['\201C'] before:block before:text-5xl before:font-bold before:leading-[48px] before:text-gray-800/30 before:w-6 before:h-[18px] before:mb-6">
+                            <p className="text-xl leading-[26px] p-0">{getQuote(csPrev)}</p>
+                            <div className="flex gap-2 items-center mt-6">
+                              <p className="text-base text-gray-800 opacity-60">{getAuthor(csPrev)}</p>
+                            </div>
+                          </blockquote>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Current Content (Entering) */}
                   <div
-                    className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-                      isExitingContent ? 'opacity-0 -translate-x-[100px]' : 'opacity-100 translate-x-0'
-                    }`}
+                    className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isAnimating ? 'opacity-0 translate-x-[100px]' : 'opacity-100 translate-x-0'
+                      }`}
                   >
                     <div className="flex flex-col gap-12 flex-1 min-h-0 h-full">
                       <div className="flex-auto">
                         <h3 className="text-[28px] font-medium text-gray-800 tracking-tight max-w-[425px]">
-                          {caseStudies[prevIndex].title}
+                          {getTitle(csActive)}
                         </h3>
-                        {caseStudies[prevIndex].projects && (
+                        {csActive.projects && (
                           <div className="flex flex-wrap gap-2 mt-5">
-                            {caseStudies[prevIndex].projects.map((project, idx) => (
+                            {csActive.projects.map((project, idx) => (
                               <div
                                 key={idx}
                                 className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
@@ -406,57 +575,22 @@ export const RealEstateCaseStudies: React.FC = () => {
                       </div>
                       <div>
                         <blockquote className="before:content-['\201C'] before:block before:text-5xl before:font-bold before:leading-[48px] before:text-gray-800/30 before:w-6 before:h-[18px] before:mb-6">
-                          <p className="text-xl leading-[26px] p-0">{caseStudies[prevIndex].quote}</p>
+                          <p className="text-xl leading-[26px] p-0">{getQuote(csActive)}</p>
                           <div className="flex gap-2 items-center mt-6">
-                            <p className="text-base text-gray-800 opacity-60">{caseStudies[prevIndex].author}</p>
+                            <p className="text-base text-gray-800 opacity-60">{getAuthor(csActive)}</p>
                           </div>
                         </blockquote>
                       </div>
                     </div>
                   </div>
-                )}
-
-                {/* Current Content (Entering) */}
-                <div
-                  className={`relative md:absolute md:inset-0 py-10 sm:py-14 md:py-[72px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-                    isAnimating ? 'opacity-0 translate-x-[100px]' : 'opacity-100 translate-x-0'
-                  }`}
-                >
-                  <div className="flex flex-col gap-12 flex-1 min-h-0 h-full">
-                    <div className="flex-auto">
-                      <h3 className="text-[28px] font-medium text-gray-800 tracking-tight max-w-[425px]">
-                        {caseStudies[activeIndex].title}
-                      </h3>
-                      {caseStudies[activeIndex].projects && (
-                        <div className="flex flex-wrap gap-2 mt-5">
-                          {caseStudies[activeIndex].projects.map((project, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
-                            >
-                              {project.name}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <blockquote className="before:content-['\201C'] before:block before:text-5xl before:font-bold before:leading-[48px] before:text-gray-800/30 before:w-6 before:h-[18px] before:mb-6">
-                        <p className="text-xl leading-[26px] p-0">{caseStudies[activeIndex].quote}</p>
-                        <div className="flex gap-2 items-center mt-6">
-                          <p className="text-base text-gray-800 opacity-60">{caseStudies[activeIndex].author}</p>
-                        </div>
-                      </blockquote>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              {/* Visual Content */}
-              <div className="col-span-12 md:col-span-6 lg:col-span-4 md:col-start-7 lg:col-start-8 relative mt-0 md:mt-0">
+              {/* Visual Content - Desktop only */}
+              <div className="hidden md:block col-span-12 md:col-span-6 lg:col-span-4 md:col-start-7 lg:col-start-8 relative mt-0 md:mt-0">
                 {/* DotHalftone Background - Hidden on mobile, visible on tablet+ */}
                 <div
-                  className="hidden md:flex absolute z-0 items-center justify-center md:inset-[-96px_0_-24px_0] md:pt-24 md:w-[1200px] md:h-auto md:-ml-[50%] lg:-ml-[100%] overflow-hidden"
+                  className="absolute z-0 items-center justify-center md:inset-[-96px_0_-24px_0] md:pt-24 md:w-[1200px] md:h-auto md:-ml-[50%] lg:-ml-[100%] overflow-hidden"
                   style={{
                     mask: 'radial-gradient(circle, black 30%, transparent 70%)',
                     WebkitMask: 'radial-gradient(circle, black 30%, transparent 70%)',
@@ -507,32 +641,24 @@ export const RealEstateCaseStudies: React.FC = () => {
                   />
                 </div>
 
-                {/* Mobile-only simplified background */}
-                <div
-                  className="md:hidden absolute inset-0 z-0 overflow-hidden rounded-xl"
-                  style={{
-                    background: `radial-gradient(circle at center, ${csColor.dotColor}15 0%, transparent 70%)`,
-                  }}
-                />
-
                 {/* Cards Container */}
-                <div className="relative z-10 h-auto md:h-full flex flex-col items-center justify-center py-4 md:py-0">
-                  <div className="scale-[0.7] sm:scale-[0.85] md:scale-100 origin-center md:origin-top">
-                  {prevIndex !== null && isExiting && csPrev ? (
-                    <AnimatedScene
-                      key={`scene-exit-${prevIndex}-${activeIndex}`}
-                      {...getSceneDefinition(prevIndex, csPrev, csPrev.activeBgColor)}
-                      mode="exit"
-                      play
-                    />
-                  ) : (
-                    <AnimatedScene
-                      key={`scene-enter-${activeIndex}`}
-                      {...getSceneDefinition(activeIndex, caseStudies[activeIndex], csActive.activeBgColor)}
-                      mode="enter"
-                      play
-                    />
-                  )}
+                <div className="relative z-10 h-full flex flex-col items-center justify-center">
+                  <div className="scale-100 origin-top">
+                    {prevIndex !== null && isExiting && csPrev ? (
+                      <AnimatedScene
+                        key={`scene-exit-${prevIndex}-${activeIndex}`}
+                        {...getSceneDefinition(prevIndex, csPrev, csPrev.activeBgColor)}
+                        mode="exit"
+                        play
+                      />
+                    ) : (
+                      <AnimatedScene
+                        key={`scene-enter-${activeIndex}`}
+                        {...getSceneDefinition(activeIndex, caseStudies[activeIndex], csActive.activeBgColor)}
+                        mode="enter"
+                        play
+                      />
+                    )}
                   </div>
                 </div>
               </div>

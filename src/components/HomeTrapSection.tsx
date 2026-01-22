@@ -8,7 +8,7 @@ const HomeTrapSection: React.FC = () => {
   const imageSrc = language === 'vi' ? '/Asset_2.png' : '/1-01.png';
   
   return (
-    <section id="home-trap" className="relative bg-white overflow-hidden">
+    <section id="home-trap" className="relative py-4 bg-white overflow-hidden">
       <div className="relative max-w-6xl mx-auto px-4 pt-4 sm:px-6 lg:px-8  sm:py-16 lg:py-20">
         {/* Header Section - Left aligned */}
         <div className="text-center mb-8 sm:mb-10 lg:mb-12">

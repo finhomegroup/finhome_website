@@ -1,6 +1,9 @@
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Partners = () => {
+  const { t } = useLanguage();
+  
   // Generate 32 icons
   const icons = Array.from({ length: 32 }, (_, i) => ({
     id: i + 1,
@@ -55,17 +58,11 @@ const Partners = () => {
       <div className="w-full relative z-10">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
-            Our Partners
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+            {t.partners.title}
           </h2>
-          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
-          Join 500,000+ customers around the world<br />
-          who trust Finhome
-          </div>
-          <div className="mt-4 flex justify-center">
-            <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-8 py-2 rounded-full text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-              Join now
-            </button>
+          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-6">
+            {t.partners.description}
           </div>
         </div>
 

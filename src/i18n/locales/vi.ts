@@ -85,16 +85,17 @@ export const vi = {
   // Data Driven Investing
   dataDriven: {
     title: 'Bắt đầu bằng dữ liệu',
-    subtitle: 'Dữ liệu làm nên cho mọi quyết định mua và đầu tư',
+    subtitle: 'Dữ liệu làm nền',
+    subtitleLine2: 'cho mọi quyết định mua và đầu tư',
     description: 'FinHome đưa dữ liệu bất động sản và thị trường vào một nền tảng tài chính. Với REFI, mỗi quyết định mua hay đầu tư được nhìn trong bối cảnh dài hạn, giúp bạn thoát khỏi mê cung của nợ vay, bẫy ảo giá, áp lực thời điểm mua và những rủi ro pháp lý tiềm ẩn.',
     cta: 'Xác định khẩu vị rủi ro',
   },
 
   // Interactive Slider
   slider: {
-    title: 'Đầu tư theo cách của bạn',
-    subtitle: 'Lãi suất kép hấp dẫn cho nhà phố và đất nền',
-    cta: 'Yêu cầu tư vấn',
+    title: 'Bến cảng tài chính',
+    subtitle: 'Không gian an toàn cho giao dịch minh bạch và dòng vốn được đầu tư hiệu quả',
+    cta: 'Cập bến cảng an toàn',
     year: 'Năm',
     months: 'Tháng',
     interestRate: 'Lãi suất',
@@ -102,9 +103,71 @@ export const vi = {
     viewDetails: 'Xem chi tiết',
   },
 
+  // Portfolio Performance
+  portfolio: {
+    title: 'Từ dữ liệu đến tác động',
+    subtitle: 'Dữ liệu được đo lường bằng tác động thực tế tại FinHome',
+    metrics: {
+      homesAnalyzed: 'BĐS được phân tích',
+      riskSignals: 'Tín hiệu rủi ro xử lý',
+      profitableHomes: 'BĐS đạt hiệu quả đầu tư',
+      activePortfolios: 'Danh mục BĐS hoạt động',
+      safeDecisions: 'Quyết định an toàn',
+      verifiedMatches: 'Kết nối đủ tin thành công',
+    },
+  },
+
+  // Case Studies
+  caseStudies: {
+    refiScore: 'Đánh giá điểm REFI',
+    journey: {
+      title: 'Hành trình bất động sản',
+      description: 'Những cơ hội BĐS đang chờ được kết nối với bức tranh tài chính của bạn',
+      cta: 'Bắt đầu hành trình',
+    },
+  },
+
+  // Mentor Feature
+  mentorFeature: {
+    title: 'Hành trình bất động sản',
+    description: 'Những cơ hội BĐS đang chờ được kết nối với bức tranh tài chính của bạn',
+    cta: 'Bắt đầu hành trình',
+  },
+
+  // Testimonials
+  testimonials: {
+    title: 'Trải nghiệm từ người dùng',
+    subtitle: 'Được tin cậy bởi người mua nhà lần đầu và nhà đầu tư chuyên nghiệp',
+  },
+
+  // Partners
+  partners: {
+    title: 'Đối tác của FinHome',
+    description: 'FinHome phối hợp cùng các đối tác để tối ưu quy trình, điều kiện và trải nghiệm tài chính cho người mua và nhà đầu tư',
+  },
+
+  // Join Experience
+  joinExperience: {
+    title: 'Tham gia trải nghiệm',
+    description: 'FinHome đang trong giai đoạn chuẩn bị ra mắt. Hãy đăng ký để trở thành những người đầu tiên trải nghiệm tính năng đột phá.',
+    emailPlaceholder: 'Nhập email của bạn',
+    button: 'Đăng ký',
+    signupCount: 'Đã có hơn 1.000 người đăng ký trải nghiệm',
+  },
+
   // Footer
   footer: {
-    description: 'Finhome - Nền tảng Tài chính Bất động sản',
-    subscribeDescription: 'Nhận cập nhật mới nhất và mẹo nghề nghiệp',
+    contact: 'Liên hệ',
+    address: '51 Nguyễn Thị Minh Khai, Quận 1, TP HCM',
+    email: 'support@finhome.group',
+    phone: 'Chuyên gia tư vấn BĐS: 0963 177 497',
+    features: 'Tính năng',
+    featureCompass: 'La bàn tài chính',
+    featureLighthouse: 'Hải đăng tài chính',
+    featureHarbor: 'Bến cảng tài chính',
+    aboutUs: 'Về chúng tôi',
+    privacyPolicy: 'Chính sách bảo mật',
+    termsOfUse: 'Điều khoản sử dụng',
+    allRightsReserved: 'Mọi quyền được bảo lưu',
   },
 };

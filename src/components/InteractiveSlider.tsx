@@ -60,14 +60,14 @@ export const InteractiveSlider: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="mb-8 md:mb-12 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900" id="interactive-heading">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900" id="interactive-heading">
             {t.slider.title}
           </h2>
           <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
             {t.slider.subtitle}
           </div>
-          <div className="mt-4">
-            <button className="bg-[#3CB550] hover:bg-[#2d9a42] text-white px-4 py-1 rounded-full text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+          <div className="mt-6 sm:mt-8">
+            <button className="bg-gradient-to-r from-[#3CB550] to-[#2d9a42] hover:from-[#2d9a42] hover:to-[#3CB550] text-white font-bold px-8 py-3 rounded-full text-base sm:text-lg transition-all duration-300 shadow-md hover:shadow-lg">
               {t.slider.cta}
             </button>
           </div>

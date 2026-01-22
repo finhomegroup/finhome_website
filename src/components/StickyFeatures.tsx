@@ -169,7 +169,7 @@ export const StickyFeatures: React.FC = () => {
   }, [activeIndex, prevIndex, nextVisualIndex]);
 
   return (
-    <section className="relative py-12 md:py-24 bg-gray-50">
+    <section className="relative py-8 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
         <div className="relative">
           <div className="px-0 md:px-6">
@@ -177,69 +177,69 @@ export const StickyFeatures: React.FC = () => {
             <div className="grid grid-cols-12 gap-5 md:gap-10 lg:gap-5">
               {/* Text Content */}
               <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2">
-                {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    ref={(el) => (itemRefs.current[index] = el)}
-                    className={`py-12 md:py-16 transition-opacity duration-500 ${
-                      activeIndex === index ? 'opacity-100' : 'opacity-30'
-                    }`}
-                    data-index={index}
-                  >
-                    <div className="space-y-6">
-                      {/* Label */}
-                      <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
-                        {feature.label}
-                      </span>
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  ref={(el) => (itemRefs.current[index] = el)}
+                  className={`py-8 md:py-16 transition-opacity duration-500 ${
+                    activeIndex === index ? 'opacity-100' : 'opacity-30'
+                  }`}
+                  data-index={index}
+                >
+                  <div >
+                    {/* Label */}
+                    <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
+                      {feature.label}
+                    </span>
 
-                      {/* Title */}
-                      <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                        {feature.title}
-                      </h3>
+                    {/* Title */}
+                    <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-2 leading-tight">
+                      {feature.title}
+                    </h3>
 
-                      {/* Description */}
-                      <div className="text-lg text-gray-600 leading-relaxed">
-                        <p>{feature.description}</p>
+                    {/* Description */}
+                    <div className="text-base text-gray-700 leading-relaxed">
+                      <p>{feature.description}</p>
+                    </div>
+
+                    {feature.sub_title && (
+                      <div className="mb-4">
+                        <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
+                          {feature.sub_title}
+                        </button>
                       </div>
+                    )}
 
-                      {feature.sub_title && (
-                        <div className="mb-4">
-                          <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
-                            {feature.sub_title}
-                          </button>
-                        </div>
-                      )}
+                    {feature.sub_description && (
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
+                        {feature.sub_description}
+                      </p>
+                    )}
 
-                      {feature.sub_description && (
-                        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
-                          {feature.sub_description}
-                        </p>
-                      )}
-
-                      {/* Link */}
-                      <div className="pt-4">
-                        <a
-                          href={feature.linkHref}
-                          className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-                          rel="noreferrer"
-                        >
-                          <span>{feature.linkText}</span>
-                        </a>
-                      </div>
+                    {/* Link */}
+                    <div className="pt-4">
+                      <a
+                        href={feature.linkHref}
+                        className="inline-flex items-center px-5 py-2 rounded-full bg-[#3CB550] hover:bg-[#2d9a42] text-white text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                        rel="noreferrer"
+                      >
+                        <span>{feature.linkText}</span>
+                      </a>
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
               </div>
 
               {/* Sticky Images Section (Right) - With DotHalftone */}
               <div className="hidden lg:block col-span-12 md:col-span-6 lg:col-span-6 md:col-start-7 lg:col-start-7">
                 <div
-                  className="sticky flex items-center justify-center"
-                  style={{
-                    height: '600px',
-                    top: 'calc(50vh - 300px)',
-                  }}
-                >
+                className="sticky flex items-center justify-center"
+                style={{
+                  height: '600px',
+                  top: 'calc(50vh - 300px)',
+                }}
+              >
                 <div className="relative w-full max-w-[500px] h-full mx-auto">
                   {/* Corner Dots - Outer Frame */}
                   <div className="absolute inset-0 pointer-events-none z-10 transition-all duration-1000">
@@ -292,24 +292,7 @@ export const StickyFeatures: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
-            </div>
-
-            {/* Mobile Images (Below content on mobile) */}
-            <div className="lg:hidden space-y-8 mt-8">
-              {features.map((feature, index) => (
-                <div key={index} className="w-full">
-                  <picture className="block w-full">
-                    <img
-                      alt={feature.imageAlt}
-                      className="w-full h-auto object-contain rounded-2xl"
-                      loading="lazy"
-                      src={feature.imageSrc}
-                      title={feature.title}
-                    />
-                  </picture>
-                </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
@@ -319,3 +302,4 @@ export const StickyFeatures: React.FC = () => {
 };
 
 export default StickyFeatures;
+

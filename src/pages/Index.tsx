@@ -15,6 +15,7 @@ import RealEstateCaseStudies from '@/components/RealEstateCaseStudies';
 import StickyFeatures from '@/components/StickyFeatures';
 import DataDrivenInvesting from '@/components/DataDrivenInvesting';
 import InteractiveSlider from '@/components/InteractiveSlider';
+import JoinExperience from '@/components/JoinExperience';
 import Footer from '@/components/Footer';
 import { useSEO } from '@/hooks/use-seo';
 
@@ -29,11 +30,10 @@ const Index = () => {
         <FinhomeEcosystem />
         <StickyFeatures />
         <DataDrivenInvesting/>
-        <MentorFeature />
-        
         <PortfolioPerformance />
-
         <RealEstateCaseStudies />
+        <MentorFeature />
+
       
         <InteractiveSlider />
         {/* <TestimonialSection /> */}
@@ -44,6 +44,7 @@ const Index = () => {
         {/* <CampaignsGrid /> */}
         <ThrivingStartups />
         <Partners />
+        <JoinExperience />
       </main>
       <Footer />
     </div>

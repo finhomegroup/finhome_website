@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, Send, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, MapPin, Mail, Headphones } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
@@ -9,69 +9,71 @@ const Footer = () => {
     <footer id="contact" className="text-white w-full" style={{ backgroundColor: '#252525' }}>
       <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 justify-items-center">
-            {/* Logo */}
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-3 sm:mb-4">
+          {/* Brand Name */}
+          <div className="flex  mb-3 sm:mb-4">
                 <img
-                  src="/vlu_logo_white.png"
+                  src="/Logo_7.png"
                   alt="VLU Logo"
                   className="h-6 sm:h-8 w-auto"
                 />
               </div>
-              <p className="text-gray-300 text-xs sm:text-sm">
-                {t.footer.description}
-              </p>
-            </div>
 
-            {/* Quick Links */}
-            <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">{t.common.email}</h3>
-              <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-                support@finhome.group
-              </p>
-            </div>
-
-            {/* Contact */}
-            <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-2 sm:mb-4">{t.common.contact}</h3>
-              <p className="text-gray-300 hover:text-white text-sm sm:text-base">
-                0963 177 497
-              </p>
-            </div>
-
-
-
-            {/* Contact Info */}
-            <div className="text-center">
-              <h3 className="text-base sm:text-lg mb-1">{t.common.subscribe}</h3>
-              <p className="text-gray-400 mb-3 sm:mb-4 text-xs sm:text-sm">{t.footer.subscribeDescription}</p>
-              <form className="flex justify-center">
-                <div
-                  className="flex items-center w-full max-w-xs sm:max-w-sm rounded-full border border-gray-600 px-4 sm:px-5 py-2 sm:py-2.5"
-                  style={{ backgroundColor: '#323330' }}
-                >
-                  <input
-                    type="email"
-                    placeholder={t.common.yourEmailAddress}
-                    className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none text-sm sm:text-base"
-                  />
-                  <button
-                    type="submit"
-                    className="ml-3 inline-flex items-center gap-3 text-gray-200 hover:text-white transition-colors min-h-[44px] px-3"
-                    aria-label={t.common.subscribe}
-                  >
-                    <span className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-600">
-                      <Send className="w-4 h-4" />
-                    </span>
-                    <span className="text-sm sm:text-base font-semibold">{t.common.sent}</span>
-                  </button>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            {/* Contact Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">{t.footer.contact}</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" />
+                  <p className="text-gray-300 text-sm">{t.footer.address}</p>
                 </div>
-              </form>
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" />
+                  <p className="text-gray-300 text-sm">{t.footer.email}</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Headphones className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" />
+                  <p className="text-gray-300 text-sm">{t.footer.phone}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Features Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">{t.footer.features}</h3>
+              <ul className="space-y-2">
+                <li className="text-gray-300 text-sm">{t.footer.featureCompass}</li>
+                <li className="text-gray-300 text-sm">{t.footer.featureLighthouse}</li>
+                <li className="text-gray-300 text-sm">{t.footer.featureHarbor}</li>
+              </ul>
+            </div>
+
+            {/* About Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">FinHome</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+                    {t.footer.aboutUs}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+                    {t.footer.privacyPolicy}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+                    {t.footer.termsOfUse}
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-center md:justify-start gap-4">
+          {/* Social Media Icons */}
+          <div className="flex  md:justify-start gap-4 ">
             <a href="#" className="text-gray-300 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="X (Twitter)">
               <Twitter className="w-5 h-5" />
             </a>
@@ -86,24 +88,11 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className="mt-8 border-t border-gray-700 pt-6">
-            <div className="flex flex-col gap-4 sm:gap-5 md:flex-row md:items-center md:justify-between">
-              <p className="text-center md:text-left text-gray-400 text-xs sm:text-sm">
-                © {new Date().getFullYear()} Finhome. {t.common.allRightsReserved}.
-              </p>
-
-              <div className="flex items-center justify-center md:justify-end gap-6 text-xs sm:text-sm">
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  {t.common.privacyPolicy}
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  {t.common.termsOfService}
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                  {t.common.cookiePolicy}
-                </a>
-              </div>
-            </div>
+          {/* Copyright */}
+          <div className="border-t border-gray-700 ">
+            <p className="text-gray-400 text-sm">
+              © 2025 FinHome. {t.footer.allRightsReserved}.
+            </p>
           </div>
         </div>
       </div>
