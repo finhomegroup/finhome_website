@@ -254,8 +254,8 @@ const MentorsLecturers = () => {
     }
   ];
 
-  const filteredMentors = selectedRole === 'all' 
-    ? mentors 
+  const filteredMentors = selectedRole === 'all'
+    ? mentors
     : mentors.filter(mentor => mentor.role.toLowerCase() === selectedRole);
 
   const totalMentors = mentors.filter(m => m.role === 'Mentor').length;
@@ -356,31 +356,28 @@ const MentorsLecturers = () => {
             <div className="flex space-x-4">
               <button
                 onClick={() => setSelectedRole('all')}
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  selectedRole === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium ${selectedRole === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 All ({mentors.length})
               </button>
               <button
                 onClick={() => setSelectedRole('mentor')}
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  selectedRole === 'mentor'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium ${selectedRole === 'mentor'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 Mentors ({totalMentors})
               </button>
               <button
                 onClick={() => setSelectedRole('lecturer')}
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  selectedRole === 'lecturer'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium ${selectedRole === 'lecturer'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 Lecturers ({totalLecturers})
               </button>
@@ -390,18 +387,16 @@ const MentorsLecturers = () => {
             <div className="flex rounded-md shadow-sm">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                  viewMode === 'grid' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${viewMode === 'grid' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 <LayoutGrid className="h-5 w-5 mr-2" />
                 Grid
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                  viewMode === 'list' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${viewMode === 'list' ? 'text-[#3CB550] bg-green-50' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 <List className="h-5 w-5 mr-2" />
                 List
@@ -414,34 +409,33 @@ const MentorsLecturers = () => {
         {viewMode === 'grid' ? (
           /* Grid View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-           {filteredMentors.map((mentor) => (
-             <div
-               key={mentor.id}
-               className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
-             >
-               {/* Profile Image - Fixed Height */}
-               <div className="relative h-52 bg-gray-100">
-                 <img
-                   src={mentor.image}
-                   alt={mentor.name}
-                   className="w-full h-full object-contain"
-                   onError={(e) => {
-                     const target = e.target as HTMLImageElement;
-                     target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e5e7eb"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%236b7280" font-size="24"%3E' + mentor.name.charAt(0) + '%3C/text%3E%3C/svg%3E';
-                   }}
-                 />
-                 <div className="absolute top-3 right-3">
-                   <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                     mentor.role === 'Mentor' 
-                       ? 'bg-blue-100 text-blue-800' 
-                       : 'bg-green-100 text-green-800'
-                   }`}>
-                     {mentor.role}
-                   </span>
-                 </div>
-               </div>
+            {filteredMentors.map((mentor) => (
+              <div
+                key={mentor.id}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
+              >
+                {/* Profile Image - Fixed Height */}
+                <div className="relative h-52 bg-gray-100">
+                  <img
+                    src={mentor.image}
+                    alt={mentor.name}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e5e7eb"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%236b7280" font-size="24"%3E' + mentor.name.charAt(0) + '%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
+                  <div className="absolute top-3 right-3">
+                    <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${mentor.role === 'Mentor'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-green-100 text-green-800'
+                      }`}>
+                      {mentor.role}
+                    </span>
+                  </div>
+                </div>
 
-                               {/* Content - Better Layout */}
+                {/* Content - Better Layout */}
                 <div className="p-5 flex flex-col flex-grow">
                   {/* Name and Rating */}
                   <div className="flex items-center justify-between mb-3">
@@ -470,7 +464,7 @@ const MentorsLecturers = () => {
                     </p>
                   </div>
 
-                                   {/* Expertise - Better Layout */}
+                  {/* Expertise - Better Layout */}
                   <div className="mb-4">
                     <p className="text-xs font-medium text-gray-500 mb-2">Expertise:</p>
                     <div className="flex flex-wrap gap-1 max-h-12 overflow-hidden">
@@ -520,27 +514,27 @@ const MentorsLecturers = () => {
                     </div>
                   </div>
 
-                 {/* Action Buttons - Fixed at Bottom */}
-                 <div className="flex space-x-2 mt-auto">
-                   <Button 
-                     variant="outline" 
-                     size="sm" 
-                     className="flex-1 flex items-center justify-center space-x-1 h-9"
-                   >
-                     <Eye className="w-3 h-3" />
-                     <span className="text-xs">View Profile</span>
-                   </Button>
-                   <Button 
-                     size="sm" 
-                     className="flex-1 flex items-center justify-center space-x-1 h-9 bg-[#3CB550] hover:bg-[#2d9a42]"
-                   >
-                     <MessageCircle className="w-3 h-3" />
-                     <span className="text-xs">Contact</span>
-                   </Button>
-                 </div>
-               </div>
-             </div>
-           ))}
+                  {/* Action Buttons - Fixed at Bottom */}
+                  <div className="flex space-x-2 mt-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 flex items-center justify-center space-x-1 h-9"
+                    >
+                      <Eye className="w-3 h-3" />
+                      <span className="text-xs">View Profile</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 flex items-center justify-center space-x-1 h-9 bg-[#3CB550] hover:bg-[#2d9a42]"
+                    >
+                      <MessageCircle className="w-3 h-3" />
+                      <span className="text-xs">Contact</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           /* List View */
@@ -590,11 +584,10 @@ const MentorsLecturers = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mb-1 w-fit ${
-                            mentor.role === 'Mentor' 
-                              ? 'bg-blue-100 text-blue-800' 
-                              : 'bg-green-100 text-green-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mb-1 w-fit ${mentor.role === 'Mentor'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                            }`}>
                             {mentor.role}
                           </span>
                           <span className="text-sm text-gray-600">{mentor.department}</span>
@@ -634,7 +627,7 @@ const MentorsLecturers = () => {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 
