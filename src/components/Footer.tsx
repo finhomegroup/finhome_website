@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="text-center">
               <div className="flex items-center justify-center mb-3 sm:mb-4">
                 <img
-                  src="/vlu_logo.png"
+                  src="/vlu_logo_white.png"
                   alt="VLU Logo"
                   className="h-6 sm:h-8 w-auto"
                 />
