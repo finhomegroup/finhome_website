@@ -13,19 +13,14 @@ const STORAGE_KEY = 'finhome_language';
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
-    // Get from localStorage or browser language
+    // Get from localStorage, default to Vietnamese
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(STORAGE_KEY) as Language;
       if (saved && (saved === 'vi' || saved === 'en')) {
         return saved;
       }
-      
-      // Detect browser language
-      const browserLang = navigator.language.toLowerCase();
-      if (browserLang.startsWith('en')) {
-        return 'en';
-      }
     }
+    // Default to Vietnamese for all new users
     return 'vi';
   });
 
