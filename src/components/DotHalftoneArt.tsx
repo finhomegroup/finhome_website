@@ -634,11 +634,14 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
   const mousePosRef = useRef<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
 
   const [imageAspect, setImageAspect] = useState<{ width: number; height: number }>({ width: 1, height: 1 });
+  const [webglError, setWebglError] = useState<boolean>(false);
 
   const pixelRatio = useMemo(() => {
-    const base = typeof window !== 'undefined' ? Math.max(window.devicePixelRatio || 1, 2) : 2;
-    const raw = base * 2;
-    const maxPixels = 10_000_000;
+    // Reduce pixel ratio on mobile devices to prevent memory issues
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const base = typeof window !== 'undefined' ? Math.max(window.devicePixelRatio || 1, 1) : 1;
+    const raw = isMobile ? base : base * 2;
+    const maxPixels = isMobile ? 5_000_000 : 10_000_000; // Lower limit on mobile
     const s = Math.sqrt(maxPixels / Math.max(1, columns * cellSize * rows * cellSize));
     return Math.min(raw, s);
   }, [columns, rows, cellSize]);
@@ -684,7 +687,21 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
         powerPreference: 'high-performance',
       });
       if (!gl) {
-        console.warn('WebGL2 is not supported on this device');
+        // Try WebGL1 as fallback
+        const gl1 = canvas.getContext('webgl', {
+          antialias: true,
+          alpha: true,
+          premultipliedAlpha: false,
+          depth: false,
+          stencil: false,
+          preserveDrawingBuffer: false,
+        });
+        if (!gl1) {
+          setWebglError(true);
+          return false;
+        }
+        // WebGL1 doesn't support R32F, so we can't use it for this component
+        setWebglError(true);
         return false;
       }
       glRef.current = gl;
@@ -776,33 +793,50 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
 
       return true;
     } catch (error) {
-      console.error('Error setting up WebGL:', error);
+      console.error('DotHalftoneArt WebGL setup error:', error);
+      setWebglError(true);
       return false;
     }
   }, [canvasWidth, canvasHeight, pixelRatio, rows, columns]);
 
   // Load image
   const loadImageTexture = useCallback((imageSrc: string) => {
-    const gl = glRef.current;
-    if (!gl) return;
-    const img = new Image();
-    img.onload = () => {
-      const texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      textureRef.current = texture;
-      setImageAspect({ width: img.width, height: img.height });
-    };
-    img.onerror = () => {
-      // Fallback aspect to avoid division by zero and signal failure
-      console.error('DotHalftoneArt: failed to load image', imageSrc);
-      setImageAspect({ width: 1, height: 1 });
-    };
-    img.src = imageSrc;
+    try {
+      const gl = glRef.current;
+      if (!gl) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const texture = gl.createTexture();
+          if (!texture) {
+            setWebglError(true);
+            return;
+          }
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          textureRef.current = texture;
+          setImageAspect({ width: img.width, height: img.height });
+        } catch (error) {
+          console.error('DotHalftoneArt: error creating texture', error);
+          setWebglError(true);
+        }
+      };
+      img.onerror = () => {
+        // Fallback aspect to avoid division by zero and signal failure
+        console.error('DotHalftoneArt: failed to load image', imageSrc);
+        setImageAspect({ width: 1, height: 1 });
+        setWebglError(true);
+      };
+      img.src = imageSrc;
+    } catch (error) {
+      console.error('DotHalftoneArt: error loading image', error);
+      setWebglError(true);
+    }
   }, []);
 
   // Update overlay targets from cells; alpha is animated in RAF
@@ -834,247 +868,252 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
   // Render
   const render = useCallback(
     (scale: number, pan: { x: number; y: number }) => {
-      const gl = glRef.current;
-      const program = programRef.current;
-      if (!gl || !program || !textureRef.current) return;
+      try {
+        const gl = glRef.current;
+        const program = programRef.current;
+        if (!gl || !program || !textureRef.current) return;
 
-      const set1i = (name: string, v: number) => {
-        const loc = gl.getUniformLocation(program, name);
-        if (loc) gl.uniform1i(loc, v);
-      };
-      const set1f = (name: string, v: number) => {
-        const loc = gl.getUniformLocation(program, name);
-        if (loc) gl.uniform1f(loc, v);
-      };
-      const set2f = (name: string, x: number, y: number) => {
-        const loc = gl.getUniformLocation(program, name);
-        if (loc) gl.uniform2f(loc, x, y);
-      };
-      const set3f = (name: string, x: number, y: number, z: number) => {
-        const loc = gl.getUniformLocation(program, name);
-        if (loc) gl.uniform3f(loc, x, y, z);
-      };
+        const set1i = (name: string, v: number) => {
+          const loc = gl.getUniformLocation(program, name);
+          if (loc) gl.uniform1i(loc, v);
+        };
+        const set1f = (name: string, v: number) => {
+          const loc = gl.getUniformLocation(program, name);
+          if (loc) gl.uniform1f(loc, v);
+        };
+        const set2f = (name: string, x: number, y: number) => {
+          const loc = gl.getUniformLocation(program, name);
+          if (loc) gl.uniform2f(loc, x, y);
+        };
+        const set3f = (name: string, x: number, y: number, z: number) => {
+          const loc = gl.getUniformLocation(program, name);
+          if (loc) gl.uniform3f(loc, x, y, z);
+        };
 
-      gl.viewport(0, 0, canvasWidth * pixelRatio, canvasHeight * pixelRatio);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, canvasWidth * pixelRatio, canvasHeight * pixelRatio);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
-      set2f('u_resolution', canvasWidth * pixelRatio, canvasHeight * pixelRatio);
-      set1f('u_rows', rows);
-      set1f('u_columns', columns);
-      set1f('u_overlayColumns', overlayColumns);
-      const actualCellSizeX = (canvasWidth * pixelRatio) / columns;
-      const actualCellSizeY = (canvasHeight * pixelRatio) / rows;
-      set1f('u_cellSize', Math.min(actualCellSizeX, actualCellSizeY));
-      set1f('u_pixelRatio', pixelRatio);
-      set2f('u_imageAspect', imageAspect.width, imageAspect.height);
-      set1i('u_objectFit', objectFit === 'cover' ? 0 : objectFit === 'contain' ? 1 : 2);
-      set1f('u_imageScale', imageScale);
-      set2f('u_visualPan', pan.x, pan.y);
-      set1f('u_visualScale', scale);
-      set1f('u_dotScale', dotScale);
-      const vp = visualPivotUV ?? { x: 0.5, y: 0.5 };
-      set2f('u_visualPivot', vp.x, vp.y);
-      set1f('u_minDotRadiusPx', Math.max(0.0, minDotDiameterPx * 0.5));
-      set1f('u_binaryThreshold', Math.min(Math.max(binaryThreshold, 0), 1));
-      set1i('u_hoverEnabled', hoverEnabled ? 1 : 0);
-      set2f('u_mousePos', mousePosRef.current.x, mousePosRef.current.y);
-      set1f('u_mouseRadius', mouseRadius);
-      set1f('u_mouseStrength', mouseStrength);
-      set1f('u_mouseInfluenceMultiplier', mouseInfluenceMultiplier);
-      set1f('u_hoverDarkenStrength', hoverDarkenStrength);
-      set1f('u_time', (typeof performance !== 'undefined' ? performance.now() : 0) / 1000.0);
-      set1f('u_decayTau', mouseDecayTau);
+        set2f('u_resolution', canvasWidth * pixelRatio, canvasHeight * pixelRatio);
+        set1f('u_rows', rows);
+        set1f('u_columns', columns);
+        set1f('u_overlayColumns', overlayColumns);
+        const actualCellSizeX = (canvasWidth * pixelRatio) / columns;
+        const actualCellSizeY = (canvasHeight * pixelRatio) / rows;
+        set1f('u_cellSize', Math.min(actualCellSizeX, actualCellSizeY));
+        set1f('u_pixelRatio', pixelRatio);
+        set2f('u_imageAspect', imageAspect.width, imageAspect.height);
+        set1i('u_objectFit', objectFit === 'cover' ? 0 : objectFit === 'contain' ? 1 : 2);
+        set1f('u_imageScale', imageScale);
+        set2f('u_visualPan', pan.x, pan.y);
+        set1f('u_visualScale', scale);
+        set1f('u_dotScale', dotScale);
+        const vp = visualPivotUV ?? { x: 0.5, y: 0.5 };
+        set2f('u_visualPivot', vp.x, vp.y);
+        set1f('u_minDotRadiusPx', Math.max(0.0, minDotDiameterPx * 0.5));
+        set1f('u_binaryThreshold', Math.min(Math.max(binaryThreshold, 0), 1));
+        set1i('u_hoverEnabled', hoverEnabled ? 1 : 0);
+        set2f('u_mousePos', mousePosRef.current.x, mousePosRef.current.y);
+        set1f('u_mouseRadius', mouseRadius);
+        set1f('u_mouseStrength', mouseStrength);
+        set1f('u_mouseInfluenceMultiplier', mouseInfluenceMultiplier);
+        set1f('u_hoverDarkenStrength', hoverDarkenStrength);
+        set1f('u_time', (typeof performance !== 'undefined' ? performance.now() : 0) / 1000.0);
+        set1f('u_decayTau', mouseDecayTau);
 
-      // Radial reveal & edge fade uniforms
-      const revealActive = revealEnabled || typeof revealProgress === 'number' || revealDurationMs !== undefined;
-      set1i('u_revealEnabled', revealActive ? 1 : 0);
-      const rc = revealCenterUV ?? { x: 0.5, y: 0.5 };
-      set2f('u_revealCenter', rc.x, rc.y);
-      let prog = 0;
-      if (typeof revealProgress === 'number') {
-        prog = Math.min(1, Math.max(0, revealProgress));
-      } else if (revealDurationMs !== undefined) {
-        const now = typeof performance !== 'undefined' ? performance.now() : 0;
-        if (revealStartRef.current === null) revealStartRef.current = now;
-        const elapsed = now - (revealStartRef.current ?? 0);
-        const delay = revealDelayMs ?? 0;
-        const p = Math.min(1, Math.max(0, (elapsed - delay) / Math.max(1, revealDurationMs)));
-        const easeDefault = (t: number) => t * t * t; // strong ease-in by default
-        const easeFn = revealBezier
-          ? createCubicBezier(revealBezier[0], revealBezier[1], revealBezier[2], revealBezier[3])
-          : revealEase ?? easeDefault;
-        prog = easeFn(p);
-      }
-      set1f('u_revealProgress', prog);
-      const revealFeatherStatic = Math.max(0.5, revealFeatherCells ?? 6);
-      const revealFeatherStartVal =
-        revealFeatherCellsStart !== undefined ? Math.max(0.5, revealFeatherCellsStart) : revealFeatherStatic;
-      const revealFeatherEndVal =
-        revealFeatherCellsEnd !== undefined ? Math.max(0.5, revealFeatherCellsEnd) : revealFeatherStatic;
-      const revealFeatherLerp = revealFeatherStartVal + (revealFeatherEndVal - revealFeatherStartVal) * prog;
-      set1f('u_revealFeatherCells', revealFeatherLerp);
-      // Edge fade animates off smoothly near the end instead of flashing off
-      // Root-cause fix: edge fade should be relative to inside-canvas distance only.
-      // Keep the configured strength; do not force-disable at end.
-      set1f('u_edgeFadeStrength', Math.min(1, Math.max(0, edgeFadeStrength ?? 0)));
-      const featherStatic = Math.max(1.0, edgeFadeFeatherCells ?? 24);
-      const featherStart =
-        edgeFadeFeatherCellsStart !== undefined ? Math.max(1.0, edgeFadeFeatherCellsStart) : featherStatic;
-      const featherEnd = edgeFadeFeatherCellsEnd !== undefined ? Math.max(1.0, edgeFadeFeatherCellsEnd) : featherStatic;
-      const featherLerp = featherStart + (featherEnd - featherStart) * prog;
-      set1f('u_edgeFadeFeatherCells', featherLerp);
-      set1f('u_revealMinRadiusPx', 0.75);
+        // Radial reveal & edge fade uniforms
+        const revealActive = revealEnabled || typeof revealProgress === 'number' || revealDurationMs !== undefined;
+        set1i('u_revealEnabled', revealActive ? 1 : 0);
+        const rc = revealCenterUV ?? { x: 0.5, y: 0.5 };
+        set2f('u_revealCenter', rc.x, rc.y);
+        let prog = 0;
+        if (typeof revealProgress === 'number') {
+          prog = Math.min(1, Math.max(0, revealProgress));
+        } else if (revealDurationMs !== undefined) {
+          const now = typeof performance !== 'undefined' ? performance.now() : 0;
+          if (revealStartRef.current === null) revealStartRef.current = now;
+          const elapsed = now - (revealStartRef.current ?? 0);
+          const delay = revealDelayMs ?? 0;
+          const p = Math.min(1, Math.max(0, (elapsed - delay) / Math.max(1, revealDurationMs)));
+          const easeDefault = (t: number) => t * t * t; // strong ease-in by default
+          const easeFn = revealBezier
+            ? createCubicBezier(revealBezier[0], revealBezier[1], revealBezier[2], revealBezier[3])
+            : revealEase ?? easeDefault;
+          prog = easeFn(p);
+        }
+        set1f('u_revealProgress', prog);
+        const revealFeatherStatic = Math.max(0.5, revealFeatherCells ?? 6);
+        const revealFeatherStartVal =
+          revealFeatherCellsStart !== undefined ? Math.max(0.5, revealFeatherCellsStart) : revealFeatherStatic;
+        const revealFeatherEndVal =
+          revealFeatherCellsEnd !== undefined ? Math.max(0.5, revealFeatherCellsEnd) : revealFeatherStatic;
+        const revealFeatherLerp = revealFeatherStartVal + (revealFeatherEndVal - revealFeatherStartVal) * prog;
+        set1f('u_revealFeatherCells', revealFeatherLerp);
+        // Edge fade animates off smoothly near the end instead of flashing off
+        // Root-cause fix: edge fade should be relative to inside-canvas distance only.
+        // Keep the configured strength; do not force-disable at end.
+        set1f('u_edgeFadeStrength', Math.min(1, Math.max(0, edgeFadeStrength ?? 0)));
+        const featherStatic = Math.max(1.0, edgeFadeFeatherCells ?? 24);
+        const featherStart =
+          edgeFadeFeatherCellsStart !== undefined ? Math.max(1.0, edgeFadeFeatherCellsStart) : featherStatic;
+        const featherEnd = edgeFadeFeatherCellsEnd !== undefined ? Math.max(1.0, edgeFadeFeatherCellsEnd) : featherStatic;
+        const featherLerp = featherStart + (featherEnd - featherStart) * prog;
+        set1f('u_edgeFadeFeatherCells', featherLerp);
+        set1f('u_revealMinRadiusPx', 0.75);
 
-      lastScaleRef.current = scale;
-      lastPanRef.current = pan;
+        lastScaleRef.current = scale;
+        lastPanRef.current = pan;
 
-      const mf = mapFill(fill);
-      set1f('u_fillAngle', mf.angle);
-      // Multi-stop uniforms
-      const stopsArr = (mf as any).stops as [number, number, number][] | undefined;
-      const stopCount = Math.min(8, stopsArr ? stopsArr.length : 0);
-      set1i('u_fillStopCount', stopCount);
-      const get = (i: number): [number, number, number] =>
-        stopsArr && i < stopCount ? stopsArr[i] : [0, 0, 0];
-      const s0 = get(0); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop0')!, s0[0], s0[1], s0[2]);
-      const s1 = get(1); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop1')!, s1[0], s1[1], s1[2]);
-      const s2 = get(2); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop2')!, s2[0], s2[1], s2[2]);
-      const s3 = get(3); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop3')!, s3[0], s3[1], s3[2]);
-      const s4 = get(4); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop4')!, s4[0], s4[1], s4[2]);
-      const s5 = get(5); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop5')!, s5[0], s5[1], s5[2]);
-      const s6 = get(6); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop6')!, s6[0], s6[1], s6[2]);
-      const s7 = get(7); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop7')!, s7[0], s7[1], s7[2]);
+        const mf = mapFill(fill);
+        set1f('u_fillAngle', mf.angle);
+        // Multi-stop uniforms
+        const stopsArr = (mf as any).stops as [number, number, number][] | undefined;
+        const stopCount = Math.min(8, stopsArr ? stopsArr.length : 0);
+        set1i('u_fillStopCount', stopCount);
+        const get = (i: number): [number, number, number] =>
+          stopsArr && i < stopCount ? stopsArr[i] : [0, 0, 0];
+        const s0 = get(0); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop0')!, s0[0], s0[1], s0[2]);
+        const s1 = get(1); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop1')!, s1[0], s1[1], s1[2]);
+        const s2 = get(2); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop2')!, s2[0], s2[1], s2[2]);
+        const s3 = get(3); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop3')!, s3[0], s3[1], s3[2]);
+        const s4 = get(4); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop4')!, s4[0], s4[1], s4[2]);
+        const s5 = get(5); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop5')!, s5[0], s5[1], s5[2]);
+        const s6 = get(6); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop6')!, s6[0], s6[1], s6[2]);
+        const s7 = get(7); gl.uniform3f(gl.getUniformLocation(program!, 'u_fillStop7')!, s7[0], s7[1], s7[2]);
 
-      const [or, og, ob] = parseHexColor(overlayColor);
-      set3f('u_overlayColor', or, og, ob);
-      const [br, bg, bb] = parseHexColor((typeof overlayColorAltProp !== 'undefined' ? overlayColorAltProp : overlayColor));
-      set3f('u_overlayColorB', br, bg, bb);
-      set1i('u_overlayBUseDarken', overlayAltDarkenBase ? 1 : 0);
-      set1f('u_overlayBDarkenFactor', overlayAltDarkenFactor);
-      set1f('u_overlayTempDarkenFactor', overlayTempDarkenFactor);
-      set1i('u_overlayCrossEnabled', overlayCrossEnabled ? 1 : 0);
-      set2f('u_overlayCrossCenter', overlayCrossCenterBase.x, overlayCrossCenterBase.y);
-      set1f('u_overlayCrossArmWidthCells', Math.max(0.5, overlayCrossArmWidth * columns));
-      set1f('u_overlayCrossSizeCells', overlayCrossSize * columns);
-      set1f('u_overlayMinDotRadiusPx', Math.max(0.0, overlayMinDotDiameterPx * 0.5));
+        const [or, og, ob] = parseHexColor(overlayColor);
+        set3f('u_overlayColor', or, og, ob);
+        const [br, bg, bb] = parseHexColor((typeof overlayColorAltProp !== 'undefined' ? overlayColorAltProp : overlayColor));
+        set3f('u_overlayColorB', br, bg, bb);
+        set1i('u_overlayBUseDarken', overlayAltDarkenBase ? 1 : 0);
+        set1f('u_overlayBDarkenFactor', overlayAltDarkenFactor);
+        set1f('u_overlayTempDarkenFactor', overlayTempDarkenFactor);
+        set1i('u_overlayCrossEnabled', overlayCrossEnabled ? 1 : 0);
+        set2f('u_overlayCrossCenter', overlayCrossCenterBase.x, overlayCrossCenterBase.y);
+        set1f('u_overlayCrossArmWidthCells', Math.max(0.5, overlayCrossArmWidth * columns));
+        set1f('u_overlayCrossSizeCells', overlayCrossSize * columns);
+        set1f('u_overlayMinDotRadiusPx', Math.max(0.0, overlayMinDotDiameterPx * 0.5));
 
-      // Ripple uniforms (multi)
-      const nowSec = (typeof performance !== 'undefined' ? performance.now() : 0) / 1000.0;
-      const ripples = rippleEnabled ? activeRipplesRef.current : [];
-      const count = Math.min(8, ripples.length);
-      const setArray2f = (base: string, arr: { x: number; y: number }[]) => {
-        for (let i = 0; i < 8; i++) {
-          const loc = gl.getUniformLocation(program!, `${base}[${i}]`);
-          if (loc) {
-            const v = i < arr.length ? arr[i] : { x: 0.5, y: 0.5 };
-            gl.uniform2f(loc, v.x, v.y);
+        // Ripple uniforms (multi)
+        const nowSec = (typeof performance !== 'undefined' ? performance.now() : 0) / 1000.0;
+        const ripples = rippleEnabled ? activeRipplesRef.current : [];
+        const count = Math.min(8, ripples.length);
+        const setArray2f = (base: string, arr: { x: number; y: number }[]) => {
+          for (let i = 0; i < 8; i++) {
+            const loc = gl.getUniformLocation(program!, `${base}[${i}]`);
+            if (loc) {
+              const v = i < arr.length ? arr[i] : { x: 0.5, y: 0.5 };
+              gl.uniform2f(loc, v.x, v.y);
+            }
           }
-        }
-      };
-      const setArray1f = (base: string, values: number[]) => {
-        for (let i = 0; i < 8; i++) {
-          const loc = gl.getUniformLocation(program!, `${base}[${i}]`);
-          if (loc) {
-            const v = i < values.length ? values[i] : 0;
-            gl.uniform1f(loc, v);
+        };
+        const setArray1f = (base: string, values: number[]) => {
+          for (let i = 0; i < 8; i++) {
+            const loc = gl.getUniformLocation(program!, `${base}[${i}]`);
+            if (loc) {
+              const v = i < values.length ? values[i] : 0;
+              gl.uniform1f(loc, v);
+            }
           }
-        }
-      };
-      set1i('u_rippleCount', count);
-      setArray2f(
-        'u_rippleCenters',
-        ripples.slice(0, 8).map((r) => ({ x: r.x, y: r.y }))
-      );
-      setArray1f(
-        'u_rippleTimes',
-        ripples.slice(0, 8).map((r) => Math.max(0, nowSec - r.start / 1000))
-      );
-      setArray1f(
-        'u_rippleDurations',
-        ripples.slice(0, 8).map((r) => r.durationSec)
-      );
-      set1f('u_rippleIntensityPx', rippleIntensity);
-      set1f('u_rippleFrequency', rippleFrequency);
-      set1f('u_rippleRadiusCells', rippleRadiusCells);
-      set1f('u_rippleWaveSpeed', rippleWaveSpeed);
-
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, textureRef.current);
-      set1i('u_image', 0);
-
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, overlayTextureRef.current);
-      set1i('u_overlayMap', 1);
-
-      gl.activeTexture(gl.TEXTURE3);
-      gl.bindTexture(gl.TEXTURE_2D, overlayTextureBRef.current);
-      set1i('u_overlayMapB', 3);
-
-      // Tertiary overlay map (temporary cities) at TEXTURE4 (with animated alpha)
-      if (!overlayTextureCRef.current) {
-        overlayTextureCRef.current = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, overlayTextureCRef.current);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texImage2D(
-          gl.TEXTURE_2D,
-          0,
-          gl.R32F,
-          overlayColumns,
-          rows,
-          0,
-          gl.RED,
-          gl.FLOAT,
-          new Float32Array(rows * overlayColumns)
+        };
+        set1i('u_rippleCount', count);
+        setArray2f(
+          'u_rippleCenters',
+          ripples.slice(0, 8).map((r) => ({ x: r.x, y: r.y }))
         );
-      }
-      // Upload current temp overlay map from animated buffer
-      {
-        gl.activeTexture(gl.TEXTURE4);
-        gl.bindTexture(gl.TEXTURE_2D, overlayTextureCRef.current);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, overlayUploadCRef.current);
-        set1i('u_overlayMapC', 4);
-      }
-
-      // Quaternary overlay map (path temp) at TEXTURE5
-      if (!overlayTextureDRef.current) {
-        overlayTextureDRef.current = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, overlayTextureDRef.current);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texImage2D(
-          gl.TEXTURE_2D,
-          0,
-          gl.R32F,
-          overlayColumns,
-          rows,
-          0,
-          gl.RED,
-          gl.FLOAT,
-          new Float32Array(rows * overlayColumns)
+        setArray1f(
+          'u_rippleTimes',
+          ripples.slice(0, 8).map((r) => Math.max(0, nowSec - r.start / 1000))
         );
-      }
-      {
-        const tempMapB = new Float32Array(rows * overlayColumns);
-        for (const c of overlayCellsTempB) {
-          const cc = c.col + columns;
-          if (c.row >= 0 && c.row < rows && cc >= 0 && cc < overlayColumns) tempMapB[c.row * overlayColumns + cc] = 1;
+        setArray1f(
+          'u_rippleDurations',
+          ripples.slice(0, 8).map((r) => r.durationSec)
+        );
+        set1f('u_rippleIntensityPx', rippleIntensity);
+        set1f('u_rippleFrequency', rippleFrequency);
+        set1f('u_rippleRadiusCells', rippleRadiusCells);
+        set1f('u_rippleWaveSpeed', rippleWaveSpeed);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, textureRef.current);
+        set1i('u_image', 0);
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, overlayTextureRef.current);
+        set1i('u_overlayMap', 1);
+
+        gl.activeTexture(gl.TEXTURE3);
+        gl.bindTexture(gl.TEXTURE_2D, overlayTextureBRef.current);
+        set1i('u_overlayMapB', 3);
+
+        // Tertiary overlay map (temporary cities) at TEXTURE4 (with animated alpha)
+        if (!overlayTextureCRef.current) {
+          overlayTextureCRef.current = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, overlayTextureCRef.current);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.R32F,
+            overlayColumns,
+            rows,
+            0,
+            gl.RED,
+            gl.FLOAT,
+            new Float32Array(rows * overlayColumns)
+          );
         }
-        gl.activeTexture(gl.TEXTURE5);
-        gl.bindTexture(gl.TEXTURE_2D, overlayTextureDRef.current);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, tempMapB);
-        set1i('u_overlayMapD', 5);
+        // Upload current temp overlay map from animated buffer
+        {
+          gl.activeTexture(gl.TEXTURE4);
+          gl.bindTexture(gl.TEXTURE_2D, overlayTextureCRef.current);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, overlayUploadCRef.current);
+          set1i('u_overlayMapC', 4);
+        }
+
+        // Quaternary overlay map (path temp) at TEXTURE5
+        if (!overlayTextureDRef.current) {
+          overlayTextureDRef.current = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, overlayTextureDRef.current);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.R32F,
+            overlayColumns,
+            rows,
+            0,
+            gl.RED,
+            gl.FLOAT,
+            new Float32Array(rows * overlayColumns)
+          );
+        }
+        {
+          const tempMapB = new Float32Array(rows * overlayColumns);
+          for (const c of overlayCellsTempB) {
+            const cc = c.col + columns;
+            if (c.row >= 0 && c.row < rows && cc >= 0 && cc < overlayColumns) tempMapB[c.row * overlayColumns + cc] = 1;
+          }
+          gl.activeTexture(gl.TEXTURE5);
+          gl.bindTexture(gl.TEXTURE_2D, overlayTextureDRef.current);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, tempMapB);
+          set1i('u_overlayMapD', 5);
+        }
+
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, influenceTextureRef.current);
+        set1i('u_influenceMap', 2);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      } catch (error) {
+        console.error('DotHalftoneArt: render error', error);
+        setWebglError(true);
       }
-
-      gl.activeTexture(gl.TEXTURE2);
-      gl.bindTexture(gl.TEXTURE_2D, influenceTextureRef.current);
-      set1i('u_influenceMap', 2);
-
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     },
     [
       canvasWidth,
@@ -1561,6 +1600,38 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
     },
     [hoverEnabled, rippleDurationMs]
   );
+
+  // Fallback UI when WebGL is not available
+  if (webglError) {
+    return (
+      <div
+        style={{
+          width: `${canvasWidth}px`,
+          height: `${canvasHeight}px`,
+          maxWidth: '100%',
+          backgroundColor: '#f3f4f6',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...style,
+        }}
+      >
+        <img
+          src={src}
+          alt=""
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'cover',
+          }}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <canvas
