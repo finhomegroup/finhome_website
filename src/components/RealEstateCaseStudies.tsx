@@ -326,12 +326,16 @@ export const RealEstateCaseStudies: React.FC = () => {
     ];
 
     tabsElement.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleScroll, { passive: true });
+    }
 
     return () => {
       timeoutIds.forEach(clearTimeout);
       tabsElement.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleScroll);
+      }
     };
   }, [handleScroll]);
 

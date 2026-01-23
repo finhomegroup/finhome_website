@@ -121,6 +121,8 @@ export const StickyFeatures: React.FC = () => {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleScroll = () => {
       if (!containerRef.current) return;
 

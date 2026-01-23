@@ -167,7 +167,7 @@ export const AnimatedScene: React.FC<AnimatedSceneProps> = memo(
           <MemoizedCardWrapper key={`anim-${index}`} card={card} pos={pos} index={index} mode={mode} />
         ))}
         
-        <style jsx>{`
+        <style>{`
           .scene .anim-target {
             will-change: transform, opacity;
             backface-visibility: hidden;
