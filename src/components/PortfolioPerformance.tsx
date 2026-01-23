@@ -16,12 +16,12 @@ const PortfolioPerformance = () => {
             {t.portfolio.subtitle}
           </div>
         </div>
-        
+
         <div className="bg-gray-50 border border-gray-200  rounded-lg p-6 sm:p-8 shadow-sm">
           {/* Mobile: 2 columns, 3 rows | Desktop: 4 columns, 1 row + 3 columns centered */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {/* Row 1: 5N+ and 2.4T+ */}
-            <div className="group text-center  transform hover:scale-105 transition-transform duration-300">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Item 1: 5N+ */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
               <AnimatedNumber
                 value={5}
                 suffix="N+"
@@ -32,8 +32,9 @@ const PortfolioPerformance = () => {
                 {t.portfolio.metrics.homesAnalyzed}
               </div>
             </div>
-            
-            <div className="group text-center transform hover:scale-105 transition-transform duration-300">
+
+            {/* Item 2: 2.4T+ */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
               <AnimatedNumber
                 value={2.4}
                 decimals={1}
@@ -45,21 +46,9 @@ const PortfolioPerformance = () => {
                 {t.portfolio.metrics.riskSignals}
               </div>
             </div>
-            
-            {/* Row 2: 81% and 48N+ */}
-            <div className="group text-center transform hover:scale-105 transition-transform duration-300">
-              <AnimatedNumber
-                value={81}
-                suffix="%"
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 group-hover:text-[#3CB550] transition-colors duration-300"
-                duration={2600}
-              />
-              <div className="text-sm sm:text-base text-gray-600">
-                {t.portfolio.metrics.profitableHomes}
-              </div>
-            </div>
-            
-            <div className="group text-center transform hover:scale-105 transition-transform duration-300">
+
+            {/* Item 3: 48N+ */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
               <AnimatedNumber
                 value={48}
                 suffix="N+"
@@ -70,25 +59,35 @@ const PortfolioPerformance = () => {
                 {t.portfolio.metrics.activePortfolios}
               </div>
             </div>
-          </div>
-          
-          {/* Row 3: 97% and 93% - Centered on mobile, part of grid on desktop */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-6 lg:mt-8 lg:max-w-3xl lg:mx-auto">
-            <div className="group text-center transform hover:scale-105 transition-transform duration-300">
-              <div className="border-2 border-gray-300 rounded-lg px-4 py-3">
-                <AnimatedNumber
-                  value={97}
-                  suffix="%"
-                  className="text-3xl sm:text-4xl font-bold text-[#3CB550] mb-2 transition-colors duration-300"
-                  duration={1800}
-                />
-                <div className="text-sm sm:text-base text-gray-600">
-                  {t.portfolio.metrics.safeDecisions}
-                </div>
+
+            {/* Item 4: 81% */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
+              <AnimatedNumber
+                value={81}
+                suffix="%"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 group-hover:text-[#3CB550] transition-colors duration-300"
+                duration={2600}
+              />
+              <div className="text-sm sm:text-base text-gray-600">
+                {t.portfolio.metrics.profitableHomes}
               </div>
             </div>
-            
-            <div className="group text-center transform hover:scale-105 transition-transform duration-300">
+
+            {/* Item 5: 97% */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
+              <AnimatedNumber
+                value={97}
+                suffix="%"
+                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 group-hover:text-[#3CB550] transition-colors duration-300"
+                duration={1800}
+              />
+              <div className="text-sm sm:text-base text-gray-600">
+                {t.portfolio.metrics.safeDecisions}
+              </div>
+            </div>
+
+            {/* Item 6: 93% */}
+            <div className="group text-center transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 border border-transparent hover:border-gray-200 hover:shadow-sm">
               <AnimatedNumber
                 value={93}
                 suffix="%"
