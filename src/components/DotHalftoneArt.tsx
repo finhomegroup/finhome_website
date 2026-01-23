@@ -472,9 +472,9 @@ const parseHexColor = (input: string): [number, number, number] => {
   const expand = (h: string) =>
     h.length === 3
       ? h
-          .split('')
-          .map((c) => c + c)
-          .join('')
+        .split('')
+        .map((c) => c + c)
+        .join('')
       : h;
   const match = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(hex);
   if (!match) return [0, 0, 0];
@@ -666,111 +666,119 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
   const transformStartRef = useRef<number | null>(null);
 
   const setupGL = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return false;
-    canvas.width = canvasWidth * pixelRatio;
-    canvas.height = canvasHeight * pixelRatio;
-    canvas.style.width = `${canvasWidth}px`;
-    canvas.style.height = `${canvasHeight}px`;
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas) return false;
+      canvas.width = canvasWidth * pixelRatio;
+      canvas.height = canvasHeight * pixelRatio;
+      canvas.style.width = `${canvasWidth}px`;
+      canvas.style.height = `${canvasHeight}px`;
 
-    const gl = canvas.getContext('webgl2', {
-      antialias: true,
-      alpha: true,
-      premultipliedAlpha: false,
-      depth: false,
-      stencil: false,
-      preserveDrawingBuffer: false,
-      powerPreference: 'high-performance',
-    });
-    if (!gl) return false;
-    glRef.current = gl;
+      const gl = canvas.getContext('webgl2', {
+        antialias: true,
+        alpha: true,
+        premultipliedAlpha: false,
+        depth: false,
+        stencil: false,
+        preserveDrawingBuffer: false,
+        powerPreference: 'high-performance',
+      });
+      if (!gl) {
+        console.warn('WebGL2 is not supported on this device');
+        return false;
+      }
+      glRef.current = gl;
 
-    const v = gl.createShader(gl.VERTEX_SHADER)!;
-    gl.shaderSource(v, vertexShaderSource);
-    gl.compileShader(v);
-    if (!gl.getShaderParameter(v, gl.COMPILE_STATUS)) {
-      // eslint-disable-next-line no-console
-      console.error('DotHalftoneArt vertex shader error:', gl.getShaderInfoLog(v));
+      const v = gl.createShader(gl.VERTEX_SHADER)!;
+      gl.shaderSource(v, vertexShaderSource);
+      gl.compileShader(v);
+      if (!gl.getShaderParameter(v, gl.COMPILE_STATUS)) {
+        // eslint-disable-next-line no-console
+        console.error('DotHalftoneArt vertex shader error:', gl.getShaderInfoLog(v));
+        return false;
+      }
+
+      const f = gl.createShader(gl.FRAGMENT_SHADER)!;
+      gl.shaderSource(f, fragmentShaderSource);
+      gl.compileShader(f);
+      if (!gl.getShaderParameter(f, gl.COMPILE_STATUS)) {
+        // eslint-disable-next-line no-console
+        console.error('DotHalftoneArt fragment shader error:', gl.getShaderInfoLog(f));
+        return false;
+      }
+
+      const program = gl.createProgram()!;
+      gl.attachShader(program, v);
+      gl.attachShader(program, f);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        // eslint-disable-next-line no-console
+        console.error('DotHalftoneArt program link error:', gl.getProgramInfoLog(program));
+        return false;
+      }
+      programRef.current = program;
+      gl.useProgram(program);
+
+      // Quad
+      const positions = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, 1, 1, 1, 1]);
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+      const positionLocation = gl.getAttribLocation(program, 'a_position');
+      const texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 16, 0);
+      gl.enableVertexAttribArray(texCoordLocation);
+      gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 16, 8);
+
+      // Overlay texture (R32F)
+      overlayTextureRef.current = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, overlayTextureRef.current);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, overlayDataRef.current);
+
+      // Secondary overlay texture (R32F)
+      overlayTextureBRef.current = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, overlayTextureBRef.current);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.R32F,
+        overlayColumns,
+        rows,
+        0,
+        gl.RED,
+        gl.FLOAT,
+        new Float32Array(rows * overlayColumns)
+      );
+
+      // Influence texture (R32F) — 2x columns to support negative columns on left half
+      influenceTextureRef.current = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, influenceTextureRef.current);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, influenceDataRef.current);
+
+      gl.viewport(0, 0, canvasWidth * pixelRatio, canvasHeight * pixelRatio);
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      return true;
+    } catch (error) {
+      console.error('Error setting up WebGL:', error);
       return false;
     }
-
-    const f = gl.createShader(gl.FRAGMENT_SHADER)!;
-    gl.shaderSource(f, fragmentShaderSource);
-    gl.compileShader(f);
-    if (!gl.getShaderParameter(f, gl.COMPILE_STATUS)) {
-      // eslint-disable-next-line no-console
-      console.error('DotHalftoneArt fragment shader error:', gl.getShaderInfoLog(f));
-      return false;
-    }
-
-    const program = gl.createProgram()!;
-    gl.attachShader(program, v);
-    gl.attachShader(program, f);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      // eslint-disable-next-line no-console
-      console.error('DotHalftoneArt program link error:', gl.getProgramInfoLog(program));
-      return false;
-    }
-    programRef.current = program;
-    gl.useProgram(program);
-
-    // Quad
-    const positions = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, 1, 1, 1, 1]);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-    const positionLocation = gl.getAttribLocation(program, 'a_position');
-    const texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 16, 0);
-    gl.enableVertexAttribArray(texCoordLocation);
-    gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 16, 8);
-
-    // Overlay texture (R32F)
-    overlayTextureRef.current = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, overlayTextureRef.current);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, overlayDataRef.current);
-
-    // Secondary overlay texture (R32F)
-    overlayTextureBRef.current = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, overlayTextureBRef.current);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.R32F,
-      overlayColumns,
-      rows,
-      0,
-      gl.RED,
-      gl.FLOAT,
-      new Float32Array(rows * overlayColumns)
-    );
-
-    // Influence texture (R32F) — 2x columns to support negative columns on left half
-    influenceTextureRef.current = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, influenceTextureRef.current);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, overlayColumns, rows, 0, gl.RED, gl.FLOAT, influenceDataRef.current);
-
-    gl.viewport(0, 0, canvasWidth * pixelRatio, canvasHeight * pixelRatio);
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    return true;
   }, [canvasWidth, canvasHeight, pixelRatio, rows, columns]);
 
   // Load image
@@ -1124,30 +1132,30 @@ const DotHalftoneArt: React.FC<DotHalftoneArtProps> = ({
     const easeDefault = (t: number) => 1 - Math.pow(1 - t, 3);
     const easeScaleFn = transformBezierScale
       ? createCubicBezier(
-          transformBezierScale[0],
-          transformBezierScale[1],
-          transformBezierScale[2],
-          transformBezierScale[3]
-        )
+        transformBezierScale[0],
+        transformBezierScale[1],
+        transformBezierScale[2],
+        transformBezierScale[3]
+      )
       : transformEaseScale ?? easeDefault;
     const easePanBase = transformBezierPan
       ? createCubicBezier(transformBezierPan[0], transformBezierPan[1], transformBezierPan[2], transformBezierPan[3])
       : transformEasePan ?? easeDefault;
     const easePanXFn = transformBezierPanX
       ? createCubicBezier(
-          transformBezierPanX[0],
-          transformBezierPanX[1],
-          transformBezierPanX[2],
-          transformBezierPanX[3]
-        )
+        transformBezierPanX[0],
+        transformBezierPanX[1],
+        transformBezierPanX[2],
+        transformBezierPanX[3]
+      )
       : transformEasePanX ?? easePanBase;
     const easePanYFn = transformBezierPanY
       ? createCubicBezier(
-          transformBezierPanY[0],
-          transformBezierPanY[1],
-          transformBezierPanY[2],
-          transformBezierPanY[3]
-        )
+        transformBezierPanY[0],
+        transformBezierPanY[1],
+        transformBezierPanY[2],
+        transformBezierPanY[3]
+      )
       : transformEasePanY ?? easePanBase;
     const tick = (ts: number) => {
       // Anchor transform start to when GL + texture are ready to avoid jumps after long loads
