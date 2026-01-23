@@ -27,13 +27,13 @@ export const en = {
     search: 'Search...',
   },
 
-          // Hero Section
-          hero: {
-            badge: 'FinHome',
-            title1: 'Smart financial',
-            title2: 'journey',
-            description: 'FinHome transforms the dream of homeownership from a financial gamble into a confident, data-driven decision, helping you clearly see your financial journey, avoid debt traps, and build a safe, sustainable life.',
-          },
+  // Hero Section
+  hero: {
+    badge: 'FinHome',
+    title1: 'Smart financial',
+    title2: 'journey',
+    description: 'FinHome transforms the dream of homeownership from a financial gamble into a confident, data-driven decision, helping you clearly see your financial journey, avoid debt traps, and build a safe, sustainable life.',
+  },
 
   // Home Trap Section
   homeTrap: {
@@ -153,6 +153,8 @@ export const en = {
     emailPlaceholder: 'Enter your email',
     button: 'Sign Up',
     signupCount: 'Over 1,000 people have registered to experience',
+    successMessage: 'Email sent successfully!',
+    errorMessage: 'Failed to send email. Please try again.',
   },
 
   // Footer

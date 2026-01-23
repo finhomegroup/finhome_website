@@ -27,13 +27,13 @@ export const vi = {
     search: 'Tìm kiếm...',
   },
 
-          // Hero Section
-          hero: {
-            badge: 'FinHome',
-            title1: 'Hành trình',
-            title2: 'tài chính thông minh',
-            description: 'FinHome biến giấc mơ sở hữu nhà từ một canh bạc tài chính thành một quyết định tự tin, dựa trên dữ liệu, giúp bạn nhìn rõ hành trình tài chính, tránh bẫy nợ và xây dựng cuộc sống an toàn, bền vững.',
-          },
+  // Hero Section
+  hero: {
+    badge: 'FinHome',
+    title1: 'Hành trình',
+    title2: 'tài chính thông minh',
+    description: 'FinHome biến giấc mơ sở hữu nhà từ một canh bạc tài chính thành một quyết định tự tin, dựa trên dữ liệu, giúp bạn nhìn rõ hành trình tài chính, tránh bẫy nợ và xây dựng cuộc sống an toàn, bền vững.',
+  },
 
   // Home Trap Section
   homeTrap: {
@@ -153,6 +153,8 @@ export const vi = {
     emailPlaceholder: 'Nhập email của bạn',
     button: 'Đăng ký',
     signupCount: 'Đã có hơn 1.000 người đăng ký trải nghiệm',
+    successMessage: 'Gửi email thành công!',
+    errorMessage: 'Gửi email thất bại. Vui lòng thử lại.',
   },
 
   // Footer

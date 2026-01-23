@@ -2,15 +2,41 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+import { toast } from 'sonner';
+
 const JoinExperience = () => {
   const { t } = useLanguage();
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Email submitted:', email);
-    setEmail('');
+    if (!email) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(t.joinExperience?.successMessage || 'Email sent successfully!');
+        setEmail('');
+      } else {
+        throw new Error(data.message || 'Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast.error(t.joinExperience?.errorMessage || 'Failed to send email. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,15 +59,23 @@ const JoinExperience = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t.joinExperience.emailPlaceholder}
-                className="w-full px-4 py-3 pr-32 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3CB550] focus:border-transparent text-base"
+                disabled={isLoading}
+                className="w-full px-4 py-3 pr-32 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3CB550] focus:border-transparent text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 required
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#3CB550] to-[#2d9a42] hover:from-[#2d9a42] hover:to-[#3CB550] text-white font-bold px-4 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#3CB550] to-[#2d9a42] hover:from-[#2d9a42] hover:to-[#3CB550] text-white font-bold px-4 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <Send className="w-4 h-4" />
-                <span className="text-sm sm:text-base">{t.joinExperience.button}</span>
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+                <span className="text-sm sm:text-base">
+                  {isLoading ? 'Sending...' : t.joinExperience.button}
+                </span>
               </button>
             </div>
           </form>
