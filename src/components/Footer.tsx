@@ -89,8 +89,8 @@ const Footer = () => {
           </div>
 
           {/* Copyright */}
-          <div className="border-t border-gray-700 ">
-            <p className="text-gray-400 text-sm">
+          <div className="border-t  border-gray-700 ">
+            <p className="text-gray-400 mt-1 text-sm">
               © 2025 FinHome. {t.footer.allRightsReserved}.
             </p>
           </div>

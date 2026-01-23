@@ -12,16 +12,24 @@ const HeroSection = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="relative overflow-hidden -mt-16 pt-16" style={{ minHeight: 350 }}>
+    <section className="relative overflow-hidden -mt-16 pt-16" style={{ minHeight: 370 }}>
       {/* Background: Image on mobile, DotHalftoneHero on desktop */}
       <div className="absolute inset-0 z-0">
-        {/* Mobile: Show image */}
-        <img
-          src="/map_hero.png"
-          alt="Southeast Asia Map"
-          className="md:hidden w-full "
-
-        />
+        {/* Mobile: Show image with fade effect */}
+        <div className="md:hidden relative w-full h-full">
+          <img
+            src="/map_hero.png"
+            alt="Southeast Asia Map"
+            className="w-full h-full object-cover"
+          />
+          {/* Gradient fade overlay - mờ dần từ trên xuống dưới */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, transparent 0%, transparent 70%, rgba(255, 255, 255, 0.3) 80%, rgba(255, 255, 255, 0.34) 90%, rgba(255, 255, 255, 1) 100%)'
+            }}
+          />
+        </div>
         {/* Desktop: Show DotHalftoneHero */}
         {!isMobile && (
           <div className="hidden md:block">

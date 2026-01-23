@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Project {
   name: string;
+  nameVi?: string;
 }
 
 interface CaseStudyData {
@@ -36,7 +37,11 @@ const caseStudies: CaseStudyData[] = [
     titleVi: 'FinHome phân tích các dự án Vinhomes bằng chuẩn dữ liệu tài chính',
     description:
       'Vinhomes integrates FinHome platform to provide smart real estate investment solutions for customers. With FinHome, Vinhomes maintains full control of customer experience for apartment, villa, and shophouse projects.',
-    projects: [{ name: 'Premium Apartments' }, { name: 'Villas' }, { name: 'Shophouses' }],
+    projects: [
+      { name: 'Premium Apartments', nameVi: 'Căn hộ cao cấp' },
+      { name: 'Villas', nameVi: 'Biệt thự' },
+      { name: 'Shophouses', nameVi: 'Nhà phố thương mại' }
+    ],
     quote: 'FinHome helps us completely digitize the real estate investment process.',
     quoteVi: 'Dưới góc nhìn REFI, các dự án Vinhomes được chúng tôi đánh giá không chỉ bằng giá bán, mà bằng khả năng chi trả, rủi ro và hiệu quả tài chính dài hạn, hỗ trợ người dùng đưa ra quyết định phù hợp và bền vững.',
     author: 'John Nguyen, CEO, Vinhomes',
@@ -51,16 +56,19 @@ const caseStudies: CaseStudyData[] = [
     slug: 'masteri',
     logo: 'Masteri',
     title: 'Masteri builds modern real estate investment platform with FinHome',
+    titleVi: 'Masteri xây dựng nền tảng đầu tư bất động sản hiện đại với FinHome',
     description:
       'Masteri partners with FinHome to provide investment and payment products for real estate projects. By building on FinHome\'s API-first infrastructure, Masteri helps investors scale with confidence.',
     projects: [
-      { name: 'Premium Apartments' },
-      { name: 'Officetels' },
-      { name: 'Shophouses' },
-      { name: 'Villas' },
+      { name: 'Premium Apartments', nameVi: 'Căn hộ cao cấp' },
+      { name: 'Officetels', nameVi: 'Officetel' },
+      { name: 'Shophouses', nameVi: 'Nhà phố thương mại' },
+      { name: 'Villas', nameVi: 'Biệt thự' },
     ],
     quote: 'FinHome\'s platform helps us move as fast as the market evolves.',
+    quoteVi: 'Nền tảng FinHome giúp chúng tôi di chuyển nhanh như thị trường phát triển.',
     author: 'Sarah Tran, Co-founder & CEO, Masteri',
+    authorVi: 'Sarah Tran, Đồng sáng lập & CEO, Masteri',
     activeBgColor: '#256b2f',
     activeIconColor: '#ffffff',
     dotColor: '#3d8f4a',
@@ -69,24 +77,36 @@ const caseStudies: CaseStudyData[] = [
     slug: 'sungroup',
     logo: 'Sun Group',
     title: 'Sun Group uses FinHome to manage resort real estate portfolio',
+    titleVi: 'Sun Group sử dụng FinHome để quản lý danh mục bất động sản nghỉ dưỡng',
     description:
       'Sun Group partners with FinHome to provide resort real estate investment solutions at Vietnam\'s top destinations. With FinHome, Sun Group maintains full control of customer experience and provides a unified platform for global investment.',
     quote: 'It\'s critical that partners move at our pace and FinHome delivers.',
+    quoteVi: 'Điều quan trọng là các đối tác di chuyển theo tốc độ của chúng tôi và FinHome đáp ứng được điều đó.',
     author: 'Michael Le, CEO, Sun Group',
+    authorVi: 'Michael Le, CEO, Sun Group',
     activeBgColor: '#FFA500',
     activeIconColor: '#1f2937',
     dotColor: '#FFB733',
-    projects: [{ name: 'Resorts & Villas' }, { name: 'Condotels' }],
+    projects: [
+      { name: 'Resorts & Villas', nameVi: 'Khu nghỉ dưỡng & Biệt thự' },
+      { name: 'Condotels', nameVi: 'Condotel' }
+    ],
   },
   {
     slug: 'novaland',
     logo: 'Novaland',
     title: 'Novaland partners with FinHome to scale real estate projects',
+    titleVi: 'Novaland hợp tác với FinHome để mở rộng các dự án bất động sản',
     description:
       'Novaland partners with FinHome to develop diverse real estate projects, helping customers with limited savings confidently navigate their daily financial lives. By leveraging FinHome\'s modern platform, Novaland can easily expand access to flexible investment solutions nationwide.',
-    projects: [{ name: 'Apartments' }, { name: 'Land Plots' }],
+    projects: [
+      { name: 'Apartments', nameVi: 'Căn hộ' },
+      { name: 'Land Plots', nameVi: 'Đất nền' }
+    ],
     quote: 'FinHome\'s modern platform empowers Novaland to scale and better serve consumers.',
+    quoteVi: 'Nền tảng hiện đại của FinHome giúp Novaland mở rộng quy mô và phục vụ người tiêu dùng tốt hơn.',
     author: 'David Pham, CEO, Novaland',
+    authorVi: 'David Pham, CEO, Novaland',
     activeBgColor: '#092951',
     activeIconColor: '#ffffff',
     dotColor: '#6A7E96',
@@ -121,6 +141,7 @@ export const RealEstateCaseStudies: React.FC = () => {
   const getTitle = (cs: CaseStudyData) => (language === 'vi' && cs.titleVi ? cs.titleVi : cs.title);
   const getQuote = (cs: CaseStudyData) => (language === 'vi' && cs.quoteVi ? cs.quoteVi : cs.quote);
   const getAuthor = (cs: CaseStudyData) => (language === 'vi' && cs.authorVi ? cs.authorVi : cs.author);
+  const getProjectName = (project: Project) => (language === 'vi' && project.nameVi ? project.nameVi : project.name);
 
   const currentImageSrc = `/images/case-studies/${caseStudies[displayIndex].slug}.jpg`;
   const nextImageSrc =
@@ -328,12 +349,16 @@ export const RealEstateCaseStudies: React.FC = () => {
     ];
 
     tabsElement.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleScroll, { passive: true });
+    }
 
     return () => {
       timeoutIds.forEach(clearTimeout);
       tabsElement.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleScroll);
+      }
     };
   }, [handleScroll]);
 
@@ -498,7 +523,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                             : 'bg-white text-gray-700 hover:bg-gray-50'
                             }`}
                         >
-                          {project.name}
+                          {getProjectName(project)}
                         </button>
                       ))}
                     </div>
@@ -507,7 +532,14 @@ export const RealEstateCaseStudies: React.FC = () => {
                   {/* Quote - Mobile */}
                   <div className="relative">
                     <div className="text-6xl font-bold text-gray-300 leading-none mb-2">"</div>
-                    <p className="text-base text-gray-600 leading-relaxed -mt-4 pl-2">
+                    <p
+                      className="text-[14px] leading-[130%] font-manue text-gray-600 -mt-4 "
+                      style={{
+                        fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+                        fontSize: "14px",
+                        lineHeight: "130%"
+                      }}
+                    >
                       {getQuote(csActive)}
                     </p>
                     <p className="text-sm text-gray-500 mt-4">
@@ -536,7 +568,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                                   key={idx}
                                   className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
                                 >
-                                  {project.name}
+                                  {getProjectName(project)}
                                 </div>
                               ))}
                             </div>
@@ -571,7 +603,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                                 key={idx}
                                 className="flex items-center gap-2 px-2 py-1 bg-white/75 shadow-[0_1px_2px_0_rgba(0,0,0,0.1),0_0_0_1px_#fff_inset] rounded-full text-sm font-medium text-gray-800"
                               >
-                                {project.name}
+                                {getProjectName(project)}
                               </div>
                             ))}
                           </div>

@@ -143,6 +143,7 @@ const MentorFeature = () => {
                 {mentor.title}
               </p>
               {mentor.info && (
+                
                 <p className="text-gray-500 text-sm mb-3 leading-relaxed min-h-[60px]">
                   {mentor.info}
                 </p>
@@ -167,14 +168,18 @@ const MentorFeature = () => {
 
   return (
     <section 
-      className="py-16 bg-white overflow-hidden"
+      className="py-8 bg-white overflow-hidden"
       aria-label="Meet our mentors showcase"
     >
       <div className="container mx-auto px-4 text-center mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-1">
           {t.mentorFeature.title}
         </h2>
-        <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
+        <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2" style={{
+          fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+          fontSize: "14px",
+          lineHeight: "130%"
+        }}>
           {t.mentorFeature.description}
         </div>
         <div className="mt-6 sm:mt-8">
@@ -186,7 +191,6 @@ const MentorFeature = () => {
              <div className="relative">
         {/* Left gradient overlay */}
         <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-        
         {/* Right gradient overlay */}
         <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
          

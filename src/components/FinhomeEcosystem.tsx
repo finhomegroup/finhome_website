@@ -10,10 +10,14 @@ const FinhomeEcosystem: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left text content - Mobile: shown first, Desktop: left side */}
           <div className="mb-8 lg:mb-0 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-1 sm:mb-4">
               {t.ecosystem.title}
             </h2>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 mb-4 sm:mb-6">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 mb-4 px-14 sm:mb-6" style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "15px",
+              lineHeight: "150%"
+            }}>
               {t.ecosystem.subtitle}
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6 sm:mb-8 max-w-3xl mx-auto lg:mx-0 text-left">

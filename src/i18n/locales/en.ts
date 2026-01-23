@@ -106,7 +106,8 @@ export const en = {
   // Portfolio Performance
   portfolio: {
     title: 'From Data to Impact',
-    subtitle: 'Where real-time insight becomes real-world financial confidence',
+    subtitle: 'Data measured',
+    subtitleLine2: 'by real-world impact at FinHome',
     metrics: {
       homesAnalyzed: 'Homes Analyzed',
       riskSignals: 'Risk Signals Processed',

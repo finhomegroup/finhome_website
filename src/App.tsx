@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,11 +8,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import LanguageSwitcher from './components/header/LanguageSwitcher';
 
-// Route-based code splitting for better performance
-const Index = React.lazy(() => import("./pages/Index"));
-const Auth = React.lazy(() => import("./pages/Auth"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const MentorsLecturers = React.lazy(() => import("./pages/MentorsLecturers"));
+// Import all pages directly (no lazy loading)
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
+import MentorsLecturers from "./pages/MentorsLecturers";
 
 // Note: Uncomment these when the corresponding page files are created
 // const CampaignDetail = React.lazy(() => import("./pages/CampaignDetail"));
@@ -30,13 +30,8 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={
-              <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-              </div>
-            }>
-              <Routes>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/mentors-lecturers" element={<MentorsLecturers />} />
@@ -44,8 +39,7 @@ const App = () => (
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            </Routes>
           </BrowserRouter>
         </TooltipProvider>
     </QueryClientProvider>

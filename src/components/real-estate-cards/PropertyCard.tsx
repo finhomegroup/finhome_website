@@ -10,15 +10,16 @@ export interface PropertyCardProps {
   hasTransactions?: boolean;
 }
 
-const GraphSvg: React.FC = () => (
+const GraphSvg: React.FC<{ strokeColor?: string }> = ({ strokeColor = 'white' }) => (
   <svg width="249" height="53" viewBox="0 0 249 53" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M1 41.5L31 31.5L61 51.5L91 41.5L121 21.5L151 11.5L181 21.5L211 1.5"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      stroke={strokeColor}
     />
-    <path d="M211 1.5L241 8" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 6" />
+    <path d="M211 1.5L241 8" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 6" stroke={strokeColor} />
   </svg>
 );
 
@@ -57,12 +58,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
         
         <div className="relative mb-2">
-          <GraphSvg />
-          <style jsx>{`
-            svg path {
-              stroke: ${isLight ? '#1f2937' : 'white'};
-            }
-          `}</style>
+          <GraphSvg strokeColor={isLight ? '#1f2937' : 'white'} />
         </div>
         
         {hasTransactions && (
