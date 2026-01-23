@@ -4,9 +4,11 @@ import { Play, TrendingUp, Users, DollarSign, Radio } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
 import DotHalftoneHero from './DotHalftoneHero';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const HeroSection = () => {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
 
   return (
     <section className="relative overflow-hidden -mt-16 pt-16" style={{ minHeight: 350 }}>
@@ -20,19 +22,21 @@ const HeroSection = () => {
 
         />
         {/* Desktop: Show DotHalftoneHero */}
-        <div className="hidden md:block">
-          <DotHalftoneHero
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '100%',
-              height: '100%',
-              maxWidth: 'none',
-            }}
-          />
-        </div>
+        {!isMobile && (
+          <div className="hidden md:block">
+            <DotHalftoneHero
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '100%',
+                height: '100%',
+                maxWidth: 'none',
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-24 lg:py-32 xl:py-48 pointer-events-none">
