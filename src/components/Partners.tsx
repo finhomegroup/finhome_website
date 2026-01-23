@@ -55,13 +55,27 @@ const Partners = () => {
           backgroundSize: '10px 10px',
         }}
       />
+      {/* Gradient overlay để làm mờ dần ở top và bottom */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0) 85%, rgba(255, 255, 255, 1) 100%)'
+        }}
+      />
       <div className="w-full relative z-10">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1 sm:mb-4 animate-fade-in">
             {t.partners.title}
           </h2>
-          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-6">
+          <div
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2"
+            style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "14px",
+              lineHeight: "130%"
+            }}
+          >
             {t.partners.description}
           </div>
         </div>

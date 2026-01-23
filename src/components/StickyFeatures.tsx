@@ -190,17 +190,26 @@ export const StickyFeatures: React.FC = () => {
                 >
                   <div >
                     {/* Label */}
-                    <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
+                    <span
+                      className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase"
+                      style={{ fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" }}
+                    >
                       {feature.label}
                     </span>
 
                     {/* Title */}
-                    <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-2 leading-tight">
+                    <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-1 leading-tight">
                       {feature.title}
                     </h3>
 
                     {/* Description */}
-                    <div className="text-base text-gray-700 leading-relaxed">
+                    <div
+                      className="text-gray-700 leading-relaxed"
+                      style={{
+                        fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+                        fontSize: "14px"
+                      }}
+                    >
                       <p>{feature.description}</p>
                     </div>
 

@@ -5,7 +5,7 @@ const DataDrivenInvesting: React.FC = () => {
   const { t } = useLanguage();
   
   return (
-    <section className="relative py-8 sm:py-16 lg:py-20 bg-white overflow-hidden">
+    <section className="relative  sm:py-16 lg:py-20 bg-white overflow-hidden">
       {/* Subtle dot background */}
       {/* <div
         className="absolute inset-0 opacity-60 pointer-events-none"
@@ -16,16 +16,27 @@ const DataDrivenInvesting: React.FC = () => {
         }}
       /> */}
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative py-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile: Text overlays image */}
         <div className="relative lg:hidden">
           {/* Chart illustration */}
-          <div className="w-full flex justify-center  sm:mb-8" style={{ maxHeight: '300px', overflow: 'hidden' }}>
+          <div className="w-full flex justify-center sm:mb-8 relative" style={{ maxHeight: '220px', overflow: 'hidden' }}>
             <img
               src="/chart_2.png"
               alt="Data-driven investing chart"
-              className="w-full max-w-4xl sm:max-w-5xl h-auto object-cover object-center"
-              style={{ maxHeight: '300px', width: '100%' }}
+              className="w-full max-w-4xl sm:max-w-5xl h-auto object-cover"
+              style={{ 
+                maxHeight: '250px', 
+                width: '100%',
+                objectPosition: 'top center'
+              }}
+            />
+            {/* Gradient fade overlay ở dưới để làm mờ dần phần dưới */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 1) 100%)'
+              }}
             />
           </div>
 
@@ -34,7 +45,14 @@ const DataDrivenInvesting: React.FC = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900  sm:mb-4">
               {t.dataDriven.title}
             </h2>
-            <p className="text-base sm:text-lg px-8 text-gray-900">
+            <p
+              className="px-8 text-gray-900"
+              style={{
+                fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+                fontSize: "14px",
+                lineHeight: "130%"
+              }}
+            >
               {t.dataDriven.subtitle}
               <br />
               {t.dataDriven.subtitleLine2}
