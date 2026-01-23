@@ -123,6 +123,8 @@ export const StickyFeatures: React.FC = () => {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleScroll = () => {
       if (!containerRef.current) return;
 
@@ -179,36 +181,46 @@ export const StickyFeatures: React.FC = () => {
             <div className="grid grid-cols-12 gap-5 md:gap-10 lg:gap-5">
               {/* Text Content */}
               <div className="col-span-12 md:col-span-6 lg:col-span-5 lg:col-start-2">
-                {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    ref={(el) => (itemRefs.current[index] = el)}
-                    className={`py-8 md:py-16 transition-opacity duration-500 ${activeIndex === index ? 'opacity-100' : 'opacity-30'
-                      }`}
-                    data-index={index}
-                  >
-                    <div >
-                      {/* Label */}
-                      <span className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase">
-                        {feature.label}
-                      </span>
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  ref={(el) => (itemRefs.current[index] = el)}
+                  className={`py-8 md:py-16 transition-opacity duration-500 ${
+                    activeIndex === index ? 'opacity-100' : 'opacity-30'
+                  }`}
+                  data-index={index}
+                >
+                  <div >
+                    {/* Label */}
+                    <span
+                      className="inline-block text-sm font-medium tracking-wider text-[#3CB550] uppercase"
+                      style={{ fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" }}
+                    >
+                      {feature.label}
+                    </span>
 
-                      {/* Title */}
-                      <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-2 leading-tight">
-                        {feature.title}
-                      </h3>
+                    {/* Title */}
+                    <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-1 leading-tight">
+                      {feature.title}
+                    </h3>
 
-                      {/* Description */}
-                      <div className="text-base text-gray-700 leading-relaxed">
-                        <p>{feature.description}</p>
+                    {/* Description */}
+                    <div
+                      className="text-gray-700 leading-relaxed"
+                      style={{
+                        fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+                        fontSize: "14px"
+                      }}
+                    >
+                      <p>{feature.description}</p>
+                    </div>
+
+                    {feature.sub_title && (
+                      <div className="mb-4">
+                        <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
+                          {feature.sub_title}
+                        </button>
                       </div>
-
-                      {feature.sub_title && (
-                        <div className="mb-4">
-                          <button className="inline-flex items-center px-5 py-2 rounded-full border border-gray-300 bg-white text-xs sm:text-sm text-gray-800 shadow-sm hover:border-[#3CB550] transition-colors duration-200">
-                            {feature.sub_title}
-                          </button>
-                        </div>
                       )}
 
                       {feature.sub_description && (

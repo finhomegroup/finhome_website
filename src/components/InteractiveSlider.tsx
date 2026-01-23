@@ -59,11 +59,18 @@ export const InteractiveSlider: React.FC = () => {
     <section className="py-12 md:py-24 bg-white" aria-labelledby="interactive-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="mb-8 md:mb-12 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900" id="interactive-heading">
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1 sm:mb-4 animate-fade-in" id="interactive-heading">
             {t.slider.title}
           </h2>
-          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-3 sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2">
+          <div
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2"
+            style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "14px",
+              lineHeight: "130%"
+            }}
+          >
             {t.slider.subtitle}
           </div>
           <div className="mt-6 sm:mt-8">

@@ -40,16 +40,23 @@ const JoinExperience = () => {
   };
 
   return (
-    <section className="relative  md:py-24  overflow-hidden">
+    <section className="relative  md:pt-24  overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Top Section - Text and Signup Form */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1 sm:mb-4 animate-fade-in">
             {t.joinExperience.title}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8">
+          <div
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2 mb-8"
+            style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "14px",
+              lineHeight: "130%"
+            }}
+          >
             {t.joinExperience.description}
-          </p>
+          </div>
 
           {/* Email Input with Button Inside */}
           <form onSubmit={handleSubmit} className="flex justify-center items-center max-w-md mx-auto mb-6">

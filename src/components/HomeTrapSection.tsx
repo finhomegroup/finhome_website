@@ -9,13 +9,20 @@ const HomeTrapSection: React.FC = () => {
   
   return (
     <section id="home-trap" className="relative py-4 bg-white overflow-hidden">
-      <div className="relative max-w-6xl mx-auto px-4 pt-4 sm:px-6 lg:px-8  sm:py-16 lg:py-20">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8  sm:py-16 lg:py-20">
         {/* Header Section - Left aligned */}
         <div className="text-center mb-8 sm:mb-10 lg:mb-12">
           <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2 sm:mb-6">
             {t.homeTrap.title}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 leading-relaxed max-w-3xl">
+          <p
+            className="text-gray-900 max-w-3xl px-[0.38rem]"
+            style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "15px",
+              lineHeight: "150%"
+            }}
+          >
             {t.homeTrap.subtitle}
           </p>
         </div>

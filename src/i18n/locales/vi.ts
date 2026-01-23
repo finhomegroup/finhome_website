@@ -106,7 +106,8 @@ export const vi = {
   // Portfolio Performance
   portfolio: {
     title: 'Từ dữ liệu đến tác động',
-    subtitle: 'Dữ liệu được đo lường bằng tác động thực tế tại FinHome',
+    subtitle: 'Dữ liệu được đo lường',
+    subtitleLine2: 'bằng tác động thực tế tại FinHome',
     metrics: {
       homesAnalyzed: 'BĐS được phân tích',
       riskSignals: 'Tín hiệu rủi ro xử lý',

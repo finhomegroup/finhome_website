@@ -93,7 +93,7 @@ const ThrivingStartups = () => {
   const getTitle = (founder: Founder) => (language === 'vi' && founder.titleVi ? founder.titleVi : founder.title);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
