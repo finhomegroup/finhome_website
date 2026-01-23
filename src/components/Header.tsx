@@ -16,18 +16,18 @@ const Header = () => {
 
   return (
     <header className="w-full py-3 flex justify-center sticky top-0 z-50 relative">
-             <div className="flex items-center w-full max-w-7xl px-6 py-2 rounded-full bg-white shadow-sm">
+      <div className="flex items-center w-full max-w-7xl px-6 py-2 rounded-full bg-white shadow-sm">
         <div className="flex items-center justify-between w-full">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Logo />
           </div>
-          
+
           {/* Search Bar */}
           <div className="hidden sm:flex items-center flex-1 max-w-md mx-4">
             <SearchBar />
           </div>
-          
+
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center">
             <DesktopNavigation />
@@ -38,8 +38,8 @@ const Header = () => {
             <LanguageSwitcher />
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
+          {/* Mobile Menu Button - Hidden as requested */}
+          <div className="hidden md:hidden flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
