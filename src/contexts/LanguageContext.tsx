@@ -22,11 +22,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       
       // Detect browser language
       const browserLang = navigator.language.toLowerCase();
-      if (browserLang.startsWith('vi')) {
-        return 'vi';
+      if (browserLang.startsWith('en')) {
+        return 'en';
       }
     }
-    return 'en';
+    return 'vi';
   });
 
   const setLanguage = (lang: Language) => {
