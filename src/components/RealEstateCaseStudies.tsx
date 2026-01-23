@@ -4,6 +4,7 @@ import { AnimatedScene, SceneLayout } from './real-estate-cards/AnimatedScene';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DotHalftone from './DotHalftone';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Project {
   name: string;
@@ -94,6 +95,7 @@ const caseStudies: CaseStudyData[] = [
 
 export const RealEstateCaseStudies: React.FC = () => {
   const { t, language } = useLanguage();
+  const isMobile = useIsMobile();
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFade, setShowFade] = useState(false);
   const [isAtEnd, setIsAtEnd] = useState(false);
@@ -353,8 +355,8 @@ export const RealEstateCaseStudies: React.FC = () => {
                 <button
                   key={i}
                   className={`border-none flex flex-shrink-0 flex-grow-0 md:flex-grow items-center justify-center rounded-full px-2.5 sm:px-4 md:px-8 py-1.5 md:py-3 text-xs sm:text-sm md:text-lg text-gray-800 cursor-pointer transition-all duration-200 ${i === activeIndex
-                      ? 'shadow-[0_0_0_1px_rgba(0,0,0,0.05)_inset,0_-1px_0_rgba(0,0,0,0.1)_inset,0px_-48px_24px_-24px_rgba(0,0,0,0.02)_inset,0px_4px_8px_0px_rgba(0,0,0,0.05),0px_2px_4px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(0,0,0,0.05)]'
-                      : 'hover:bg-gray-800/5'
+                    ? 'shadow-[0_0_0_1px_rgba(0,0,0,0.05)_inset,0_-1px_0_rgba(0,0,0,0.1)_inset,0px_-48px_24px_-24px_rgba(0,0,0,0.02)_inset,0px_4px_8px_0px_rgba(0,0,0,0.05),0px_2px_4px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(0,0,0,0.05)]'
+                    : 'hover:bg-gray-800/5'
                     }`}
                   style={{
                     backgroundColor: i === activeIndex ? c.activeBgColor : 'transparent',
@@ -436,25 +438,27 @@ export const RealEstateCaseStudies: React.FC = () => {
                           WebkitMaskRepeat: 'repeat',
                         }}
                       />
-                      <DotHalftone
-                        src={currentImageSrc}
-                        nextSrc={nextVisualIndex !== undefined ? nextImageSrc : undefined}
-                        rows={100}
-                        columns={100}
-                        cellSize={8}
-                        transitionDuration={750}
-                        rippleEffect
-                        rippleIntensity={0.12}
-                        rippleFrequency={12.0}
-                        objectFit="contain"
-                        fill={currentFill}
-                        nextFill={nextFill}
-                        fillTransitionDuration={500}
-                        fillTrigger={fillTick}
-                        style={{ pointerEvents: 'none' }}
-                        className="logo-dots"
-                        onTransitionComplete={handleHalftoneTransitionComplete}
-                      />
+                      {!isMobile && (
+                        <DotHalftone
+                          src={currentImageSrc}
+                          nextSrc={nextVisualIndex !== undefined ? nextImageSrc : undefined}
+                          rows={100}
+                          columns={100}
+                          cellSize={8}
+                          transitionDuration={750}
+                          rippleEffect
+                          rippleIntensity={0.12}
+                          rippleFrequency={12.0}
+                          objectFit="contain"
+                          fill={currentFill}
+                          nextFill={nextFill}
+                          fillTransitionDuration={500}
+                          fillTrigger={fillTick}
+                          style={{ pointerEvents: 'none' }}
+                          className="logo-dots"
+                          onTransitionComplete={handleHalftoneTransitionComplete}
+                        />
+                      )}
                     </div>
                     {/* Cards Container */}
                     <div className="relative z-10 h-full flex flex-col items-center justify-center">
@@ -490,8 +494,8 @@ export const RealEstateCaseStudies: React.FC = () => {
                         <button
                           key={idx}
                           className={`px-4 py-2 border border-gray-300 rounded-full text-sm font-medium transition-colors ${idx === 0
-                              ? 'bg-gray-100 text-gray-700'
-                              : 'bg-white text-gray-700 hover:bg-gray-50'
+                            ? 'bg-gray-100 text-gray-700'
+                            : 'bg-white text-gray-700 hover:bg-gray-50'
                             }`}
                         >
                           {project.name}

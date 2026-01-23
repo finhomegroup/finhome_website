@@ -16,6 +16,7 @@ import LogoRamp from '~/assets/svg/logos/ramp.svg';
 import LogoBestEgg from '~/assets/svg/logos/bestegg.svg';
 import DotHalftone from '~/components/DotHalftone';
 import { useCarouselCardVisibility } from '~/utils/useCarouselCardVisibility';
+import { useIsMobile } from '@/hooks/use-mobile';
 interface Product {
   name: string;
 }
@@ -279,11 +280,11 @@ const TabButton = styled.button<{
     box-shadow 0.1s;
   &:hover {
     ${({ active }) =>
-      !active
-        ? css`
+    !active
+      ? css`
             background: rgba(var(--rgb-blue-800), 0.05);
           `
-        : null}
+      : null}
   }
   svg {
     height: 24px;
@@ -624,6 +625,7 @@ const useLayoutMode = () => {
 
 export const SectionCaseStudies: React.FC = () => {
   const { isClassicLayout, isCarouselLayout } = useLayoutMode();
+  const isMobile = useIsMobile();
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [showFade, setShowFade] = React.useState(false);
   const [isAtEnd, setIsAtEnd] = React.useState(false);
@@ -1471,7 +1473,7 @@ export const SectionCaseStudies: React.FC = () => {
                         </Column>
                         <Column>
                           <Testimonial>
-                          <Text as="blockquote" lineHeight="26px" size={20} p={0}>
+                            <Text as="blockquote" lineHeight="26px" size={20} p={0}>
                               {caseStudies[activeIndex].quote}
                             </Text>
                             <Flex gap="8px" alignItems="center" mt="24px">
@@ -1492,25 +1494,27 @@ export const SectionCaseStudies: React.FC = () => {
                   >
                     <CaseStudyVisual aria-hidden $dotColor={csColor.dotColor}>
                       <BlurredBG $dotColor={csColor.dotColor} />
-                      <DotHalftone
-                        src={currentImageSrc}
-                        nextSrc={nextVisualIndex !== undefined ? nextImageSrc : undefined}
-                        rows={100}
-                        columns={100}
-                        cellSize={8}
-                        transitionDuration={750}
-                        rippleEffect
-                        rippleIntensity={0.12}
-                        rippleFrequency={12.0}
-                        objectFit="contain"
-                        fill={currentFill}
-                        nextFill={nextFill}
-                        fillTransitionDuration={500}
-                        fillTrigger={fillTick}
-                        style={{ pointerEvents: 'none' }}
-                        className="logo-dots"
-                        onTransitionComplete={handleHalftoneTransitionComplete}
-                      />
+                      {!isMobile && (
+                        <DotHalftone
+                          src={currentImageSrc}
+                          nextSrc={nextVisualIndex !== undefined ? nextImageSrc : undefined}
+                          rows={100}
+                          columns={100}
+                          cellSize={8}
+                          transitionDuration={750}
+                          rippleEffect
+                          rippleIntensity={0.12}
+                          rippleFrequency={12.0}
+                          objectFit="contain"
+                          fill={currentFill}
+                          nextFill={nextFill}
+                          fillTransitionDuration={500}
+                          fillTrigger={fillTick}
+                          style={{ pointerEvents: 'none' }}
+                          className="logo-dots"
+                          onTransitionComplete={handleHalftoneTransitionComplete}
+                        />
+                      )}
                     </CaseStudyVisual>
 
                     <Flex height="100%" flexDirection="column" justifyContent="center">

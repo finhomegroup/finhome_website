@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Play, TrendingUp, Users, DollarSign, Radio } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
-import DotHalftoneHero from './DotHalftoneHero';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+const DotHalftoneHero = React.lazy(() => import('./DotHalftoneHero'));
 
 const HeroSection = () => {
   const { t } = useLanguage();
@@ -24,17 +25,19 @@ const HeroSection = () => {
         {/* Desktop: Show DotHalftoneHero */}
         {!isMobile && (
           <div className="hidden md:block">
-            <DotHalftoneHero
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '100%',
-                height: '100%',
-                maxWidth: 'none',
-              }}
-            />
+            <Suspense fallback={null}>
+              <DotHalftoneHero
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: 'none',
+                }}
+              />
+            </Suspense>
           </div>
         )}
       </div>
