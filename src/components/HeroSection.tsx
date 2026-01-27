@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const DotHalftoneHero = React.lazy(() => import('./DotHalftoneHero'));
 
 const HeroSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const isMobile = useIsMobile();
 
   return (
@@ -62,6 +62,7 @@ const HeroSection = () => {
             <h1 className="mb-4 sm:mb-6">
               <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 leading-tight">
                 <TypeAnimation
+                  key={`title1-${language}`}
                   sequence={[
                     t.hero.title1,
                     2000,
@@ -74,6 +75,7 @@ const HeroSection = () => {
               </div>
               <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 leading-tight sm:mt-2">
                 <TypeAnimation
+                  key={`title2-${language}`}
                   sequence={[
                     t.hero.title2,
                     2000,
@@ -85,10 +87,10 @@ const HeroSection = () => {
                 />
               </div>
               <div
-                className="text-base md:text-lg text-gray-600 leading-relaxed mt-1 sm:mt-6 max-w-2xl sm:max-w-3xl text-left"
-                style={{ fontSize: '20px' }}
+                className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed mt-1 sm:mt-6 max-w-2xl sm:max-w-3xl text-left"
               >
                 <TypeAnimation
+                  key={`desc-${language}`}
                   sequence={[
                     t.hero.description,
                     2000,

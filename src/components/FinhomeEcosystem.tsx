@@ -13,16 +13,15 @@ const FinhomeEcosystem: React.FC = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1 sm:mb-4">
               {t.ecosystem.title}
             </h2>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 mb-4 sm:mb-6" style={{
+            <p className="text-base md:text-lg lg:text-xl text-gray-900 mb-4 sm:mb-6" style={{
               fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-              fontSize: "20px",
               lineHeight: "150%"
             }}>
               {t.ecosystem.subtitle}
             </p>
             <p
-              className="text-base md:text-lg text-gray-700 leading-relaxed mb-6 sm:mb-8 max-w-3xl mx-auto lg:mx-0"
-              style={{ textAlign: 'justify', textAlignLast: 'left', fontSize: '20px' }}
+              className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed mb-6 sm:mb-8 max-w-3xl mx-auto lg:mx-0"
+              style={{ textAlign: 'justify', textAlignLast: 'left' }}
             >
               {t.ecosystem.description}
             </p>

@@ -41,7 +41,7 @@ const DataDrivenInvesting: React.FC = () => {
           </div>
 
           {/* Title and Subtitle - Overlay on mobile */}
-          <div className="absolute top-[-5%] sm:top-[16%] left-4 sm:left-6 right-4 sm:right-6 text-left">
+          <div className="absolute top-[-5%] sm:top-[16%] left-4 sm:left-6 right-4 sm:right-6 text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900  sm:mb-4">
               {t.dataDriven.title}
             </h2>
@@ -49,7 +49,7 @@ const DataDrivenInvesting: React.FC = () => {
               className="text-gray-900"
               style={{
                 fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                fontSize: "20px",
+                
                 lineHeight: "130%"
               }}
             >

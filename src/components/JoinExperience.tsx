@@ -61,7 +61,7 @@ const JoinExperience = () => {
               className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl md:max-w-none mx-auto md:mx-0 px-2 md:px-0 mb-8"
               style={{
                 fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                fontSize: "20px",
+                
                 lineHeight: "130%"
               }}
             >

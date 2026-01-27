@@ -26,11 +26,9 @@ const HomeTrapSection: React.FC = () => {
             {t.homeTrap.title}
           </h2>
           <p
-            className="relative text-gray-900 max-w-xl sm:max-w-2xl mx-auto px-[0.38rem]"
+            className="relative text-base md:text-lg lg:text-xl text-gray-600 max-w-xl sm:max-w-2xl mx-auto px-[0.38rem] leading-relaxed sm:mt-4"
             style={{
               fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-              fontSize: "20px",
-              lineHeight: "150%"
             }}
           >
             {t.homeTrap.subtitle}

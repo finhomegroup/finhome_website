@@ -514,11 +514,11 @@ export const RealEstateCaseStudies: React.FC = () => {
 
                   {/* Project Buttons - Mobile */}
                   {csActive.projects && (
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 -mx-4 px-4 scrollbar-hide">
                       {csActive.projects.map((project, idx) => (
                         <button
                           key={idx}
-                          className={`px-4 py-2 border border-gray-300 rounded-full text-sm font-medium transition-colors ${idx === 0
+                          className={`px-3 py-1.5 border border-gray-300 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${idx === 0
                             ? 'bg-gray-100 text-gray-700'
                             : 'bg-white text-gray-700 hover:bg-gray-50'
                             }`}
@@ -533,11 +533,10 @@ export const RealEstateCaseStudies: React.FC = () => {
                   <div className="relative">
                     <div className="text-6xl font-bold text-gray-300 leading-none mb-2">"</div>
                     <p
-                      className="text-[20px] leading-[130%] font-manue text-gray-600 -mt-4 "
+                      className="text-base leading-relaxed font-manue text-gray-600 -mt-2"
                       style={{
                         fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                        fontSize: "20px",
-                        lineHeight: "130%"
+                        lineHeight: "150%"
                       }}
                     >
                       {getQuote(csActive)}

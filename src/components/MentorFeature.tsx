@@ -177,7 +177,7 @@ const MentorFeature = () => {
         </h2>
         <div className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2" style={{
           fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-          fontSize: "20px",
+          
           lineHeight: "130%"
         }}>
           {t.mentorFeature.description}
@@ -190,9 +190,9 @@ const MentorFeature = () => {
       </div>
              <div className="relative">
         {/* Left gradient overlay */}
-        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute left-0 top-0 w-6 md:w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         {/* Right gradient overlay */}
-        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 w-6 md:w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
          
          <div className="marquee-container">
            <div className="marquee-track">
@@ -209,6 +209,8 @@ const MentorFeature = () => {
             width: 100%;
             overflow: hidden;
             position: relative;
+            padding-top: 20px;
+            padding-bottom: 20px;
           }
 
           .marquee-track {

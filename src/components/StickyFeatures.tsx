@@ -200,16 +200,15 @@ export const StickyFeatures: React.FC = () => {
                     </span>
 
                     {/* Title */}
-                    <h3 className="text-3xl mb-4 md:text-4xl font-semibold text-gray-900 mt-1 leading-tight">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mt-1 mb-4 leading-tight">
                       {feature.title}
                     </h3>
 
                     {/* Description */}
                     <div
-                      className="text-gray-700 leading-relaxed"
+                      className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed"
                       style={{
                         fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                        fontSize: "20px"
                       }}
                     >
                       <p>{feature.description}</p>
