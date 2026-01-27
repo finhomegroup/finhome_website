@@ -25,7 +25,7 @@ const TestimonialSection = () => {
           <div className="text-black order-1 lg:order-2">
             <div className="max-w-2xl lg:ml-auto">
               <blockquote className="text-base sm:text-lg lg:text-xl leading-relaxed mb-6 lg:mb-8 text-justify">
-                VLIC plays a vital role for investors by helping them decode the 'entrepreneurial DNA', thereby reducing the failure rate of startups in their portfolios.
+                VLIC plays a vital role for investors by helping them decode thea 'entrepreneurial DNA', thereby reducing the failure rate of startups in their portfolios.
               </blockquote>
               
               <blockquote className="text-base sm:text-lg lg:text-xl leading-relaxed mb-6 lg:mb-8 text-justify">
