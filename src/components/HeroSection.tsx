@@ -60,7 +60,7 @@ const HeroSection = () => {
             </div>
 
             <h1 className="mb-4 sm:mb-6">
-              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 leading-tight">
                 <TypeAnimation
                   sequence={[
                     t.hero.title1,
@@ -72,7 +72,7 @@ const HeroSection = () => {
                   cursor={false}
                 />
               </div>
-              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight sm:mt-2">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-900 leading-tight sm:mt-2">
                 <TypeAnimation
                   sequence={[
                     t.hero.title2,
@@ -84,7 +84,10 @@ const HeroSection = () => {
                   cursor={false}
                 />
               </div>
-              <div className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed mt-1 sm:mt-6 max-w-2xl sm:max-w-3xl text-left">
+              <div
+                className="text-base md:text-lg text-gray-600 leading-relaxed mt-1 sm:mt-6 max-w-2xl sm:max-w-3xl text-left"
+                style={{ fontSize: '20px' }}
+              >
                 <TypeAnimation
                   sequence={[
                     t.hero.description,

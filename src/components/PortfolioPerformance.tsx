@@ -7,22 +7,20 @@ const PortfolioPerformance = () => {
 
   return (
     <section className="py-4  overflow-hidden relative lg:min-h-[600px]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-8 sm:mb-10 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1 sm:mb-4 animate-fade-in">
             {t.portfolio.title}
           </h2>
           <div
-            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2"
+            className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2"
             style={{
               fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-              fontSize: "14px",
+              fontSize: "20px",
               lineHeight: "130%"
             }}
           >
             {t.portfolio.subtitle}
-            <br />
-            {t.portfolio.subtitleLine2}
           </div>
         </div>
 

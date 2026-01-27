@@ -41,21 +41,19 @@ const DataDrivenInvesting: React.FC = () => {
           </div>
 
           {/* Title and Subtitle - Overlay on mobile */}
-          <div className="absolute top-[-5%] sm:top-[16%] left-4 sm:left-6 right-4 sm:right-6 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900  sm:mb-4">
+          <div className="absolute top-[-5%] sm:top-[16%] left-4 sm:left-6 right-4 sm:right-6 text-left">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900  sm:mb-4">
               {t.dataDriven.title}
             </h2>
             <p
-              className="px-8 text-gray-900"
+              className="text-gray-900"
               style={{
                 fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                fontSize: "14px",
+                fontSize: "20px",
                 lineHeight: "130%"
               }}
             >
               {t.dataDriven.subtitle}
-              <br />
-              {t.dataDriven.subtitleLine2}
             </p>
           </div>
         </div>
@@ -64,16 +62,24 @@ const DataDrivenInvesting: React.FC = () => {
         <div className="hidden lg:grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Left text content */}
           <div className="w-full">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3 md:whitespace-nowrap">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
               {t.dataDriven.title}
             </h2>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 mb-6">
+            <p
+              className="text-base md:text-lg text-gray-900 mb-6"
+              style={{
+                fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+                fontSize: '20px',
+                lineHeight: '150%'
+              }}
+            >
               {t.dataDriven.subtitle}
-              <br />
-              {t.dataDriven.subtitleLine2}
             </p>
 
-            <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed mb-4">
+            <p
+              className="text-base text-gray-700 leading-relaxed mb-4"
+              style={{ textAlign: 'justify', textAlignLast: 'left', fontSize: '20px' }}
+            >
               {t.dataDriven.description}
             </p>
 
@@ -103,7 +109,10 @@ const DataDrivenInvesting: React.FC = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed text-left">
+            <p
+              className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed"
+              style={{ textAlign: 'justify', textAlignLast: 'left' }}
+            >
               {t.dataDriven.description}
             </p>
           </div>

@@ -32,7 +32,7 @@ const ServiceCardItem: React.FC<ServiceCard> = ({
             {label}
           </p>
         )}
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-2">
           {title}
         </h3>
         <p className="text-gray-600 text-sm sm:text-base mb-4">

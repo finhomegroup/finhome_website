@@ -97,10 +97,17 @@ const ThrivingStartups = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-2">
             {t.testimonials.title}
           </h2>
-          <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-8">
+          <div
+            className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-8"
+            style={{
+              fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
+              fontSize: "20px",
+              lineHeight: "130%"
+            }}
+          >
             {t.testimonials.subtitle}
           </div>
         </div>

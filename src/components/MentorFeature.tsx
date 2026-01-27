@@ -136,7 +136,7 @@ const MentorFeature = () => {
           {/* Info section below image */}
           {mentor.name && mentor.title && (
             <div className="p-6 text-left flex-grow flex flex-col">
-              <h3 className="text-gray-900 text-xl font-bold mb-2 min-h-[56px]">
+              <h3 className="text-gray-900 text-xl font-semibold mb-2 min-h-[56px]">
                 {mentor.name}
               </h3>
               <p className="text-gray-600 text-sm mb-3 min-h-[40px]">
@@ -172,12 +172,12 @@ const MentorFeature = () => {
       aria-label="Meet our mentors showcase"
     >
       <div className="container mx-auto px-4 text-center mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-1">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-1">
           {t.mentorFeature.title}
         </h2>
-        <div className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2" style={{
+        <div className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed  sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2" style={{
           fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-          fontSize: "14px",
+          fontSize: "20px",
           lineHeight: "130%"
         }}>
           {t.mentorFeature.description}

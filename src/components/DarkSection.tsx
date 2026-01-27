@@ -43,7 +43,7 @@ const DarkSection = () => {
                   </div>
                   
                   {/* Main heading */}
-                  <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+                  <h2 className="text-3xl lg:text-4xl xl:text-5xl font-semibold mb-6 leading-tight">
                     <span style={{ color: '#4dd4ac' }}>Flexible building</span>
                     <br />
                     <span className="text-gray-300">blocks built on USD</span>

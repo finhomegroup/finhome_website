@@ -86,7 +86,6 @@ export const en = {
   dataDriven: {
     title: 'Start with data',
     subtitle: 'Data makes the foundation',
-    subtitleLine2: 'for every buying and investment decision',
     description: 'FinHome integrates real estate and market data into a financial platform. With REFI, every buying or investment decision is viewed in a long-term context, helping you escape the maze of debt, price bubbles, timing pressure, and potential legal risks.',
     cta: 'Determine risk appetite',
   },
@@ -107,7 +106,6 @@ export const en = {
   portfolio: {
     title: 'From Data to Impact',
     subtitle: 'Data measured',
-    subtitleLine2: 'by real-world impact at FinHome',
     metrics: {
       homesAnalyzed: 'Homes Analyzed',
       riskSignals: 'Risk Signals Processed',

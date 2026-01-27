@@ -48,10 +48,10 @@ const JoinExperience = () => {
             {t.joinExperience.title}
           </h2>
           <div
-            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2 mb-8"
+            className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed sm:mt-4 max-w-2xl sm:max-w-3xl mx-auto px-2 mb-8"
             style={{
               fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-              fontSize: "14px",
+              fontSize: "20px",
               lineHeight: "130%"
             }}
           >

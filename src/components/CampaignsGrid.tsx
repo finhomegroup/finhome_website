@@ -194,7 +194,7 @@ const CampaignsGrid = () => {
     return (
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 mb-4">
             VLIC Project Portfolio
           </h2>
           <p className="text-red-600 mb-4">Failed to load projects. Please try again later.</p>

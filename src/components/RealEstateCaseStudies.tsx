@@ -508,7 +508,7 @@ export const RealEstateCaseStudies: React.FC = () => {
                   </div>
 
                   {/* Title - Mobile */}
-                  <h3 className="text-2xl font-bold text-gray-900 leading-tight">
+                  <h3 className="text-2xl font-semibold text-gray-900 leading-tight">
                     {getTitle(csActive)}
                   </h3>
 
@@ -533,10 +533,10 @@ export const RealEstateCaseStudies: React.FC = () => {
                   <div className="relative">
                     <div className="text-6xl font-bold text-gray-300 leading-none mb-2">"</div>
                     <p
-                      className="text-[14px] leading-[130%] font-manue text-gray-600 -mt-4 "
+                      className="text-[20px] leading-[130%] font-manue text-gray-600 -mt-4 "
                       style={{
                         fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                        fontSize: "14px",
+                        fontSize: "20px",
                         lineHeight: "130%"
                       }}
                     >

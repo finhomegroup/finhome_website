@@ -174,7 +174,7 @@ export const StickyFeatures: React.FC = () => {
 
   return (
     <section className="relative py-8 md:py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
         <div className="relative">
           <div className="px-0 md:px-6">
             {/* Content Section (Left) */}
@@ -200,7 +200,7 @@ export const StickyFeatures: React.FC = () => {
                     </span>
 
                     {/* Title */}
-                    <h3 className="text-3xl mb-4 md:text-4xl font-bold text-gray-900 mt-1 leading-tight">
+                    <h3 className="text-3xl mb-4 md:text-4xl font-semibold text-gray-900 mt-1 leading-tight">
                       {feature.title}
                     </h3>
 
@@ -209,7 +209,7 @@ export const StickyFeatures: React.FC = () => {
                       className="text-gray-700 leading-relaxed"
                       style={{
                         fontFamily: "'Maison Neue', 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif",
-                        fontSize: "14px"
+                        fontSize: "20px"
                       }}
                     >
                       <p>{feature.description}</p>

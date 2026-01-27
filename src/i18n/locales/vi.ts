@@ -85,8 +85,7 @@ export const vi = {
   // Data Driven Investing
   dataDriven: {
     title: 'Bắt đầu bằng dữ liệu',
-    subtitle: 'Dữ liệu làm nền',
-    subtitleLine2: 'cho mọi quyết định mua và đầu tư',
+    subtitle: 'Dữ liệu làm nền cho mọi quyết định mua và đầu tư',
     description: 'FinHome đưa dữ liệu bất động sản và thị trường vào một nền tảng tài chính. Với REFI, mỗi quyết định mua hay đầu tư được nhìn trong bối cảnh dài hạn, giúp bạn thoát khỏi mê cung của nợ vay, bẫy ảo giá, áp lực thời điểm mua và những rủi ro pháp lý tiềm ẩn.',
     cta: 'Xác định khẩu vị rủi ro',
   },
@@ -106,8 +105,7 @@ export const vi = {
   // Portfolio Performance
   portfolio: {
     title: 'Từ dữ liệu đến tác động',
-    subtitle: 'Dữ liệu được đo lường',
-    subtitleLine2: 'bằng tác động thực tế tại FinHome',
+    subtitle: 'Dữ liệu được đo lường bằng tác động thực tế tại FinHome',
     metrics: {
       homesAnalyzed: 'BĐS được phân tích',
       riskSignals: 'Tín hiệu rủi ro xử lý',
