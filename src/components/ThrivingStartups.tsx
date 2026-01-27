@@ -223,19 +223,7 @@ const ThrivingStartups = () => {
               <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-[#3CB550] transition-colors duration-200" />
             </button>
             
-            {/* Pagination Dots */}
-            <div className="flex gap-2">
-              {founders.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    index === currentIndex ? 'bg-[#3CB550]' : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                  aria-label={`Go to testimonial ${index + 1}`}
-                />
-              ))}
-            </div>
+
             
             <button
               onClick={nextTestimonial}
