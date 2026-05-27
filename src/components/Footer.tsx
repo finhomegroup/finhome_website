@@ -1,5 +1,6 @@
 import React from 'react';
 import { Facebook, Instagram, Linkedin, Twitter, MapPin, Mail, Headphones } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
@@ -59,14 +60,14 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+                  <Link to="/privacy-policy" className="text-gray-300 hover:text-white text-sm transition-colors">
                     {t.footer.privacyPolicy}
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+                  <Link to="/terms" className="text-gray-300 hover:text-white text-sm transition-colors">
                     {t.footer.termsOfUse}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
