@@ -159,9 +159,8 @@ export const vi = {
   // Footer
   footer: {
     contact: 'Liên hệ',
-    address: '51 Nguyễn Thị Minh Khai, Quận 1, TP HCM',
-    email: 'support@finhome.group',
-    phone: 'Chuyên gia tư vấn BĐS: 0963 177 497',
+    email: 'finhome.support@gmail.com',
+    phone: '0963 177 497',
     features: 'Tính năng',
     featureCompass: 'La bàn tài chính',
     featureLighthouse: 'Hải đăng tài chính',

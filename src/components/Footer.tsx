@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, Twitter, MapPin, Mail, Headphones } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, Mail, Headphones } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -25,10 +25,6 @@ const Footer = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">{t.footer.contact}</h3>
               <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" />
-                  <p className="text-gray-300 text-sm">{t.footer.address}</p>
-                </div>
                 <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" />
                   <p className="text-gray-300 text-sm">{t.footer.email}</p>

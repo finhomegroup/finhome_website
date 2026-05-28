@@ -159,9 +159,8 @@ export const en = {
   // Footer
   footer: {
     contact: 'Contact',
-    address: '51 Nguyen Thi Minh Khai, District 1, Ho Chi Minh City',
-    email: 'support@finhome.group',
-    phone: 'Real Estate Consultant: 0963 177 497',
+    email: 'finhome.support@gmail.com',
+    phone: '0963 177 497',
     features: 'Features',
     featureCompass: 'Financial Compass',
     featureLighthouse: 'Financial Lighthouse',
