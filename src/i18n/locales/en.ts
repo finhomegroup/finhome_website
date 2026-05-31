@@ -159,7 +159,7 @@ export const en = {
   // Footer
   footer: {
     contact: 'Contact',
-    email: 'finhome.support@gmail.com',
+    email: 'hotro@finhome.group',
     phone: '0963 177 497',
     features: 'Features',
     featureCompass: 'Financial Compass',

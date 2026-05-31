@@ -159,7 +159,7 @@ export const vi = {
   // Footer
   footer: {
     contact: 'Liên hệ',
-    email: 'finhome.support@gmail.com',
+    email: 'hotro@finhome.group',
     phone: '0963 177 497',
     features: 'Tính năng',
     featureCompass: 'La bàn tài chính',
