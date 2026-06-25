@@ -1,0 +1,119 @@
+import type { Metadata } from "next";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/reveal";
+import { Markdown } from "@/components/markdown";
+import { img } from "@/lib/images";
+import { POSTS, getPost } from "@/content/posts";
+
+export function generateStaticParams() {
+  return POSTS.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPost(slug);
+  if (!post) return {};
+  return {
+    title: `${post.title} — FinHome`,
+    description: post.excerpt,
+  };
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = getPost(slug);
+  if (!post) notFound();
+
+  const body = await fs.readFile(
+    path.join(process.cwd(), "content/posts", slug + ".md"),
+    "utf8",
+  );
+
+  const related = POSTS.filter((p) => p.slug !== slug).slice(0, 3);
+
+  return (
+    <>
+      <SiteHeader />
+      <main>
+        <article className="py-16 md:py-24">
+          <Container>
+            <Reveal className="mx-auto max-w-3xl">
+              <span className="inline-block rounded-full bg-bg-soft px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
+                {post.category}
+              </span>
+              <h1 className="mt-4 font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
+                {post.title}
+              </h1>
+              <p className="mt-3 text-sm text-ink-3">{post.readingTime}</p>
+            </Reveal>
+
+            <Reveal className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl">
+              <img
+                src={img(post.cover)}
+                alt={post.title}
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </Reveal>
+
+            <div className="mx-auto mt-10 max-w-3xl">
+              <Markdown source={body} />
+            </div>
+          </Container>
+        </article>
+
+        <section className="border-t border-ink-4/15 bg-bg-soft py-16 md:py-24">
+          <Container>
+            <Reveal>
+              <h2 className="font-display text-2xl text-ink md:text-3xl">
+                Bài viết liên quan
+              </h2>
+            </Reveal>
+            <Reveal className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+              {related.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/blog/${p.slug}`}
+                  className="group flex flex-col overflow-hidden rounded-3xl border border-ink-4/15 bg-white shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <img
+                      src={img(p.cover)}
+                      alt={p.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <span className="text-xs font-medium uppercase tracking-wide text-primary">
+                      {p.category}
+                    </span>
+                    <h3 className="mt-2 font-display text-lg leading-snug text-ink">
+                      {p.title}
+                    </h3>
+                    <span className="mt-3 text-xs text-ink-3">
+                      {p.readingTime}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </Reveal>
+          </Container>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
+  );
+}
