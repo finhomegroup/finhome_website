@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "./fonts.css";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Brand palette (from Framer mirror) */
+  --color-primary: #0099ff;
+  --color-brand-green: #17ab48;
+  --color-brand-lime: #a2db46;
+  --color-brand-softgreen: #90d77b;
+  --color-bg-soft: #f7fcf7;
+
+  /* Ink / text */
+  --color-ink: #000000;
+  --color-ink-2: #575757;
+  --color-ink-3: #848484;
+  --color-ink-4: #bcbcbc;
+
+  /* Fonts */
+  --font-sans: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Maison Neue Extended Medium", "Inter", sans-serif;
+  --font-display-book: "Maison Neue Extended Book", "Inter", sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* content width matching Framer */
+.container-fh {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/* Radix accordion open/close animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+.animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+.animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
+}
