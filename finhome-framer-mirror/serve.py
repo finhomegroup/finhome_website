@@ -10,12 +10,17 @@ Server này bỏ query string; nếu không thấy file đúng tên thì tìm fi
 cùng thư mục có dạng "<tên>@..." và phục vụ file đó (mọi biến thể size
 đều trỏ về 1 file đã tải -> đủ để xem giống bản gốc).
 """
+import mimetypes
 import os
 import urllib.parse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 PORT = 8899
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+mimetypes.add_type("application/javascript", ".mjs")
+mimetypes.add_type("image/svg+xml", ".svg")
+mimetypes.add_type("font/woff2", ".woff2")
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -38,6 +43,15 @@ class Handler(SimpleHTTPRequestHandler):
                     return os.path.join(directory, name)
 
         return full  # để super trả 404 nếu thật sự không có
+
+    def guess_type(self, path):
+        # Tên file dạng "abc.png@width=798&height=306" -> đoán MIME từ "abc.png"
+        base = os.path.basename(path)
+        real = base.split("@", 1)[0]
+        ctype, _ = mimetypes.guess_type(real)
+        if ctype:
+            return ctype
+        return super().guess_type(path)
 
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
