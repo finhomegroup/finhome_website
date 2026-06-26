@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:
     "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
-  icons: { icon: "/images/qiB3oKKzF4BijpvumvHCnb6KFvw.png" },
+  // Favicon resolved from app/icon.svg via the file convention.
   openGraph: {
     title: "FinHome",
     description: "FinHome giúp bạn chọn đúng nhà, vay đúng sức.",
