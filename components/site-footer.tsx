@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { img } from "@/lib/images";
 import { FOOTER, CONTACT, LOGO } from "@/content/site";
 
 const SOCIALS = [
@@ -65,7 +64,7 @@ export function SiteFooter() {
       <Container className="py-14 md:py-16">
         <Link href="/" className="inline-flex items-center" aria-label="FinHome">
           <img
-            src={img(LOGO.header)}
+            src={LOGO.header}
             alt="FinHome"
             className="h-7 w-auto [filter:brightness(0)_invert(1)]"
           />

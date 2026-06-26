@@ -41,6 +41,7 @@ export const FOOTER = {
 };
 
 export const LOGO = {
-  header: "y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
-  footer: "9s4vQoO4B1yGmAja7Y9j3ldBNDU.svg",
+  // Direct path under public/ — referenced as-is (no img() lookup).
+  header: "/logo-finhome.svg",
+  footer: "/logo-finhome.svg",
 };

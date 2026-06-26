@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { img } from "@/lib/images";
 import { NAV_ITEMS, CTA_LABEL, CTA_HREF, LOGO } from "@/content/site";
 
 export function SiteHeader() {
@@ -16,7 +15,7 @@ export function SiteHeader() {
         <div className="mx-auto flex h-[50px] max-w-[1076px] items-center justify-between rounded-full bg-white pl-5 pr-[7px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]">
         <Link href="/" className="flex items-center" aria-label="FinHome">
           <img
-            src={img(LOGO.header)}
+            src={LOGO.header}
             alt="FinHome"
             className="h-auto w-[104px] md:w-[116px]"
           />
