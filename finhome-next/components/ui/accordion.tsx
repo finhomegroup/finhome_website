@@ -15,27 +15,47 @@ export function Accordion({
       type="single"
       collapsible
       defaultValue="item-0"
-      className={cn("w-full divide-y divide-ink-4/20", className)}
+      className={cn("flex w-full flex-col gap-3", className)}
     >
       {items.map((item, i) => (
-        <RadixAccordion.Item key={i} value={`item-${i}`} className="py-2">
+        <RadixAccordion.Item
+          key={i}
+          value={`item-${i}`}
+          className="rounded-2xl bg-bg-soft px-5 py-3.5 md:px-6 md:py-4"
+        >
           <RadixAccordion.Header>
-            <RadixAccordion.Trigger className="group flex w-full items-center justify-between gap-4 py-4 text-left text-base font-medium text-ink">
-              <span>{item.q}</span>
-              <svg
-                className="size-5 shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]:rotate-45"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+            <RadixAccordion.Trigger className="group flex w-full items-center justify-between gap-4 text-left">
+              <span className="inline-flex rounded-lg bg-brand-green/10 px-2.5 py-1 fh-h3 text-ink">
+                {i + 1}. {item.q}
+              </span>
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-green text-white">
+                <svg
+                  className="size-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                >
+                  <line
+                    x1="5"
+                    y1="12"
+                    x2="19"
+                    y2="12"
+                  />
+                  <line
+                    x1="12"
+                    y1="5"
+                    x2="12"
+                    y2="19"
+                    className="origin-center transition-transform duration-200 group-data-[state=open]:scale-y-0"
+                  />
+                </svg>
+              </span>
             </RadixAccordion.Trigger>
           </RadixAccordion.Header>
-          <RadixAccordion.Content className="overflow-hidden text-ink-2 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="pb-4 pr-8 leading-relaxed">{item.a}</p>
+          <RadixAccordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <p className="fh-body pt-4">{item.a}</p>
           </RadixAccordion.Content>
         </RadixAccordion.Item>
       ))}

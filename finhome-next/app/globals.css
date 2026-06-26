@@ -6,6 +6,9 @@
   /* Brand palette (from Framer mirror) */
   --color-primary: #0099ff;
   --color-brand-green: #17ab48;
+  /* Green used by the "Thử ngay" CTA pill (sampled from the Framer mirror) */
+  --color-cta: #40b354;
+  --color-cta-hover: #36a449;
   --color-brand-lime: #a2db46;
   --color-brand-softgreen: #90d77b;
   --color-bg-soft: #f7fcf7;
@@ -16,9 +19,9 @@
   --color-ink-3: #848484;
   --color-ink-4: #bcbcbc;
 
-  /* Fonts */
-  --font-sans: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Maison Neue Extended Medium", "Inter", sans-serif;
+  /* Fonts — the Framer site uses Maison Neue Extended for headings AND body. */
+  --font-sans: "Maison Neue Extended Book", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Maison Neue Extended Medium", "Maison Neue Extended Book", "Inter", sans-serif;
   --font-display-book: "Maison Neue Extended Book", "Inter", sans-serif;
 }
 
@@ -35,7 +38,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  letter-spacing: -0.32px;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* content width matching Framer */
@@ -44,6 +49,98 @@ body {
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 20px;
+}
+
+/* "Thử ngay" CTA pill — glossy green surface sampled from the Framer button image
+   (top bevel highlight, darkest ~25%, then lightening toward the bottom). */
+.btn-cta-surface {
+  background-image: linear-gradient(
+    180deg,
+    #79ca87 0%,
+    #54bb66 8%,
+    #3cb14f 25%,
+    #46b74f 42%,
+    #51be4f 56%,
+    #66cb4f 74%,
+    #77d458 92%,
+    #84d86e 100%
+  );
+}
+
+/* ---- Type scale (measured from the Framer mirror @1440px) ---- */
+/* Hero H1: Maison Neue Extended Medium 45px / 1.1 / -0.9px tracking */
+.fh-h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 45px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Section H2: Maison Neue Extended Medium 35px / 1.1 / -1.05px tracking */
+.fh-h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(27px, 3.4vw, 35px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+/* Card / sub heading */
+.fh-h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Body copy: Maison Neue Extended Book 16px / 1.4 / -0.32px, muted ink */
+.fh-body {
+  font-family: var(--font-display-book);
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  color: rgb(87 87 87 / 0.85);
+}
+
+/* Section subtitle / lead under an H2: Maison Book 20px / 1.4 / -0.4px */
+.fh-lead {
+  font-family: var(--font-display-book);
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+  color: rgb(87 87 87 / 0.85);
+}
+
+/* White pill "eyebrow" badge used above the hero headline */
+.fh-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid rgb(0 0 0 / 0.06);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Testimonials infinite marquee (two identical sets → translate -50% loops seamlessly) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* Radix accordion open/close animations */

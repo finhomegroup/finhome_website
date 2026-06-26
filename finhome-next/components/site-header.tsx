@@ -11,30 +11,32 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink-4/20 bg-white/80 backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 bg-transparent">
+      <Container className="pt-[37px]">
+        <div className="mx-auto flex h-[50px] max-w-[1076px] items-center justify-between rounded-full bg-white pl-5 pr-[7px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]">
         <Link href="/" className="flex items-center" aria-label="FinHome">
           <img
             src={img(LOGO.header)}
             alt="FinHome"
-            className="h-7 w-auto"
+            className="h-auto w-[104px] md:w-[116px]"
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-sm text-ink-2 transition-colors hover:text-ink"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="hidden md:block">
-          <Button href={CTA_HREF}>{CTA_LABEL}</Button>
+        <div className="hidden items-center gap-9 md:flex">
+          <nav className="flex items-center gap-[34px]">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="font-display text-[17px] font-medium text-ink-2/80 transition-colors hover:text-ink"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <Button href={CTA_HREF} size="lg">
+            {CTA_LABEL}
+          </Button>
         </div>
 
         <button
@@ -42,7 +44,7 @@ export function SiteHeader() {
           aria-label="Mở menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 md:hidden"
+          className="-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 md:hidden"
         >
           <span className="sr-only">Menu</span>
           {open ? (
@@ -71,29 +73,28 @@ export function SiteHeader() {
             </svg>
           )}
         </button>
-      </Container>
+        </div>
 
-      {open && (
-        <div className="border-t border-ink-4/20 bg-white/95 backdrop-blur-md md:hidden">
-          <Container className="flex flex-col gap-1 py-4">
+        {open && (
+          <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md md:hidden">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-3 text-sm text-ink-2 transition-colors hover:bg-ink/5 hover:text-ink"
+                className="rounded-lg px-3 py-3 text-sm text-ink-2 transition-colors hover:bg-ink/5 hover:text-ink"
               >
                 {item.label}
               </a>
             ))}
-            <div className="mt-2">
+            <div className="mt-1 px-1 pb-1">
               <Button href={CTA_HREF} className="w-full">
                 {CTA_LABEL}
               </Button>
             </div>
-          </Container>
-        </div>
-      )}
+          </div>
+        )}
+      </Container>
     </header>
   );
 }

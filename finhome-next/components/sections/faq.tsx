@@ -5,19 +5,17 @@ import { Reveal } from "@/components/reveal";
 
 export function Faq() {
   return (
-    <section id="hotro" className="py-16 md:py-24">
+    <section id="hotro" className="py-12 md:py-16">
       <Container>
         <Reveal>
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-            <div className="lg:pt-2">
-              <h2 className="font-display text-3xl text-ink md:text-4xl">
-                {FAQ_SECTION.title}
-              </h2>
-              <p className="mt-4 max-w-md text-ink-2">{FAQ_SECTION.subtitle}</p>
-            </div>
-            <div>
-              <Accordion items={FAQ_SECTION.items} />
-            </div>
+          <div className="text-center">
+            <h2 className="fh-h2">{FAQ_SECTION.title}</h2>
+            <p className="fh-lead mx-auto mt-4 max-w-xl">
+              {FAQ_SECTION.subtitle}
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-[820px]">
+            <Accordion items={FAQ_SECTION.items} />
           </div>
         </Reveal>
       </Container>

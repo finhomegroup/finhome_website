@@ -28,6 +28,10 @@ function PostCard({ post, featured }: { post: Post; featured?: boolean }) {
           alt={post.title}
           className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
+        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink shadow-sm backdrop-blur">
+          <span className="size-1.5 rounded-full bg-brand-green" />
+          {post.category}
+        </span>
       </div>
       <div
         className={
@@ -36,9 +40,6 @@ function PostCard({ post, featured }: { post: Post; featured?: boolean }) {
             : "flex flex-1 flex-col gap-2 p-5"
         }
       >
-        <span className="text-xs uppercase tracking-wide text-primary">
-          {post.category}
-        </span>
         <h3
           className={
             featured
@@ -59,17 +60,15 @@ export function News() {
   const [featured, ...rest] = POSTS;
 
   return (
-    <section id="tintuc" className="py-16 md:py-24">
+    <section id="tintuc" className="py-12 md:py-16">
       <Container>
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl text-ink md:text-4xl">
-              {NEWS_SECTION.title}
-            </h2>
-            <p className="mt-4 text-ink-2">{NEWS_SECTION.subtitle}</p>
+            <h2 className="fh-h2">{NEWS_SECTION.title}</h2>
+            <p className="fh-lead mx-auto mt-4 max-w-xl">{NEWS_SECTION.subtitle}</p>
           </div>
 
-          <div className="mt-12 space-y-8">
+          <div className="mt-10 space-y-6">
             <PostCard post={featured} featured />
             <div className="grid gap-6 md:grid-cols-3">
               {rest.map((post) => (
