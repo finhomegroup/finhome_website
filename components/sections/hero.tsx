@@ -7,7 +7,7 @@ export function Hero() {
   return (
     <section
       id="trangchu"
-      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] pb-0 md:pt-[139px]"
+      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] pb-0 md:pt-[162px]"
     >
       {/* Hero background artwork (green gradient + concentric rings), from the Framer original.
           The source is a very wide, short band that sits across the top of the hero. */}
@@ -19,9 +19,9 @@ export function Hero() {
       />
 
       <Container className="relative z-10">
-        <div className="grid items-center gap-10 md:grid-cols-[50%_50%] md:gap-4">
+        <div className="mx-auto flex w-full max-w-[1060px] flex-col items-start gap-10 md:flex-row md:items-center md:justify-between">
           {/* LEFT COLUMN */}
-          <div className="flex flex-col items-start pb-10 md:pb-24">
+          <div className="flex w-full flex-col items-start gap-3 pb-10 md:w-auto md:pb-24">
             <Reveal>
               <span className="fh-eyebrow">
                 <BroadcastIcon />
@@ -30,26 +30,30 @@ export function Hero() {
             </Reveal>
 
             <Reveal delay={0.08}>
-              <h1 className="fh-h1 mt-6 max-w-xl text-balance text-left">
+              <h1 className="fh-h1 max-w-xl text-balance text-left">
                 {HERO.headline}
               </h1>
+            </Reveal>
+
+            <Reveal delay={0.12}>
+              <p className="fh-lead max-w-md text-left">{HERO.subhead}</p>
             </Reveal>
 
             <Reveal delay={0.16}>
               <img
                 src={img(HERO.images.panel)}
                 alt="Tải ứng dụng FinHome trên Google Play và App Store"
-                className="mt-8 h-auto w-[268px] max-w-full"
+                className="h-auto w-[268px] max-w-full"
               />
             </Reveal>
           </div>
 
-          {/* RIGHT COLUMN — phones sit within the right column (matching the Framer size) */}
-          <Reveal delay={0.12} className="relative flex justify-center md:justify-end">
+          {/* RIGHT COLUMN — phone flush to the right edge */}
+          <Reveal delay={0.12} className="relative flex shrink-0 justify-end">
             <img
               src={img(HERO.images.phone)}
               alt="Ứng dụng FinHome"
-              className="pointer-events-none h-auto w-full max-w-[380px] select-none md:mr-12 md:max-w-[451px] lg:mr-16"
+              className="pointer-events-none h-auto w-full max-w-[380px] select-none md:max-w-[451px]"
             />
           </Reveal>
         </div>

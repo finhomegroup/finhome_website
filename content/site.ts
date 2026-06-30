@@ -11,10 +11,11 @@ export const CTA_LABEL = "Thử ngay";
 export const CTA_HREF = "#"; // placeholder until real app URL is provided
 
 export const CONTACT = {
-  email: "hotro@finhome.group",
+  email: "support@finhome.group",
   phone: "0963 177 497",
+  phoneTel: "0963177497",
   phoneLabel: "Chuyên gia tư vấn BĐS: 0963 177 497",
-  address: "51 Nguyễn Thị Minh Khai, Quận 1, TP HCM",
+  address: "Toà Nhà Lexington, 67 Mai Chí Thọ, Bình Trưng, Hồ Chí Minh",
 };
 
 export const FOOTER = {
@@ -32,8 +33,8 @@ export const FOOTER = {
       title: "FinHome",
       links: [
         { label: "Về chúng tôi", href: "#" },
-        { label: "Chính sách bảo mật", href: "#" },
-        { label: "Điều khoản sử dụng", href: "#" },
+        { label: "Chính sách bảo mật", href: "/privacy-policy" },
+        { label: "Điều khoản sử dụng", href: "/terms" },
       ],
     },
   ],
@@ -42,5 +43,5 @@ export const FOOTER = {
 
 export const LOGO = {
   header: "y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
-  footer: "9s4vQoO4B1yGmAja7Y9j3ldBNDU.svg",
+  footer: "/logos/Logo_7.png",
 };

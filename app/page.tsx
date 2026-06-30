@@ -5,6 +5,7 @@ import { Steps } from "@/components/sections/steps";
 import { Platform } from "@/components/sections/platform";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Faq } from "@/components/sections/faq";
+import { Signup } from "@/components/sections/signup";
 import { News } from "@/components/sections/news";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
         <Platform />
         <Testimonials />
         <Faq />
+        <Signup />
         <News />
       </main>
       <SiteFooter />

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { img } from "@/lib/images";
 import { FOOTER, CONTACT, LOGO } from "@/content/site";
 
 const SOCIALS = [
@@ -65,9 +64,9 @@ export function SiteFooter() {
       <Container className="py-14 md:py-16">
         <Link href="/" className="inline-flex items-center" aria-label="FinHome">
           <img
-            src={img(LOGO.header)}
+            src={LOGO.footer}
             alt="FinHome"
-            className="h-7 w-auto [filter:brightness(0)_invert(1)]"
+            className="h-7 w-auto"
           />
         </Link>
 
@@ -93,7 +92,12 @@ export function SiteFooter() {
               </li>
               <li className="flex items-start gap-2.5">
                 <ContactIcon name="phone" />
-                <span>{CONTACT.phoneLabel}</span>
+                <a
+                  href={`tel:${CONTACT.phoneTel}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {CONTACT.phoneLabel}
+                </a>
               </li>
             </ul>
 
@@ -123,12 +127,21 @@ export function SiteFooter() {
                 <ul className="mt-5 space-y-3 text-sm">
                   {col.links.map((link) => (
                     <li key={link.label}>
-                      <a
-                        href={link.href}
-                        className="transition-colors hover:text-white"
-                      >
-                        {link.label}
-                      </a>
+                      {link.href.startsWith("/") ? (
+                        <Link
+                          href={link.href}
+                          className="transition-colors hover:text-white"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="transition-colors hover:text-white"
+                        >
+                          {link.label}
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>

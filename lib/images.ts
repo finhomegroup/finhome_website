@@ -6,6 +6,7 @@ export const IMG: Record<string, string> = {
   "4F8Fzhd4rrU9Yv83jWxZjg6pqLc.jpg": "/images/4F8Fzhd4rrU9Yv83jWxZjg6pqLc.jpg",
   "4RetLJhrrvKYh3oS3lO0wfJLayM.png": "/images/4RetLJhrrvKYh3oS3lO0wfJLayM.png",
   "5Q3gFip1lY8vWKmRLAHPnkJqAis.svg": "/images/5Q3gFip1lY8vWKmRLAHPnkJqAis.svg",
+  "6hJrSISXOuw6XHbmBRCGFMIE78.png": "/images/6hJrSISXOuw6XHbmBRCGFMIE78.png",
   "6tTbkXggWgQCAJ4DO2QEdXXmgM.svg": "/images/6tTbkXggWgQCAJ4DO2QEdXXmgM.svg",
   "9DWQzTIfFOk6ZkCVfnfpg9Fnz5Q.svg": "/images/9DWQzTIfFOk6ZkCVfnfpg9Fnz5Q.svg",
   "9s4vQoO4B1yGmAja7Y9j3ldBNDU.svg": "/images/9s4vQoO4B1yGmAja7Y9j3ldBNDU.svg",
@@ -19,6 +20,9 @@ export const IMG: Record<string, string> = {
   "KkQ6bZ6ezs4ASm9zGhCxZRRF1o.jpg": "/images/KkQ6bZ6ezs4ASm9zGhCxZRRF1o.jpg",
   "MvgTNGLn4lUKne928t46iiqxY.png": "/images/MvgTNGLn4lUKne928t46iiqxY.png",
   "PQLhDmvFrnxHe3GZoIseyfdJrrc.svg": "/images/PQLhDmvFrnxHe3GZoIseyfdJrrc.svg",
+  "VnhOAfra6cWAj4k6aWSHjctp59o.png": "/images/VnhOAfra6cWAj4k6aWSHjctp59o.png",
+  "W9DPNIyHaEmP2Cj7bG3UxiMbg.png": "/images/W9DPNIyHaEmP2Cj7bG3UxiMbg.png",
+  "Ym3IuKDBwg0U6P3YdFiwaa2xKE.png": "/images/Ym3IuKDBwg0U6P3YdFiwaa2xKE.png",
   "ZYeE9HPY4yfLdeQA4G5HW49WveQ.svg": "/images/ZYeE9HPY4yfLdeQA4G5HW49WveQ.svg",
   "dTeZrxbqIYr4yq8uPXe5gxdbM.jpg": "/images/dTeZrxbqIYr4yq8uPXe5gxdbM.jpg",
   "hInhX9UgJBuGaSywFBNNbocS2t0.png": "/images/hInhX9UgJBuGaSywFBNNbocS2t0.png",
@@ -36,6 +40,7 @@ export const IMG: Record<string, string> = {
   "wucS1gLE60ECBgA4gyzkB26d4.svg": "/images/wucS1gLE60ECBgA4gyzkB26d4.svg",
   "x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg": "/images/x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg",
   "y9hwKK3MJX6DL9OckY7P3La9kZg.svg": "/images/y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
+  "zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png": "/images/zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png",
 };
 
 export function img(base: string): string {

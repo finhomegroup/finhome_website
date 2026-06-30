@@ -3,6 +3,8 @@
 
 export const HERO = {
   headline: "FinHome giúp bạn chọn đúng nhà, vay đúng sức",
+  subhead:
+    "Ứng dụng về tài chính BĐS hoàn toàn miễn phí và bảo mật an toàn tuyệt đối",
   cta: "Thử ngay",
   images: {
     marquee: "hInhX9UgJBuGaSywFBNNbocS2t0.png",
@@ -41,9 +43,9 @@ export const PLATFORM_SECTION = {
   title: "Một nền tảng đồng hành cùng bạn cả hành trình mua nhà",
   features: [
     {
-      title: "Cá nhân hóa trải nghiệm",
-      desc: "Gợi ý phù hợp hơn với tình trạng tài chính và hành trình của bạn",
-      image: "tpQ6tMpwmvmfHToJKBGPClPFTbU.png",
+      title: "Cá nhân hóa trải nghiệm với AI",
+      desc: "AI phân tích để gợi ý dự án phù hợp hơn với bạn",
+      image: "VnhOAfra6cWAj4k6aWSHjctp59o.png",
     },
     {
       title: "Luôn cập nhật xu hướng",
@@ -131,6 +133,22 @@ export const FAQ_SECTION = {
       q: "Dữ liệu tài chính của tôi trên FinHome có an toàn không?",
       a: "FinHome coi trọng việc bảo mật dữ liệu cá nhân và chỉ sử dụng thông tin bạn cung cấp để phục vụ việc phân tích và đưa ra gợi ý cho chính bạn.",
     },
+  ],
+};
+
+export const SIGNUP_SECTION = {
+  title: "Đăng ký trải nghiệm sớm",
+  subtitleLines: [
+    "FinHome đã có trên iOS. Nhập email",
+    "để sớm trải nghiệm bản Android",
+  ],
+  placeholder: "Nhập email của bạn",
+  cta: "Đăng ký",
+  socialProof: "Đã có 1,000+ người đăng ký",
+  avatars: [
+    "6hJrSISXOuw6XHbmBRCGFMIE78.png",
+    "Ym3IuKDBwg0U6P3YdFiwaa2xKE.png",
+    "zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png",
   ],
 };
 
