@@ -13,9 +13,9 @@ export function Faq() {
         <Reveal>
           <div className="text-center">
             <h2 className="fh-h2 text-ink">{FAQ_SECTION.title}</h2>
-            <p className="fh-lead mt-4">
-              <span className="block">{SUBTITLE_LINE1}</span>
-              <span className="block">{SUBTITLE_LINE2}</span>
+            <p className="fh-lead mx-auto mt-4 max-w-2xl text-balance">
+              <span className="inline lg:block">{SUBTITLE_LINE1}{" "}</span>
+              <span className="inline lg:block">{SUBTITLE_LINE2}</span>
             </p>
           </div>
 

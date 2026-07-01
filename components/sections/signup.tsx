@@ -10,10 +10,10 @@ export function Signup() {
         <Reveal>
           <div className="mx-auto max-w-xl text-center">
             <h2 className="fh-h2 text-ink">{SIGNUP_SECTION.title}</h2>
-            <p className="fh-lead mt-4">
+            <p className="fh-lead mx-auto mt-4 max-w-xl text-balance">
               {SIGNUP_SECTION.subtitleLines.map((line) => (
-                <span key={line} className="block">
-                  {line}
+                <span key={line} className="inline lg:block">
+                  {line}{" "}
                 </span>
               ))}
             </p>
@@ -23,13 +23,19 @@ export function Signup() {
                 type="email"
                 required
                 name="Email"
+                autoComplete="email"
+                inputMode="email"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="go"
                 placeholder={SIGNUP_SECTION.placeholder}
                 aria-label={SIGNUP_SECTION.placeholder}
-                className="h-[52px] w-full min-w-0 flex-1 rounded-[34px] border border-[#c7c7c7] bg-white px-5 font-display-book text-base text-ink placeholder:text-[rgb(87,87,87)] outline-none transition-colors focus:border-brand-green"
+                className="h-[52px] w-full min-w-0 flex-1 rounded-[34px] border border-[#c7c7c7] bg-white px-5 font-display-book text-base text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-brand-green"
               />
               <button
                 type="submit"
-                className="inline-flex h-[52px] shrink-0 items-center justify-center rounded-[34px] border border-[#c7c7c7] bg-[#f7f7f7] px-8 font-display text-[17px] font-medium text-[rgb(87,87,87)] transition-colors hover:bg-[#efefef]"
+                className="inline-flex h-[52px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 sm:border-[#c7c7c7] sm:bg-[#f7f7f7] sm:text-[rgb(87,87,87)] sm:shadow-none sm:hover:bg-[#efefef]"
               >
                 {SIGNUP_SECTION.cta}
               </button>
