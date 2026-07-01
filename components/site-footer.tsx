@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
 import { FOOTER, CONTACT, LOGO } from "@/content/site";
 
 const SOCIALS = [
@@ -62,7 +64,11 @@ export function SiteFooter() {
   return (
     <footer className="bg-[#1a1a1a] text-ink-4">
       <Container className="py-14 md:py-16">
-        <Link href="/" className="inline-flex items-center" aria-label="FinHome">
+        <Link
+          href="/"
+          className={cn("inline-flex items-center", FH_POINTER)}
+          aria-label="FinHome"
+        >
           <img
             src={LOGO.footer}
             alt="FinHome"
@@ -85,7 +91,7 @@ export function SiteFooter() {
                 <ContactIcon name="mail" />
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="transition-colors hover:text-white"
+                  className={cn("transition-colors hover:text-white", FH_POINTER)}
                 >
                   {CONTACT.email}
                 </a>
@@ -94,7 +100,7 @@ export function SiteFooter() {
                 <ContactIcon name="phone" />
                 <a
                   href={`tel:${CONTACT.phoneTel}`}
-                  className="transition-colors hover:text-white"
+                  className={cn("transition-colors hover:text-white", FH_POINTER)}
                 >
                   {CONTACT.phoneLabel}
                 </a>
@@ -107,7 +113,7 @@ export function SiteFooter() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="text-ink-4 transition-colors hover:text-white"
+                  className={cn("text-ink-4 transition-colors hover:text-white", FH_POINTER)}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path d={s.path} />
@@ -130,14 +136,14 @@ export function SiteFooter() {
                       {link.href.startsWith("/") ? (
                         <Link
                           href={link.href}
-                          className="transition-colors hover:text-white"
+                          className={cn("transition-colors hover:text-white", FH_POINTER)}
                         >
                           {link.label}
                         </Link>
                       ) : (
                         <a
                           href={link.href}
-                          className="transition-colors hover:text-white"
+                          className={cn("transition-colors hover:text-white", FH_POINTER)}
                         >
                           {link.label}
                         </a>

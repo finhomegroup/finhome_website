@@ -1,5 +1,9 @@
+"use client";
+
 import { SIGNUP_SECTION } from "@/content/home";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import { FH_INPUT_SHADOW, FH_POINTER } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 
@@ -18,24 +22,34 @@ export function Signup() {
               ))}
             </p>
 
-            <form className="mx-auto mt-8 flex max-w-md flex-col items-stretch gap-3 lg:flex-row lg:items-center">
+            <form
+              noValidate
+              className="mx-auto mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:items-stretch"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <input
                 type="email"
                 required
-                name="Email"
+                name="email"
                 autoComplete="email"
                 inputMode="email"
-                autoCapitalize="off"
+                autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
-                enterKeyHint="go"
+                enterKeyHint="send"
                 placeholder={SIGNUP_SECTION.placeholder}
                 aria-label={SIGNUP_SECTION.placeholder}
-                className="h-[60px] w-full min-w-0 flex-1 rounded-[34px] border border-[#c7c7c7] bg-white px-6 font-display-book text-base text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-brand-green lg:h-[52px] lg:px-5"
+                className={cn(
+                  "box-border min-h-[52px] w-full min-w-0 flex-1 appearance-none rounded-[34px] border border-[#c7c7c7] bg-white px-5 py-3.5 font-display-book text-base leading-normal text-ink caret-brand-green placeholder:text-ink-3 outline-none transition-[border-color,box-shadow] [-webkit-tap-highlight-color:transparent] focus:border-brand-green focus-visible:ring-[3px] focus-visible:ring-brand-green/20 disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 sm:text-[17px]",
+                  FH_INPUT_SHADOW,
+                )}
               />
               <button
                 type="submit"
-                className="inline-flex h-[60px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 lg:h-[52px] lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef]"
+                className={cn(
+                  "inline-flex min-h-[52px] w-full shrink-0 touch-manipulation items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-base font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[filter,background-color] [-webkit-tap-highlight-color:transparent] hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[8.5rem] sm:text-[17px] lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef] lg:active:bg-[#e8e8e8]",
+                  FH_POINTER,
+                )}
               >
                 {SIGNUP_SECTION.cta}
               </button>

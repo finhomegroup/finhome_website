@@ -3,9 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
 import { Button } from "@/components/ui/button";
 import { img } from "@/lib/images";
-import { NAV_ITEMS, CTA_LABEL, CTA_HREF, LOGO } from "@/content/site";
+import {
+  NAV_ITEMS,
+  CTA_HOVER_LABEL,
+  CTA_LABEL,
+  CTA_HREF,
+  LOGO,
+} from "@/content/site";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -14,7 +22,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-transparent">
       <Container className="pt-[37px]">
         <div className="mx-auto flex h-[50px] max-w-[1076px] items-center justify-between rounded-full bg-white pl-5 pr-[7px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]">
-        <Link href="/" className="flex items-center" aria-label="FinHome">
+        <Link href="/" className={cn("flex items-center", FH_POINTER)} aria-label="FinHome">
           <img
             src={img(LOGO.header)}
             alt="FinHome"
@@ -28,13 +36,16 @@ export function SiteHeader() {
               <a
                 key={item.href}
                 href={item.href}
-                className="font-display text-[17px] font-medium text-ink-2/80 transition-colors hover:text-ink"
+                className={cn(
+                  "font-display text-[17px] font-medium text-ink-2/80 transition-colors hover:text-ink",
+                  FH_POINTER,
+                )}
               >
                 {item.label}
               </a>
             ))}
           </nav>
-          <Button href={CTA_HREF} size="lg">
+          <Button href={CTA_HREF} size="lg" hoverLabel={CTA_HOVER_LABEL}>
             {CTA_LABEL}
           </Button>
         </div>
@@ -44,7 +55,10 @@ export function SiteHeader() {
           aria-label="Mở menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 lg:hidden"
+          className={cn(
+            "-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 lg:hidden",
+            FH_POINTER,
+          )}
         >
           <span className="sr-only">Menu</span>
           {open ? (
@@ -82,13 +96,20 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-3 text-sm text-ink-2 transition-colors hover:bg-ink/5 hover:text-ink"
+                className={cn(
+                  "rounded-lg px-3 py-3 text-sm text-ink-2 transition-colors hover:bg-ink/5 hover:text-ink",
+                  FH_POINTER,
+                )}
               >
                 {item.label}
               </a>
             ))}
             <div className="mt-1 px-1 pb-1">
-              <Button href={CTA_HREF} className="w-full">
+              <Button
+                href={CTA_HREF}
+                className="w-full"
+                hoverLabel={CTA_HOVER_LABEL}
+              >
                 {CTA_LABEL}
               </Button>
             </div>

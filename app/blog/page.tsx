@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
 import { POSTS } from "@/content/posts";
 
 export const metadata: Metadata = {
@@ -34,16 +36,22 @@ export default function BlogPage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-3xl border border-ink-4/15 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className={cn(
+                    "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
+                    FH_CLICKABLE_CARD,
+                  )}
                 >
-                  <div className="aspect-[16/10] overflow-hidden">
+                  <div className="overflow-hidden rounded-xl">
                     <img
                       src={img(post.cover)}
                       alt={post.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className={cn(
+                        "aspect-[3/2] w-full object-cover",
+                        FH_CARD_IMAGE_ZOOM,
+                      )}
                     />
                   </div>
-                  <div className="flex flex-1 flex-col p-6">
+                  <div className="flex flex-1 flex-col gap-2 pt-4">
                     <span className="text-xs font-medium uppercase tracking-wide text-primary">
                       {post.category}
                     </span>

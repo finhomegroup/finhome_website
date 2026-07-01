@@ -3,6 +3,7 @@
 import * as RadixAccordion from "@radix-ui/react-accordion";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
+import { FH_CARD_SHADOW, FH_POINTER } from "@/lib/interaction-styles";
 
 const FAQ_QUESTION_BG = "CKU5fM0cAKas042ZkEiDFMZCCrU.jpg";
 const FAQ_TOGGLE_ICON = "iFYY6KsVY4Sg2HETYv3vxfrz8.png";
@@ -41,10 +42,18 @@ export function Accordion({
         <RadixAccordion.Item
           key={i}
           value={`item-${i}`}
-          className="overflow-hidden rounded-2xl bg-white p-[5px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]"
+          className={cn(
+            "overflow-hidden rounded-2xl bg-white p-[5px]",
+            FH_CARD_SHADOW,
+          )}
         >
           <RadixAccordion.Header className="m-0">
-            <RadixAccordion.Trigger className="group relative flex min-h-[62px] w-full items-center justify-between gap-3 overflow-hidden rounded-[13px] py-3 pl-4 pr-3 text-left data-[state=open]:rounded-b-none sm:gap-4 sm:py-4 sm:pl-5 sm:pr-4">
+            <RadixAccordion.Trigger
+              className={cn(
+                "group relative flex min-h-[62px] w-full items-center justify-between gap-3 overflow-hidden rounded-[13px] py-3 pl-4 pr-3 text-left data-[state=open]:rounded-b-none sm:gap-4 sm:py-4 sm:pl-5 sm:pr-4",
+                FH_POINTER,
+              )}
+            >
               <img
                 src={img(FAQ_QUESTION_BG)}
                 alt=""

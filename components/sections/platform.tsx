@@ -1,5 +1,7 @@
 import { PLATFORM_SECTION } from "@/content/home";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import { FH_CARD_IMAGE_ZOOM, FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 
@@ -51,12 +53,17 @@ function FeatureCard({
 }) {
   return (
     <Reveal delay={delay}>
-      <article className="relative w-full">
+      <article
+        className={cn(
+          "group relative w-full overflow-hidden rounded-[20px]",
+          FH_CARD_SHADOW,
+        )}
+      >
         <img
           src={img(feature.image)}
           alt=""
           aria-hidden="true"
-          className="block w-full rounded-[20px]"
+          className={cn("block w-full rounded-[20px]", FH_CARD_IMAGE_ZOOM)}
         />
         <div className="pointer-events-none absolute inset-x-0 top-0 px-5 pt-4 lg:px-11">
           <h3 className="fh-h3 text-ink">{feature.title}</h3>

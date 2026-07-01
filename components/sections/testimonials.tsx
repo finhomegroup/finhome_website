@@ -1,5 +1,7 @@
 import { TESTIMONIALS_SECTION } from "@/content/home";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import { FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 
@@ -24,7 +26,12 @@ function Card({
       className={className ?? "w-[352px] shrink-0 pr-6"}
       aria-hidden={ariaHidden}
     >
-      <figure className="flex h-full flex-col rounded-2xl bg-gradient-to-b from-white to-[#f3faf0] p-7 shadow-[0_1px_20px_rgba(0,0,0,0.05)]">
+      <figure
+        className={cn(
+          "flex h-full flex-col rounded-2xl bg-gradient-to-b from-white to-[#f3faf0] p-7",
+          FH_CARD_SHADOW,
+        )}
+      >
         <blockquote className="flex-1 text-left font-display-book text-base leading-relaxed text-ink-2">
           {item.quote}
         </blockquote>
@@ -83,7 +90,7 @@ export function Testimonials() {
         </Reveal>
 
         <Reveal delay={0.1} className="mt-10 hidden md:block">
-          <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]">
+          <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]">
             <div className="flex w-max [animation:marquee_45s_linear_infinite] group-hover:[animation-play-state:paused] motion-reduce:[animation:none]">
               {track.map((item, i) => (
                 <Card

@@ -2,6 +2,13 @@ import Link from "next/link";
 import { NEWS_SECTION } from "@/content/home";
 import { POSTS, type Post } from "@/content/posts";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import {
+  FH_CARD_IMAGE_ZOOM,
+  FH_CLICKABLE_CARD,
+  FH_LINK_ARROW,
+  FH_LINK_OPACITY,
+} from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 
@@ -19,13 +26,19 @@ function FeaturedCard({ post }: { post: Post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[20px] bg-white p-4 shadow-[0_1px_20px_rgba(0,0,0,0.03)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] md:flex-row md:items-stretch md:gap-4"
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4 md:flex-row md:items-stretch md:gap-4",
+        FH_CLICKABLE_CARD,
+      )}
     >
       <div className="min-h-0 shrink-0 overflow-hidden rounded-xl md:w-1/2">
         <img
           src={img(post.cover)}
           alt={post.title}
-          className="aspect-[3/2] h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] md:aspect-auto md:min-h-[280px]"
+          className={cn(
+            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-[280px]",
+            FH_CARD_IMAGE_ZOOM,
+          )}
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-4 py-1 md:w-1/2 md:py-2 md:pr-2">
@@ -56,7 +69,10 @@ function PostCard({ post }: { post: Post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[20px] bg-white p-4 shadow-[0_1px_20px_rgba(0,0,0,0.03)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
+        FH_CLICKABLE_CARD,
+      )}
     >
       <div className="relative overflow-hidden rounded-xl">
         <div className="absolute right-3 top-3 z-10">
@@ -65,7 +81,7 @@ function PostCard({ post }: { post: Post }) {
         <img
           src={img(post.cover)}
           alt={post.title}
-          className="aspect-[3/2] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className={cn("aspect-[3/2] w-full object-cover", FH_CARD_IMAGE_ZOOM)}
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 pt-4">
@@ -84,13 +100,16 @@ function ViewMoreLink() {
   return (
     <Link
       href="/blog"
-      className="inline-flex items-center gap-2 font-display text-[17px] font-medium text-ink transition-opacity hover:opacity-70"
+      className={cn(
+        "group/link inline-flex items-center gap-2 font-display text-[17px] font-medium text-ink",
+        FH_LINK_OPACITY,
+      )}
     >
       {NEWS_SECTION.cta}
       <svg
         viewBox="0 0 256 256"
         aria-hidden="true"
-        className="size-5 shrink-0 fill-current"
+        className={cn("size-5 shrink-0 fill-current", FH_LINK_ARROW)}
       >
         <path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z" />
       </svg>

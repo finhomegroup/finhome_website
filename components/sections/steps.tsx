@@ -1,6 +1,8 @@
 import { STEPS_SECTION } from "@/content/home";
-import { CTA_HREF } from "@/content/site";
+import { CTA_HREF, CTA_HOVER_LABEL } from "@/content/site";
 import { img } from "@/lib/images";
+import { cn } from "@/lib/cn";
+import { FH_CARD_IMAGE_ZOOM, FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
@@ -29,13 +31,18 @@ function StepCard({ step, index, delay }: { step: Step; index: number; delay: nu
 
   return (
     <Reveal delay={delay}>
-      <article className="overflow-hidden rounded-[20px] bg-white shadow-[0_1px_20px_rgba(0,0,0,0.05)]">
+      <article
+        className={cn(
+          "group overflow-hidden rounded-[20px] bg-white",
+          FH_CARD_SHADOW,
+        )}
+      >
         <div className="h-[210px] overflow-hidden">
           <img
             src={img(step.icon)}
             alt=""
             aria-hidden="true"
-            className="block w-full"
+            className={cn("block w-full", FH_CARD_IMAGE_ZOOM)}
             style={imageOffset ? { marginTop: imageOffset } : undefined}
           />
         </div>
@@ -85,6 +92,7 @@ export function Steps() {
                   <Button
                     href={CTA_HREF}
                     size="lg"
+                    hoverLabel={CTA_HOVER_LABEL}
                     className="rounded-[21px] px-5 py-2.5 shadow-none"
                   >
                     {STEPS_SECTION.cta}
@@ -126,6 +134,7 @@ export function Steps() {
                 <Button
                   href={CTA_HREF}
                   size="lg"
+                  hoverLabel={CTA_HOVER_LABEL}
                   className="rounded-[21px] px-5 py-2.5 shadow-none"
                 >
                   {STEPS_SECTION.cta}

@@ -8,6 +8,7 @@ export const NAV_ITEMS: { label: string; href: string }[] = [
 ];
 
 export const CTA_LABEL = "Thử ngay";
+export const CTA_HOVER_LABEL = "Tải xuống";
 export const CTA_HREF = "#"; // placeholder until real app URL is provided
 
 export const CONTACT = {
