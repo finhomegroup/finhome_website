@@ -7,15 +7,6 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 
-const LEAD_BODY_LINES = [
-  "Nhập thông tin cơ bản, FinHome sẽ xác định",
-  "vùng mua nhà an toàn, đánh giá khả năng vay",
-  "và mở khóa la bàn định hướng tài chính cho bạn",
-] as const;
-
-const TITLE_LINE1 = "Các bước đơn giản để hiểu";
-const TITLE_LINE2 = "khả năng mua nhà của bạn";
-
 // Overlay positions from Framer mirror @1120×444.
 const LEAD_OVERLAY = {
   titleTop: 47.41,
@@ -60,31 +51,38 @@ export function Steps() {
     <section id="tinhnang" className="scroll-mt-32 py-12 md:py-16">
       <Container>
         <Reveal>
-          <h2 className="fh-h2 mx-auto max-w-2xl text-center">
-            <span className="block max-md:text-balance md:whitespace-nowrap">
-              {TITLE_LINE1}
+          <h2 className="fh-h2 mx-auto max-w-2xl text-center text-balance">
+            <span className="xl:hidden">
+              {STEPS_SECTION.titleMobileLines.map((line) => (
+                <span
+                  key={line}
+                  className="block max-sm:text-[25px] max-sm:leading-[1.1] sm:whitespace-nowrap"
+                >
+                  {line}
+                </span>
+              ))}
             </span>
-            <span className="block">{TITLE_LINE2}</span>
+            <span className="hidden xl:block">{STEPS_SECTION.title}</span>
           </h2>
         </Reveal>
 
         {/* Lead folder — desktop: artwork + text/CTA overlays; mobile: stacked flow */}
         <Reveal delay={0.1}>
           <div className="mx-auto w-full max-w-[1120px]">
-            {/* Mobile: text and CTA in normal document flow (overlay breaks on narrow screens) */}
-            <div className="flex flex-col items-center gap-6 text-center lg:hidden">
+            {/* Stacked layout below xl — Framer uses short copy until ~1200px */}
+            <div className="flex flex-col items-center gap-6 text-center xl:hidden">
               <img
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
                 aria-hidden="true"
                 className="block w-full select-none rounded-[20px]"
               />
-              <div className="max-w-md px-1">
-                <p className="font-display text-xl font-medium leading-snug text-ink">
+              <div className="w-full">
+                <p className="font-display text-xl font-medium leading-[1.2] text-ink">
                   {STEPS_SECTION.leadTitle}
                 </p>
-                <div className="mt-3 space-y-1 font-display-book text-base leading-relaxed text-[#5c5c5c]">
-                  {LEAD_BODY_LINES.map((line) => (
+                <div className="mt-3 font-display-book text-base leading-[1.2] text-[#5c5c5c]">
+                  {STEPS_SECTION.leadBodyMobileLines.map((line) => (
                     <p key={line}>{line}</p>
                   ))}
                 </div>
@@ -101,8 +99,8 @@ export function Steps() {
               </div>
             </div>
 
-            {/* Desktop: Framer artwork with percentage-based overlays */}
-            <div className="relative hidden w-full lg:block">
+            {/* Desktop xl+: Framer artwork with percentage-based overlays */}
+            <div className="relative hidden w-full xl:block">
               <img
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
@@ -124,8 +122,10 @@ export function Steps() {
                     width: `${LEAD_OVERLAY.bodyWidth}%`,
                   }}
                 >
-                  {LEAD_BODY_LINES.map((line) => (
-                    <p key={line}>{line}</p>
+                  {STEPS_SECTION.leadBodyLines.map((line) => (
+                    <p key={line} className="whitespace-nowrap">
+                      {line}
+                    </p>
                   ))}
                 </div>
               </div>

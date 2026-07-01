@@ -16,9 +16,26 @@ export const HERO = {
 
 export const STEPS_SECTION = {
   title: "Các bước đơn giản để hiểu khả năng mua nhà của bạn",
+  titleMobileLines: [
+    "Các bước đơn giản để hiểu",
+    "khả năng mua nhà của bạn",
+  ],
   leadTitle: "Khởi động bằng dữ liệu",
   leadBody:
     "Nhập thông tin cơ bản, FinHome sẽ xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính cho bạn",
+  /** Shorter copy on narrow viewports — matches Framer mobile breakpoint. */
+  leadBodyMobile:
+    "Nhập thông tin cơ bản, FinHome sẽ định hướng tài chính cho bạn",
+  /** Intentional line breaks @375px — avoids orphan words when flowing as one paragraph. */
+  leadBodyMobileLines: [
+    "Nhập thông tin cơ bản, FinHome",
+    "sẽ định hướng tài chính cho bạn",
+  ],
+  leadBodyLines: [
+    "Nhập thông tin cơ bản, FinHome sẽ xác định",
+    "vùng mua nhà an toàn, đánh giá khả năng vay",
+    "và mở khóa la bàn định hướng tài chính cho bạn",
+  ],
   cta: "Thử ngay",
   steps: [
     {
