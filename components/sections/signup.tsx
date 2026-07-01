@@ -31,11 +31,11 @@ export function Signup() {
                 enterKeyHint="go"
                 placeholder={SIGNUP_SECTION.placeholder}
                 aria-label={SIGNUP_SECTION.placeholder}
-                className="h-[52px] w-full min-w-0 flex-1 rounded-[34px] border border-[#c7c7c7] bg-white px-5 font-display-book text-base text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-brand-green"
+                className="h-[60px] w-full min-w-0 flex-1 rounded-[34px] border border-[#c7c7c7] bg-white px-6 font-display-book text-base text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-brand-green lg:h-[52px] lg:px-5"
               />
               <button
                 type="submit"
-                className="inline-flex h-[52px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef]"
+                className="inline-flex h-[60px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 lg:h-[52px] lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef]"
               >
                 {SIGNUP_SECTION.cta}
               </button>
