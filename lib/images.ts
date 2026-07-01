@@ -40,6 +40,7 @@ export const IMG: Record<string, string> = {
   "wucS1gLE60ECBgA4gyzkB26d4.svg": "/images/wucS1gLE60ECBgA4gyzkB26d4.svg",
   "x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg": "/images/x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg",
   "y9hwKK3MJX6DL9OckY7P3La9kZg.svg": "/images/y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
+  "Z8KIqP7hqZvzaK06QSJARSULQQw.png": "/images/Z8KIqP7hqZvzaK06QSJARSULQQw.png",
   "zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png": "/images/zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png",
 };
 

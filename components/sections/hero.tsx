@@ -15,7 +15,7 @@ export function Hero() {
         src={img(HERO.images.marquee)}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-fill"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[774px] w-full select-none object-cover object-center lg:h-[668px]"
       />
 
       <Container className="relative z-10">
@@ -53,7 +53,7 @@ export function Hero() {
             <img
               src={img(HERO.images.phone)}
               alt="Ứng dụng FinHome"
-              className="pointer-events-none h-auto w-full max-w-[min(100%,320px)] select-none sm:max-w-[380px] lg:max-w-[451px]"
+              className="pointer-events-none mx-auto h-[378px] w-[329px] max-w-full select-none object-cover object-top sm:h-[420px] sm:w-[366px] lg:mx-0 lg:h-[500px] lg:w-[451px]"
             />
           </Reveal>
         </div>

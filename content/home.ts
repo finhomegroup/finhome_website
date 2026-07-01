@@ -10,7 +10,7 @@ export const HERO = {
     marquee: "hInhX9UgJBuGaSywFBNNbocS2t0.png",
     badge: "x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg",
     panel: "o8jJXgRiX6LN7LOGgMXmaxsupVs.png",
-    phone: "2rgZQTmXdtEu6UJwxuFHaDvptI.png",
+    phone: "Z8KIqP7hqZvzaK06QSJARSULQQw.png",
   },
 };
 
