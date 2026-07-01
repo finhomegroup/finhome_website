@@ -18,7 +18,7 @@ export function Signup() {
               ))}
             </p>
 
-            <form className="mx-auto mt-8 flex max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <form className="mx-auto mt-8 flex max-w-md flex-col items-stretch gap-3 lg:flex-row lg:items-center">
               <input
                 type="email"
                 required
@@ -35,7 +35,7 @@ export function Signup() {
               />
               <button
                 type="submit"
-                className="inline-flex h-[52px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 sm:border-[#c7c7c7] sm:bg-[#f7f7f7] sm:text-[rgb(87,87,87)] sm:shadow-none sm:hover:bg-[#efefef]"
+                className="inline-flex h-[52px] shrink-0 items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-[17px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors hover:brightness-95 lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef]"
               >
                 {SIGNUP_SECTION.cta}
               </button>
