@@ -8,7 +8,7 @@ const SUBTITLE_LINE2 = "giúp bạn hiểu rõ FinHome trước khi trải nghi�
 
 export function Faq() {
   return (
-    <section id="hotro" className="py-12 md:py-[50px]">
+    <section id="hotro" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-[50px]">
       <Container className="max-w-[1104px]">
         <Reveal>
           <div className="text-center">

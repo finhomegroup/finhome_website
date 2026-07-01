@@ -44,14 +44,14 @@ export function Accordion({
           className="overflow-hidden rounded-2xl bg-white p-[5px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]"
         >
           <RadixAccordion.Header className="m-0">
-            <RadixAccordion.Trigger className="group relative flex h-[62px] w-full items-center justify-between gap-4 overflow-hidden rounded-[13px] py-4 pl-5 pr-4 text-left data-[state=open]:rounded-b-none">
+            <RadixAccordion.Trigger className="group relative flex min-h-[62px] w-full items-center justify-between gap-3 overflow-hidden rounded-[13px] py-3 pl-4 pr-3 text-left data-[state=open]:rounded-b-none sm:gap-4 sm:py-4 sm:pl-5 sm:pr-4">
               <img
                 src={img(FAQ_QUESTION_BG)}
                 alt=""
                 aria-hidden
                 className="pointer-events-none absolute inset-0 size-full object-cover object-[0.6%_50%]"
               />
-              <span className="relative z-10 min-w-0 flex-1 font-[family-name:var(--font-display)] text-[15px] font-medium leading-none tracking-[0.01em] text-ink">
+              <span className="relative z-10 min-w-0 flex-1 font-[family-name:var(--font-display)] text-[15px] font-medium leading-snug tracking-[0.01em] text-ink">
                 {i + 1}. {item.q}
               </span>
               <ToggleIcon />

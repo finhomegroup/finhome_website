@@ -32,6 +32,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  scroll-padding-top: 6.5rem;
 }
 
 body {
@@ -41,6 +43,7 @@ body {
   letter-spacing: -0.32px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 /* content width matching Framer */
@@ -49,6 +52,13 @@ body {
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 20px;
+}
+
+/* Tighten side padding on very small phones so content isn't cramped. */
+@media (max-width: 380px) {
+  .container-fh {
+    padding-inline: 16px;
+  }
 }
 
 /* "Thử ngay" CTA pill — glossy green surface sampled from the Framer button image
@@ -110,7 +120,7 @@ body {
 /* Section subtitle / lead under an H2: Maison Book 20px / 1.4 / -0.4px */
 .fh-lead {
   font-family: var(--font-display-book);
-  font-size: 20px;
+  font-size: clamp(16px, 4.2vw, 20px);
   line-height: 1.4;
   letter-spacing: -0.4px;
   color: rgb(87 87 87 / 0.85);
@@ -128,7 +138,7 @@ body {
   padding: 8px 16px;
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 18px;
+  font-size: clamp(14px, 3.8vw, 18px);
   letter-spacing: -0.02em;
   color: var(--color-ink);
 }

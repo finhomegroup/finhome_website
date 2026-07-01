@@ -22,7 +22,7 @@ export function SiteHeader() {
           />
         </Link>
 
-        <div className="hidden items-center gap-9 md:flex">
+        <div className="hidden items-center gap-9 lg:flex">
           <nav className="flex items-center gap-[34px]">
             {NAV_ITEMS.map((item) => (
               <a
@@ -44,7 +44,7 @@ export function SiteHeader() {
           aria-label="Mở menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 md:hidden"
+          className="-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 lg:hidden"
         >
           <span className="sr-only">Menu</span>
           {open ? (
@@ -76,7 +76,7 @@ export function SiteHeader() {
         </div>
 
         {open && (
-          <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md md:hidden">
+          <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md lg:hidden">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}

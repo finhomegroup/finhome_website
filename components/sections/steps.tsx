@@ -61,10 +61,40 @@ export function Steps() {
           </h2>
         </Reveal>
 
-        {/* Lead folder — artwork + text/CTA overlays (Framer #170hfxr @1120×444). */}
+        {/* Lead folder — desktop: artwork + text/CTA overlays; mobile: stacked flow */}
         <Reveal delay={0.1}>
           <div className="mx-auto w-full max-w-[1120px]">
-            <div className="relative w-full">
+            {/* Mobile: text and CTA in normal document flow (overlay breaks on narrow screens) */}
+            <div className="flex flex-col items-center gap-6 text-center lg:hidden">
+              <img
+                src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
+                alt=""
+                aria-hidden="true"
+                className="block w-full select-none rounded-[20px]"
+              />
+              <div className="max-w-md px-1">
+                <p className="font-display text-xl font-medium leading-snug text-ink">
+                  {STEPS_SECTION.leadTitle}
+                </p>
+                <div className="mt-3 space-y-1 font-display-book text-base leading-relaxed text-[#5c5c5c]">
+                  {LEAD_BODY_LINES.map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <Button
+                    href={CTA_HREF}
+                    size="lg"
+                    className="rounded-[21px] px-5 py-2.5 shadow-none"
+                  >
+                    {STEPS_SECTION.cta}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: Framer artwork with percentage-based overlays */}
+            <div className="relative hidden w-full lg:block">
               <img
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
@@ -72,7 +102,6 @@ export function Steps() {
                 className="block w-full select-none"
               />
 
-              {/* Text overlay — pill frame is baked into the PNG. */}
               <div className="pointer-events-none absolute inset-0">
                 <p
                   className="absolute left-1/2 w-full -translate-x-1/2 whitespace-nowrap text-center font-display text-[22px] font-medium leading-[1.2] text-ink"
@@ -93,7 +122,6 @@ export function Steps() {
                 </div>
               </div>
 
-              {/* CTA — Framer anchors 29px from artwork bottom (≈6.5%). */}
               <div className="absolute inset-x-0 bottom-[6.5%] z-10 flex justify-center">
                 <Button
                   href={CTA_HREF}

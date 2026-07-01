@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <Hero />
         <Steps />
         <Platform />

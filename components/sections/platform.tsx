@@ -58,7 +58,7 @@ function FeatureCard({
           aria-hidden="true"
           className="block w-full rounded-[20px]"
         />
-        <div className="pointer-events-none absolute inset-x-0 top-0 px-5 pt-4 md:px-11">
+        <div className="pointer-events-none absolute inset-x-0 top-0 px-5 pt-4 lg:px-11">
           <h3 className="fh-h3 text-ink">{feature.title}</h3>
           <FeatureDescription feature={feature} index={index} />
         </div>
@@ -71,7 +71,7 @@ export function Platform() {
   const { features } = PLATFORM_SECTION;
 
   return (
-    <section id="nentang" className="py-12 md:py-16">
+    <section id="nentang" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-16">
       <Container>
         <Reveal>
           <h2 className="fh-h2 mx-auto max-w-3xl text-center text-balance">
@@ -86,7 +86,7 @@ export function Platform() {
           </h2>
         </Reveal>
 
-        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {COLUMNS.map((col, colIndex) => (
             <div key={colIndex} className="flex flex-col gap-3">
               {col.map((featureIndex, rowIndex) => (

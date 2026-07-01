@@ -10,11 +10,22 @@ const SUBTITLE_LINE2 =
 // 352px × 3 cards + 24px × 2 gaps = 1104px track width.
 type Item = (typeof TESTIMONIALS_SECTION.items)[number];
 
-function Card({ item, ariaHidden }: { item: Item; ariaHidden?: boolean }) {
+function Card({
+  item,
+  ariaHidden,
+  className,
+}: {
+  item: Item;
+  ariaHidden?: boolean;
+  className?: string;
+}) {
   return (
-    <div className="w-[352px] shrink-0 pr-6" aria-hidden={ariaHidden}>
+    <div
+      className={className ?? "w-[352px] shrink-0 pr-6"}
+      aria-hidden={ariaHidden}
+    >
       <figure className="flex h-full flex-col rounded-2xl bg-gradient-to-b from-white to-[#f3faf0] p-7 shadow-[0_1px_20px_rgba(0,0,0,0.05)]">
-        <blockquote className="fh-body flex-1 text-left text-ink">
+        <blockquote className="flex-1 text-left font-display-book text-base leading-relaxed text-ink-2">
           {item.quote}
         </blockquote>
         <figcaption className="mt-8 flex items-center justify-between gap-3">
@@ -52,7 +63,7 @@ export function Testimonials() {
   const track = [...half, ...half];
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="overflow-x-clip py-12 md:py-16">
       <Container className="max-w-[1104px]">
         <Reveal>
           <div className="text-center">
@@ -64,8 +75,15 @@ export function Testimonials() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.1}>
-          <div className="group mt-10 overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]">
+        {/* Mobile: static stack — marquee cards clip awkwardly on narrow screens */}
+        <Reveal delay={0.1} className="mt-10 flex flex-col gap-4 md:hidden">
+          {items.map((item) => (
+            <Card key={item.name} item={item} className="w-full" />
+          ))}
+        </Reveal>
+
+        <Reveal delay={0.1} className="mt-10 hidden md:block">
+          <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]">
             <div className="flex w-max [animation:marquee_45s_linear_infinite] group-hover:[animation-play-state:paused] motion-reduce:[animation:none]">
               {track.map((item, i) => (
                 <Card
