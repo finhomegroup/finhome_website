@@ -5,10 +5,12 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { LegalDocument } from "@/components/legal-document";
 import { PRIVACY_CONTENT } from "@/content/legal";
+import { canonicalPath } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `${PRIVACY_CONTENT.pageTitle} — FinHome`,
+  title: PRIVACY_CONTENT.pageTitle,
   description: PRIVACY_CONTENT.intro,
+  alternates: { canonical: canonicalPath("/privacy-policy") },
 };
 
 export default function PrivacyPolicyPage() {

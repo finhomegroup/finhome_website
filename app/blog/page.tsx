@@ -8,11 +8,18 @@ import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
 import { POSTS } from "@/content/posts";
+import { canonicalPath } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Tin tức bất động sản — FinHome",
-  description:
-    "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
+  title: "Tin tức bất động sản",
+  description: "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
+  alternates: { canonical: canonicalPath("/blog") },
+  openGraph: {
+    type: "website",
+    url: canonicalPath("/blog"),
+    title: "Tin tức bất động sản — FinHome",
+    description: "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
+  },
 };
 
 export default function BlogPage() {
