@@ -12,6 +12,8 @@ import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
 import { POSTS, getPost } from "@/content/posts";
+import { canonicalPath, absUrl, articleSchema } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
 
 export function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -25,9 +27,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
+  const url = canonicalPath(`/blog/${post.slug}`);
+  const cover = absUrl(img(post.cover));
   return {
-    title: `${post.title} — FinHome`,
+    title: post.title,
     description: post.excerpt,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: `${post.title} — FinHome`,
+      description: post.excerpt,
+      ...(post.date ? { publishedTime: post.date } : {}),
+      images: [{ url: cover, alt: post.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${post.title} — FinHome`,
+      description: post.excerpt,
+      images: [cover],
+    },
   };
 }
 
@@ -49,6 +68,7 @@ export default async function Page({
 
   return (
     <>
+      <JsonLd data={articleSchema(post)} />
       <SiteHeader />
       <main>
         <article className="py-16 md:py-24">
