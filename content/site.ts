@@ -46,3 +46,24 @@ export const LOGO = {
   header: "y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
   footer: "/logos/Logo_7.png",
 };
+
+// Single source of truth for SEO. Change the domain here only.
+export const SITE = {
+  url: "https://finhome.group",
+  name: "FinHome",
+  title: "FinHome — Mua nhà an toàn, sống an yên",
+  description:
+    "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
+  locale: "vi_VN",
+  ogImage: "/og-image.png", // 1200x630, resolved against SITE.url via metadataBase
+  keywords: [
+    "FinHome",
+    "mua nhà",
+    "vay mua nhà",
+    "la bàn tài chính",
+    "khả năng vay",
+    "bất động sản",
+    "nhà ở xã hội",
+    "tài chính cá nhân",
+  ],
+} as const;

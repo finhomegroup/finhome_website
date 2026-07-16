@@ -5,10 +5,12 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { LegalDocument } from "@/components/legal-document";
 import { TERMS_CONTENT } from "@/content/legal";
+import { canonicalPath } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `${TERMS_CONTENT.pageTitle} — FinHome`,
+  title: TERMS_CONTENT.pageTitle,
   description: TERMS_CONTENT.intro,
+  alternates: { canonical: canonicalPath("/terms") },
 };
 
 export default function TermsPage() {
