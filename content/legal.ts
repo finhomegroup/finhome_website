@@ -152,12 +152,12 @@ export const PRIVACY_CONTENT: LegalDocContent = {
         "Phản đối hoặc hạn chế việc xử lý dữ liệu của bạn",
         "Nhận bản sao dữ liệu theo định dạng có thể đọc được (data portability)",
       ],
-      note: "Để thực hiện các quyền trên, liên hệ support@finhome.group. Chúng tôi sẽ phản hồi trong vòng 72 giờ.",
+      note: "Để thực hiện các quyền trên, liên hệ hotro@finhome.group. Chúng tôi sẽ phản hồi trong vòng 72 giờ.",
     },
     {
       title: "Liên hệ",
       content:
-        "Nếu bạn có câu hỏi hoặc khiếu nại về chính sách bảo mật, vui lòng liên hệ:\n\nEmail: support@finhome.group\nChính sách đầy đủ: https://www.finhome.group/privacy-policy/",
+        "Nếu bạn có câu hỏi hoặc khiếu nại về chính sách bảo mật, vui lòng liên hệ:\n\nEmail: hotro@finhome.group\nChính sách đầy đủ: https://www.finhome.group/privacy-policy/",
     },
   ],
 };

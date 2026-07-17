@@ -12,7 +12,7 @@ export const CTA_HOVER_LABEL = "Tải xuống";
 export const CTA_HREF = "#"; // placeholder until real app URL is provided
 
 export const CONTACT = {
-  email: "support@finhome.group",
+  email: "hotro@finhome.group",
   phone: "0963 177 497",
   phoneTel: "0963177497",
   phoneLabel: "Chuyên gia tư vấn BĐS: 0963 177 497",
