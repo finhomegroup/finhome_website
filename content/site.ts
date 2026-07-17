@@ -49,7 +49,7 @@ export const LOGO = {
 
 // Single source of truth for SEO. Change the domain here only.
 export const SITE = {
-  url: "https://finhome.group",
+  url: "https://www.finhome.group", // canonical host; finhome.group 307-redirects here
   name: "FinHome",
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:

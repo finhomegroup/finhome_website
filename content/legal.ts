@@ -157,7 +157,7 @@ export const PRIVACY_CONTENT: LegalDocContent = {
     {
       title: "Liên hệ",
       content:
-        "Nếu bạn có câu hỏi hoặc khiếu nại về chính sách bảo mật, vui lòng liên hệ:\n\nEmail: support@finhome.group\nChính sách đầy đủ: https://finhome.group/privacy-policy",
+        "Nếu bạn có câu hỏi hoặc khiếu nại về chính sách bảo mật, vui lòng liên hệ:\n\nEmail: support@finhome.group\nChính sách đầy đủ: https://www.finhome.group/privacy-policy/",
     },
   ],
 };
