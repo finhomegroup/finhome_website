@@ -14,19 +14,6 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
-
-  // Expose the shared backend/Cognito config to the client bundle.
-  // The repo's `.env` stores these under the app-native `EXPO_PUBLIC_*` names;
-  // Next only inlines `NEXT_PUBLIC_*`, so we re-map them here. Values inlined
-  // via `env` are ALWAYS bundled — same public-exposure model as the mobile
-  // app's `EXPO_PUBLIC_*` vars (static gateway key + Cognito pool IDs).
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
-    NEXT_PUBLIC_API_TOKEN: process.env.EXPO_PUBLIC_API_TOKEN,
-    NEXT_PUBLIC_COGNITO_USER_POOL_ID: process.env.EXPO_PUBLIC_COGNITO_USER_POOL_ID,
-    NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID:
-      process.env.EXPO_PUBLIC_COGNITO_USER_POOL_CLIENT_ID,
-  },
 };
 
 export default nextConfig;
