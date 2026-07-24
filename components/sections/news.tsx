@@ -136,7 +136,7 @@ export function News() {
           <div className="mt-10 flex flex-col gap-5 md:gap-6">
             <FeaturedCard post={featured} />
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 md:gap-5">
-              {rest.map((post) => (
+              {rest.slice(0, 3).map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}
             </div>
