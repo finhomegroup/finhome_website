@@ -80,29 +80,31 @@ export default async function Page({
         <article className="py-16 md:py-24">
           <Container>
             <Reveal className="mx-auto max-w-3xl">
-              <Link
-                href="/blog"
-                className={cn(
-                  "mb-6 inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
-                  FH_POINTER,
-                )}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+              <div>
+                <Link
+                  href="/blog"
+                  className={cn(
+                    "inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
+                    FH_POINTER,
+                  )}
                 >
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                Quay lại Tin tức
-              </Link>
-              <span className="inline-block rounded-full bg-bg-soft px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                  Quay lại Tin tức
+                </Link>
+              </div>
+              <span className="mt-6 inline-block rounded-full bg-bg-soft px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
                 {post.category}
               </span>
               <h1 className="mt-4 font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
