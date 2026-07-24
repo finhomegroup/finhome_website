@@ -3,12 +3,11 @@ import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 
 const components: Components = {
-  a: ({ href, children, ...props }) => {
+  a: ({ href, children }) => {
     const external = href?.startsWith("http");
     return (
       <a
         href={href}
-        {...props}
         {...(external
           ? { target: "_blank", rel: "noopener noreferrer" }
           : {})}
