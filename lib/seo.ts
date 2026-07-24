@@ -50,7 +50,10 @@ export function articleSchema(post: Post): Record<string, unknown> {
     headline: post.title,
     description: post.excerpt,
     image: absUrl(img(post.cover)),
-    ...(post.date ? { datePublished: post.date } : {}),
+    inLanguage: "vi-VN",
+    ...(post.date
+      ? { datePublished: post.date, dateModified: post.date }
+      : {}),
     author: { "@type": "Organization", name: SITE.name },
     publisher: {
       "@type": "Organization",
