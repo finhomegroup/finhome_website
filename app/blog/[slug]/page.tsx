@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -11,7 +12,11 @@ import { PostCardLink } from "@/components/post-card-link";
 import { SourceAttribution } from "@/components/source-attribution";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
-import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
+import {
+  FH_CARD_IMAGE_ZOOM,
+  FH_CLICKABLE_CARD,
+  FH_POINTER,
+} from "@/lib/interaction-styles";
 import { POSTS, getPost } from "@/content/posts";
 import { canonicalPath, absUrl, articleSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
@@ -75,6 +80,28 @@ export default async function Page({
         <article className="py-16 md:py-24">
           <Container>
             <Reveal className="mx-auto max-w-3xl">
+              <Link
+                href="/blog"
+                className={cn(
+                  "mb-6 inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
+                  FH_POINTER,
+                )}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Quay lại Tin tức
+              </Link>
               <span className="inline-block rounded-full bg-bg-soft px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
                 {post.category}
               </span>

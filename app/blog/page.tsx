@@ -6,9 +6,14 @@ import { Reveal } from "@/components/reveal";
 import { PostCardLink } from "@/components/post-card-link";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
-import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
+import {
+  FH_CARD_IMAGE_ZOOM,
+  FH_CLICKABLE_CARD,
+  FH_POINTER,
+} from "@/lib/interaction-styles";
 import { POSTS } from "@/content/posts";
 import { canonicalPath } from "@/lib/seo";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Tin tức bất động sản",
@@ -30,6 +35,28 @@ export default function BlogPage() {
         <section className="py-16 md:py-24">
           <Container>
             <Reveal className="mx-auto max-w-3xl text-center">
+              <Link
+                href="/"
+                className={cn(
+                  "mb-6 inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
+                  FH_POINTER,
+                )}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Quay lại trang chủ
+              </Link>
               <h1 className="font-display text-4xl leading-tight text-ink md:text-5xl">
                 Tin tức bất động sản
               </h1>
