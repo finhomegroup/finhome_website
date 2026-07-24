@@ -77,9 +77,9 @@ export default async function Page({
       <JsonLd data={articleSchema(post)} />
       <SiteHeader />
       <main>
-        <article className="py-12 md:py-16 lg:py-20">
+        <article className="py-16 md:py-24">
           <Container>
-            <Reveal>
+            <Reveal className="mx-auto max-w-3xl">
               <Link
                 href="/blog"
                 className={cn(
@@ -103,7 +103,7 @@ export default async function Page({
                 Quay lại Tin tức
               </Link>
 
-              <h1 className="mt-8 max-w-5xl font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
+              <h1 className="mt-8 font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
                 {post.title}
               </h1>
 
@@ -126,24 +126,22 @@ export default async function Page({
               </div>
 
               {post.source ? (
-                <div className="mt-6 max-w-4xl lg:max-w-5xl">
-                  <SourceAttribution
-                    name={post.source.name}
-                    url={post.source.url}
-                  />
-                </div>
+                <SourceAttribution
+                  name={post.source.name}
+                  url={post.source.url}
+                />
               ) : null}
             </Reveal>
 
-            <Reveal className="mt-10 overflow-hidden rounded-3xl">
+            <Reveal className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl">
               <img
                 src={img(post.cover)}
                 alt={post.title}
-                className="aspect-[21/9] w-full object-cover md:aspect-[2.4/1]"
+                className="aspect-[16/9] w-full object-cover"
               />
             </Reveal>
 
-            <div className="mx-auto mt-10 max-w-4xl md:mt-12 lg:max-w-5xl">
+            <div className="mx-auto mt-10 max-w-3xl">
               <Markdown source={body} />
             </div>
           </Container>
