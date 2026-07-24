@@ -70,6 +70,30 @@ export async function deleteAccount(
   if (res.status === 401 || res.status === 403) {
     throw new AccountDeleteUnauthorized();
   }
-  if (res.status === 500) throw new AccountDeletePartialFailure();
+  if (res.status === 500) {
+    // The BE returns 500 for TWO distinct cases with the same status but
+    // different `message` in the JSON body `{ statusCode, message, details }`:
+    //   (a) genuine partial failure — RDS deleted but Cognito removal failed:
+    //       "Data deleted but identity removal failed. Please contact support."
+    //   (b) nothing deleted — e.g. "Account deletion is not configured" or a
+    //       generic "Internal server error" thrown BEFORE the RDS cascade.
+    // Only (a) may tell the user their data is gone. There is no stable error
+    // code, so we key on the message text; anything else is a safe generic
+    // failure that must NOT claim deletion happened.
+    let backendMessage = "";
+    try {
+      const data: unknown = await res.json();
+      if (data && typeof data === "object" && "message" in data) {
+        const m = (data as { message?: unknown }).message;
+        if (typeof m === "string") backendMessage = m;
+      }
+    } catch {
+      /* non-JSON body — treat as generic failure below */
+    }
+    if (/identity removal failed|data deleted/i.test(backendMessage)) {
+      throw new AccountDeletePartialFailure();
+    }
+    throw new Error("account_delete_server_error");
+  }
   throw new Error(`account_delete_failed_${res.status}`);
 }
