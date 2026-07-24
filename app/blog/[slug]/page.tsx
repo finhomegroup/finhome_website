@@ -77,57 +77,73 @@ export default async function Page({
       <JsonLd data={articleSchema(post)} />
       <SiteHeader />
       <main>
-        <article className="py-16 md:py-24">
+        <article className="py-12 md:py-16 lg:py-20">
           <Container>
-            <Reveal className="mx-auto max-w-3xl">
-              <div>
-                <Link
-                  href="/blog"
-                  className={cn(
-                    "inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
-                    FH_POINTER,
-                  )}
+            <Reveal>
+              <Link
+                href="/blog"
+                className={cn(
+                  "inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
+                  FH_POINTER,
+                )}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                  </svg>
-                  Quay lại Tin tức
-                </Link>
-              </div>
-              <span className="mt-6 inline-block rounded-full bg-bg-soft px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
-                {post.category}
-              </span>
-              <h1 className="mt-4 font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Quay lại Tin tức
+              </Link>
+
+              <h1 className="mt-8 max-w-4xl font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
                 {post.title}
               </h1>
-              <p className="mt-3 text-sm text-ink-3">{post.readingTime}</p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-3">
+                <span className="font-medium uppercase tracking-wide text-primary">
+                  {post.category}
+                </span>
+                <span aria-hidden="true" className="text-ink-4">
+                  ·
+                </span>
+                <span>{post.readingTime}</span>
+                {post.source ? (
+                  <>
+                    <span aria-hidden="true" className="text-ink-4">
+                      ·
+                    </span>
+                    <span>Theo {post.source.name}</span>
+                  </>
+                ) : null}
+              </div>
+
               {post.source ? (
-                <SourceAttribution
-                  name={post.source.name}
-                  url={post.source.url}
-                />
+                <div className="mt-6 max-w-3xl">
+                  <SourceAttribution
+                    name={post.source.name}
+                    url={post.source.url}
+                  />
+                </div>
               ) : null}
             </Reveal>
 
-            <Reveal className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl">
+            <Reveal className="mt-10 overflow-hidden rounded-3xl">
               <img
                 src={img(post.cover)}
                 alt={post.title}
-                className="aspect-[16/9] w-full object-cover"
+                className="aspect-[21/9] w-full object-cover md:aspect-[2.4/1]"
               />
             </Reveal>
 
-            <div className="mx-auto mt-10 max-w-3xl">
+            <div className="mx-auto mt-10 max-w-3xl md:mt-12">
               <Markdown source={body} />
             </div>
           </Container>
