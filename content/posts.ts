@@ -6,7 +6,7 @@ export type Post = {
   category: string;
   excerpt: string;
   readingTime: string;
-  cover: string; // Framer base filename; resolve with img()
+  cover: string; // Framer base filename OR public path (/images/...); resolve with img()
   date?: string; // ISO YYYY-MM-DD publish date (for Article schema + sitemap lastmod)
   source?: {
     name: string;
@@ -23,7 +23,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Khi giá nhà tăng nhanh hơn thu nhập, số năm tích lũy để sở hữu nhà tăng rõ rệt. FinHome tóm tắt các tín hiệu quan trọng và gợi ý cách đọc con số này khi lập kế hoạch mua nhà.",
     readingTime: "3 phút đọc",
-    cover: "oWCUzm8toUrYjCtF86RIMXwJky8.jpg",
+    cover: "/images/blog/kha-nang-mua-nha-viet-nam-numbeo.jpg",
     date: "2026-07-24",
     source: {
       name: "VnExpress",
@@ -38,7 +38,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Tỷ số giá nhà trên thu nhập của Việt Nam đã vượt mốc 30. FinHome phân tích nguyên nhân đằng sau con số này và vì sao ham rẻ với nhà chưa có sổ có thể là canh bạc rủi ro.",
     readingTime: "4 phút đọc",
-    cover: "oIxITa5snaVT7XXKnAxj031jsc.jpg",
+    cover: "/images/blog/hon-30-nam-thu-nhap-de-mua-nha.jpg",
     date: "2026-07-24",
     source: {
       name: "CafeF",
@@ -53,7 +53,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Giữa giá nhà leo thang, người trẻ đô thị đang chia thành ba nhóm: chờ cơ hội, hành động ngay, hoặc chọn thuê dài hạn. FinHome gợi ý cách xác định mình thuộc nhóm nào để quyết định đúng thời điểm.",
     readingTime: "4 phút đọc",
-    cover: "pBWyVGbn6q90q7em1mpZCUhjo.jpg",
+    cover: "/images/blog/gioi-tre-mua-nha-thoi-bao-gia.jpg",
     date: "2026-07-24",
     source: {
       name: "CafeF",
@@ -68,7 +68,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Nhóm thu nhập trung bình — không đủ điều kiện mua nhà ở xã hội nhưng khó với tới nhà thương mại — vừa được đưa vào trọng tâm chính sách nhà ở. FinHome điểm lại các định hướng chính và việc cần chuẩn bị ngay từ bây giờ.",
     readingTime: "3 phút đọc",
-    cover: "KkQ6bZ6ezs4ASm9zGhCxZRRF1o.jpg",
+    cover: "/images/blog/chinh-sach-nha-o-thu-nhap-trung-binh.jpg",
     date: "2026-07-23",
     source: {
       name: "VnExpress",
@@ -83,7 +83,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Mức giá 'phù hợp' theo đề xuất chính sách và mức giá 'an toàn' theo khả năng trả nợ thực tế có thể chênh nhau khá xa. FinHome tổng hợp cách tính để bạn tự xác định ngân sách mua nhà của mình.",
     readingTime: "3 phút đọc",
-    cover: "oWCUzm8toUrYjCtF86RIMXwJky8.jpg",
+    cover: "/images/blog/gia-nha-phu-hop-thu-nhap-trung-binh.jpg",
     date: "2026-07-23",
     source: {
       name: "VnExpress",
@@ -98,7 +98,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Một cơ chế thí điểm nhà ở thương mại giá phù hợp đang được lấy ý kiến, hướng tới nhóm thu nhập trên 20 triệu đồng/tháng. FinHome tóm tắt nội dung đề xuất và việc nên chuẩn bị trong lúc chờ chính sách.",
     readingTime: "3 phút đọc",
-    cover: "oIxITa5snaVT7XXKnAxj031jsc.jpg",
+    cover: "/images/blog/uu-tien-mua-nha-gia-phu-hop-tren-20-trieu.jpg",
     date: "2026-07-22",
     source: {
       name: "VnExpress",
@@ -113,7 +113,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Không phải ai đủ điều kiện mua nhà ở xã hội cũng được vay vốn ưu đãi. FinHome tóm tắt nhóm đối tượng, điều kiện, lãi suất và thời hạn vay theo quy định hiện hành.",
     readingTime: "3 phút đọc",
-    cover: "pBWyVGbn6q90q7em1mpZCUhjo.jpg",
+    cover: "/images/blog/vay-von-mua-nha-o-xa-hoi-dieu-kien.png",
     date: "2026-07-22",
     source: {
       name: "Luật Việt Nam",
@@ -128,7 +128,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Từ 1/3/2026, mỗi bất động sản sẽ có mã định danh điện tử riêng. FinHome giải thích ý nghĩa của quy định này và vì sao nó không thay thế được bước thẩm định tài chính cá nhân.",
     readingTime: "3 phút đọc",
-    cover: "KkQ6bZ6ezs4ASm9zGhCxZRRF1o.jpg",
+    cover: "/images/blog/ma-dinh-danh-dien-tu-bat-dong-san.jpg",
     date: "2026-07-21",
     source: {
       name: "VnExpress",
@@ -143,7 +143,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Lãi vay mua nhà đã tăng 2-4 điểm phần trăm và chưa có dấu hiệu giảm. FinHome gợi ý cách kiểm tra khoản vay của bạn có còn an toàn khi hết thời gian ưu đãi lãi suất.",
     readingTime: "4 phút đọc",
-    cover: "oWCUzm8toUrYjCtF86RIMXwJky8.jpg",
+    cover: "/images/blog/lai-suat-vay-mua-nha-neo-cao.jpg",
     date: "2026-07-21",
     source: {
       name: "DNSE",
@@ -158,7 +158,7 @@ export const POSTS: Post[] = [
     excerpt:
       "Người trẻ đang chịu áp lực lớn nhất từ chênh lệch giá nhà - thu nhập. FinHome tổng hợp đề xuất gói tín dụng ưu đãi dành cho nhóm dưới 35 tuổi và cách chuẩn bị tài chính trong lúc chờ chính sách.",
     readingTime: "3 phút đọc",
-    cover: "oIxITa5snaVT7XXKnAxj031jsc.jpg",
+    cover: "/images/blog/goi-tin-dung-uu-dai-nguoi-tre-duoi-35.jpg",
     date: "2026-07-20",
     source: {
       name: "VnExpress",

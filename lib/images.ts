@@ -45,6 +45,8 @@ export const IMG: Record<string, string> = {
 };
 
 export function img(base: string): string {
+  // Allow direct public paths (e.g. crawled blog covers under /images/blog/).
+  if (base.startsWith("/")) return base;
   const p = IMG[base];
   if (!p) throw new Error(`Unknown image: ${base}`);
   return p;
