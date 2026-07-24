@@ -8,6 +8,11 @@ export type Post = {
   readingTime: string;
   cover: string; // Framer base filename; resolve with img()
   date?: string; // ISO YYYY-MM-DD publish date (for Article schema + sitemap lastmod)
+  source?: {
+    name: string;
+    url: string;
+    accessed?: string;
+  };
 };
 
 export const POSTS: Post[] = [

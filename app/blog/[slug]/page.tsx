@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { Markdown } from "@/components/markdown";
+import { SourceAttribution } from "@/components/source-attribution";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
@@ -81,6 +82,12 @@ export default async function Page({
                 {post.title}
               </h1>
               <p className="mt-3 text-sm text-ink-3">{post.readingTime}</p>
+              {post.source ? (
+                <SourceAttribution
+                  name={post.source.name}
+                  url={post.source.url}
+                />
+              ) : null}
             </Reveal>
 
             <Reveal className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl">

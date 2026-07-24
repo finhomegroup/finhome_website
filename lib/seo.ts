@@ -58,5 +58,15 @@ export function articleSchema(post: Post): Record<string, unknown> {
       logo: { "@type": "ImageObject", url: absUrl("/logos/Logo_7.png") },
     },
     mainEntityOfPage: absUrl(canonicalPath(`/blog/${post.slug}`)),
+    ...(post.source
+      ? {
+          isBasedOn: {
+            "@type": "WebPage",
+            name: post.source.name,
+            url: post.source.url,
+          },
+          citation: post.source.url,
+        }
+      : {}),
   };
 }
