@@ -7,21 +7,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Sourced posts open the publisher URL; FinHome originals stay on /blog/[slug]. */
+/** Always open the FinHome article page (SEO). Source credit lives on the detail page. */
 export function PostCardLink({ post, className, children }: Props) {
-  if (post.source) {
-    return (
-      <a
-        href={post.source.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {children}
-      </a>
-    );
-  }
-
   return (
     <Link href={`/blog/${post.slug}`} className={className}>
       {children}

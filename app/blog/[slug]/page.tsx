@@ -133,15 +133,14 @@ export default async function Page({
                   </div>
                   <div className="flex flex-1 flex-col gap-2 pt-4">
                     <span className="text-xs font-medium uppercase tracking-wide text-primary">
-                      {p.source ? `Nguồn: ${p.source.name}` : p.category}
+                      {p.category}
                     </span>
                     <h3 className="mt-2 font-display text-lg leading-snug text-ink">
                       {p.title}
                     </h3>
                     <span className="mt-3 text-xs text-ink-3">
-                      {p.source
-                        ? `Đọc trên ${p.source.name} →`
-                        : p.readingTime}
+                      {p.readingTime}
+                      {p.source ? ` · Theo ${p.source.name}` : ""}
                     </span>
                   </div>
                 </PostCardLink>

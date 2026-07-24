@@ -17,13 +17,14 @@ description: >-
 ## Hard rules
 
 1. **Canonical** on FinHome: `/blog/<slug>/` via `canonicalPath` (trailing slash).
-2. **Do not republish** full third-party articles. Summarize + link out with `source`.
-3. **One H1** = post title. Body uses `##` / `###` only.
-4. **Title** ≤ ~60 chars when practical; **excerpt** 120–160 chars for meta description.
-5. **Cover**: site assets via `img(post.cover)` only — never hotlink outlet images.
-6. External links: `target="_blank"` `rel="noopener noreferrer"` (Markdown component handles this).
-7. If `post.source` exists, page must show `SourceAttribution` and schema `isBasedOn`.
-8. After changes: `pnpm build` and confirm `out/blog/<slug>/index.html` has title, description, canonical, JSON-LD Article.
+2. **Do not republish** full third-party articles. Write FinHome summaries + cite `source` (SEO stays on FinHome).
+3. **List/home cards always link to** `/blog/<slug>` — never send primary traffic straight to the publisher.
+4. **One H1** = post title. Body uses `##` / `###` only.
+5. **Title** ≤ ~60 chars when practical; **excerpt** 120–160 chars for meta description.
+6. **Cover**: local assets via `img(post.cover)` (`/images/blog/...` or Framer map) — do not hotlink remote URLs at runtime.
+7. External links: `target="_blank"` `rel="noopener noreferrer"` (Markdown component handles this).
+8. If `post.source` exists, page must show `SourceAttribution` and schema `isBasedOn` / `citation`.
+9. After changes: `pnpm build` and confirm `out/blog/<slug>/index.html` has title, description, canonical, JSON-LD Article.
 
 ## Checklist per new post
 

@@ -60,7 +60,7 @@ export default function BlogPage() {
                   </div>
                   <div className="flex flex-1 flex-col gap-2 pt-4">
                     <span className="text-xs font-medium uppercase tracking-wide text-primary">
-                      {post.source ? `Nguồn: ${post.source.name}` : post.category}
+                      {post.category}
                     </span>
                     <h2 className="mt-2 font-display text-xl leading-snug text-ink">
                       {post.title}
@@ -69,9 +69,8 @@ export default function BlogPage() {
                       {post.excerpt}
                     </p>
                     <span className="mt-4 text-xs text-ink-3">
-                      {post.source
-                        ? `Đọc trên ${post.source.name} →`
-                        : post.readingTime}
+                      {post.readingTime}
+                      {post.source ? ` · Theo ${post.source.name}` : ""}
                     </span>
                   </div>
                 </PostCardLink>
