@@ -103,7 +103,7 @@ export default async function Page({
                 Quay lại Tin tức
               </Link>
 
-              <h1 className="mt-8 max-w-4xl font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
+              <h1 className="mt-8 max-w-5xl font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
                 {post.title}
               </h1>
 
@@ -126,7 +126,7 @@ export default async function Page({
               </div>
 
               {post.source ? (
-                <div className="mt-6 max-w-3xl">
+                <div className="mt-6 max-w-4xl lg:max-w-5xl">
                   <SourceAttribution
                     name={post.source.name}
                     url={post.source.url}
@@ -143,7 +143,7 @@ export default async function Page({
               />
             </Reveal>
 
-            <div className="mx-auto mt-10 max-w-3xl md:mt-12">
+            <div className="mx-auto mt-10 max-w-4xl md:mt-12 lg:max-w-5xl">
               <Markdown source={body} />
             </div>
           </Container>
