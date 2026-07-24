@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
+import { DeleteAccountForm } from "@/components/delete-account-form";
 import { DELETE_ACCOUNT_CONTENT as C } from "@/content/delete-account";
 
 // Private page: not linked from nav/footer, excluded from the sitemap, and
@@ -13,10 +14,6 @@ export const metadata: Metadata = {
   description: C.intro,
   robots: { index: false, follow: false },
 };
-
-const mailtoHref = `mailto:${C.supportEmail}?subject=${encodeURIComponent(
-  C.mailtoSubject,
-)}&body=${encodeURIComponent(C.mailtoBody)}`;
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -50,44 +47,16 @@ export default function DeleteAccountPage() {
           </Reveal>
 
           <div className="mx-auto mt-10 max-w-3xl space-y-6">
-            {/* How to request deletion */}
+            {/* Self-service deletion */}
             <Reveal>
               <Card>
-                <CardTitle>{C.requestTitle}</CardTitle>
+                <CardTitle>{C.formTitle}</CardTitle>
                 <p className="mt-3 text-base leading-relaxed text-ink-2">
-                  {C.requestIntro}
+                  {C.formIntro}
                 </p>
-                <ol className="mt-4 space-y-3">
-                  {C.requestSteps.map((step, i) => (
-                    <li key={step} className="flex items-start gap-3">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bg-soft text-sm font-semibold text-brand-green">
-                        {i + 1}
-                      </span>
-                      <span className="pt-0.5 text-base leading-relaxed text-ink-2">
-                        {step}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-
-                <a
-                  href={mailtoHref}
-                  className="mt-6 inline-flex items-center justify-center rounded-full bg-brand-green px-6 py-3 font-display font-medium text-white transition hover:brightness-95"
-                >
-                  {C.mailtoButton}
-                </a>
-
-                <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                  Chúng tôi sẽ xác minh và xử lý yêu cầu {C.processingTime}. Nếu
-                  cần hỗ trợ, liên hệ{" "}
-                  <a
-                    href={`mailto:${C.supportEmail}`}
-                    className="font-medium text-brand-green underline"
-                  >
-                    {C.supportEmail}
-                  </a>
-                  .
-                </p>
+                <div className="mt-5">
+                  <DeleteAccountForm />
+                </div>
               </Card>
             </Reveal>
 
