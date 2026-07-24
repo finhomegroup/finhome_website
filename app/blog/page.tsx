@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
+import { PostCardLink } from "@/components/post-card-link";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CLICKABLE_CARD } from "@/lib/interaction-styles";
@@ -40,9 +40,9 @@ export default function BlogPage() {
 
             <Reveal className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {POSTS.map((post) => (
-                <Link
+                <PostCardLink
                   key={post.slug}
-                  href={`/blog/${post.slug}`}
+                  post={post}
                   className={cn(
                     "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
                     FH_CLICKABLE_CARD,
@@ -60,7 +60,7 @@ export default function BlogPage() {
                   </div>
                   <div className="flex flex-1 flex-col gap-2 pt-4">
                     <span className="text-xs font-medium uppercase tracking-wide text-primary">
-                      {post.category}
+                      {post.source ? `Nguồn: ${post.source.name}` : post.category}
                     </span>
                     <h2 className="mt-2 font-display text-xl leading-snug text-ink">
                       {post.title}
@@ -69,10 +69,12 @@ export default function BlogPage() {
                       {post.excerpt}
                     </p>
                     <span className="mt-4 text-xs text-ink-3">
-                      {post.readingTime}
+                      {post.source
+                        ? `Đọc trên ${post.source.name} →`
+                        : post.readingTime}
                     </span>
                   </div>
-                </Link>
+                </PostCardLink>
               ))}
             </Reveal>
           </Container>

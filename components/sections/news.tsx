@@ -11,6 +11,7 @@ import {
 } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
+import { PostCardLink } from "@/components/post-card-link";
 
 function CategoryBadge({ label }: { label: string }) {
   return (
@@ -23,9 +24,14 @@ function CategoryBadge({ label }: { label: string }) {
 }
 
 function FeaturedCard({ post }: { post: Post }) {
+  const badge = post.source ? `Nguồn: ${post.source.name}` : post.category;
+  const meta = post.source
+    ? `Đọc trên ${post.source.name} →`
+    : post.readingTime;
+
   return (
-    <Link
-      href={`/blog/${post.slug}`}
+    <PostCardLink
+      post={post}
       className={cn(
         "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4 md:flex-row md:items-stretch md:gap-4",
         FH_CLICKABLE_CARD,
@@ -43,7 +49,7 @@ function FeaturedCard({ post }: { post: Post }) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-4 py-1 md:w-1/2 md:py-2 md:pr-2">
         <div className="flex flex-1 flex-col gap-3">
-          <CategoryBadge label={post.category} />
+          <CategoryBadge label={badge} />
           <div className="space-y-2">
             <h3 className="fh-h3 text-left">{post.title}</h3>
             <p className="fh-body line-clamp-4 text-left text-[rgb(87,87,87)]">
@@ -57,18 +63,20 @@ function FeaturedCard({ post }: { post: Post }) {
             aria-hidden="true"
           />
           <span className="bg-[radial-gradient(96%_50%_at_50%_50%,#17ab48_0%,#a2db46_100%)] bg-clip-text font-display-book text-sm text-transparent">
-            {post.readingTime}
+            {meta}
           </span>
         </div>
       </div>
-    </Link>
+    </PostCardLink>
   );
 }
 
 function PostCard({ post }: { post: Post }) {
+  const badge = post.source ? `Nguồn: ${post.source.name}` : post.category;
+
   return (
-    <Link
-      href={`/blog/${post.slug}`}
+    <PostCardLink
+      post={post}
       className={cn(
         "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
         FH_CLICKABLE_CARD,
@@ -76,7 +84,7 @@ function PostCard({ post }: { post: Post }) {
     >
       <div className="relative overflow-hidden rounded-xl">
         <div className="absolute right-3 top-3 z-10">
-          <CategoryBadge label={post.category} />
+          <CategoryBadge label={badge} />
         </div>
         <img
           src={img(post.cover)}
@@ -92,7 +100,7 @@ function PostCard({ post }: { post: Post }) {
           {post.excerpt}
         </p>
       </div>
-    </Link>
+    </PostCardLink>
   );
 }
 

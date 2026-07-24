@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { Markdown } from "@/components/markdown";
+import { PostCardLink } from "@/components/post-card-link";
 import { SourceAttribution } from "@/components/source-attribution";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
@@ -113,9 +113,9 @@ export default async function Page({
             </Reveal>
             <Reveal className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
               {related.map((p) => (
-                <Link
+                <PostCardLink
                   key={p.slug}
-                  href={`/blog/${p.slug}`}
+                  post={p}
                   className={cn(
                     "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
                     FH_CLICKABLE_CARD,
@@ -133,16 +133,18 @@ export default async function Page({
                   </div>
                   <div className="flex flex-1 flex-col gap-2 pt-4">
                     <span className="text-xs font-medium uppercase tracking-wide text-primary">
-                      {p.category}
+                      {p.source ? `Nguồn: ${p.source.name}` : p.category}
                     </span>
                     <h3 className="mt-2 font-display text-lg leading-snug text-ink">
                       {p.title}
                     </h3>
                     <span className="mt-3 text-xs text-ink-3">
-                      {p.readingTime}
+                      {p.source
+                        ? `Đọc trên ${p.source.name} →`
+                        : p.readingTime}
                     </span>
                   </div>
-                </Link>
+                </PostCardLink>
               ))}
             </Reveal>
           </Container>
