@@ -188,7 +188,10 @@ function DecorativeBadges({
 
 export function PartnerCta() {
   return (
-    <section className="pb-0 pt-12 md:pt-16">
+    <section
+      id="doitac"
+      className="scroll-mt-28 pb-0 pt-12 md:scroll-mt-32 md:pt-16"
+    >
       <Container>
         <Reveal>
           {/* Badges share this frame with the title. Live Framer sits the heading
