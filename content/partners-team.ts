@@ -95,6 +95,5 @@ export const TEAM_SECTION = {
     { src: "/images/partners-team/team-05.jpg", alt: "Chân dung thành viên đội ngũ FinHome 5", width: 1234, height: 1528 },
     { src: "/images/partners-team/team-06.jpg", alt: "Chân dung thành viên đội ngũ FinHome 6", width: 1234, height: 1528 },
     { src: "/images/partners-team/team-07.jpg", alt: "Chân dung thành viên đội ngũ FinHome 7", width: 1234, height: 1528 },
-    { src: "/images/partners-team/team-08.jpg", alt: "Chân dung thành viên đội ngũ FinHome 8", width: 1234, height: 1528 },
   ] satisfies readonly TeamPortrait[],
 } as const;
