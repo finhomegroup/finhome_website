@@ -80,6 +80,7 @@ export function Button({
       className={cn(
         "group/btn inline-flex items-center justify-center rounded-full px-5 py-2.5 font-display font-medium leading-5 tracking-tight",
         FH_POINTER,
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
         hasSwap && "relative overflow-hidden",
         size === "lg" ? "text-[17px]" : "text-[15px]",
         variant === "primary" &&

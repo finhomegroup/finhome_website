@@ -123,7 +123,7 @@ export function News() {
   const [featured, ...rest] = POSTS;
 
   return (
-    <section id="tintuc" className="py-12 md:py-[50px]">
+    <section id="tintuc" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-[50px]">
       <Container>
         <Reveal>
           <div className="text-center">

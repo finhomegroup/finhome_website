@@ -9,7 +9,7 @@ import { Reveal } from "@/components/reveal";
 
 export function Signup() {
   return (
-    <section id="dangky" className="py-12 md:py-[50px]">
+    <section id="dangky" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-[50px]">
       <Container>
         <Reveal>
           <div className="mx-auto max-w-xl text-center">

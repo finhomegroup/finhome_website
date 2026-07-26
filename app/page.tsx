@@ -6,6 +6,7 @@ import { Platform } from "@/components/sections/platform";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Faq } from "@/components/sections/faq";
 import { Signup } from "@/components/sections/signup";
+import { PartnersAndTeam } from "@/components/sections/partners-and-team";
 import { News } from "@/components/sections/news";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
@@ -23,6 +24,7 @@ export default function Home() {
         <Testimonials />
         <Faq />
         <Signup />
+        <PartnersAndTeam />
         <News />
       </main>
       <SiteFooter />
