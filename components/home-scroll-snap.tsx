@@ -5,6 +5,8 @@ import { useEffect } from "react";
 const SNAP_CLASS = "home-snap-y";
 const DURATION_MS = 550;
 const WHEEL_THRESHOLD = 10;
+/** Match Tailwind `xl` — section snap is large-desktop only (not iPad). */
+const DESKTOP_MQ = "(min-width: 1280px)";
 
 function getSections(): HTMLElement[] {
   return Array.from(
@@ -14,6 +16,10 @@ function getSections(): HTMLElement[] {
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function isDesktopSnap(): boolean {
+  return window.matchMedia(DESKTOP_MQ).matches;
 }
 
 function easeInOutCubic(t: number): number {
@@ -50,33 +56,21 @@ function isPastLastSection(sections: HTMLElement[]): boolean {
 }
 
 /**
- * Full-page section scroll: one wheel / key step → next or previous section.
- * From the last section, one more scroll down jumps to the footer; from the
- * footer, one scroll up returns to the last section.
+ * Full-page section scroll (desktop `xl+` only): one wheel / key step → next
+ * or previous section. Disabled on phone/iPad so the page scrolls normally.
  */
 export function HomeScrollSnap() {
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.add(SNAP_CLASS);
+    const mq = window.matchMedia(DESKTOP_MQ);
     const previousPadding = root.style.scrollPaddingTop;
     const previousBehavior = root.style.scrollBehavior;
     const previousRestoration = window.history.scrollRestoration;
 
-    window.history.scrollRestoration = "manual";
-    root.style.scrollPaddingTop = "0px";
-    root.style.scrollBehavior = "auto";
-
-    const jumpTop = () => {
-      if (window.location.hash) return;
-      window.scrollTo(0, 0);
-    };
-    jumpTop();
-    requestAnimationFrame(jumpTop);
-    window.addEventListener("pageshow", jumpTop);
-
     let locked = false;
     let rafAnim = 0;
     let unlockTimer = 0;
+    let active = false;
 
     const cancelAnim = () => {
       if (rafAnim) {
@@ -133,6 +127,7 @@ export function HomeScrollSnap() {
     };
 
     const onWheel = (event: WheelEvent) => {
+      if (!isDesktopSnap()) return;
       if (event.ctrlKey) return;
       if (Math.abs(event.deltaY) < WHEEL_THRESHOLD) return;
 
@@ -143,14 +138,12 @@ export function HomeScrollSnap() {
       const index = currentIndex(sections);
       const section = sections[Math.min(index, last)];
 
-      // Footer → last section in one step.
       if (event.deltaY < 0 && isPastLastSection(sections)) {
         event.preventDefault();
         if (!locked) goToIndex(last);
         return;
       }
 
-      // Tall section: finish inner scroll before changing page position.
       if (!locked && sectionCanScrollInner(section, event.deltaY)) return;
 
       event.preventDefault();
@@ -158,13 +151,14 @@ export function HomeScrollSnap() {
 
       if (event.deltaY > 0) {
         if (index < last) goToIndex(index + 1);
-        else goToFooter(); // last section → footer in one step
+        else goToFooter();
       } else {
         if (index > 0) goToIndex(index - 1);
       }
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!isDesktopSnap()) return;
       const keys = [
         "PageDown",
         "PageUp",
@@ -230,18 +224,50 @@ export function HomeScrollSnap() {
       }
     };
 
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("keydown", onKeyDown);
+    const jumpTop = () => {
+      if (window.location.hash) return;
+      window.scrollTo(0, 0);
+    };
 
-    return () => {
+    const activate = () => {
+      if (active) return;
+      active = true;
+      root.classList.add(SNAP_CLASS);
+      window.history.scrollRestoration = "manual";
+      root.style.scrollPaddingTop = "0px";
+      root.style.scrollBehavior = "auto";
+      jumpTop();
+      requestAnimationFrame(jumpTop);
+      window.addEventListener("pageshow", jumpTop);
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("keydown", onKeyDown);
+    };
+
+    const deactivate = () => {
+      if (!active) return;
+      active = false;
+      cancelAnim();
+      locked = false;
       root.classList.remove(SNAP_CLASS);
       root.style.scrollPaddingTop = previousPadding;
       root.style.scrollBehavior = previousBehavior;
       window.history.scrollRestoration = previousRestoration;
-      cancelAnim();
       window.removeEventListener("pageshow", jumpTop);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
+    };
+
+    const syncMode = () => {
+      if (mq.matches) activate();
+      else deactivate();
+    };
+
+    syncMode();
+    mq.addEventListener("change", syncMode);
+
+    return () => {
+      mq.removeEventListener("change", syncMode);
+      deactivate();
     };
   }, []);
 
