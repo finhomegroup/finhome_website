@@ -8,6 +8,7 @@ import { TEAM_SECTION } from "@/content/partners-team";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
@@ -124,13 +125,12 @@ function ArrowButton({
 }
 
 export function Team() {
-  // "keepSnaps" (not "trimSnaps") preserves one snap point per portrait so the
-  // dot count always matches TEAM_SECTION.portraits.length (8, per source —
-  // see task-1-measurements.md §2), instead of Embla consolidating trailing
-  // snaps once enough slides fit in the viewport (observed at ≥1200px).
+  // `trimSnaps` drops unreachable trailing snaps when multiple portraits fit
+  // in view, so the progress dots match how many positions you can actually
+  // scroll to (not one phantom dot per portrait past the end).
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
-    containScroll: "keepSnaps",
+    containScroll: "trimSnaps",
     loop: false,
   });
   const { selectedIndex, scrollSnaps, canScrollPrev, canScrollNext } =
@@ -159,7 +159,7 @@ export function Team() {
   );
 
   return (
-    <section className="py-12 md:py-16">
+    <SectionFrame id="doingu">
       <Container>
         <Reveal>
           <div className="text-center">
@@ -170,14 +170,14 @@ export function Team() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-10">
+        <Reveal delay={0.1} className="mt-6 md:mt-8">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4 md:gap-6">
               {TEAM_SECTION.portraits.map((portrait) => (
                 <div
                   key={portrait.src}
                   className={cn(
-                    "relative shrink-0 overflow-hidden rounded-2xl bg-ink-4/10 aspect-[1234/1528]",
+                    "relative shrink-0 overflow-hidden rounded-2xl bg-ink-4/10 aspect-[1234/1528] max-h-[min(400px,52dvh)]",
                     SLIDE_WIDTH_CLASS,
                   )}
                 >
@@ -234,6 +234,6 @@ export function Team() {
           )}
         </Reveal>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }

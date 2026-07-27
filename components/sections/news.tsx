@@ -10,6 +10,7 @@ import {
   FH_LINK_OPACITY,
 } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 import { PostCardLink } from "@/components/post-card-link";
 
@@ -37,7 +38,7 @@ function FeaturedCard({ post }: { post: Post }) {
           src={img(post.cover)}
           alt={post.title}
           className={cn(
-            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-[280px]",
+            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[240px]",
             FH_CARD_IMAGE_ZOOM,
           )}
         />
@@ -123,7 +124,7 @@ export function News() {
   const [featured, ...rest] = POSTS;
 
   return (
-    <section id="tintuc" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-[50px]">
+    <SectionFrame id="tintuc">
       <Container>
         <Reveal>
           <div className="text-center">
@@ -135,7 +136,7 @@ export function News() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-10 flex flex-col gap-5 md:gap-6">
+          <div className="mt-6 flex flex-col gap-5 md:mt-8 md:gap-6">
             <FeaturedCard post={featured} />
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 md:gap-5">
               {rest.slice(0, 3).map((post) => (
@@ -144,11 +145,11 @@ export function News() {
             </div>
           </div>
 
-          <div className="mt-10 flex justify-center">
+          <div className="mt-8 flex justify-center md:mt-10">
             <ViewMoreLink />
           </div>
         </Reveal>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }

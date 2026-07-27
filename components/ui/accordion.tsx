@@ -10,7 +10,7 @@ const FAQ_TOGGLE_ICON = "iFYY6KsVY4Sg2HETYv3vxfrz8.png";
 
 function ToggleIcon() {
   return (
-    <span className="relative z-10 flex size-[30px] shrink-0 items-center justify-center">
+    <span className="relative z-10 flex size-6 shrink-0 items-center justify-center sm:size-[26px]">
       <img
         src={img(FAQ_TOGGLE_ICON)}
         alt=""
@@ -18,8 +18,8 @@ function ToggleIcon() {
         className="absolute inset-0 size-full object-contain"
       />
       <span className="relative flex size-full items-center justify-center">
-        <span className="absolute h-[2px] w-3 rounded-full bg-white" />
-        <span className="absolute h-3 w-[2px] origin-center rounded-full bg-white transition-transform duration-200 group-data-[state=open]:scale-y-0" />
+        <span className="absolute h-[1.5px] w-2.5 rounded-full bg-white" />
+        <span className="absolute h-2.5 w-[1.5px] origin-center rounded-full bg-white transition-transform duration-200 group-data-[state=open]:scale-y-0" />
       </span>
     </span>
   );
@@ -36,21 +36,21 @@ export function Accordion({
     <RadixAccordion.Root
       type="single"
       collapsible
-      className={cn("flex w-full flex-col gap-5", className)}
+      className={cn("flex w-full flex-col gap-2", className)}
     >
       {items.map((item, i) => (
         <RadixAccordion.Item
           key={i}
           value={`item-${i}`}
           className={cn(
-            "overflow-hidden rounded-2xl bg-white p-[5px]",
+            "overflow-hidden rounded-xl bg-white p-1",
             FH_CARD_SHADOW,
           )}
         >
           <RadixAccordion.Header className="m-0">
             <RadixAccordion.Trigger
               className={cn(
-                "group relative flex min-h-[62px] w-full items-center justify-between gap-3 overflow-hidden rounded-[13px] py-3 pl-4 pr-3 text-left data-[state=open]:rounded-b-none sm:gap-4 sm:py-4 sm:pl-5 sm:pr-4",
+                "group relative flex min-h-0 w-full items-center justify-between gap-3 overflow-hidden rounded-[10px] py-2 pl-3.5 pr-2.5 text-left data-[state=open]:rounded-b-none sm:gap-3 sm:py-2.5 sm:pl-4 sm:pr-3",
                 FH_POINTER,
               )}
             >
@@ -60,15 +60,17 @@ export function Accordion({
                 aria-hidden
                 className="pointer-events-none absolute inset-0 size-full object-cover object-[0.6%_50%]"
               />
-              <span className="relative z-10 min-w-0 flex-1 font-[family-name:var(--font-display)] text-[15px] font-medium leading-snug tracking-[0.01em] text-ink">
+              <span className="relative z-10 min-w-0 flex-1 font-[family-name:var(--font-display)] text-[14px] font-medium leading-snug tracking-[0.01em] text-ink sm:text-[15px]">
                 {i + 1}. {item.q}
               </span>
               <ToggleIcon />
             </RadixAccordion.Trigger>
           </RadixAccordion.Header>
           <RadixAccordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="px-5 pb-4 pt-3">
-              <p className="fh-body text-left">{item.a}</p>
+            <div className="px-4 pb-3 pt-2">
+              <p className="fh-body text-left text-[15px] leading-snug">
+                {item.a}
+              </p>
             </div>
           </RadixAccordion.Content>
         </RadixAccordion.Item>

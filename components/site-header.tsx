@@ -58,9 +58,20 @@ export function SiteHeader() {
         <Container className="pt-[37px]">
           <div className="mx-auto flex h-[50px] max-w-[1076px] items-center justify-between rounded-full bg-white pl-5 pr-[7px] shadow-[0_1px_20px_rgba(0,0,0,0.03)]">
             <Link
-              href="/"
+              href={onHome ? "#trangchu" : "/"}
               className={cn("flex items-center", FH_POINTER)}
               aria-label="FinHome"
+              onClick={(e) => {
+                if (!onHome) return;
+                e.preventDefault();
+                setOpen(false);
+                document
+                  .getElementById("trangchu")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                if (window.location.hash) {
+                  history.replaceState(null, "", "/");
+                }
+              }}
             >
               <img
                 src={img(LOGO.header)}
@@ -69,8 +80,8 @@ export function SiteHeader() {
               />
             </Link>
 
-            <div className="hidden items-center gap-9 lg:flex">
-              <nav className="flex items-center gap-[34px]">
+            <div className="hidden items-center gap-6 xl:gap-9 lg:flex">
+              <nav className="flex items-center gap-5 xl:gap-[34px]">
                 {NAV_ITEMS.map((item) => {
                   const isActive = activeId === sectionIdFromHref(item.href);
                   return (

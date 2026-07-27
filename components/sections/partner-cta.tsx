@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { PARTNER_CTA } from "@/content/partners-team";
 import { CTA_HREF } from "@/content/site";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
+import { PartnerTables } from "@/components/sections/partner-tables";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 // Decorative badges float around the partner title. Desktop geometry re-measured
@@ -186,17 +188,15 @@ function DecorativeBadges({
   );
 }
 
+/** Partner CTA + dashboard tables share one homepage viewport (`#doitac`). */
 export function PartnerCta() {
   return (
-    <section
-      id="doitac"
-      className="scroll-mt-28 pb-0 pt-12 md:scroll-mt-32 md:pt-16"
-    >
+    <SectionFrame id="doitac">
       <Container>
         <Reveal>
-          {/* Badges share this frame with the title. Live Framer sits the heading
-              ~78px below the top badge band so the four icons surround it. */}
-          <div className="relative md:min-h-[280px]">
+          {/* Badges share this frame with the title. Compact layout so CTA +
+              dashboard fit one viewport (desktop badges still flank the heading). */}
+          <div className="relative md:min-h-[200px]">
             {/* -mx-5 cancels container-fh's 20px inline padding so badge offsets
                 match the outer 1200px container edge measured on Framer. */}
             <div
@@ -212,19 +212,18 @@ export function PartnerCta() {
               <DecorativeBadges variant="desktop" />
             </div>
 
-            {/* Live Framer sits the heading ~78px below the top badge band. */}
             <div
               aria-hidden="true"
               className="hidden md:block"
-              style={{ height: 78 }}
+              style={{ height: 40 }}
             />
 
             <div className="relative z-10 mx-auto max-w-2xl text-center">
               <h2 className="fh-h2 text-ink">{PARTNER_CTA.title}</h2>
-              <p className="fh-lead mx-auto mt-[9px] max-w-xl text-balance">
+              <p className="fh-lead mx-auto mt-2 max-w-xl text-balance text-[15px] leading-snug md:text-base">
                 {PARTNER_CTA.subtitle}
               </p>
-              <div className="mt-[34px] flex justify-center">
+              <div className="mt-4 flex justify-center md:mt-5">
                 <Button
                   href={CTA_HREF}
                   size="lg"
@@ -236,7 +235,11 @@ export function PartnerCta() {
             </div>
           </div>
         </Reveal>
+
+        <div className="mt-5 md:mt-6">
+          <PartnerTables />
+        </div>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }

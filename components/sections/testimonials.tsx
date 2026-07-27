@@ -3,6 +3,7 @@ import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 
 const SUBTITLE_LINE1 = "Góc nhìn từ người dùng sau khi hiểu rõ hơn";
@@ -70,7 +71,7 @@ export function Testimonials() {
   const track = [...half, ...half];
 
   return (
-    <section className="overflow-x-clip py-12 md:py-16">
+    <SectionFrame id="trainghiem" className="overflow-x-clip">
       <Container className="max-w-[1104px]">
         <Reveal>
           <div className="text-center">
@@ -83,13 +84,13 @@ export function Testimonials() {
         </Reveal>
 
         {/* Mobile: static stack — marquee cards clip awkwardly on narrow screens */}
-        <Reveal delay={0.1} className="mt-10 flex flex-col gap-4 md:hidden">
+        <Reveal delay={0.1} className="mt-6 flex flex-col gap-4 md:hidden">
           {items.map((item) => (
             <Card key={item.name} item={item} className="w-full" />
           ))}
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-10 hidden md:block">
+        <Reveal delay={0.1} className="mt-8 hidden md:block">
           <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]">
             <div className="flex w-max [animation:marquee_45s_linear_infinite] group-hover:[animation-play-state:paused] motion-reduce:[animation:none]">
               {track.map((item, i) => (
@@ -103,6 +104,6 @@ export function Testimonials() {
           </div>
         </Reveal>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }

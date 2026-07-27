@@ -1,16 +1,25 @@
 import { HERO } from "@/content/home";
 import { img } from "@/lib/images";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 
+/**
+ * Hero matches Framer `#trangchu` @ desktop: green band ≈668px with phones
+ * (451×500) sitting in that band so the wave cuts at the phone bottoms;
+ * remaining viewport below stays white for one-section snap height.
+ * @see https://finhomegroup.framer.website/
+ */
 export function Hero() {
   return (
-    <section
+    <SectionFrame
       id="trangchu"
-      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] pb-0 lg:pt-[162px]"
+      center={false}
+      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] lg:pt-[162px]"
     >
-      {/* Hero background artwork (green gradient + concentric rings), from the Framer original.
-          The source is a very wide, short band that sits across the top of the hero. */}
+      {/* Framer fills `#trangchu` with this art (object-fit: cover). We keep the
+          measured band height so the wave stays mid-composition while the
+          section itself can be taller (100dvh) with white below. */}
       <img
         src={img(HERO.images.marquee)}
         alt=""
@@ -48,17 +57,20 @@ export function Hero() {
             </Reveal>
           </div>
 
-          {/* RIGHT COLUMN — phone mockup */}
-          <Reveal delay={0.12} className="relative flex w-full justify-center lg:w-auto lg:shrink-0 lg:justify-end">
+          {/* RIGHT COLUMN — phone mockup (Framer sizes + object-position left top) */}
+          <Reveal
+            delay={0.12}
+            className="relative flex w-full justify-center lg:w-auto lg:shrink-0 lg:justify-end"
+          >
             <img
               src={img(HERO.images.phone)}
               alt="Ứng dụng FinHome"
-              className="pointer-events-none mx-auto h-[378px] w-[329px] max-w-full select-none object-cover object-top sm:h-[420px] sm:w-[366px] lg:mx-0 lg:h-[500px] lg:w-[451px]"
+              className="pointer-events-none mx-auto h-[378px] w-[329px] max-w-full select-none object-cover object-left-top sm:h-[420px] sm:w-[366px] lg:mx-0 lg:h-[500px] lg:w-[451px]"
             />
           </Reveal>
         </div>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }
 

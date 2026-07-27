@@ -4,6 +4,7 @@ import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 
@@ -28,16 +29,16 @@ function StepCard({ step, index, delay }: { step: Step; index: number; delay: nu
           FH_CARD_SHADOW,
         )}
       >
-        <div className="h-[210px] overflow-hidden">
+        <div className="h-[min(210px,22dvh)] overflow-hidden">
           <img
             src={img(step.icon)}
             alt=""
             aria-hidden="true"
-            className={cn("block w-full", FH_CARD_IMAGE_ZOOM)}
+            className={cn("block h-full w-full object-cover", FH_CARD_IMAGE_ZOOM)}
             style={imageOffset ? { marginTop: imageOffset } : undefined}
           />
         </div>
-        <div className="px-5 pb-2.5 pt-[29px]">
+        <div className="px-5 pb-2.5 pt-5 md:pt-[29px]">
           <h3 className="fh-h3">{step.title}</h3>
           <p className="fh-body mt-2">{step.desc}</p>
         </div>
@@ -48,7 +49,7 @@ function StepCard({ step, index, delay }: { step: Step; index: number; delay: nu
 
 export function Steps() {
   return (
-    <section id="tinhnang" className="scroll-mt-32 py-12 md:py-16">
+    <SectionFrame id="tinhnang">
       <Container>
         <Reveal>
           <h2 className="fh-h2 mx-auto max-w-2xl text-center text-balance">
@@ -75,7 +76,7 @@ export function Steps() {
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
                 aria-hidden="true"
-                className="block w-full select-none rounded-[20px]"
+                className="mx-auto block h-auto max-h-[min(280px,32dvh)] w-full select-none rounded-[20px] object-contain"
               />
               <div className="w-full">
                 <p className="font-display text-xl font-medium leading-[1.2] text-ink">
@@ -100,12 +101,12 @@ export function Steps() {
             </div>
 
             {/* Desktop xl+: Framer artwork with percentage-based overlays */}
-            <div className="relative hidden w-full xl:block">
+            <div className="relative mx-auto hidden w-full max-h-[min(360px,38dvh)] xl:block">
               <img
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
                 aria-hidden="true"
-                className="block w-full select-none"
+                className="block h-auto max-h-[min(360px,38dvh)] w-full select-none object-contain"
               />
 
               <div className="pointer-events-none absolute inset-0">
@@ -145,12 +146,12 @@ export function Steps() {
         </Reveal>
 
         {/* Three step cards — Framer "How it works" @360×326. */}
-        <div className="mx-auto mt-14 grid max-w-[1120px] grid-cols-1 gap-8 md:mt-[33px] md:grid-cols-3 md:gap-6">
+        <div className="mx-auto mt-8 grid max-w-[1120px] grid-cols-1 gap-6 md:mt-6 md:grid-cols-3 md:gap-6">
           {STEPS_SECTION.steps.map((step, i) => (
             <StepCard key={step.title} step={step} index={i} delay={0.1 * i} />
           ))}
         </div>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }

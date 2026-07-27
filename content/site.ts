@@ -3,8 +3,10 @@
 export const NAV_ITEMS: { label: string; href: string }[] = [
   { label: "Tính năng", href: "#tinhnang" },
   { label: "Nền tảng", href: "#nentang" },
+  { label: "Trải nghiệm", href: "#trainghiem" },
   { label: "Hỗ trợ", href: "#hotro" },
   { label: "Đối tác", href: "#doitac" },
+  { label: "Đội ngũ", href: "#doingu" },
   { label: "Tin tức", href: "#tintuc" },
 ];
 

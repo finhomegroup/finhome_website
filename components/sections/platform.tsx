@@ -3,6 +3,7 @@ import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CARD_SHADOW } from "@/lib/interaction-styles";
 import { Container } from "@/components/ui/container";
+import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 
 type Feature = (typeof PLATFORM_SECTION.features)[number];
@@ -78,7 +79,7 @@ export function Platform() {
   const { features } = PLATFORM_SECTION;
 
   return (
-    <section id="nentang" className="scroll-mt-28 py-12 md:scroll-mt-32 md:py-16">
+    <SectionFrame id="nentang">
       <Container>
         <Reveal>
           <h2 className="fh-h2 mx-auto max-w-3xl text-center text-balance">
@@ -93,7 +94,7 @@ export function Platform() {
           </h2>
         </Reveal>
 
-        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-6 grid max-w-[1120px] grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-8 lg:grid-cols-3">
           {COLUMNS.map((col, colIndex) => (
             <div key={colIndex} className="flex flex-col gap-3">
               {col.map((featureIndex, rowIndex) => (
@@ -108,6 +109,6 @@ export function Platform() {
           ))}
         </div>
       </Container>
-    </section>
+    </SectionFrame>
   );
 }
