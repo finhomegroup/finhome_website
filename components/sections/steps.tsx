@@ -146,7 +146,7 @@ export function Steps() {
         </Reveal>
 
         {/* Three step cards — Framer "How it works" @360×326. */}
-        <div className="mx-auto mt-8 grid max-w-[1120px] grid-cols-1 gap-6 md:mt-6 md:grid-cols-3 md:gap-6">
+        <div className="mx-auto mt-8 grid max-w-[1120px] grid-cols-1 gap-6 md:mt-6 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
           {STEPS_SECTION.steps.map((step, i) => (
             <StepCard key={step.title} step={step} index={i} delay={0.1 * i} />
           ))}

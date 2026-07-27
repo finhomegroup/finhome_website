@@ -1,13 +1,15 @@
 import { cn } from "@/lib/cn";
 
 type SectionFrameProps = React.ComponentPropsWithoutRef<"section"> & {
-  /** Vertically center content when it fits (default true). */
+  /** Vertically center content when it fits (default true). Desktop xl+ only. */
   center?: boolean;
 };
 
 /**
- * One-viewport homepage section shell: exact `100dvh`, scroll-snap start,
- * and inner overflow when content is taller than the screen.
+ * Homepage section shell.
+ * Phone + iPad: natural document flow (no locked height / inner scroll).
+ * Desktop (`xl+`): one-viewport `100dvh` with inner overflow when content is tall.
+ * (iPad / iPad Pro widths sit below `xl`, so they stay readable.)
  */
 export function SectionFrame({
   className,
@@ -19,16 +21,19 @@ export function SectionFrame({
     <section
       {...props}
       className={cn(
-        "flex h-dvh max-h-dvh flex-col overflow-x-clip overflow-y-auto",
+        "flex flex-col overflow-x-clip",
+        "xl:h-dvh xl:max-h-dvh xl:overflow-y-auto",
         className,
       )}
     >
       <div
         className={cn(
-          "flex min-h-full w-full flex-1 flex-col",
+          "flex w-full flex-1 flex-col",
           center
-            ? "justify-center pb-8 pt-[6.5rem] md:pb-10"
-            : "justify-start",
+            ? // Phone gap; iPad flows; xl+ clears header + centers.
+              "py-8 max-md:py-16 xl:min-h-full xl:[justify-content:safe_center] xl:pb-8 xl:pt-[6.5rem]"
+            : // Hero: phone bottom gap; iPad fills via hero classes; xl+ normal.
+              "justify-start max-md:pb-16 md:max-xl:min-h-0 md:max-xl:flex-1",
         )}
       >
         {children}

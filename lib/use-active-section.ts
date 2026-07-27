@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 /**
  * Returns the id (without `#`) of the section currently in view.
- * Uses IntersectionObserver with a top rootMargin that clears the fixed header.
+ * Uses IntersectionObserver with a top-biased rootMargin.
  */
 export function useActiveSection(sectionIds: readonly string[]): string | null {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -37,9 +37,8 @@ export function useActiveSection(sectionIds: readonly string[]): string | null {
         setActiveId(bestId);
       },
       {
-        // Keep the fixed header out of the observation band (~header height).
         root: null,
-        rootMargin: "-96px 0px -45% 0px",
+        rootMargin: "-24px 0px -45% 0px",
         threshold: [0, 0.25, 0.5, 0.75, 1],
       },
     );

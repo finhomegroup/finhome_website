@@ -38,7 +38,7 @@ function FeaturedCard({ post }: { post: Post }) {
           src={img(post.cover)}
           alt={post.title}
           className={cn(
-            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[240px]",
+            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[200px] lg:max-h-[180px]",
             FH_CARD_IMAGE_ZOOM,
           )}
         />
@@ -127,26 +127,27 @@ export function News() {
     <SectionFrame id="tintuc">
       <Container>
         <Reveal>
-          <div className="text-center">
-            <h2 className="fh-h2 text-ink">{NEWS_SECTION.title}</h2>
-            <p className="fh-lead mx-auto mt-4 max-w-xl">
-              {NEWS_SECTION.subtitle}
-            </p>
+          <div className="flex flex-col items-center gap-4 text-center sm:gap-5">
+            <div>
+              <h2 className="fh-h2 text-ink">{NEWS_SECTION.title}</h2>
+              <p className="fh-lead mx-auto mt-3 max-w-xl md:mt-4">
+                {NEWS_SECTION.subtitle}
+              </p>
+            </div>
+            {/* Keep CTA in the header band so it stays on-screen in the
+                desktop one-viewport section (cards alone can fill the fold). */}
+            <ViewMoreLink />
           </div>
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-6 flex flex-col gap-5 md:mt-8 md:gap-6">
+          <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <FeaturedCard post={featured} />
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 md:gap-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {rest.slice(0, 3).map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}
             </div>
-          </div>
-
-          <div className="mt-8 flex justify-center md:mt-10">
-            <ViewMoreLink />
           </div>
         </Reveal>
       </Container>
