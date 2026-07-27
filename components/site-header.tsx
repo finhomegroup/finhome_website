@@ -230,7 +230,7 @@ export function SiteHeader() {
           </div>
 
           {open && (
-            <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md lg:hidden">
+            <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md xl:hidden">
               {NAV_ITEMS.map((item) => {
                 const isActive = activeId === sectionIdFromHref(item.href);
                 return (

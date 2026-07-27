@@ -39,7 +39,7 @@ const BADGES: {
     wrapper: { width: 127, height: 180, top: 0 },
     side: "left",
     offset: 140,
-    tablet: { top: 0, offset: 0 },
+    tablet: { top: 0, offset: -20 },
     rotate: [-8, 10],
     floatY: [0, -15],
     rotateDuration: 4.2,
@@ -51,7 +51,7 @@ const BADGES: {
     wrapper: { width: 137, height: 186, top: 145 },
     side: "left",
     offset: 180,
-    tablet: { top: 88, offset: 0 },
+    tablet: { top: 88, offset: -20 },
     rotate: [-18, -8],
     floatY: [0, 25],
     rotateDuration: 4.8,
@@ -63,7 +63,7 @@ const BADGES: {
     wrapper: { width: 128, height: 181, top: 16 },
     side: "right",
     offset: 124,
-    tablet: { top: 4, offset: 0 },
+    tablet: { top: 4, offset: -20 },
     rotate: [-10, 8],
     floatY: [0, -22],
     rotateDuration: 5,
@@ -75,7 +75,7 @@ const BADGES: {
     wrapper: { width: 137, height: 186, top: 146 },
     side: "right",
     offset: 185,
-    tablet: { top: 84, offset: 0 },
+    tablet: { top: 84, offset: -20 },
     rotate: [8, 22],
     floatY: [0, 25],
     rotateDuration: 4.4,
@@ -197,11 +197,12 @@ export function PartnerCta() {
           {/* Badges share this frame with the title. Compact layout so CTA +
               dashboard fit one viewport (desktop badges still flank the heading). */}
           <div className="relative md:min-h-[200px]">
-            {/* -mx-5 cancels container-fh's 20px inline padding so badge offsets
-                match the outer 1200px container edge measured on Framer. */}
+            {/* Tablet badges anchor to the title's own max-width (not the much
+                wider, viewport-dependent container) so they stay close to the
+                heading instead of drifting to the screen edges on wide iPads. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 -mx-5 hidden md:block xl:hidden"
+              className="pointer-events-none absolute left-1/2 top-0 w-full max-w-2xl -translate-x-1/2 hidden md:block xl:hidden"
             >
               <DecorativeBadges variant="tablet" />
             </div>

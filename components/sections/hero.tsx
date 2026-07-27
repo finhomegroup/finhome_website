@@ -23,7 +23,7 @@ export function Hero() {
         src={img(HERO.images.marquee)}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[774px] w-full select-none object-cover object-center md:max-xl:h-full xl:h-[668px]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[774px] w-full select-none object-cover object-center md:max-xl:h-[calc(50dvh_+_408px)] xl:h-[668px]"
       />
 
       <Container className="relative z-10 md:max-xl:flex md:max-xl:min-h-0 md:max-xl:flex-1 md:max-xl:flex-col">
