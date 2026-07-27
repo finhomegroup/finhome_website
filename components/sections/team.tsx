@@ -171,7 +171,10 @@ export function Team() {
         </Reveal>
 
         <Reveal delay={0.1} className="mt-6 md:mt-8">
-          <div className="overflow-hidden" ref={emblaRef}>
+          <div
+            className="overflow-hidden md:max-xl:[mask-image:linear-gradient(to_right,#000_0%,#000_calc(100%-64px),transparent_100%)]"
+            ref={emblaRef}
+          >
             <div className="flex gap-4 md:gap-6">
               {TEAM_SECTION.portraits.map((portrait) => (
                 <div

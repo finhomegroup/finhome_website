@@ -38,7 +38,7 @@ function FeaturedCard({ post }: { post: Post }) {
           src={img(post.cover)}
           alt={post.title}
           className={cn(
-            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[200px] lg:max-h-[180px]",
+            "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[240px] lg:max-h-[280px]",
             FH_CARD_IMAGE_ZOOM,
           )}
         />

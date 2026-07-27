@@ -70,46 +70,10 @@ export function SiteHeader() {
       }
     };
 
-    // rAF poll: HomeScrollSnap drives scroll via rAF scrollTo; relying on
-    // scroll events alone is flaky across browsers.
-    let raf = 0;
-    let prev = window.scrollY;
-    const tick = () => {
-      const y = window.scrollY;
-      if (y !== prev) {
-        prev = y;
-        sync();
-      } else {
-        // Still update lastY when sync short-circuits on equal frames after snap.
-        lastY.current = y;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
     window.addEventListener("scroll", sync, { passive: true });
-    raf = requestAnimationFrame(tick);
-
-    const sections = document.querySelectorAll<HTMLElement>("main > section");
-    const onInnerScroll = () => {
-      // Inner section scroll counts as leaving the page top visually.
-      if (window.scrollY <= TOP_PX) {
-        const first = sections[0];
-        if (first && first.scrollTop > TOP_PX) {
-          setFixed(false);
-          setOpen(false);
-        }
-      }
-    };
-    for (const section of sections) {
-      section.addEventListener("scroll", onInnerScroll, { passive: true });
-    }
 
     return () => {
       window.removeEventListener("scroll", sync);
-      cancelAnimationFrame(raf);
-      for (const section of sections) {
-        section.removeEventListener("scroll", onInnerScroll);
-      }
     };
   }, [pathname]);
 

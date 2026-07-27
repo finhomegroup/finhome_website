@@ -6,8 +6,9 @@ import { Reveal } from "@/components/reveal";
 
 /**
  * Hero matches Framer `#trangchu`.
- * Phone (< md): 774px green band, stacked, phones on the wave.
- * iPad only (md–xl): full-viewport stacked layout (same composition as phone).
+ * Phone + iPad (< xl): 774px green band, phone image pinned to the band's
+ * bottom edge (absolute) so it can never overflow the band regardless of
+ * how tall the copy column wraps — text is centered on iPad, left on phone.
  * Desktop (xl+): side-by-side row with 668px green band.
  * @see https://finhomegroup.framer.website/
  */
@@ -16,19 +17,19 @@ export function Hero() {
     <SectionFrame
       id="trangchu"
       center={false}
-      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] md:max-xl:h-dvh md:max-xl:max-h-dvh xl:pt-[162px]"
+      className="relative -mt-[87px] overflow-hidden bg-white pt-[119px] xl:pt-[162px]"
     >
-      {/* Phone: fixed band. iPad: fill viewport. xl+: 668px band. */}
+      {/* Phone + iPad: fixed band. xl+: 668px band. */}
       <img
         src={img(HERO.images.marquee)}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[774px] w-full select-none object-cover object-center md:max-xl:h-[calc(50dvh_+_408px)] xl:h-[668px]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[774px] w-full select-none object-cover object-center xl:h-[668px]"
       />
 
-      <Container className="relative z-10 md:max-xl:flex md:max-xl:min-h-0 md:max-xl:flex-1 md:max-xl:flex-col">
-        {/* Phone: band − padding. iPad: fill + vertically centered. xl: row. */}
-        <div className="relative mx-auto h-[calc(774px-119px)] w-full max-w-[1060px] md:max-xl:flex md:max-xl:h-auto md:max-xl:min-h-0 md:max-xl:flex-1 md:max-xl:flex-col md:max-xl:justify-center md:max-xl:gap-8 xl:flex xl:h-auto xl:flex-none xl:flex-row xl:items-center xl:justify-between xl:gap-10">
+      <Container className="relative z-10">
+        {/* Phone + iPad: band − padding, vertically centered. xl: row. */}
+        <div className="relative mx-auto h-[calc(774px-119px)] w-full max-w-[1060px] xl:flex xl:h-auto xl:flex-none xl:flex-row xl:items-center xl:justify-between xl:gap-10">
           {/* Copy column — left on phone/desktop; centered on iPad to match phones */}
           <div className="relative z-10 flex w-full flex-col items-start gap-2 md:max-xl:items-center md:max-xl:text-center xl:w-auto xl:gap-3 xl:pb-24 xl:items-start xl:text-left">
             <Reveal>
@@ -62,7 +63,7 @@ export function Hero() {
           {/* RIGHT COLUMN — absolute to wave on phone; in-flow + centered from iPad up */}
           <Reveal
             delay={0.12}
-            className="absolute inset-x-0 bottom-0 z-[1] flex justify-center md:static md:inset-auto md:z-auto xl:w-auto xl:shrink-0 xl:justify-end"
+            className="absolute inset-x-0 bottom-0 z-[1] flex justify-center xl:static xl:inset-auto xl:z-auto xl:w-auto xl:shrink-0 xl:justify-end"
           >
             <img
               src={img(HERO.images.phone)}

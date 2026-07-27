@@ -36,15 +36,6 @@ html {
   scroll-padding-top: 6.5rem;
 }
 
-/* Homepage only — toggled by `HomeScrollSnap` on `/`.
-   No CSS scroll-snap here: JS owns section settle. Snap + smooth would fight
-   the animation and cause up/down jitter. */
-html.home-snap-y {
-  scroll-snap-type: none;
-  scroll-behavior: auto;
-  scroll-padding-top: 0;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);

@@ -101,12 +101,12 @@ export function Steps() {
             </div>
 
             {/* Desktop xl+: Framer artwork with percentage-based overlays */}
-            <div className="relative mx-auto hidden w-full max-h-[min(360px,38dvh)] xl:block">
+            <div className="relative mx-auto hidden w-full max-h-[444px] xl:block">
               <img
                 src={img("W9DPNIyHaEmP2Cj7bG3UxiMbg.png")}
                 alt=""
                 aria-hidden="true"
-                className="block h-auto max-h-[min(360px,38dvh)] w-full select-none object-contain"
+                className="block h-auto max-h-[444px] w-full select-none object-contain"
               />
 
               <div className="pointer-events-none absolute inset-0">

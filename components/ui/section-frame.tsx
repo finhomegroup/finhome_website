@@ -6,10 +6,8 @@ type SectionFrameProps = React.ComponentPropsWithoutRef<"section"> & {
 };
 
 /**
- * Homepage section shell.
- * Phone + iPad: natural document flow (no locked height / inner scroll).
- * Desktop (`xl+`): one-viewport `100dvh` with inner overflow when content is tall.
- * (iPad / iPad Pro widths sit below `xl`, so they stay readable.)
+ * Homepage section shell. Sections size to their content and flow
+ * naturally at every breakpoint — no forced one-viewport height.
  */
 export function SectionFrame({
   className,
@@ -20,20 +18,13 @@ export function SectionFrame({
   return (
     <section
       {...props}
-      className={cn(
-        "flex flex-col overflow-x-clip",
-        "xl:h-dvh xl:max-h-dvh xl:overflow-y-auto",
-        className,
-      )}
+      className={cn("flex flex-col overflow-x-clip", className)}
     >
       <div
         className={cn(
-          "flex w-full flex-1 flex-col",
-          center
-            ? // Phone gap; iPad flows with a bigger gap; xl+ clears header + centers.
-              "py-8 max-md:py-16 md:max-xl:py-20 xl:min-h-full xl:[justify-content:safe_center] xl:pb-8 xl:pt-[6.5rem]"
-            : // Hero: phone bottom gap; iPad fills via hero classes; xl+ normal.
-              "justify-start max-md:pb-16 md:max-xl:min-h-0 md:max-xl:flex-1",
+          "flex w-full flex-col",
+          // Even vertical rhythm across breakpoints.
+          center ? "py-10 md:max-xl:py-12 xl:py-14" : "pb-10 md:max-xl:pb-12 xl:pb-14",
         )}
       >
         {children}
