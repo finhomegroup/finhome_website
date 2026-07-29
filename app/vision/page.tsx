@@ -16,10 +16,10 @@ import { canonicalPath } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Tầm nhìn & Sứ mệnh",
   description: BRAND_IDENTITY.northStar,
-  alternates: { canonical: canonicalPath("/tam-nhin-su-menh") },
+  alternates: { canonical: canonicalPath("/vision") },
   openGraph: {
     type: "website",
-    url: canonicalPath("/tam-nhin-su-menh"),
+    url: canonicalPath("/vision"),
     title: "Tầm nhìn & Sứ mệnh — FinHome",
     description: BRAND_IDENTITY.northStar,
   },

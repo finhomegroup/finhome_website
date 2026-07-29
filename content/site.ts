@@ -1,11 +1,37 @@
 // Site-wide content: navigation, contact, footer. Verbatim copy from the Framer mirror.
 
-export const NAV_ITEMS: { label: string; href: string }[] = [
+export type NavChild = {
+  label: string;
+  description: string;
+  href: string;
+  icon: "compass";
+};
+
+export type NavItem = {
+  label: string;
+  href: string;
+  eyebrow?: string;
+  children?: NavChild[];
+};
+
+export const NAV_ITEMS: NavItem[] = [
   { label: "Tính năng", href: "#tinhnang" },
   { label: "Nền tảng", href: "#nentang" },
   { label: "Trải nghiệm", href: "#trainghiem" },
   { label: "Hỗ trợ", href: "#hotro" },
-  { label: "Đối tác", href: "#doitac" },
+  {
+    label: "Đối tác",
+    href: "#doitac",
+    eyebrow: "Đối tác",
+    children: [
+      {
+        label: "Tầm nhìn & Sứ mệnh",
+        description: "Giá trị cốt lõi và nguyên tắc vận hành của FinHome",
+        href: "/vision",
+        icon: "compass",
+      },
+    ],
+  },
   // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
   { label: "Tin tức", href: "#tintuc" },
 ];

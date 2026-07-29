@@ -1,5 +1,5 @@
 // Vietnamese adaptation of docs/finhome-identity.pdf — vision, mission, core
-// values and operating principles for the /tam-nhin-su-menh page.
+// values and operating principles for the /vision page.
 
 export type CoreValue = {
   readonly title: string;

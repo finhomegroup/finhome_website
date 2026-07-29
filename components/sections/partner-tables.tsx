@@ -6,7 +6,7 @@ import {
 import { FH_POINTER, FH_CARD_IMAGE_ZOOM } from "@/lib/interaction-styles";
 
 const DASHBOARD_SRC = "/images/partners-team/partner-dashboard.png";
-const DASHBOARD_HREF = "/tam-nhin-su-menh";
+const DASHBOARD_HREF = "/vision";
 
 /** Screen-reader copy of the dashboard data (visual UI is the Framer raster). */
 function AccessibleDashboardTables() {

@@ -15,7 +15,35 @@ import {
   CTA_LABEL,
   CTA_HREF,
   LOGO,
+  type NavChild,
 } from "@/content/site";
+
+const NAV_CHILD_ICON_PATHS: Record<NavChild["icon"], React.ReactNode> = {
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M14.8 9.2l-2 5.6-5.6 2 2-5.6z" />
+    </>
+  ),
+};
+
+function NavChildIcon({ icon }: { icon: NavChild["icon"] }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {NAV_CHILD_ICON_PATHS[icon]}
+    </svg>
+  );
+}
 
 /** Hash links only work on the home page; elsewhere point at `/#section`. */
 function resolveNavHref(href: string, pathname: string): string {
@@ -35,6 +63,8 @@ const DIR_PX = 6;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  /** Which mobile-menu item's children are expanded (by href), if any. */
+  const [expandedNav, setExpandedNav] = useState<string | null>(null);
   /**
    * Static at top and while scrolling down.
    * Fixed only while scrolling back up (toward top).
@@ -80,6 +110,7 @@ export function SiteHeader() {
   useEffect(() => {
     setOpen(false);
     setFixed(false);
+    setExpandedNav(null);
   }, [pathname]);
 
   const navLinkClassName = (href: string, mobile = false) => {
@@ -136,6 +167,77 @@ export function SiteHeader() {
               <nav className="flex items-center gap-5 xl:gap-[34px]">
                 {NAV_ITEMS.map((item) => {
                   const isActive = activeId === sectionIdFromHref(item.href);
+                  if (item.children?.length) {
+                    return (
+                      <div key={item.href} className="group relative">
+                        <a
+                          href={resolveNavHref(item.href, pathname)}
+                          className={cn(
+                            navLinkClassName(item.href),
+                            "flex items-center gap-1",
+                          )}
+                          aria-current={isActive ? "true" : undefined}
+                        >
+                          {item.label}
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                            className="mt-px text-ink-3 transition-transform duration-150 group-hover:rotate-180 group-focus-within:rotate-180"
+                          >
+                            <path d="M6 9l6 6 6-6" />
+                          </svg>
+                        </a>
+                        {/* Zero-gap hit area bridging the trigger and the panel, so the
+                            pointer never leaves `.group` while moving toward it. Visibility
+                            is never toggled — only opacity/pointer-events — so child links
+                            stay tab-focusable even before hover/focus reveals the panel. */}
+                        <div className="absolute left-1/2 top-full z-50 w-[360px] -translate-x-1/2 pt-3">
+                          <div
+                            className={cn(
+                              "origin-top scale-95 rounded-2xl bg-white p-3 opacity-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.05] transition-[opacity,transform] duration-150 ease-out",
+                              "pointer-events-none group-hover:pointer-events-auto group-hover:scale-100 group-hover:opacity-100",
+                              "group-focus-within:pointer-events-auto group-focus-within:scale-100 group-focus-within:opacity-100",
+                            )}
+                          >
+                            {item.eyebrow && (
+                              <p className="px-2.5 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-ink-3">
+                                {item.eyebrow}
+                              </p>
+                            )}
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={cn(
+                                  "flex items-start gap-3 rounded-xl p-2.5 outline-none transition-colors hover:bg-bg-soft focus-visible:bg-bg-soft",
+                                  FH_POINTER,
+                                )}
+                              >
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-lime/15 text-brand-green">
+                                  <NavChildIcon icon={child.icon} />
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block font-display text-[15px] font-medium text-ink">
+                                    {child.label}
+                                  </span>
+                                  <span className="mt-0.5 block text-[13px] leading-snug text-ink-2">
+                                    {child.description}
+                                  </span>
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
                   return (
                     <a
                       key={item.href}
@@ -198,15 +300,77 @@ export function SiteHeader() {
               {NAV_ITEMS.map((item) => {
                 const isActive = activeId === sectionIdFromHref(item.href);
                 return (
-                  <a
-                    key={item.href}
-                    href={resolveNavHref(item.href, pathname)}
-                    onClick={() => setOpen(false)}
-                    className={navLinkClassName(item.href, true)}
-                    aria-current={isActive ? "true" : undefined}
-                  >
-                    {item.label}
-                  </a>
+                  <div key={item.href}>
+                    {item.children?.length ? (
+                      <button
+                        type="button"
+                        aria-expanded={expandedNav === item.href}
+                        onClick={() =>
+                          setExpandedNav((v) =>
+                            v === item.href ? null : item.href,
+                          )
+                        }
+                        className={cn(
+                          navLinkClassName(item.href, true),
+                          "flex w-full items-center justify-between gap-2",
+                        )}
+                        aria-current={isActive ? "true" : undefined}
+                      >
+                        {item.label}
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                          className={cn(
+                            "shrink-0 text-ink-3 transition-transform duration-150",
+                            expandedNav === item.href && "rotate-180",
+                          )}
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <a
+                        href={resolveNavHref(item.href, pathname)}
+                        onClick={() => setOpen(false)}
+                        className={navLinkClassName(item.href, true)}
+                        aria-current={isActive ? "true" : undefined}
+                      >
+                        {item.label}
+                      </a>
+                    )}
+                    {item.children?.length && expandedNav === item.href
+                      ? item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                              "flex items-start gap-3 rounded-lg p-2.5 pl-6 transition-colors hover:bg-ink/5",
+                              FH_POINTER,
+                            )}
+                          >
+                            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-lime/15 text-brand-green">
+                              <NavChildIcon icon={child.icon} />
+                            </span>
+                            <span className="min-w-0 pt-0.5">
+                              <span className="block text-sm text-ink-2">
+                                {child.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-ink-3">
+                                {child.description}
+                              </span>
+                            </span>
+                          </Link>
+                        ))
+                      : null}
+                  </div>
                 );
               })}
               <div className="mt-1 px-1 pb-1">
