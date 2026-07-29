@@ -1,11 +1,11 @@
 import { PartnerCta } from "@/components/sections/partner-cta";
-import { Team } from "@/components/sections/team";
+// import { Team } from "@/components/sections/team";
 
 export function PartnersAndTeam() {
   return (
     <>
       <PartnerCta />
-      <Team />
+      {/* Team hidden until team photos are ready. */}
     </>
   );
 }

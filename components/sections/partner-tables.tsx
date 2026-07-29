@@ -95,7 +95,7 @@ export function PartnerTables() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Xem bảng phóng to"
-        className={`group mx-auto block w-full max-w-[1104px] ${FH_POINTER}`}
+        className={`group mx-auto block w-full ${FH_POINTER}`}
       >
         <img
           src={DASHBOARD_SRC}
@@ -103,7 +103,7 @@ export function PartnerTables() {
           width={7281}
           height={4025}
           decoding="async"
-          className={`mx-auto block h-auto max-h-[min(480px,calc(100dvh-22rem))] w-full object-contain ${FH_CARD_IMAGE_ZOOM}`}
+          className={`mx-auto block h-auto w-full object-contain ${FH_CARD_IMAGE_ZOOM}`}
         />
       </button>
       <AccessibleDashboardTables />

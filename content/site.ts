@@ -6,7 +6,7 @@ export const NAV_ITEMS: { label: string; href: string }[] = [
   { label: "Trải nghiệm", href: "#trainghiem" },
   { label: "Hỗ trợ", href: "#hotro" },
   { label: "Đối tác", href: "#doitac" },
-  { label: "Đội ngũ", href: "#doingu" },
+  // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
   { label: "Tin tức", href: "#tintuc" },
 ];
 
