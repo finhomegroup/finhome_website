@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import {
   BUYER_JOURNEY,
   PARTNER_TOUCHPOINTS,
@@ -9,6 +6,7 @@ import {
 import { FH_POINTER, FH_CARD_IMAGE_ZOOM } from "@/lib/interaction-styles";
 
 const DASHBOARD_SRC = "/images/partners-team/partner-dashboard.png";
+const DASHBOARD_HREF = "/tam-nhin-su-menh";
 
 /** Screen-reader copy of the dashboard data (visual UI is the Framer raster). */
 function AccessibleDashboardTables() {
@@ -70,31 +68,15 @@ function AccessibleDashboardTables() {
 }
 
 /** Partner dashboard image — rendered inside the shared `#doitac` viewport.
- * Click to zoom: the raster is tiny at its default scale, so tapping it opens
- * a full-size lightbox instead of forcing users to squint. */
+ * Links through to the full "Tầm nhìn & Sứ mệnh" page, which renders this
+ * same data as real, readable tables instead of a raster the user has to
+ * zoom into. */
 export function PartnerTables() {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
-
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Xem bảng phóng to"
+      <Link
+        href={DASHBOARD_HREF}
+        aria-label="Xem chi tiết hành trình và điểm chạm đối tác"
         className={`group mx-auto block w-full ${FH_POINTER}`}
       >
         <img
@@ -105,52 +87,8 @@ export function PartnerTables() {
           decoding="async"
           className={`mx-auto block h-auto w-full object-contain ${FH_CARD_IMAGE_ZOOM}`}
         />
-      </button>
+      </Link>
       <AccessibleDashboardTables />
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 cursor-zoom-out"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={() => setOpen(false)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={BUYER_JOURNEY.title}
-          >
-            <motion.img
-              src={DASHBOARD_SRC}
-              alt=""
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="max-h-[92vh] max-w-[95vw] rounded-xl object-contain shadow-2xl"
-            />
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Đóng"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink transition-colors hover:bg-white"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = [
     { url: absUrl(canonicalPath("/")), changeFrequency: "weekly", priority: 1 },
     { url: absUrl(canonicalPath("/blog")), changeFrequency: "weekly", priority: 0.8 },
+    { url: absUrl(canonicalPath("/tam-nhin-su-menh")), changeFrequency: "monthly", priority: 0.5 },
     { url: absUrl(canonicalPath("/privacy-policy")), changeFrequency: "yearly", priority: 0.3 },
     { url: absUrl(canonicalPath("/terms")), changeFrequency: "yearly", priority: 0.3 },
   ];
