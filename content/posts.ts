@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "du-bao-thi-truong-bat-dong-san-cuoi-nam-2026",
+    title: "Dự báo bất ngờ về thị trường bất động sản cuối năm 2026",
+    category: "Thị trường",
+    excerpt: "Các chuyên gia dự báo thị trường bất động sản Việt Nam cuối năm 2026 sẽ chứng kiến nhiều biến động, với khả năng phục hồi và tăng trưởng ở một số phân khúc.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-bao-thi-truong-bat-dong-san-cuoi-nam-2026.jpg",
+    date: "2026-07-29",
+    source: {
+        "name": "laodong.vn",
+        "url": "https://laodong.vn/bat-dong-san/du-bao-bat-ngo-ve-thi-truong-bat-dong-san-cuoi-nam-2026-1738605.ldo",
+        "accessed": "2026-07-29"
+      },
+  },
+  {
     slug: "kha-nang-mua-nha-viet-nam-numbeo",
     title: "Khả năng mua nhà của người Việt đang khó hơn thế nào?",
     category: "Tài chính",
