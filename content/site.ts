@@ -4,7 +4,6 @@ export type NavChild = {
   label: string;
   description: string;
   href: string;
-  icon: "compass";
 };
 
 export type NavItem = {
@@ -28,7 +27,6 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Tầm nhìn & Sứ mệnh",
         description: "Giá trị cốt lõi và nguyên tắc vận hành của FinHome",
         href: "/vision",
-        icon: "compass",
       },
     ],
   },

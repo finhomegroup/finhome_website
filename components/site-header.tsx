@@ -15,35 +15,7 @@ import {
   CTA_LABEL,
   CTA_HREF,
   LOGO,
-  type NavChild,
 } from "@/content/site";
-
-const NAV_CHILD_ICON_PATHS: Record<NavChild["icon"], React.ReactNode> = {
-  compass: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M14.8 9.2l-2 5.6-5.6 2 2-5.6z" />
-    </>
-  ),
-};
-
-function NavChildIcon({ icon }: { icon: NavChild["icon"] }) {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {NAV_CHILD_ICON_PATHS[icon]}
-    </svg>
-  );
-}
 
 /** Hash links only work on the home page; elsewhere point at `/#section`. */
 function resolveNavHref(href: string, pathname: string): string {
@@ -216,20 +188,15 @@ export function SiteHeader() {
                                 key={child.href}
                                 href={child.href}
                                 className={cn(
-                                  "flex items-start gap-3 rounded-xl p-2.5 outline-none transition-colors hover:bg-bg-soft focus-visible:bg-bg-soft",
+                                  "block rounded-xl p-2.5 outline-none transition-colors hover:bg-bg-soft focus-visible:bg-bg-soft",
                                   FH_POINTER,
                                 )}
                               >
-                                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-lime/15 text-brand-green">
-                                  <NavChildIcon icon={child.icon} />
+                                <span className="block font-display text-[15px] font-medium text-ink">
+                                  {child.label}
                                 </span>
-                                <span className="min-w-0">
-                                  <span className="block font-display text-[15px] font-medium text-ink">
-                                    {child.label}
-                                  </span>
-                                  <span className="mt-0.5 block text-[13px] leading-snug text-ink-2">
-                                    {child.description}
-                                  </span>
+                                <span className="mt-0.5 block text-[13px] leading-snug text-ink-2">
+                                  {child.description}
                                 </span>
                               </Link>
                             ))}
@@ -352,20 +319,15 @@ export function SiteHeader() {
                             href={child.href}
                             onClick={() => setOpen(false)}
                             className={cn(
-                              "flex items-start gap-3 rounded-lg p-2.5 pl-6 transition-colors hover:bg-ink/5",
+                              "block rounded-lg p-2.5 pl-6 transition-colors hover:bg-ink/5",
                               FH_POINTER,
                             )}
                           >
-                            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-lime/15 text-brand-green">
-                              <NavChildIcon icon={child.icon} />
+                            <span className="block text-sm text-ink-2">
+                              {child.label}
                             </span>
-                            <span className="min-w-0 pt-0.5">
-                              <span className="block text-sm text-ink-2">
-                                {child.label}
-                              </span>
-                              <span className="mt-0.5 block text-xs text-ink-3">
-                                {child.description}
-                              </span>
+                            <span className="mt-0.5 block text-xs text-ink-3">
+                              {child.description}
                             </span>
                           </Link>
                         ))
