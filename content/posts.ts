@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach",
+    title: "Thu nhập 60 triệu đồng/tháng: Tranh cãi về đối tượng mua nhà ở xã hội",
+    category: "Chính sách",
+    excerpt: "Đề xuất nâng mức thu nhập để mua nhà ở xã hội lên 60 triệu/tháng cho cặp vợ chồng tại TP.HCM đang gây tranh luận gay gắt về ranh giới đối tượng hưởng chính sách.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach.jpg",
+    date: "2026-07-30",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/thu-nhap-60-trieu-dong-thang-van-mua-nha-o-xa-hoi-co-con-dung-doi-tuong-100260728152243981.htm",
+        "accessed": "2026-07-30"
+      },
+  },
+  {
     slug: "du-bao-thi-truong-bat-dong-san-cuoi-nam-2026",
     title: "Dự báo bất ngờ về thị trường bất động sản cuối năm 2026",
     category: "Thị trường",
