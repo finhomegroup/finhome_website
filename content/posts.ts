@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-du-an-nha-cho-thue-34000-ty-dong",
+    title: "Hà Nội phát triển gần 4.400 căn nhà cho thuê giai đoạn 2025-2030",
+    category: "Thị trường",
+    excerpt: "Thành phố Hà Nội vừa phê duyệt 3 dự án nhà cho thuê tại Long Biên, Việt Hưng, Yên Sở với tổng vốn đầu tư hơn 34.000 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-du-an-nha-cho-thue-34000-ty-dong.jpg",
+    date: "2026-07-30",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ha-noi-se-co-ba-du-an-nha-cho-thue-hon-34-000-ty-dong-5102772.html",
+        "accessed": "2026-07-30"
+      },
+  },
+  {
     slug: "thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach",
     title: "Thu nhập 60 triệu đồng/tháng: Tranh cãi về đối tượng mua nhà ở xã hội",
     category: "Chính sách",
