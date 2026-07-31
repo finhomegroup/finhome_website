@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thi-truong-nha-dat-tp-hcm-dau-2026",
+    title: "Thị trường nhà đất TP.HCM đầu 2026: Người mua cần lưu ý gì khi lãi suất vay còn neo cao",
+    category: "Thị trường",
+    excerpt: "Thị trường bất động sản TP.HCM đầu năm 2026 ghi nhận nguồn cung nhà chuyển nhượng tại một số khu vực tăng, trong khi lãi suất vay mua nhà vẫn ở mức cao khiến người mua cân nhắc kỹ khả năng tài chính.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-nha-dat-tp-hcm-dau-2026.jpg",
+    date: "2026-07-31",
+    source: {
+        "name": "batdongsan.com.vn",
+        "url": "https://batdongsan.com.vn/nha-dat-ban-tp-hcm",
+        "accessed": "2026-07-31"
+      },
+  },
+  {
     slug: "thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo",
     title: "Thị trường nhà chuyển nhượng giảm giá cục bộ: Áp lực từ lãi suất và cung vượt cầu",
     category: "Thị trường",
