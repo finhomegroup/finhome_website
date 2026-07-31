@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
+import { VisionCompass } from "@/components/vision-compass";
 import {
   BuyerJourneyTable,
   PartnerTouchpointsTable,
@@ -71,16 +72,21 @@ export default function BrandIdentityPage() {
               <p className="fh-lead mx-auto mt-4 max-w-2xl">{BRAND_IDENTITY.northStar}</p>
             </Reveal>
 
-            <Reveal delay={0.1} className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-5 md:grid-cols-3">
-              {BRAND_IDENTITY.pillars.map((pillar) => (
-                <div
-                  key={pillar.title}
-                  className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)]"
-                >
-                  <h2 className="fh-h3">{pillar.title}</h2>
-                  <p className="fh-body mt-3">{pillar.body}</p>
-                </div>
-              ))}
+            <Reveal
+              delay={0.1}
+              className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-16"
+            >
+              <div className="lg:sticky lg:top-28">
+                <VisionCompass />
+              </div>
+              <div className="space-y-10">
+                {BRAND_IDENTITY.pillars.map((pillar) => (
+                  <div key={pillar.title}>
+                    <h2 className="fh-h2">{pillar.title}</h2>
+                    <p className="fh-body mt-3">{pillar.body}</p>
+                  </div>
+                ))}
+              </div>
             </Reveal>
           </Container>
         </section>
