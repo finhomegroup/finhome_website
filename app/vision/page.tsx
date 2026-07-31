@@ -13,6 +13,23 @@ import { BRAND_IDENTITY } from "@/content/brand-identity";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import { canonicalPath } from "@/lib/seo";
+import {
+  IconTransparency,
+  IconShield,
+  IconLightbulb,
+  IconIntegrity,
+  IconSustain,
+  IconEvolve,
+} from "@/components/vision-icons";
+
+const VALUE_ICONS = [
+  IconTransparency,
+  IconShield,
+  IconLightbulb,
+  IconIntegrity,
+  IconSustain,
+  IconEvolve,
+];
 
 export const metadata: Metadata = {
   title: "Tầm nhìn & Sứ mệnh",
@@ -102,28 +119,34 @@ export default function BrandIdentityPage() {
               delay={0.1}
               className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {BRAND_IDENTITY.values.map((value) => (
-                <div
-                  key={value.title}
-                  className="rounded-2xl bg-white p-6 shadow-[0_1px_20px_rgba(0,0,0,0.03)]"
-                >
-                  <p className="text-xs font-medium uppercase tracking-wide text-ink-3">
-                    {value.tagline}
-                  </p>
-                  <h3 className="fh-h3 mt-1">{value.title}</h3>
-                  <ul className="mt-4 space-y-2">
-                    {value.behaviors.map((behavior) => (
-                      <li key={behavior} className="flex gap-2.5 text-sm leading-relaxed text-ink-2">
-                        <span
-                          aria-hidden="true"
-                          className="mt-[7px] size-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#95e678] to-[#46c670]"
-                        />
-                        {behavior}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {BRAND_IDENTITY.values.map((value, i) => {
+                const Icon = VALUE_ICONS[i];
+                return (
+                  <div
+                    key={value.title}
+                    className="rounded-2xl bg-white p-6 shadow-[0_1px_20px_rgba(0,0,0,0.03)]"
+                  >
+                    <div className="fh-badge-gradient flex size-11 items-center justify-center rounded-full text-white">
+                      <Icon className="size-5" />
+                    </div>
+                    <p className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-3">
+                      {value.tagline}
+                    </p>
+                    <h3 className="fh-h3 mt-1">{value.title}</h3>
+                    <ul className="mt-4 space-y-2">
+                      {value.behaviors.map((behavior) => (
+                        <li key={behavior} className="flex gap-2.5 text-sm leading-relaxed text-ink-2">
+                          <span
+                            aria-hidden="true"
+                            className="mt-[7px] size-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#95e678] to-[#46c670]"
+                          />
+                          {behavior}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </Reveal>
           </Container>
         </section>
