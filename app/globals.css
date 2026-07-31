@@ -143,6 +143,11 @@ body {
   color: var(--color-ink);
 }
 
+/* Solid radial-green fill for small icon badges (compass, value/principle cards) */
+.fh-badge-gradient {
+  background: radial-gradient(207% 50% at 50% 50%, #17ab48 0%, #a2db46 100%);
+}
+
 /* Testimonials infinite marquee (two identical sets → translate -50% loops seamlessly) */
 @keyframes marquee {
   from {
