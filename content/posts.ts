@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo",
+    title: "Thị trường nhà chuyển nhượng giảm giá cục bộ: Áp lực từ lãi suất và cung vượt cầu",
+    category: "Thị trường",
+    excerpt: "Thị trường bất động sản chuyển nhượng điều chỉnh giá cục bộ trong bối cảnh nguồn cung tăng nhưng sức hấp thụ giảm, ngược chiều đà tăng giá từ chủ đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo.jpg",
+    date: "2026-07-31",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hoi-moi-gioi-thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo-5103203.html",
+        "accessed": "2026-07-31"
+      },
+  },
+  {
     slug: "ha-noi-du-an-nha-cho-thue-34000-ty-dong",
     title: "Hà Nội phát triển gần 4.400 căn nhà cho thuê giai đoạn 2025-2030",
     category: "Thị trường",
