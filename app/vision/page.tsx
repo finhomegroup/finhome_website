@@ -20,6 +20,9 @@ import {
   IconIntegrity,
   IconSustain,
   IconEvolve,
+  IconTrendingUp,
+  IconTarget,
+  IconRocket,
 } from "@/components/vision-icons";
 
 const VALUE_ICONS = [
@@ -30,6 +33,8 @@ const VALUE_ICONS = [
   IconSustain,
   IconEvolve,
 ];
+
+const PRINCIPLE_ICONS = [IconTrendingUp, IconTarget, IconRocket];
 
 export const metadata: Metadata = {
   title: "Tầm nhìn & Sứ mệnh",
@@ -153,23 +158,34 @@ export default function BrandIdentityPage() {
 
         <section className="py-16 md:py-24">
           <Container>
-            <Reveal className="mx-auto max-w-2xl text-center">
-              <h2 className="fh-h2">{BRAND_IDENTITY.principlesTitle}</h2>
-            </Reveal>
+            <Reveal className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:items-start lg:gap-16">
+              <div className="lg:sticky lg:top-28">
+                <h2 className="fh-h2">{BRAND_IDENTITY.principlesTitle}</h2>
+                <p className="fh-body mt-3 max-w-xs">{BRAND_IDENTITY.principlesSubtitle}</p>
+              </div>
 
-            <Reveal delay={0.1} className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-              {BRAND_IDENTITY.principles.map((principle, i) => (
-                <div
-                  key={principle.title}
-                  className="rounded-2xl border border-black/5 p-6"
-                >
-                  <span className="bg-[radial-gradient(207%_50%_at_50%_50%,#17ab48_0%,#a2db46_100%)] bg-clip-text font-display text-2xl font-medium text-transparent">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="fh-h3 mt-3">{principle.title}</h3>
-                  <p className="fh-body mt-2">{principle.detail}</p>
-                </div>
-              ))}
+              <div className="space-y-6">
+                {BRAND_IDENTITY.principles.map((principle, i) => {
+                  const Icon = PRINCIPLE_ICONS[i];
+                  return (
+                    <div
+                      key={principle.title}
+                      className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-bg-soft p-6 shadow-[0_1px_20px_rgba(0,0,0,0.04)] md:p-8"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="fh-badge-gradient flex size-11 shrink-0 items-center justify-center rounded-full text-white">
+                          <Icon className="size-5" />
+                        </div>
+                        <h3 className="fh-h3">{principle.title}</h3>
+                      </div>
+                      <p className="fh-body mt-3">{principle.detail}</p>
+                      <span className="absolute bottom-4 right-6 font-display text-4xl font-medium text-ink-4/60">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </Reveal>
           </Container>
         </section>
