@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "can-ho-tp-hcm-vuot-moc-100-trieu-m2",
+    title: "Căn hộ mới TP HCM đồng loạt vượt 100 triệu/m2: Nguồn cung khan hiếm đẩy giá lên cao",
+    category: "Thị trường",
+    excerpt: "Sau nhiều năm khan hiếm nguồn cung, thị trường chung cư TP HCM đón loạt dự án cao cấp, hạng sang mở bán, kéo mặt bằng giá phổ biến vượt 100 triệu đồng/m2.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/can-ho-tp-hcm-vuot-moc-100-trieu-m2.jpg",
+    date: "2026-08-01",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/vi-sao-can-ho-moi-tai-tp-hcm-dong-loat-vuot-moc-tram-trieu-dong-mot-m2-5103286.html",
+        "accessed": "2026-08-01"
+      },
+  },
+  {
     slug: "ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam",
     title: "Ascott tăng trưởng 30% tại Việt Nam, mở rộng gần 3.200 căn hộ dịch vụ",
     category: "Thị trường",
