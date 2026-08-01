@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-xay-dung-xac-dinh-nha-o-cho-thue-phan-khuc-chien-luoc-dai-han",
+    title: "Bộ Xây dựng xác định nhà ở cho thuê là phân khúc chiến lược dài hạn",
+    category: "Chính sách",
+    excerpt: "Bộ Xây dựng chuyển trọng tâm phát triển từ nhà ở thương mại sang đồng thời cả nhà ở cho thuê, xác định đây là phân khúc chiến lược quốc gia.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-xay-dung-xac-dinh-nha-o-cho-thue-phan-khuc-chien-luoc-dai-han.jpg",
+    date: "2026-08-01",
+    source: {
+        "name": "baochinhphu.vn",
+        "url": "https://baochinhphu.vn/xac-dinh-nha-o-cho-thue-la-phan-khuc-chien-luoc-dai-han-102260731091819693.htm",
+        "accessed": "2026-08-01"
+      },
+  },
+  {
     slug: "can-ho-tp-hcm-vuot-moc-100-trieu-m2",
     title: "Căn hộ mới TP HCM đồng loạt vượt 100 triệu/m2: Nguồn cung khan hiếm đẩy giá lên cao",
     category: "Thị trường",
