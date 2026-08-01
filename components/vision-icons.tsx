@@ -19,62 +19,79 @@ function IconBase({ className, children }: IconProps & Pick<SVGProps<SVGSVGEleme
   );
 }
 
-/** Minh bạch trên hết */
-export function IconTransparency({ className }: IconProps) {
+function IconBaseFilled({ className, children }: IconProps & Pick<SVGProps<SVGSVGElement>, "children">) {
   return (
-    <IconBase className={className}>
-      <circle cx="10" cy="10" r="6" />
-      <path d="M20 20l-5.5-5.5" />
-    </IconBase>
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="none"
+      aria-hidden="true"
+      className={className}
+    >
+      {children}
+    </svg>
   );
 }
 
-/** An toàn là sức mạnh */
-export function IconShield({ className }: IconProps) {
+/** Minh bạch */
+export function IconVerifiedBadge({ className }: IconProps) {
   return (
-    <IconBase className={className}>
-      <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" />
-    </IconBase>
-  );
-}
-
-/** Trao quyền qua thấu hiểu */
-export function IconLightbulb({ className }: IconProps) {
-  return (
-    <IconBase className={className}>
-      <path d="M12 3a6 6 0 0 0-3 11.2c.6.4 1 1 1 1.8h4c0-.8.4-1.4 1-1.8A6 6 0 0 0 12 3z" />
-      <path d="M9 18h6M10 21h4" />
-    </IconBase>
-  );
-}
-
-/** Chính trực mọi lúc */
-export function IconIntegrity({ className }: IconProps) {
-  return (
-    <IconBase className={className}>
+    <IconBaseFilled className={className}>
       <path d="M12 2l2.2 1.3 2.5-.3 1 2.3 2.3 1-.3 2.5L21 12l-1.3 2.2.3 2.5-2.3 1-1 2.3-2.5-.3L12 22l-2.2-1.3-2.5.3-1-2.3-2.3-1 .3-2.5L3 12l1.3-2.2-.3-2.5 2.3-1 1-2.3 2.5.3L12 2z" />
-      <path d="M9 12l2 2 4-4" />
-    </IconBase>
+      <path
+        d="M9 12.2l1.8 1.8 3.7-4"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </IconBaseFilled>
   );
 }
 
-/** Bền vững */
-export function IconSustain({ className }: IconProps) {
+/** An toàn */
+export function IconShieldFilled({ className }: IconProps) {
   return (
-    <IconBase className={className}>
-      <path d="M4 20c8 0 14-6 14-14V4h-2C8 4 4 10 4 18v2z" />
-      <path d="M4 20c3-5 7-9 12-12" />
-    </IconBase>
+    <IconBaseFilled className={className}>
+      <path d="M12 2.5l7.5 3v6c0 5.2-3.7 8.3-7.5 9.5-3.8-1.2-7.5-4.3-7.5-9.5v-6l7.5-3z" />
+      <circle cx="12" cy="12" r="1.6" fill="white" />
+    </IconBaseFilled>
   );
 }
 
-/** Tiến hoá */
-export function IconEvolve({ className }: IconProps) {
+/** Thấu hiểu */
+export function IconChatDots({ className }: IconProps) {
   return (
-    <IconBase className={className}>
-      <path d="M4 12a8 8 0 0 1 13.9-5.4M20 4v4h-4" />
-      <path d="M20 12a8 8 0 0 1-13.9 5.4M4 20v-4h4" />
-    </IconBase>
+    <IconBaseFilled className={className}>
+      <path d="M12 3C6.9 3 3 6.4 3 10.6c0 2.1 1 4 2.6 5.4-.1.9-.4 2-1.1 3.1a.5.5 0 0 0 .6.7c1.5-.5 2.7-1.1 3.5-1.7 1 .3 2.2.5 3.4.5 5.1 0 9-3.4 9-7.6S17.1 3 12 3z" />
+      <circle cx="8.5" cy="10.6" r="1.1" fill="white" />
+      <circle cx="12" cy="10.6" r="1.1" fill="white" />
+      <circle cx="15.5" cy="10.6" r="1.1" fill="white" />
+    </IconBaseFilled>
+  );
+}
+
+/** Chuẩn mực */
+export function IconCompassFilled({ className }: IconProps) {
+  return (
+    <IconBaseFilled className={className}>
+      <circle cx="12" cy="12" r="9.5" />
+      <path
+        d="M15 9l-4.5 1.5L9 15l4.5-1.5L15 9z"
+        fill="white"
+      />
+    </IconBaseFilled>
+  );
+}
+
+/** Cải tiến */
+export function IconSparkle({ className }: IconProps) {
+  return (
+    <IconBaseFilled className={className}>
+      <path d="M12 2l1.6 5.4L19 9l-5.4 1.6L12 16l-1.6-5.4L5 9l5.4-1.6L12 2z" />
+      <path d="M19 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" />
+    </IconBaseFilled>
   );
 }
 

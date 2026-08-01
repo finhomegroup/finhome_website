@@ -14,24 +14,22 @@ import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import { canonicalPath } from "@/lib/seo";
 import {
-  IconTransparency,
-  IconShield,
-  IconLightbulb,
-  IconIntegrity,
-  IconSustain,
-  IconEvolve,
+  IconVerifiedBadge,
+  IconShieldFilled,
+  IconChatDots,
+  IconCompassFilled,
+  IconSparkle,
   IconTrendingUp,
   IconTarget,
   IconRocket,
 } from "@/components/vision-icons";
 
 const VALUE_ICONS = [
-  IconTransparency,
-  IconShield,
-  IconLightbulb,
-  IconIntegrity,
-  IconSustain,
-  IconEvolve,
+  IconVerifiedBadge,
+  IconShieldFilled,
+  IconChatDots,
+  IconCompassFilled,
+  IconSparkle,
 ];
 
 const PRINCIPLE_ICONS = [IconTrendingUp, IconTarget, IconRocket];
@@ -113,42 +111,25 @@ export default function BrandIdentityPage() {
           </Container>
         </section>
 
-        <section className="bg-bg-soft py-16 md:py-24">
+        <section className="py-16 md:py-24">
           <Container>
-            <Reveal className="mx-auto max-w-2xl text-center">
-              <h2 className="fh-h2">{BRAND_IDENTITY.valuesTitle}</h2>
-              <p className="fh-lead mx-auto mt-3">{BRAND_IDENTITY.valuesSubtitle}</p>
-            </Reveal>
-
             <Reveal
               delay={0.1}
-              className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-5 md:grid-cols-3"
             >
+              <h2 className="fh-h2 self-start">{BRAND_IDENTITY.valuesTitle}</h2>
               {BRAND_IDENTITY.values.map((value, i) => {
                 const Icon = VALUE_ICONS[i];
                 return (
                   <div
                     key={value.title}
-                    className="rounded-2xl bg-white p-6 shadow-[0_1px_20px_rgba(0,0,0,0.03)]"
+                    className="rounded-2xl border-l-4 border-brand-green bg-[#f7f7f6] p-6"
                   >
-                    <div className="fh-badge-gradient flex size-11 items-center justify-center rounded-full text-white">
-                      <Icon className="size-5" />
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-white shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
+                      <Icon className="size-5 text-brand-green" />
                     </div>
-                    <p className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-3">
-                      {value.tagline}
-                    </p>
-                    <h3 className="fh-h3 mt-1">{value.title}</h3>
-                    <ul className="mt-4 space-y-2">
-                      {value.behaviors.map((behavior) => (
-                        <li key={behavior} className="flex gap-2.5 text-sm leading-relaxed text-ink-2">
-                          <span
-                            aria-hidden="true"
-                            className="mt-[7px] size-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#95e678] to-[#46c670]"
-                          />
-                          {behavior}
-                        </li>
-                      ))}
-                    </ul>
+                    <h3 className="fh-h3 mt-6">{value.title}</h3>
+                    <p className="fh-body mt-2">{value.description}</p>
                   </div>
                 );
               })}
@@ -170,7 +151,7 @@ export default function BrandIdentityPage() {
                   return (
                     <div
                       key={principle.title}
-                      className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-bg-soft p-6 shadow-[0_1px_20px_rgba(0,0,0,0.04)] md:p-8"
+                      className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-bg-soft p-6 pb-14 shadow-[0_1px_20px_rgba(0,0,0,0.04)] md:p-8 md:pb-16"
                     >
                       <div className="flex items-center gap-3">
                         <div className="fh-badge-gradient flex size-11 shrink-0 items-center justify-center rounded-full text-white">
@@ -178,7 +159,7 @@ export default function BrandIdentityPage() {
                         </div>
                         <h3 className="fh-h3">{principle.title}</h3>
                       </div>
-                      <p className="fh-body mt-3">{principle.detail}</p>
+                      <p className="fh-body mt-3 pr-14">{principle.detail}</p>
                       <span className="absolute bottom-4 right-6 font-display text-4xl font-medium text-ink-4/60">
                         {String(i + 1).padStart(2, "0")}
                       </span>

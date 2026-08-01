@@ -3,8 +3,7 @@
 
 export type CoreValue = {
   readonly title: string;
-  readonly tagline: string;
-  readonly behaviors: readonly string[];
+  readonly description: string;
 };
 
 export type OperatingPrinciple = {
@@ -35,62 +34,27 @@ export const BRAND_IDENTITY = {
     },
   ] as const,
 
-  valuesTitle: "Giá trị cốt lõi & Hành động",
-  valuesSubtitle: "Giá trị là điều chúng tôi tin. Hành động là cách chúng tôi làm khi không ai nhìn thấy.",
+  valuesTitle: "Giá trị cốt lõi",
   values: [
     {
-      title: "Minh bạch trên hết",
-      tagline: "Truth Beats Polish",
-      behaviors: [
-        "Dùng dữ liệu đã kiểm chứng trước khi đưa ra ý kiến.",
-        "Nói sự thật, dù điều đó không dễ nghe.",
-        "Chia sẻ cả tiến bộ và sai sót.",
-      ],
+      title: "Minh bạch",
+      description: "Dựa trên dữ liệu, nói đúng sự thật và rõ ràng trong mọi thông tin.",
     },
     {
-      title: "An toàn là sức mạnh",
-      tagline: "Protect Before You Scale",
-      behaviors: [
-        "Kiểm chứng trước khi mở rộng quy mô.",
-        "Đo thành công bằng sự bảo vệ mang lại cho người dùng.",
-        "Thiết kế cho sự bền vững, không phải đầu cơ.",
-      ],
+      title: "An toàn",
+      description: "Ưu tiên an toàn và giảm thiểu rủi ro cho người dùng.",
     },
     {
-      title: "Trao quyền qua thấu hiểu",
-      tagline: "Simplicity Builds Confidence",
-      behaviors: [
-        "Lắng nghe trước khi tư vấn.",
-        "Biến điều phức tạp thành rõ ràng.",
-        "Thiết kế công cụ để hướng dẫn, không chỉ để bán hàng.",
-      ],
+      title: "Thấu hiểu",
+      description: "Hiểu đúng nhu cầu để đưa ra điều thực sự phù hợp với người dùng.",
     },
     {
-      title: "Chính trực mọi lúc",
-      tagline: "Trust Is Our Currency",
-      behaviors: [
-        "Chịu trách nhiệm với kết quả.",
-        "Nhận sai nhanh và sửa còn nhanh hơn.",
-        "Đối xử với dữ liệu cẩn trọng như với niềm tin cá nhân.",
-      ],
+      title: "Chuẩn mực",
+      description: "Luôn làm đúng nguyên tắc và nhất quán trong mọi hành động.",
     },
     {
-      title: "Bền vững",
-      tagline: "Build for Decades, Not Quarters",
-      behaviors: [
-        "Chọn sự bền vững hơn là lối tắt.",
-        "Cân bằng giữa tăng trưởng và trách nhiệm.",
-        "Xem mỗi khách hàng là một mối quan hệ lâu dài, không phải một lượt chuyển đổi.",
-      ],
-    },
-    {
-      title: "Tiến hoá",
-      tagline: "Learn Faster Than We Fail",
-      behaviors: [
-        "Hành động, thử nghiệm và điều chỉnh.",
-        "Tôn vinh việc học hỏi, không phải sự may rủi.",
-        "Mặc định đưa ra các quyết định có thể đảo ngược.",
-      ],
+      title: "Cải tiến",
+      description: "Luôn học hỏi, thử nghiệm và cải tiến để tạo ra giá trị tốt hơn, lâu dài hơn.",
     },
   ] satisfies readonly CoreValue[],
 

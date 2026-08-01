@@ -188,7 +188,7 @@ function DecorativeBadges({
   );
 }
 
-/** Partner CTA + dashboard tables share one homepage viewport (`#doitac`). */
+/** Partner CTA + buyer-journey/touchpoint tables share the `#doitac` section. */
 export function PartnerCta() {
   return (
     <SectionFrame id="doitac">
