@@ -95,6 +95,8 @@ export const BRAND_IDENTITY = {
   ] satisfies readonly CoreValue[],
 
   principlesTitle: "Nguyên tắc vận hành",
+  principlesSubtitle:
+    "Nguyên tắc là kim chỉ nam cho cách chúng tôi ra quyết định, hành động và cải tiến mỗi ngày.",
   principles: [
     {
       title: "Đi nhanh — nhưng không bao giờ mù mờ",
