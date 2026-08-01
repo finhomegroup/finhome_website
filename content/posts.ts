@@ -17,6 +17,76 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam",
+    title: "Ascott tăng trưởng 30% tại Việt Nam, mở rộng gần 3.200 căn hộ dịch vụ",
+    category: "Thị trường",
+    excerpt: "Ascott ký hợp đồng 9 dự án căn hộ dịch vụ tại Việt Nam trong nửa đầu 2026, nâng tổng danh mục hơn 30% với các đơn vị tại Hà Nội, TP.HCM, Đà Nẵng và Quy Nhơn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam.jpg",
+    date: "2026-08-01",
+    source: {
+        "name": "vir.com.vn",
+        "url": "https://vir.com.vn/ascott-signs-nine-vietnam-projects-grows-portfolio-30-157784.html",
+        "accessed": "2026-08-01"
+      },
+  },
+  {
+    slug: "thi-truong-nha-dat-tp-hcm-dau-2026",
+    title: "Thị trường nhà đất TP.HCM đầu 2026: Người mua cần lưu ý gì khi lãi suất vay còn neo cao",
+    category: "Thị trường",
+    excerpt: "Thị trường bất động sản TP.HCM đầu năm 2026 ghi nhận nguồn cung nhà chuyển nhượng tại một số khu vực tăng, trong khi lãi suất vay mua nhà vẫn ở mức cao khiến người mua cân nhắc kỹ khả năng tài chính.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-nha-dat-tp-hcm-dau-2026.jpg",
+    date: "2026-07-31",
+    source: {
+        "name": "batdongsan.com.vn",
+        "url": "https://batdongsan.com.vn/nha-dat-ban-tp-hcm",
+        "accessed": "2026-07-31"
+      },
+  },
+  {
+    slug: "thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo",
+    title: "Thị trường nhà chuyển nhượng giảm giá cục bộ: Áp lực từ lãi suất và cung vượt cầu",
+    category: "Thị trường",
+    excerpt: "Thị trường bất động sản chuyển nhượng điều chỉnh giá cục bộ trong bối cảnh nguồn cung tăng nhưng sức hấp thụ giảm, ngược chiều đà tăng giá từ chủ đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo.jpg",
+    date: "2026-07-31",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hoi-moi-gioi-thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo-5103203.html",
+        "accessed": "2026-07-31"
+      },
+  },
+  {
+    slug: "ha-noi-du-an-nha-cho-thue-34000-ty-dong",
+    title: "Hà Nội phát triển gần 4.400 căn nhà cho thuê giai đoạn 2025-2030",
+    category: "Thị trường",
+    excerpt: "Thành phố Hà Nội vừa phê duyệt 3 dự án nhà cho thuê tại Long Biên, Việt Hưng, Yên Sở với tổng vốn đầu tư hơn 34.000 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-du-an-nha-cho-thue-34000-ty-dong.jpg",
+    date: "2026-07-30",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ha-noi-se-co-ba-du-an-nha-cho-thue-hon-34-000-ty-dong-5102772.html",
+        "accessed": "2026-07-30"
+      },
+  },
+  {
+    slug: "thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach",
+    title: "Thu nhập 60 triệu đồng/tháng: Tranh cãi về đối tượng mua nhà ở xã hội",
+    category: "Chính sách",
+    excerpt: "Đề xuất nâng mức thu nhập để mua nhà ở xã hội lên 60 triệu/tháng cho cặp vợ chồng tại TP.HCM đang gây tranh luận gay gắt về ranh giới đối tượng hưởng chính sách.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach.jpg",
+    date: "2026-07-30",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/thu-nhap-60-trieu-dong-thang-van-mua-nha-o-xa-hoi-co-con-dung-doi-tuong-100260728152243981.htm",
+        "accessed": "2026-07-30"
+      },
+  },
+  {
     slug: "du-bao-thi-truong-bat-dong-san-cuoi-nam-2026",
     title: "Dự báo bất ngờ về thị trường bất động sản cuối năm 2026",
     category: "Thị trường",
