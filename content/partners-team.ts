@@ -28,6 +28,7 @@ export const PARTNER_CTA = {
   subtitle: "Cùng FinHome kết nối cơ hội, kiến tạo giá trị bền vững",
   cta: "Liên hệ ngay",
   hoverCta: "Tải xuống",
+  tablesCta: "Xem chi tiết hành trình & điểm chạm",
 } as const;
 
 export const BUYER_JOURNEY = {
