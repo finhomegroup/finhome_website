@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam",
+    title: "Ascott tăng trưởng 30% tại Việt Nam, mở rộng gần 3.200 căn hộ dịch vụ",
+    category: "Thị trường",
+    excerpt: "Ascott ký hợp đồng 9 dự án căn hộ dịch vụ tại Việt Nam trong nửa đầu 2026, nâng tổng danh mục hơn 30% với các đơn vị tại Hà Nội, TP.HCM, Đà Nẵng và Quy Nhơn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam.jpg",
+    date: "2026-08-01",
+    source: {
+        "name": "vir.com.vn",
+        "url": "https://vir.com.vn/ascott-signs-nine-vietnam-projects-grows-portfolio-30-157784.html",
+        "accessed": "2026-08-01"
+      },
+  },
+  {
     slug: "thi-truong-nha-dat-tp-hcm-dau-2026",
     title: "Thị trường nhà đất TP.HCM đầu 2026: Người mua cần lưu ý gì khi lãi suất vay còn neo cao",
     category: "Thị trường",
