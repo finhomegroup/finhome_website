@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tien-coc-doanh-nghiep-bat-dong-san-ap-luc",
+    title: "Hơn 8 tỷ USD tiền cọc: Áp lực hay cơ hội cho chủ đầu tư bất động sản?",
+    category: "Thị trường",
+    excerpt: "Lượng tiền cọc người mua trả trước đạt mức cao kỷ lục hơn 8 tỷ USD, đặt ra câu hỏi về áp lực tài chính và rủi ro cho các chủ đầu tư bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tien-coc-doanh-nghiep-bat-dong-san-ap-luc.jpg",
+    date: "2026-08-02",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/nam-hon-8-ti-usd-tien-coc-cac-doanh-nghiep-bat-dong-san-co-gap-ap-luc-100260731202100535.htm",
+        "accessed": "2026-08-02"
+      },
+  },
+  {
     slug: "lai-vay-mua-nha-tang-cao-ap-luc-ban-nha-thoat-no",
     title: "Lãi suất vay mua nhà tăng cao, người vay chịu áp lực bán tài sản thoát nợ",
     category: "Tài chính",
