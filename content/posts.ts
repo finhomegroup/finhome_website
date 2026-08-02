@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-vay-mua-nha-tang-cao-ap-luc-ban-nha-thoat-no",
+    title: "Lãi suất vay mua nhà tăng cao, người vay chịu áp lực bán tài sản thoát nợ",
+    category: "Tài chính",
+    excerpt: "Lãi suất vay mua nhà trong giai đoạn ưu đãi đã vượt 10%/năm, lãi suất thả nổi chạm ngưỡng 16%/năm khiến nhiều người vay cân nhắc bán nhà để giảm gánh nợ.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/lai-vay-mua-nha-tang-cao-ap-luc-ban-nha-thoat-no.jpg",
+    date: "2026-08-02",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/lai-vay-mua-nha-tang-cao-nhieu-nguoi-chi-muon-ban-nha-thoat-no-d148444.html",
+        "accessed": "2026-08-02"
+      },
+  },
+  {
     slug: "bo-xay-dung-xac-dinh-nha-o-cho-thue-phan-khuc-chien-luoc-dai-han",
     title: "Bộ Xây dựng xác định nhà ở cho thuê là phân khúc chiến lược dài hạn",
     category: "Chính sách",
