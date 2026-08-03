@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thi-truong-nha-o-phan-hoa-hanoi-tpcm",
+    title: "Thị trường nhà ở phân hóa: Hà Nội giảm tốc, TP.HCM vẫn neo giá cao",
+    category: "Thị trường",
+    excerpt: "Thị trường nhà ở Hà Nội ghi nhận tỷ lệ hấp thụ giảm xuống dưới 70%, trong khi TP.HCM căn hộ mới liên tục vượt 100 triệu/m², cho thấy sự phân hóa ngày càng rõ nét giữa hai đô thị lớn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-nha-o-phan-hoa-hanoi-tpcm.jpg",
+    date: "2026-08-03",
+    source: {
+        "name": "tinnhanhchungkhoan.vn",
+        "url": "https://www.tinnhanhchungkhoan.vn/dien-bien-moi-tren-thi-truong-nha-o-post395104.html",
+        "accessed": "2026-08-03"
+      },
+  },
+  {
     slug: "loi-nhuan-ke-toan-tang-nhung-doanh-thu-ban-hang-giam-bat-dong-san-dau-hieu-can-l",
     title: "Lợi nhuận kế toán tăng nhưng doanh thu bán hàng giảm: Bất động sản đang bán gì để có lời?",
     category: "Tài chính",
