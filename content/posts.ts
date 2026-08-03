@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "sun-group-dau-tu-40000-ty-phu-quoc-nha-o-xa-hoi",
+    title: "Sun Group đầu tư 40.000 tỷ đồng xây gần 50.000 căn nhà ở xã hội, nhà cho thuê tại Phú Quốc",
+    category: "Nhà ở xã hội",
+    excerpt: "Sun Group khởi động chương trình phát triển gần 50.000 căn nhà ở xã hội và nhà cho thuê tại Khu đô thị An Thới, Phú Quốc với vốn đầu tư 40.000 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/sun-group-dau-tu-40000-ty-phu-quoc-nha-o-xa-hoi.jpg",
+    date: "2026-08-03",
+    source: {
+        "name": "sungroup.com.vn",
+        "url": "https://sungroup.com.vn/tin-tuc/sun-group-dau-tu-40000-ty-dong-xay-gan-50000-can-nha-o-xa-hoi-nha-o-cho-thue-tieu-chuan-singapore-tai-phu-quoc-12527",
+        "accessed": "2026-08-03"
+      },
+  },
+  {
     slug: "tien-coc-doanh-nghiep-bat-dong-san-ap-luc",
     title: "Hơn 8 tỷ USD tiền cọc: Áp lực hay cơ hội cho chủ đầu tư bất động sản?",
     category: "Thị trường",
