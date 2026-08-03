@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { POSTS } from "../content/posts";
-import { BLOG_PAGE_SIZE } from "../content/blog-pagination";
+import { POSTS } from "../content/posts.js";
+import { BLOG_PAGE_SIZE } from "../content/blog-pagination.js";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
