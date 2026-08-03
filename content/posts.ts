@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc",
+    title: "Chung cư TP.HCM 350 triệu/m²: Thị trường dành cho ai khi giá vượt xa sức mua đa số?",
+    category: "Thị trường",
+    excerpt: "Căn hộ 55 m² tại khu trung tâm TP.HCM có giá hơn 21 tỷ đồng, tương đương 350 triệu/m² - mức giá chỉ một bộ phận nhỏ người mua có thể tiếp cận.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc.jpg",
+    date: "2026-08-03",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/gia-chung-cu-tp-hcm-gia-nha-tp-hcm-chung-cu-tp-hcm-ngao-gia-350-trieu-dong-mot-m2-ban-cho-ai-5104037.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=tienngo&fbclid=IwdGRjcATdbHxwZG9mBWZkaWQWULydvaIG-b-vUTg_fzu27d2updZs1GV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR45MoB9ISQ7RRjeHI4C9iXjZJPdfkGoylininSq9QJ-mN5REAdvHZYPjw13RA_aem_v_Y2D9vso7tO5F-5t_ushA",
+        "accessed": "2026-08-03"
+      },
+  },
+  {
     slug: "nghi-quyet-21-thay-doi-luat-choi-thi-truong-bat-dong-san",
     title: "Nghị quyết 21 thay đổi luật chơi thị trường bất động sản như thế nào",
     category: "Thị trường",
