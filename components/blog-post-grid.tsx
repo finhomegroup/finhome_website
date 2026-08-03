@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/reveal";
 import { PostCardLink } from "@/components/post-card-link";
 import { img } from "@/lib/images";
@@ -19,6 +19,18 @@ type BlogPostsResponse = {
   total: number;
 };
 
+function pageFromUrl(pageCount: number) {
+  const raw = Number(new URLSearchParams(window.location.search).get("page")) || 1;
+  return Math.min(Math.max(raw, 1), pageCount);
+}
+
+function writePageToUrl(page: number) {
+  const url = new URL(window.location.href);
+  if (page === 1) url.searchParams.delete("page");
+  else url.searchParams.set("page", String(page));
+  window.history.pushState(null, "", url);
+}
+
 export function BlogPostGrid({
   initialPosts,
   pageCount,
@@ -32,14 +44,15 @@ export function BlogPostGrid({
   const gridRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
 
-  async function goToPage(next: number) {
+  async function loadPage(next: number, { syncUrl = true, scroll = true } = {}) {
     const clamped = Math.min(Math.max(next, 1), pageCount);
     if (clamped === page || loading) return;
 
     if (clamped === 1) {
       setPage(1);
       setPosts(initialPosts);
-      gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (syncUrl) writePageToUrl(1);
+      if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
 
@@ -52,13 +65,28 @@ export function BlogPostGrid({
       if (requestIdRef.current !== requestId) return;
       setPosts(data.posts);
       setPage(data.page);
-      gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (syncUrl) writePageToUrl(data.page);
+      if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
       // keep current page on failure
     } finally {
       if (requestIdRef.current === requestId) setLoading(false);
     }
   }
+
+  useEffect(() => {
+    const target = pageFromUrl(pageCount);
+    if (target !== 1) {
+      queueMicrotask(() => loadPage(target, { syncUrl: false, scroll: false }));
+    }
+
+    function onPopState() {
+      queueMicrotask(() => loadPage(pageFromUrl(pageCount), { syncUrl: false, scroll: false }));
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div ref={gridRef}>
@@ -115,7 +143,7 @@ export function BlogPostGrid({
         >
           <button
             type="button"
-            onClick={() => goToPage(page - 1)}
+            onClick={() => loadPage(page - 1)}
             disabled={page === 1 || loading}
             className={cn(
               "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
@@ -129,7 +157,7 @@ export function BlogPostGrid({
             <button
               key={n}
               type="button"
-              onClick={() => goToPage(n)}
+              onClick={() => loadPage(n)}
               disabled={loading}
               aria-current={n === page ? "page" : undefined}
               className={cn(
@@ -146,7 +174,7 @@ export function BlogPostGrid({
 
           <button
             type="button"
-            onClick={() => goToPage(page + 1)}
+            onClick={() => loadPage(page + 1)}
             disabled={page === pageCount || loading}
             className={cn(
               "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
