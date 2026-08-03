@@ -3,15 +3,11 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
-import { PostCardLink } from "@/components/post-card-link";
-import { img } from "@/lib/images";
+import { BlogPostGrid } from "@/components/blog-post-grid";
 import { cn } from "@/lib/cn";
-import {
-  FH_CARD_IMAGE_ZOOM,
-  FH_CLICKABLE_CARD,
-  FH_POINTER,
-} from "@/lib/interaction-styles";
+import { FH_POINTER } from "@/lib/interaction-styles";
 import { POSTS } from "@/content/posts";
+import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
 import { canonicalPath } from "@/lib/seo";
 import Link from "next/link";
 
@@ -28,6 +24,9 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const pageCount = Math.max(1, Math.ceil(POSTS.length / BLOG_PAGE_SIZE));
+  const initialPosts = POSTS.slice(0, BLOG_PAGE_SIZE);
+
   return (
     <>
       <SiteHeader />
@@ -65,44 +64,7 @@ export default function BlogPage() {
               </p>
             </Reveal>
 
-            <Reveal className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {POSTS.map((post) => (
-                <PostCardLink
-                  key={post.slug}
-                  post={post}
-                  className={cn(
-                    "group flex flex-col overflow-hidden rounded-[20px] bg-white p-4",
-                    FH_CLICKABLE_CARD,
-                  )}
-                >
-                  <div className="overflow-hidden rounded-xl">
-                    <img
-                      src={img(post.cover)}
-                      alt={post.title}
-                      className={cn(
-                        "aspect-[3/2] w-full object-cover",
-                        FH_CARD_IMAGE_ZOOM,
-                      )}
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2 pt-4">
-                    <span className="text-xs font-medium uppercase tracking-wide text-primary">
-                      {post.category}
-                    </span>
-                    <h2 className="mt-2 font-display text-xl leading-snug text-ink">
-                      {post.title}
-                    </h2>
-                    <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-ink-2">
-                      {post.excerpt}
-                    </p>
-                    <span className="mt-4 text-xs text-ink-3">
-                      {post.readingTime}
-                      {post.source ? ` · Theo ${post.source.name}` : ""}
-                    </span>
-                  </div>
-                </PostCardLink>
-              ))}
-            </Reveal>
+            <BlogPostGrid initialPosts={initialPosts} pageCount={pageCount} />
           </Container>
         </section>
       </main>
