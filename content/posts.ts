@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "loi-nhuan-ke-toan-tang-nhung-doanh-thu-ban-hang-giam-bat-dong-san-dau-hieu-can-l",
+    title: "Lợi nhuận kế toán tăng nhưng doanh thu bán hàng giảm: Bất động sản đang bán gì để có lời?",
+    category: "Tài chính",
+    excerpt: "Nhiều doanh nghiệp bất động sản báo lợi nhuận tăng Q2/2026 dù doanh thu sụt giảm, đặt ra câu hỏi về chất lượng lợi nhuận và sức khỏe tài chính thực sự của ngành.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/loi-nhuan-ke-toan-tang-nhung-doanh-thu-ban-hang-giam-bat-dong-san-dau-hieu-can-l.jpg",
+    date: "2026-08-03",
+    source: {
+        "name": "danviet.vn",
+        "url": "https://danviet.vn/doanh-thu-cot-loi-teo-top-nhieu-doanh-nghiep-bat-dong-san-song-nho-nguon-thu-bat-thuong-d1448337.html",
+        "accessed": "2026-08-03"
+      },
+  },
+  {
     slug: "sun-group-dau-tu-40000-ty-phu-quoc-nha-o-xa-hoi",
     title: "Sun Group đầu tư 40.000 tỷ đồng xây gần 50.000 căn nhà ở xã hội, nhà cho thuê tại Phú Quốc",
     category: "Nhà ở xã hội",
