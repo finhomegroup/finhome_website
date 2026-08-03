@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nghi-quyet-21-thay-doi-luat-choi-thi-truong-bat-dong-san",
+    title: "Nghị quyết 21 thay đổi luật chơi thị trường bất động sản như thế nào",
+    category: "Thị trường",
+    excerpt: "TS Nguyễn Trí Hiếu nhận định Nghị quyết 21 của Đảng sẽ làm thay đổi cách vận hành của thị trường bất động sản trong thời gian tới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nghi-quyet-21-thay-doi-luat-choi-thi-truong-bat-dong-san.jpg",
+    date: "2026-08-03",
+    source: {
+        "name": "cafebiz.vn",
+        "url": "https://cafebiz.vn/thi-truong-bds-luat-choi-tu-luc-nay-se-thay-doi-176260803085632013.chn",
+        "accessed": "2026-08-03"
+      },
+  },
+  {
     slug: "thi-truong-nha-o-phan-hoa-hanoi-tpcm",
     title: "Thị trường nhà ở phân hóa: Hà Nội giảm tốc, TP.HCM vẫn neo giá cao",
     category: "Thị trường",
