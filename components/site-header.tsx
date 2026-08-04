@@ -228,7 +228,7 @@ export function SiteHeader() {
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
               className={cn(
-                "-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 xl:hidden",
+                "-mr-1 inline-flex h-11 w-11 items-center justify-center rounded-lg text-ink transition-colors hover:bg-ink/5 xl:hidden",
                 "md:max-xl:absolute md:max-xl:right-[7px] md:max-xl:top-1/2 md:max-xl:-translate-y-1/2 md:max-xl:mr-0",
                 FH_POINTER,
               )}
@@ -236,8 +236,8 @@ export function SiteHeader() {
               <span className="sr-only">Menu</span>
               {open ? (
                 <svg
-                  width="22"
-                  height="22"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -248,8 +248,8 @@ export function SiteHeader() {
                 </svg>
               ) : (
                 <svg
-                  width="22"
-                  height="22"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
