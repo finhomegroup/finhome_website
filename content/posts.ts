@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "co-phieu-bat-dong-san-dan-dat-vn-index-1777-diem",
+    title: "Cổ phiếu bất động sản dẫn dắt, VN-Index tiến sát 1.780 điểm phiên 4/8",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "VN-Index tăng 14,39 điểm lên 1.777,23 điểm nhờ cổ phiếu BĐS dẫn dắt, dù thanh khoản giảm còn hơn 19.479 tỷ đồng. Nhà đầu tư ngoại vẫn mua ròng 873 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/co-phieu-bat-dong-san-dan-dat-vn-index-1777-diem.webp",
+    date: "2026-08-04",
+    source: {
+        "name": "nhandan.vn",
+        "url": "https://nhandan.vn/chung-khoan-ngay-48-co-phieu-bat-dong-san-dan-dat-vn-index-tien-sat-moc-1780-diem-post979692.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "dat-nen-lao-doc-sau-nua-nam",
     title: "Giá đất nền lao dốc: Có nơi giảm hơn 65% chỉ sau nửa năm từ đỉnh",
     category: "Thị trường",
