@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-hung-yen-2026",
+    title: "Hòa Phát mở bán 842 căn nhà ở xã hội Hưng Yên từ tháng 8/2026, giá từ 20,8 triệu/m²",
+    category: "Nhà ở xã hội",
+    excerpt: "Hòa Phát tiếp nhận hồ sơ đăng ký 842 căn hộ nhà ở xã hội tại KCN Yên Mỹ II, Hưng Yên từ 14/8 đến 14/9/2026, mức giá chỉ từ 20,8 triệu/m².",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-hung-yen-2026.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "thoibaotaichinhvietnam.vn",
+        "url": "https://thoibaotaichinhvietnam.vn/hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-tai-hung-yen-tu-thang-8-2026-201672.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc",
     title: "Chung cư TP.HCM 350 triệu/m²: Thị trường dành cho ai khi giá vượt xa sức mua đa số?",
     category: "Thị trường",
