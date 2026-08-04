@@ -1,9 +1,12 @@
 // Blog post metadata. Bodies live in content/posts/<slug>.md and are read at build time.
 
+export type Topic = "gia-cung" | "cau-thanh-khoan" | "khu-vuc-ha-tang" | "chinh-sach-su-kien";
+
 export type Post = {
   slug: string;
   title: string;
   category: string;
+  topics: Topic[];
   excerpt: string;
   readingTime: string;
   cover: string; // Framer base filename OR public path (/images/...); resolve with img()
@@ -20,6 +23,7 @@ export const POSTS: Post[] = [
     slug: "chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc",
     title: "Chung cư TP.HCM 350 triệu/m²: Thị trường dành cho ai khi giá vượt xa sức mua đa số?",
     category: "Thị trường",
+    topics: ["gia-cung"],
     excerpt: "Căn hộ 55 m² tại khu trung tâm TP.HCM có giá hơn 21 tỷ đồng, tương đương 350 triệu/m² - mức giá chỉ một bộ phận nhỏ người mua có thể tiếp cận.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc.jpg",
@@ -34,6 +38,7 @@ export const POSTS: Post[] = [
     slug: "nghi-quyet-21-thay-doi-luat-choi-thi-truong-bat-dong-san",
     title: "Nghị quyết 21 thay đổi luật chơi thị trường bất động sản như thế nào",
     category: "Thị trường",
+    topics: ["chinh-sach-su-kien"],
     excerpt: "TS Nguyễn Trí Hiếu nhận định Nghị quyết 21 của Đảng sẽ làm thay đổi cách vận hành của thị trường bất động sản trong thời gian tới.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/nghi-quyet-21-thay-doi-luat-choi-thi-truong-bat-dong-san.jpg",
@@ -48,6 +53,7 @@ export const POSTS: Post[] = [
     slug: "thi-truong-nha-o-phan-hoa-hanoi-tpcm",
     title: "Thị trường nhà ở phân hóa: Hà Nội giảm tốc, TP.HCM vẫn neo giá cao",
     category: "Thị trường",
+    topics: ["cau-thanh-khoan", "gia-cung"],
     excerpt: "Thị trường nhà ở Hà Nội ghi nhận tỷ lệ hấp thụ giảm xuống dưới 70%, trong khi TP.HCM căn hộ mới liên tục vượt 100 triệu/m², cho thấy sự phân hóa ngày càng rõ nét giữa hai đô thị lớn.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/thi-truong-nha-o-phan-hoa-hanoi-tpcm.jpg",
@@ -62,6 +68,7 @@ export const POSTS: Post[] = [
     slug: "loi-nhuan-ke-toan-tang-nhung-doanh-thu-ban-hang-giam-bat-dong-san-dau-hieu-can-l",
     title: "Lợi nhuận kế toán tăng nhưng doanh thu bán hàng giảm: Bất động sản đang bán gì để có lời?",
     category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
     excerpt: "Nhiều doanh nghiệp bất động sản báo lợi nhuận tăng Q2/2026 dù doanh thu sụt giảm, đặt ra câu hỏi về chất lượng lợi nhuận và sức khỏe tài chính thực sự của ngành.",
     readingTime: "4 phút đọc",
     cover: "/images/blog/loi-nhuan-ke-toan-tang-nhung-doanh-thu-ban-hang-giam-bat-dong-san-dau-hieu-can-l.jpg",
@@ -76,6 +83,7 @@ export const POSTS: Post[] = [
     slug: "sun-group-dau-tu-40000-ty-phu-quoc-nha-o-xa-hoi",
     title: "Sun Group đầu tư 40.000 tỷ đồng xây gần 50.000 căn nhà ở xã hội, nhà cho thuê tại Phú Quốc",
     category: "Nhà ở xã hội",
+    topics: ["gia-cung", "khu-vuc-ha-tang"],
     excerpt: "Sun Group khởi động chương trình phát triển gần 50.000 căn nhà ở xã hội và nhà cho thuê tại Khu đô thị An Thới, Phú Quốc với vốn đầu tư 40.000 tỷ đồng.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/sun-group-dau-tu-40000-ty-phu-quoc-nha-o-xa-hoi.jpg",
@@ -90,6 +98,7 @@ export const POSTS: Post[] = [
     slug: "tien-coc-doanh-nghiep-bat-dong-san-ap-luc",
     title: "Hơn 8 tỷ USD tiền cọc: Áp lực hay cơ hội cho chủ đầu tư bất động sản?",
     category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
     excerpt: "Lượng tiền cọc người mua trả trước đạt mức cao kỷ lục hơn 8 tỷ USD, đặt ra câu hỏi về áp lực tài chính và rủi ro cho các chủ đầu tư bất động sản.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/tien-coc-doanh-nghiep-bat-dong-san-ap-luc.jpg",
@@ -104,6 +113,7 @@ export const POSTS: Post[] = [
     slug: "lai-vay-mua-nha-tang-cao-ap-luc-ban-nha-thoat-no",
     title: "Lãi suất vay mua nhà tăng cao, người vay chịu áp lực bán tài sản thoát nợ",
     category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
     excerpt: "Lãi suất vay mua nhà trong giai đoạn ưu đãi đã vượt 10%/năm, lãi suất thả nổi chạm ngưỡng 16%/năm khiến nhiều người vay cân nhắc bán nhà để giảm gánh nợ.",
     readingTime: "4 phút đọc",
     cover: "/images/blog/lai-vay-mua-nha-tang-cao-ap-luc-ban-nha-thoat-no.jpg",
@@ -118,6 +128,7 @@ export const POSTS: Post[] = [
     slug: "bo-xay-dung-xac-dinh-nha-o-cho-thue-phan-khuc-chien-luoc-dai-han",
     title: "Bộ Xây dựng xác định nhà ở cho thuê là phân khúc chiến lược dài hạn",
     category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
     excerpt: "Bộ Xây dựng chuyển trọng tâm phát triển từ nhà ở thương mại sang đồng thời cả nhà ở cho thuê, xác định đây là phân khúc chiến lược quốc gia.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/bo-xay-dung-xac-dinh-nha-o-cho-thue-phan-khuc-chien-luoc-dai-han.jpg",
@@ -132,6 +143,7 @@ export const POSTS: Post[] = [
     slug: "can-ho-tp-hcm-vuot-moc-100-trieu-m2",
     title: "Căn hộ mới TP HCM đồng loạt vượt 100 triệu/m2: Nguồn cung khan hiếm đẩy giá lên cao",
     category: "Thị trường",
+    topics: ["gia-cung"],
     excerpt: "Sau nhiều năm khan hiếm nguồn cung, thị trường chung cư TP HCM đón loạt dự án cao cấp, hạng sang mở bán, kéo mặt bằng giá phổ biến vượt 100 triệu đồng/m2.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/can-ho-tp-hcm-vuot-moc-100-trieu-m2.jpg",
@@ -146,6 +158,7 @@ export const POSTS: Post[] = [
     slug: "ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam",
     title: "Ascott tăng trưởng 30% tại Việt Nam, mở rộng gần 3.200 căn hộ dịch vụ",
     category: "Thị trường",
+    topics: ["gia-cung"],
     excerpt: "Ascott ký hợp đồng 9 dự án căn hộ dịch vụ tại Việt Nam trong nửa đầu 2026, nâng tổng danh mục hơn 30% với các đơn vị tại Hà Nội, TP.HCM, Đà Nẵng và Quy Nhơn.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/ascott-tang-truong-30-phan-tram-thi-truong-can-ho-dich-vu-viet-nam.jpg",
@@ -160,6 +173,7 @@ export const POSTS: Post[] = [
     slug: "thi-truong-nha-dat-tp-hcm-dau-2026",
     title: "Thị trường nhà đất TP.HCM đầu 2026: Người mua cần lưu ý gì khi lãi suất vay còn neo cao",
     category: "Thị trường",
+    topics: ["gia-cung", "cau-thanh-khoan"],
     excerpt: "Thị trường bất động sản TP.HCM đầu năm 2026 ghi nhận nguồn cung nhà chuyển nhượng tại một số khu vực tăng, trong khi lãi suất vay mua nhà vẫn ở mức cao khiến người mua cân nhắc kỹ khả năng tài chính.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/thi-truong-nha-dat-tp-hcm-dau-2026.jpg",
@@ -174,6 +188,7 @@ export const POSTS: Post[] = [
     slug: "thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo",
     title: "Thị trường nhà chuyển nhượng giảm giá cục bộ: Áp lực từ lãi suất và cung vượt cầu",
     category: "Thị trường",
+    topics: ["gia-cung", "cau-thanh-khoan"],
     excerpt: "Thị trường bất động sản chuyển nhượng điều chỉnh giá cục bộ trong bối cảnh nguồn cung tăng nhưng sức hấp thụ giảm, ngược chiều đà tăng giá từ chủ đầu tư.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/thi-truong-nha-chuyen-nhuong-giam-gia-cuc-bo.jpg",
@@ -188,6 +203,7 @@ export const POSTS: Post[] = [
     slug: "ha-noi-du-an-nha-cho-thue-34000-ty-dong",
     title: "Hà Nội phát triển gần 4.400 căn nhà cho thuê giai đoạn 2025-2030",
     category: "Thị trường",
+    topics: ["khu-vuc-ha-tang", "gia-cung"],
     excerpt: "Thành phố Hà Nội vừa phê duyệt 3 dự án nhà cho thuê tại Long Biên, Việt Hưng, Yên Sở với tổng vốn đầu tư hơn 34.000 tỷ đồng.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/ha-noi-du-an-nha-cho-thue-34000-ty-dong.jpg",
@@ -202,6 +218,7 @@ export const POSTS: Post[] = [
     slug: "thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach",
     title: "Thu nhập 60 triệu đồng/tháng: Tranh cãi về đối tượng mua nhà ở xã hội",
     category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
     excerpt: "Đề xuất nâng mức thu nhập để mua nhà ở xã hội lên 60 triệu/tháng cho cặp vợ chồng tại TP.HCM đang gây tranh luận gay gắt về ranh giới đối tượng hưởng chính sách.",
     readingTime: "4 phút đọc",
     cover: "/images/blog/thu-nhap-60-trieu-mua-nha-xa-hoi-tranh-lua-chinh-sach.jpg",
@@ -216,6 +233,7 @@ export const POSTS: Post[] = [
     slug: "du-bao-thi-truong-bat-dong-san-cuoi-nam-2026",
     title: "Dự báo bất ngờ về thị trường bất động sản cuối năm 2026",
     category: "Thị trường",
+    topics: ["gia-cung"],
     excerpt: "Các chuyên gia dự báo thị trường bất động sản Việt Nam cuối năm 2026 sẽ chứng kiến nhiều biến động, với khả năng phục hồi và tăng trưởng ở một số phân khúc.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/du-bao-thi-truong-bat-dong-san-cuoi-nam-2026.jpg",
@@ -230,6 +248,7 @@ export const POSTS: Post[] = [
     slug: "kha-nang-mua-nha-viet-nam-numbeo",
     title: "Khả năng mua nhà của người Việt đang khó hơn thế nào?",
     category: "Tài chính",
+    topics: ["gia-cung"],
     excerpt:
       "Giá nhà tăng nhanh hơn thu nhập khiến số năm tích lũy mua nhà tăng rõ. FinHome tóm tắt tín hiệu chính để lập kế hoạch mua nhà.",
     readingTime: "3 phút đọc",
@@ -245,6 +264,7 @@ export const POSTS: Post[] = [
     slug: "hon-30-nam-thu-nhap-de-mua-nha",
     title: "Vì sao cần hơn 30 năm thu nhập để mua được một căn nhà?",
     category: "Tài chính",
+    topics: ["gia-cung"],
     excerpt:
       "Tỷ số giá nhà/thu nhập Việt Nam đã vượt mốc 30. FinHome phân tích nguyên nhân và rủi ro khi mua nhà chưa có sổ.",
     readingTime: "4 phút đọc",
@@ -260,6 +280,7 @@ export const POSTS: Post[] = [
     slug: "gioi-tre-mua-nha-thoi-bao-gia",
     title: "Người trẻ đang nghĩ lại chuyện mua nhà thời bão giá",
     category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
     excerpt:
       "Người trẻ đô thị chia thành nhóm chờ, mua ngay hoặc thuê dài hạn. FinHome gợi ý cách chọn thời điểm mua nhà phù hợp.",
     readingTime: "4 phút đọc",
@@ -275,6 +296,7 @@ export const POSTS: Post[] = [
     slug: "chinh-sach-nha-o-thu-nhap-trung-binh",
     title: "Chính sách nhà ở cho người thu nhập trung bình",
     category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien"],
     excerpt:
       "Nhóm thu nhập trung bình đang được đưa vào trọng tâm chính sách nhà ở. FinHome điểm các định hướng và việc cần chuẩn bị.",
     readingTime: "3 phút đọc",
@@ -290,6 +312,7 @@ export const POSTS: Post[] = [
     slug: "gia-nha-phu-hop-thu-nhap-trung-binh",
     title: "Giá nhà bao nhiêu là vừa sức với người thu nhập trung bình?",
     category: "Tài chính",
+    topics: ["gia-cung"],
     excerpt:
       "Giá 'phù hợp' theo chính sách và giá 'an toàn' theo khả năng trả nợ có thể lệch nhau. FinHome gợi ý cách tính ngân sách.",
     readingTime: "3 phút đọc",
@@ -305,6 +328,7 @@ export const POSTS: Post[] = [
     slug: "uu-tien-mua-nha-gia-phu-hop-tren-20-trieu",
     title: "Thu nhập trên 20 triệu có thể ưu tiên mua nhà giá phù hợp?",
     category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien"],
     excerpt:
       "Cơ chế thí điểm nhà thương mại giá phù hợp đang lấy ý kiến cho nhóm trên 20 triệu/tháng. FinHome tóm tắt điểm cần biết.",
     readingTime: "3 phút đọc",
@@ -320,6 +344,7 @@ export const POSTS: Post[] = [
     slug: "vay-von-mua-nha-o-xa-hoi-dieu-kien",
     title: "Điều kiện vay ưu đãi mua nhà ở xã hội bạn cần biết",
     category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien", "cau-thanh-khoan"],
     excerpt:
       "Đủ điều kiện mua nhà ở xã hội chưa chắc được vay ưu đãi. FinHome tóm tắt đối tượng, điều kiện, lãi suất và thời hạn vay.",
     readingTime: "3 phút đọc",
@@ -335,6 +360,7 @@ export const POSTS: Post[] = [
     slug: "ma-dinh-danh-dien-tu-bat-dong-san",
     title: "Mã định danh điện tử BĐS: thêm lớp minh bạch khi mua nhà",
     category: "Bất động sản",
+    topics: ["chinh-sach-su-kien"],
     excerpt:
       "Từ 1/3/2026 mỗi BĐS có mã định danh điện tử riêng. FinHome giải thích ý nghĩa và vì sao vẫn cần thẩm định tài chính cá nhân.",
     readingTime: "3 phút đọc",
@@ -350,6 +376,7 @@ export const POSTS: Post[] = [
     slug: "lai-suat-vay-mua-nha-neo-cao",
     title: "Lãi suất vay mua nhà neo cao: Người mua cần chuẩn bị gì?",
     category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
     excerpt:
       "Lãi vay mua nhà tăng 2–4 điểm % và chưa giảm. FinHome gợi ý kiểm tra khoản vay còn an toàn khi hết ưu đãi lãi suất.",
     readingTime: "4 phút đọc",
@@ -365,6 +392,7 @@ export const POSTS: Post[] = [
     slug: "goi-tin-dung-uu-dai-nguoi-tre-duoi-35",
     title: "Đề xuất gói tín dụng ưu đãi nhà ở cho người dưới 35 tuổi",
     category: "Tài chính",
+    topics: ["chinh-sach-su-kien", "cau-thanh-khoan"],
     excerpt:
       "Người trẻ chịu áp lực lớn từ chênh lệch giá nhà–thu nhập. FinHome tổng hợp đề xuất tín dụng ưu đãi cho nhóm dưới 35 tuổi.",
     readingTime: "3 phút đọc",
@@ -380,6 +408,7 @@ export const POSTS: Post[] = [
     slug: "dieu-kien-vay-mua-nha-o-xa-hoi-nam-2026",
     title: "Điều kiện vay mua nhà ở xã hội năm 2026",
     category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien", "cau-thanh-khoan"],
     excerpt:
       "Nhà ở xã hội vẫn là lối an cư cho thu nhập thấp–trung bình. FinHome tóm tắt điều kiện vay ưu đãi theo quy định mới nhất.",
     readingTime: "5 phút đọc",
@@ -390,6 +419,7 @@ export const POSTS: Post[] = [
     slug: "lai-suat-vay-tang-cao-dong-tien-dich-chuyen",
     title: "Lãi suất vay tăng cao, dòng tiền đầu tư dịch chuyển ra sao?",
     category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
     excerpt:
       "Lãi vay mua nhà cao buộc nhiều nhà đầu tư thu hẹp danh mục. FinHome nhìn dòng tiền và hướng phân bổ tài sản bền vững hơn.",
     readingTime: "5 phút đọc",
@@ -400,6 +430,7 @@ export const POSTS: Post[] = [
     slug: "ma-dinh-danh-bat-dong-san-tu-2026",
     title: "Mã định danh BĐS từ 2026: minh bạch hóa thị trường",
     category: "Bất động sản",
+    topics: ["chinh-sach-su-kien"],
     excerpt:
       "Từ năm 2026, mỗi bất động sản sẽ có mã định danh riêng, giúp minh bạch thông tin và giảm rủi ro khi giao dịch.",
     readingTime: "4 phút đọc",
@@ -410,6 +441,7 @@ export const POSTS: Post[] = [
     slug: "thu-tuong-tang-quy-dat-ho-tro-tin-dung-nha-o",
     title: "Thủ tướng: Tăng quỹ đất, hỗ trợ tín dụng nhà ở giá phù hợp",
     category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien", "gia-cung"],
     excerpt:
       "Thủ tướng yêu cầu tăng quỹ đất và hỗ trợ tín dụng nhà ở giá phù hợp, nhằm mở rộng nguồn cung cho thu nhập trung bình.",
     readingTime: "4 phút đọc",

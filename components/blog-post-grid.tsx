@@ -10,7 +10,10 @@ import {
   FH_CLICKABLE_CARD,
   FH_POINTER,
 } from "@/lib/interaction-styles";
-import type { Post } from "@/content/posts";
+import type { Post, Topic } from "@/content/posts";
+import { TOPICS, topicLabel } from "@/content/blog-topics";
+
+type TopicFilter = Topic | "all";
 
 type BlogPostsResponse = {
   posts: Post[];
@@ -19,13 +22,20 @@ type BlogPostsResponse = {
   total: number;
 };
 
-function pageFromUrl(pageCount: number) {
-  const raw = Number(new URLSearchParams(window.location.search).get("page")) || 1;
-  return Math.min(Math.max(raw, 1), pageCount);
+const TOPIC_IDS = new Set<string>(TOPICS.map((t) => t.id));
+
+function paramsFromUrl(): { topic: TopicFilter; page: number } {
+  const search = new URLSearchParams(window.location.search);
+  const rawTopic = search.get("topic");
+  const topic: TopicFilter = rawTopic && TOPIC_IDS.has(rawTopic) ? (rawTopic as Topic) : "all";
+  const page = Math.max(Number(search.get("page")) || 1, 1);
+  return { topic, page };
 }
 
-function writePageToUrl(page: number) {
+function writeParamsToUrl(topic: TopicFilter, page: number) {
   const url = new URL(window.location.href);
+  if (topic === "all") url.searchParams.delete("topic");
+  else url.searchParams.set("topic", topic);
   if (page === 1) url.searchParams.delete("page");
   else url.searchParams.set("page", String(page));
   window.history.pushState(null, "", url);
@@ -33,25 +43,28 @@ function writePageToUrl(page: number) {
 
 export function BlogPostGrid({
   initialPosts,
-  pageCount,
+  pageCount: initialPageCount,
 }: {
   initialPosts: Post[];
   pageCount: number;
 }) {
+  const [topic, setTopic] = useState<TopicFilter>("all");
   const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(initialPageCount);
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
 
-  async function loadPage(next: number, { syncUrl = true, scroll = true } = {}) {
-    const clamped = Math.min(Math.max(next, 1), pageCount);
-    if (clamped === page || loading) return;
+  async function load(nextTopic: TopicFilter, nextPage: number, { syncUrl = true, scroll = true } = {}) {
+    if (loading || (nextTopic === topic && nextPage === page)) return;
 
-    if (clamped === 1) {
+    if (nextTopic === "all" && nextPage === 1) {
+      setTopic("all");
       setPage(1);
       setPosts(initialPosts);
-      if (syncUrl) writePageToUrl(1);
+      setPageCount(initialPageCount);
+      if (syncUrl) writeParamsToUrl("all", 1);
       if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
@@ -59,29 +72,34 @@ export function BlogPostGrid({
     const requestId = ++requestIdRef.current;
     setLoading(true);
     try {
-      const res = await fetch(`/api/blog-posts?page=${clamped}`);
+      const qs = new URLSearchParams({ page: String(nextPage) });
+      if (nextTopic !== "all") qs.set("topic", nextTopic);
+      const res = await fetch(`/api/blog-posts?${qs.toString()}`);
       if (!res.ok) throw new Error("Failed to load posts");
       const data: BlogPostsResponse = await res.json();
       if (requestIdRef.current !== requestId) return;
       setPosts(data.posts);
       setPage(data.page);
-      if (syncUrl) writePageToUrl(data.page);
+      setPageCount(data.pageCount);
+      setTopic(nextTopic);
+      if (syncUrl) writeParamsToUrl(nextTopic, data.page);
       if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
-      // keep current page on failure
+      // keep current state on failure
     } finally {
       if (requestIdRef.current === requestId) setLoading(false);
     }
   }
 
   useEffect(() => {
-    const target = pageFromUrl(pageCount);
-    if (target !== 1) {
-      queueMicrotask(() => loadPage(target, { syncUrl: false, scroll: false }));
+    const initial = paramsFromUrl();
+    if (initial.topic !== "all" || initial.page !== 1) {
+      queueMicrotask(() => load(initial.topic, initial.page, { syncUrl: false, scroll: false }));
     }
 
     function onPopState() {
-      queueMicrotask(() => loadPage(pageFromUrl(pageCount), { syncUrl: false, scroll: false }));
+      const next = paramsFromUrl();
+      queueMicrotask(() => load(next.topic, next.page, { syncUrl: false, scroll: false }));
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -90,6 +108,48 @@ export function BlogPostGrid({
 
   return (
     <div ref={gridRef}>
+      <div className="mt-12 flex flex-wrap justify-center gap-2" role="group" aria-label="Lọc theo chủ đề">
+        <button
+          type="button"
+          onClick={() => load("all", 1)}
+          disabled={loading}
+          aria-pressed={topic === "all"}
+          className={cn(
+            "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
+            FH_POINTER,
+            topic === "all"
+              ? "bg-brand-green text-white"
+              : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
+          )}
+        >
+          Tất cả
+        </button>
+        {TOPICS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => load(t.id, 1)}
+            disabled={loading}
+            aria-pressed={topic === t.id}
+            className={cn(
+              "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
+              FH_POINTER,
+              topic === t.id
+                ? "bg-brand-green text-white"
+                : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {posts.length === 0 && !loading && (
+        <p className="mt-12 text-center text-sm text-ink-2">
+          Chưa có bài viết nào cho chủ đề này.
+        </p>
+      )}
+
       <Reveal
         className={cn(
           "mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 transition-opacity",
@@ -131,6 +191,16 @@ export function BlogPostGrid({
                 {post.readingTime}
                 {post.source ? ` · Theo ${post.source.name}` : ""}
               </span>
+              <span className="mt-2 flex flex-wrap gap-1.5">
+                {post.topics.map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex items-center rounded-full bg-brand-green/10 px-2.5 py-0.5 text-[11px] font-medium text-brand-green"
+                  >
+                    {topicLabel(t)}
+                  </span>
+                ))}
+              </span>
             </div>
           </PostCardLink>
         ))}
@@ -143,7 +213,7 @@ export function BlogPostGrid({
         >
           <button
             type="button"
-            onClick={() => loadPage(page - 1)}
+            onClick={() => load(topic, page - 1)}
             disabled={page === 1 || loading}
             className={cn(
               "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
@@ -157,7 +227,7 @@ export function BlogPostGrid({
             <button
               key={n}
               type="button"
-              onClick={() => loadPage(n)}
+              onClick={() => load(topic, n)}
               disabled={loading}
               aria-current={n === page ? "page" : undefined}
               className={cn(
@@ -174,7 +244,7 @@ export function BlogPostGrid({
 
           <button
             type="button"
-            onClick={() => loadPage(page + 1)}
+            onClick={() => load(topic, page + 1)}
             disabled={page === pageCount || loading}
             className={cn(
               "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
