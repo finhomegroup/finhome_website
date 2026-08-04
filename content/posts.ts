@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-vay-mua-o-to-tang-sau-uu-dai",
+    title: "Lãi suất vay mua ô tô tăng vọt sau ưu đãi: Người vay chịu áp lực tài chính",
+    category: "Tài chính",
+    excerpt: "Nhiều khoản vay mua ô tô chuyển từ lãi suất ưu đãi 8%/năm lên mức thả nổi 18%/năm, gây áp lực trả nợ lớn cho người vay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-o-to-tang-sau-uu-dai.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vietnambiz.vn",
+        "url": "https://vietnambiz.vn/het-uu-dai-lai-suat-tha-noi-tu-8-len-18nam-nguoi-vay-mua-o-to-khoc-rong-202684141235901.htm",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-hung-yen-2026",
     title: "Hòa Phát mở bán 842 căn nhà ở xã hội Hưng Yên từ tháng 8/2026, giá từ 20,8 triệu/m²",
     category: "Nhà ở xã hội",
