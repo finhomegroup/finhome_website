@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-vay-mua-nha-sau-uu-dai-tang-manh-13-15",
+    title: "Lãi suất vay mua nhà sau ưu đãi tăng mạnh lên 13-15%, áp lực thanh khoản người mua",
+    category: "Tài chính",
+    excerpt: "Lãi suất vay mua nhà sau thời gian ưu đãi hiện phổ biến 13-15%/năm, tăng đáng kể so với cùng kỳ năm trước trong bối cảnh giá bất động sản vẫn neo cao khiến người mua đối mặt áp lực tài chính lớn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-nha-sau-uu-dai-tang-manh-13-15.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nguoi-mua-nha-doi-mat-lai-vay-13-15-sau-uu-dai-5104630.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-dong-nai-2026",
     title: "Đồng Nai kiểm tra tiến độ 16 dự án nhà ở xã hội trong tuần tới",
     category: "Nhà ở xã hội",
