@@ -20,6 +20,76 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dat-nen-lao-doc-sau-nua-nam",
+    title: "Giá đất nền lao dốc: Có nơi giảm hơn 65% chỉ sau nửa năm từ đỉnh",
+    category: "Thị trường",
+    excerpt: "Giá đất nền tại nhiều khu vực giảm sâu 30-65% chỉ sau khoảng 6 tháng sau đỉnh quý IV/2025, phản ánh chu kỳ điều chỉnh của thị trường bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dat-nen-lao-doc-sau-nua-nam.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/gia-dat-nen-lao-doc-co-noi-giam-hon-65-chi-sau-nua-nam-d148572.html?fbclid=IwY2xjawTex8pwZG9mAWV4dG4DYWVtAjEwAGJyaWQRMW1qVTBXTnZYeFRKTldicWJzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeqnsYurWZMk-I3loxA5qaGHPy3atipqUH6VApvLbgbhYW_4dzCo8bnUO6YZs_aem_FQL1B8nzRkfyHWAqaw0Q1A",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
+    slug: "lai-suat-vay-mua-nha-sau-uu-dai-tang-manh-13-15",
+    title: "Lãi suất vay mua nhà sau ưu đãi tăng mạnh lên 13-15%, áp lực thanh khoản người mua",
+    category: "Tài chính",
+    excerpt: "Lãi suất vay mua nhà sau thời gian ưu đãi hiện phổ biến 13-15%/năm, tăng đáng kể so với cùng kỳ năm trước trong bối cảnh giá bất động sản vẫn neo cao khiến người mua đối mặt áp lực tài chính lớn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-nha-sau-uu-dai-tang-manh-13-15.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nguoi-mua-nha-doi-mat-lai-vay-13-15-sau-uu-dai-5104630.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
+    slug: "kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-dong-nai-2026",
+    title: "Đồng Nai kiểm tra tiến độ 16 dự án nhà ở xã hội trong tuần tới",
+    category: "Nhà ở xã hội",
+    excerpt: "Sở Xây dựng Đồng Nai kiểm tra thực tế tiến độ 16 dự án nhà ở xã hội từ 27-31/7/2026, nhằm đánh giá công tác triển khai trên địa bàn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-dong-nai-2026.png",
+    date: "2026-08-04",
+    source: {
+        "name": "sxd.dongnai.gov.vn",
+        "url": "https://sxd.dongnai.gov.vn/vi/news/Quan-ly-Nha-va-Thi-truong-Bat-dong-san/kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-tren-dia-ban-thanh-pho-dong-nai-13655.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
+    slug: "lai-suat-vay-mua-o-to-tang-sau-uu-dai",
+    title: "Lãi suất vay mua ô tô tăng vọt sau ưu đãi: Người vay chịu áp lực tài chính",
+    category: "Tài chính",
+    excerpt: "Nhiều khoản vay mua ô tô chuyển từ lãi suất ưu đãi 8%/năm lên mức thả nổi 18%/năm, gây áp lực trả nợ lớn cho người vay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-o-to-tang-sau-uu-dai.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vietnambiz.vn",
+        "url": "https://vietnambiz.vn/het-uu-dai-lai-suat-tha-noi-tu-8-len-18nam-nguoi-vay-mua-o-to-khoc-rong-202684141235901.htm",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
+    slug: "hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-hung-yen-2026",
+    title: "Hòa Phát mở bán 842 căn nhà ở xã hội Hưng Yên từ tháng 8/2026, giá từ 20,8 triệu/m²",
+    category: "Nhà ở xã hội",
+    excerpt: "Hòa Phát tiếp nhận hồ sơ đăng ký 842 căn hộ nhà ở xã hội tại KCN Yên Mỹ II, Hưng Yên từ 14/8 đến 14/9/2026, mức giá chỉ từ 20,8 triệu/m².",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-hung-yen-2026.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "thoibaotaichinhvietnam.vn",
+        "url": "https://thoibaotaichinhvietnam.vn/hoa-phat-nhan-ho-so-dang-ky-mua-nha-o-xa-hoi-tai-hung-yen-tu-thang-8-2026-201672.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "chung-cu-tp-hcm-350-trieu-dong-m2-ai-mua-duoc",
     title: "Chung cư TP.HCM 350 triệu/m²: Thị trường dành cho ai khi giá vượt xa sức mua đa số?",
     category: "Thị trường",
