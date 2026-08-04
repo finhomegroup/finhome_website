@@ -108,14 +108,14 @@ export function BlogPostGrid({
 
   return (
     <div ref={gridRef}>
-      <div className="mt-12 flex flex-wrap justify-center gap-3" role="group" aria-label="Lọc theo chủ đề">
+      <div className="mt-12 flex flex-wrap justify-center gap-2" role="group" aria-label="Lọc theo chủ đề">
         <button
           type="button"
           onClick={() => load("all", 1)}
           disabled={loading}
           aria-pressed={topic === "all"}
           className={cn(
-            "min-h-11 rounded-full px-5 py-2.5 text-sm font-medium transition-colors disabled:pointer-events-none",
+            "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
             FH_POINTER,
             topic === "all"
               ? "bg-brand-green text-white"
@@ -132,7 +132,7 @@ export function BlogPostGrid({
             disabled={loading}
             aria-pressed={topic === t.id}
             className={cn(
-              "min-h-11 rounded-full px-5 py-2.5 text-sm font-medium transition-colors disabled:pointer-events-none",
+              "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
               FH_POINTER,
               topic === t.id
                 ? "bg-brand-green text-white"
