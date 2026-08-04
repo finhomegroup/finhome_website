@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dat-nen-lao-doc-sau-nua-nam",
+    title: "Giá đất nền lao dốc: Có nơi giảm hơn 65% chỉ sau nửa năm từ đỉnh",
+    category: "Thị trường",
+    excerpt: "Giá đất nền tại nhiều khu vực giảm sâu 30-65% chỉ sau khoảng 6 tháng sau đỉnh quý IV/2025, phản ánh chu kỳ điều chỉnh của thị trường bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dat-nen-lao-doc-sau-nua-nam.jpg",
+    date: "2026-08-04",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/gia-dat-nen-lao-doc-co-noi-giam-hon-65-chi-sau-nua-nam-d148572.html?fbclid=IwY2xjawTex8pwZG9mAWV4dG4DYWVtAjEwAGJyaWQRMW1qVTBXTnZYeFRKTldicWJzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeqnsYurWZMk-I3loxA5qaGHPy3atipqUH6VApvLbgbhYW_4dzCo8bnUO6YZs_aem_FQL1B8nzRkfyHWAqaw0Q1A",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "lai-suat-vay-mua-nha-sau-uu-dai-tang-manh-13-15",
     title: "Lãi suất vay mua nhà sau ưu đãi tăng mạnh lên 13-15%, áp lực thanh khoản người mua",
     category: "Tài chính",
