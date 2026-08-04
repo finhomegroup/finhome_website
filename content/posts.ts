@@ -17,6 +17,20 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-dong-nai-2026",
+    title: "Đồng Nai kiểm tra tiến độ 16 dự án nhà ở xã hội trong tuần tới",
+    category: "Nhà ở xã hội",
+    excerpt: "Sở Xây dựng Đồng Nai kiểm tra thực tế tiến độ 16 dự án nhà ở xã hội từ 27-31/7/2026, nhằm đánh giá công tác triển khai trên địa bàn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-dong-nai-2026.png",
+    date: "2026-08-04",
+    source: {
+        "name": "sxd.dongnai.gov.vn",
+        "url": "https://sxd.dongnai.gov.vn/vi/news/Quan-ly-Nha-va-Thi-truong-Bat-dong-san/kiem-tra-tien-do-16-du-an-nha-o-xa-hoi-tren-dia-ban-thanh-pho-dong-nai-13655.html",
+        "accessed": "2026-08-04"
+      },
+  },
+  {
     slug: "lai-suat-vay-mua-o-to-tang-sau-uu-dai",
     title: "Lãi suất vay mua ô tô tăng vọt sau ưu đãi: Người vay chịu áp lực tài chính",
     category: "Tài chính",
