@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bac-ninh-phe-duyet-4-du-an-nha-o-xa-hoi-gan-9000-can-ho",
+    title: "Bắc Ninh phê duyệt 4 dự án nhà ở xã hội gần 9.000 căn tổng vốn hàng nghìn tỷ đồng",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Bắc Ninh phê duyệt 4 dự án nhà ở xã hội tập trung với gần 9.000 căn hộ tại các huyện Đại Mai, Vũ Ninh, Thuận Thành và Nam Sơn, tổng vốn đầu tư hàng nghìn tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bac-ninh-phe-duyet-4-du-an-nha-o-xa-hoi-gan-9000-can-ho.jpg",
+    date: "2026-08-05",
+    source: {
+        "name": "bacninh.gov.vn",
+        "url": "https://bacninh.gov.vn/-/details/37632/chap-thuan-au-tu-khu-nha-o-xa-hoi-tap-trung-phuong-a-mai-voi-tong-von-gan-6900-ty-ong-quy-mo-khoang-5576-can-ho-141199571",
+        "accessed": "2026-08-05"
+      },
+  },
+  {
     slug: "lotte-eco-smart-city-thu-thiem-thanh-toan-tien-su-dung-dat",
     title: "Lotte Eco Smart City Thu Thiem hoàn tất thanh toán gần 17.600 tỷ đồng tiền sử dụng đất",
     category: "Thị trường",
