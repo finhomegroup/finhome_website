@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "giao-duc-tai-chinh-ca-nhan-viet-nam",
+    title: "Người Việt tiết kiệm cao nhưng thiếu kiến thức đầu tư: Khoảng trống từ giáo dục tài chính",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Việt Nam thuộc nhóm tỷ lệ tiết kiệm cao khu vực nhưng phần lớn tài sản vẫn tập trung vào tiền gửi, vàng và bất động sản. Liệu nâng cao dân trí tài chính có thể chuyển dòng vốn sang các sản phẩm dài hạn?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/giao-duc-tai-chinh-ca-nhan-viet-nam.jpg",
+    date: "2026-08-05",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/nguoi-viet-tiet-kiem-nhung-hieu-ve-dau-tu-khoang-trong-mang-ten-giao-duc-tai-chinh-d148527.html?fbclid=IwZnRzaATgMQ5wZG9mAWZkaWQWUL5n_OZKShoxYQpVm8jWEwjppJSSNmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6OUDnQh6ITQ-4tFdnTajeWg1GebkcTmsgASTzHYgkiyll15p3p745yk6w_8g_aem_pTXm4p_-OOHmOLRv0OM6PA",
+        "accessed": "2026-08-05"
+      },
+  },
+  {
     slug: "ha-noi-mo-ban-nha-o-xa-hoi-gia-1-1-ty-dong-canh-vanh-dai-3",
     title: "Hà Nội chuẩn bị mở bán nhà ở xã hội giá từ 1,1 tỷ đồng/căn tại khu vực cạnh Vành đai 3",
     category: "Nhà ở xã hội",
