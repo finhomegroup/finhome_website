@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "song-thoat-hang-chung-cu-sap-ban-giao",
+    title: "Sóng thoát hàng chung cư sắp bàn giao: Người mua chịu áp lực thanh khoản lớn",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nhiều nhà đầu tư chấp nhận giảm giá mạnh để thoát hàng căn hộ sắp bàn giao, áp lực thanh khoản gia tăng khi đến hạn thanh toán đợt cuối.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/song-thoat-hang-chung-cu-sap-ban-giao.jpg",
+    date: "2026-08-05",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/song-thoat-hang-chung-cu-sap-ban-giao-5104548.html",
+        "accessed": "2026-08-05"
+      },
+  },
+  {
     slug: "bac-ninh-phe-duyet-4-du-an-nha-o-xa-hoi-gan-9000-can-ho",
     title: "Bắc Ninh phê duyệt 4 dự án nhà ở xã hội gần 9.000 căn tổng vốn hàng nghìn tỷ đồng",
     category: "Nhà ở xã hội",
