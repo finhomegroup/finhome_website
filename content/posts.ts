@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lotte-eco-smart-city-thu-thiem-thanh-toan-tien-su-dung-dat",
+    title: "Lotte Eco Smart City Thu Thiem hoàn tất thanh toán gần 17.600 tỷ đồng tiền sử dụng đất",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Lotte Properties hoàn thành nghĩa vụ tài chính đất đai gần 17.600 tỷ đồng cho dự án Lotte Eco Smart City Thu Thiem, mở đường cho giai đoạn triển khai tiếp theo tại khu vực trọng điểm TP.HCM.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lotte-eco-smart-city-thu-thiem-thanh-toan-tien-su-dung-dat.png",
+    date: "2026-08-05",
+    source: {
+        "name": "phatdat.com.vn",
+        "url": "https://www.phatdat.com.vn/en/news/lotte-eco-smart-city-thu-thiem-project-fulfills-land-financial-obligations",
+        "accessed": "2026-08-05"
+      },
+  },
+  {
     slug: "co-phieu-bat-dong-san-dan-dat-vn-index-1777-diem",
     title: "Cổ phiếu bất động sản dẫn dắt, VN-Index tiến sát 1.780 điểm phiên 4/8",
     category: "Thị trường",
