@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-mo-ban-nha-o-xa-hoi-gia-1-1-ty-dong-canh-vanh-dai-3",
+    title: "Hà Nội chuẩn bị mở bán nhà ở xã hội giá từ 1,1 tỷ đồng/căn tại khu vực cạnh Vành đai 3",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Sở Xây dựng Hà Nội công bố giá bán dự kiến dự án nhà ở xã hội CT2 tại phường Lĩnh Nam với mức khoảng 28,4 triệu đồng/m², tương đương 1,1-1,5 tỷ đồng/căn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-mo-ban-nha-o-xa-hoi-gia-1-1-ty-dong-canh-vanh-dai-3.png",
+    date: "2026-08-05",
+    source: {
+        "name": "housenow.com.vn",
+        "url": "https://www.housenow.com.vn/news/ha-noi-chuan-bi-mo-ban-nha-o-xa-hoi-gia-tu-11-ty-dongcan-tai-khu-vuc-canh-vanh-dai-3-625?fbclid=IwZnRzaATgKiBwZG9mAWZkaWQWUL41z9z_PwVsOB0yftRH9otiRXJqGmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5-u9ISksik61xOBm-viwqv8CkHMbwS04jUSAGUzvamRbC7cvny99gCm5Kb3A_aem_Gs34VZ0KZZ7uQnwpbqYuAQ",
+        "accessed": "2026-08-05"
+      },
+  },
+  {
     slug: "song-thoat-hang-chung-cu-sap-ban-giao",
     title: "Sóng thoát hàng chung cư sắp bàn giao: Người mua chịu áp lực thanh khoản lớn",
     category: "Thị trường",
