@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-dat-doi-mat-khong-minh-bach",
+    title: "Người mua đất đối mặt rủi ro 'mù mờ' thông tin: So sánh đáng lo ngại với mua điện thoại, ôtô",
+    category: "Thị trường",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Mua điện thoại có bảo hành, ôtô có đăng kiểm và bảo hiểm - nhưng mua đất tại Việt Nam, người tiêu dùng gần như không có cơ chế bảo vệ tương đương. Bài viết phân tích khoảng trống pháp lý và rủi ro thực tế khi giao dịch đất đai.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-dat-doi-mat-khong-minh-bach.jpg",
+    date: "2026-08-06",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/mu-mo-mua-dat-5105265.html",
+        "accessed": "2026-08-06"
+      },
+  },
+  {
     slug: "nha-nuoc-quyet-dinh-gia-dat-luat-dat-dai-sua-doi",
     title: "Nhà nước quyết định giá đất qua bảng giá và hệ số K: Người mua nhà cần biết gì?",
     category: "Chính sách",
