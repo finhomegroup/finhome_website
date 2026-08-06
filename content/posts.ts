@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "gioi-han-thoi-han-su-dung-khong-bien-chung-cu-thanh-tieu-san",
+    title: "Giới hạn thời hạn sử dụng không biến chung cư thành tiêu sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chuyên gia lý giải việc gắn thời hạn căn hộ với tuổi thọ công trình giúp tăng trách nhiệm, bảo vệ quyền tài sản chủ nhà, không phải hạn chế quyền sở hữu.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/gioi-han-thoi-han-su-dung-khong-bien-chung-cu-thanh-tieu-san.jpg",
+    date: "2026-08-06",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/gioi-han-thoi-han-su-dung-khong-bien-chung-cu-thanh-tieu-san-5105538.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=phuonguyen&fbclid=IwZnRzaATg92ZwZG9mBWZkaWQWUL_WDNc217Qfg8_X00mohbVFkxld-mV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5beheJwXBw3S-5YC-uhevqykIa0SibaGGc-07h5l3OIpHBe-9M6ICxhN6-BA_aem_Z6p3yfnR5-xWClbbVGve7A",
+        "accessed": "2026-08-06"
+      },
+  },
+  {
     slug: "ngan-hang-tang-trich-lap-du-phong-no-xau",
     title: "Ngân hàng tăng trích lập dự phòng nợ xấu: Áp lực lên tín dụng bất động sản",
     category: "Tài chính",
