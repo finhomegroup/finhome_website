@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nha-nuoc-quyet-dinh-gia-dat-luat-dat-dai-sua-doi",
+    title: "Nhà nước quyết định giá đất qua bảng giá và hệ số K: Người mua nhà cần biết gì?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Dự thảo luật Đất đai sửa đổi đưa ra cơ chế giá đất do Nhà nước quyết định bằng bảng giá và hệ số K, chuyển từ tư duy quản lý hành chính sang quản trị phát triển.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nha-nuoc-quyet-dinh-gia-dat-luat-dat-dai-sua-doi.jpg",
+    date: "2026-08-06",
+    source: {
+        "name": "thanhnien.vn",
+        "url": "https://thanhnien.vn/nha-nuoc-se-quyet-dinh-gia-dat-185260805204711856.htm",
+        "accessed": "2026-08-06"
+      },
+  },
+  {
     slug: "gioi-han-thoi-han-su-dung-khong-bien-chung-cu-thanh-tieu-san",
     title: "Giới hạn thời hạn sử dụng không biến chung cư thành tiêu sản",
     category: "Chính sách",
