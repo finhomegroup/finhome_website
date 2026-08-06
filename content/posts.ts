@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ngan-hang-tang-trich-lap-du-phong-no-xau",
+    title: "Ngân hàng tăng trích lập dự phòng nợ xấu: Áp lực lên tín dụng bất động sản",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nhiều ngân hàng tăng mạnh trích lập dự phòng rủi ro nợ xấu trong bối cảnh tín dụng bất động sản chịu áp lực, có thể ảnh hưởng đến điều kiện vay mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ngan-hang-tang-trich-lap-du-phong-no-xau.jpg",
+    date: "2026-08-06",
+    source: {
+        "name": "baodautu.vn",
+        "url": "https://baodautu.vn/ngan-hang-manh-tay-trich-lap-du-phong-kiem-soat-no-xau-tang-d662829.html",
+        "accessed": "2026-08-06"
+      },
+  },
+  {
     slug: "giao-duc-tai-chinh-ca-nhan-viet-nam",
     title: "Người Việt tiết kiệm cao nhưng thiếu kiến thức đầu tư: Khoảng trống từ giáo dục tài chính",
     category: "Tài chính",
