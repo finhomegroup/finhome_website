@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bidv-seabank-dieu-chinh-lai-suat-6-8",
+    title: "BIDV, SeABank điều chỉnh giảm lãi suất ngày 6/8: Tín hiệu xu hướng lãi suất ngân hàng",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "BIDV và SeABank đồng loạt điều chỉnh giảm lãi suất huy động và cho vay trong ngày 6/8, phản ánh xu hướng lãi suất thị trường biến động và ảnh hưởng trực tiếp đến chi phí vay mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bidv-seabank-dieu-chinh-lai-suat-6-8.png",
+    date: "2026-08-07",
+    source: {
+        "name": "nguoiquansat.vn",
+        "url": "https://nguoiquansat.vn/lai-suat-ngan-hang-ngay-6-8-bidv-seabank-dong-loat-dieu-chinh-giam-308769.html",
+        "accessed": "2026-08-07"
+      },
+  },
+  {
     slug: "hanoi-cap-dat-117421-m2-an-binh-phat-xay-nha-o-xa-hoi-long-bien",
     title: "Hà Nội giao hơn 117.000 m² đất cho An Binh Phát xây nhà ở xã hội tại Long Biên",
     category: "Nhà ở xã hội",
