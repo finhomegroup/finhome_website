@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "hanoi-cap-dat-117421-m2-an-binh-phat-xay-nha-o-xa-hoi-long-bien",
+    title: "Hà Nội giao hơn 117.000 m² đất cho An Binh Phát xây nhà ở xã hội tại Long Biên",
+    category: "Nhà ở xã hội",
+    topics: ["khu-vuc-ha-tang","gia-cung"],
+    excerpt: "UBND TP Hà Nội giao hơn 117.000 m² đất tại phường Bồ Đề, Long Biên cho Công ty TNHH BĐS An Bình Phát Holdings triển khai dự án nhà ở xã hội HH5.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/hanoi-cap-dat-117421-m2-an-binh-phat-xay-nha-o-xa-hoi-long-bien.webp",
+    date: "2026-08-07",
+    source: {
+        "name": "hanoi.gov.vn",
+        "url": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/giao-cong-ty-tnhh-bat-dong-san-an-binh-phat-holdings-117421-m2-dat-de-thuc-hien-du-an-dau-tu-xay-dung-khu-nha-o-xa-hoi-hh5-long-bien-phuong-bo-de-4260806165319005.htm?utm_source=chatgpt.com",
+        "accessed": "2026-08-07"
+      },
+  },
+  {
     slug: "nguoi-mua-dat-doi-mat-khong-minh-bach",
     title: "Người mua đất đối mặt rủi ro 'mù mờ' thông tin: So sánh đáng lo ngại với mua điện thoại, ôtô",
     category: "Thị trường",
