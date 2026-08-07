@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dia-phuong-lam-ro-kha-nang-hoan-thanh-du-lieu-dat-dai-2026",
+    title: "Bộ Nông nghiệp yêu cầu các địa phương làm rõ tiến độ hoàn thành cơ sở dữ liệu đất đai",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Bộ Nông nghiệp và Môi trường cho biết nhiều địa phương chưa hoàn thành xây dựng cơ sở dữ liệu đất đai theo tiến độ được giao, ảnh hưởng đến công tác quản lý và minh bạch thị trường bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dia-phuong-lam-ro-kha-nang-hoan-thanh-du-lieu-dat-dai-2026.jpg",
+    date: "2026-08-07",
+    source: {
+        "name": "vneconomy.vn",
+        "url": "https://vneconomy.vn/cac-dia-phuong-can-lam-ro-kha-nang-hoan-thanh-du-lieu-dat-dai-theo-moc-tien-do.htm",
+        "accessed": "2026-08-07"
+      },
+  },
+  {
     slug: "bidv-seabank-dieu-chinh-lai-suat-6-8",
     title: "BIDV, SeABank điều chỉnh giảm lãi suất ngày 6/8: Tín hiệu xu hướng lãi suất ngân hàng",
     category: "Tài chính",
