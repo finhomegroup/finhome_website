@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "giaoduc-taichinh-quoc-gia-viet-nam",
+    title: "Chuyên gia đề xuất chương trình giáo dục tài chính quốc gia: Trang bị kỹ năng quản lý tiền từ sớm",
+    category: "Tài chính",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Các chuyên gia cho rằng Việt Nam cần chương trình giáo dục tài chính quy mô quốc gia, giúp người dân được trang bị kỹ năng quản lý tài chính từ sớm và trong suốt cuộc đời.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/giaoduc-taichinh-quoc-gia-viet-nam.jpg",
+    date: "2026-08-07",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/da-den-luc-quan-ly-tai-chinh-ca-nhan-tro-thanh-mon-hoc-quoc-dan-d148533.html",
+        "accessed": "2026-08-07"
+      },
+  },
+  {
     slug: "dia-phuong-lam-ro-kha-nang-hoan-thanh-du-lieu-dat-dai-2026",
     title: "Bộ Nông nghiệp yêu cầu các địa phương làm rõ tiến độ hoàn thành cơ sở dữ liệu đất đai",
     category: "Chính sách",
