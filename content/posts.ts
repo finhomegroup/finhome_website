@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "metro-ben-thanh-suoi-tien-keo-dai-nhon-trach-dong-nai-lay-y-kien",
+    title: "Metro Bến Thành – Suối Tiên kéo dài đến Nhơn Trạch: Cư dân được lấy ý kiến về dự án kết nối Long Thành",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "UBND phường Nhơn Trạch tổ chức hội nghị lấy ý kiến cư dân có đất bị ảnh hưởng về dự án kéo dài tuyến Metro Bến Thành – Suối Tiên đến trung tâm hành chính Đồng Nai và sân bay Long Thành.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/metro-ben-thanh-suoi-tien-keo-dai-nhon-trach-dong-nai-lay-y-kien.jpg",
+    date: "2026-08-08",
+    source: {
+        "name": "nhontrach.dongnai.gov.vn",
+        "url": "https://nhontrach.dongnai.gov.vn/vi/news/hoat-dong-chinh-quyen-nha-nuoc/phuong-nhon-trach-lay-y-kien-ve-du-an-keo-dai-tuyen-metro-ben-thanh-suoi-tien-den-trung-tam-hanh-chinh-thanh-pho-dong-nai-va-cang-hang-khong-quoc-te-long-thanh-1422.html",
+        "accessed": "2026-08-08"
+      },
+  },
+  {
     slug: "giaoduc-taichinh-quoc-gia-viet-nam",
     title: "Chuyên gia đề xuất chương trình giáo dục tài chính quốc gia: Trang bị kỹ năng quản lý tiền từ sớm",
     category: "Tài chính",
