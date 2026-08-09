@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-xem-xet-gia-han-thu-tuc-6-du-an",
+    title: "Hà Nội xem xét gia hạn thủ tục 6 dự án lớn: Cơ hội nào cho người mua?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Hà Nội đề xuất gia hạn 6 tháng thủ tục cho 6 dự án đã khởi công nhưng chưa hoàn tất quy hoạch, hồ sơ đầu tư hoặc giải phóng mặt bằng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-xem-xet-gia-han-thu-tuc-6-du-an.png",
+    date: "2026-08-09",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ha-noi-xem-xet-gia-han-thu-tuc-6-du-an-lon-5106755.html",
+        "accessed": "2026-08-09"
+      },
+  },
+  {
     slug: "metro-ben-thanh-suoi-tien-keo-dai-nhon-trach-dong-nai-lay-y-kien",
     title: "Metro Bến Thành – Suối Tiên kéo dài đến Nhơn Trạch: Cư dân được lấy ý kiến về dự án kết nối Long Thành",
     category: "Thị trường",
