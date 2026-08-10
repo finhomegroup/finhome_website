@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tong-giam-doc-mb-ly-giai-lai-suat-nua-cuoi-nam-kho-giam",
+    title: "Tổng Giám đốc MB: Lãi suất nửa cuối năm khó giảm, người mua nhà cần lưu ý gì?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Tổng Giám đốc MB nhận định lãi suất từ nay đến cuối năm nhiều khả năng khó giảm, NIM tiếp tục thu hẹp — ảnh hưởng trực tiếp đến chi phí vay mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tong-giam-doc-mb-ly-giai-lai-suat-nua-cuoi-nam-kho-giam.png",
+    date: "2026-08-10",
+    source: {
+        "name": "nhipsongkinhdoanh.vn",
+        "url": "https://nhipsongkinhdoanh.vn/tong-giam-doc-mb-ly-giai-vi-sao-lai-suat-nua-cuoi-nam-kho-giam--nim-se-con-thu-hep-31561.htm?fbclid=IwZnRzaATlQHlwZG9mBWZkaWQWUMKxVKa1UI160Iv-QbLhOUkQEb_BBmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5gwiVXux21RS0Dg_7JxS4iAklSrMZYgqgND5kJu-xGAbW1QytFaAhzxhLMZQ_aem_wDgLDQAouopGE4vtn2haGw",
+        "accessed": "2026-08-10"
+      },
+  },
+  {
     slug: "ha-noi-xem-xet-gia-han-thu-tuc-6-du-an",
     title: "Hà Nội xem xét gia hạn thủ tục 6 dự án lớn: Cơ hội nào cho người mua?",
     category: "Chính sách",
