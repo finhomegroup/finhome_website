@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "vay-mua-nha-thoi-lai-cao-luu-y-diem-gi",
+    title: "Vay mua nhà thời lãi cao: 3 điểm cần lưu ý để tránh rủi ro tài chính",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Khi lãi suất vay mua nhà neo cao, người mua cần tính toán khoản vay phù hợp, lên kế hoạch dòng tiền 12-36 tháng và tính kỹ tổng chi phí sở hữu nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/vay-mua-nha-thoi-lai-cao-luu-y-diem-gi.jpg",
+    date: "2026-08-11",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/vay-mua-nha-thoi-lai-cao-can-luu-y-gi-5107065.html",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "nguoi-mua-nha-thich-ung-mat-bang-lai-suat",
     title: "Người mua nhà thích ứng với mặt bằng lãi suất mới: Giảm vay, tăng vốn tự có",
     category: "Tài chính",
