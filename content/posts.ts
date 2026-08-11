@@ -26,7 +26,7 @@ export const POSTS: Post[] = [
     topics: ["chinh-sach-su-kien","cau-thanh-khoan"],
     excerpt: "Sau chỉ đạo của Ngân hàng Nhà nước, Agribank, BIDV và NCB đã có động thái điều chỉnh lãi suất mới, phản ánh xu hướng tín dụng hiện nay.",
     readingTime: "3 phút đọc",
-    cover: "/images/blog/agribank-bidv-ncb-dieu-chinh-lai-sau-chi-dao-ngan-hang-nha-nuoc.jpg",
+    cover: "/images/blog/agribank-bidv-ncb-dieu-chinh-lai-sau-chi-dao-ngan-hang-nha-nuoc.png",
     date: "2026-08-11",
     source: {
         "name": "nguoiquansat.vn",
