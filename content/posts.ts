@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dong-nai-mo-ban-1104-can-ho-nha-o-xa-hoi-hap1-nhon-trach",
+    title: "Đồng Nai mở bán 1.104 căn hộ nhà ở xã hội HAP1 tại Nhơn Trạch",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung","chinh-sach-su-kien"],
+    excerpt: "Đồng Nai công bố mở bán 1.104 căn hộ chung cư nhà ở xã hội HAP1 tại phường Nhơn Trạch, cung cấp thêm lựa chọn nhà ở giá phù hợp cho người có thu nhập trung bình khu vực.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-nai-mo-ban-1104-can-ho-nha-o-xa-hoi-hap1-nhon-trach.png",
+    date: "2026-08-11",
+    source: {
+        "name": "sxd.dongnai.gov.vn",
+        "url": "https://sxd.dongnai.gov.vn/vi/news/thong-tin-mo-ban-nha-o-xa-hoi/cong-bo-cong-khai-thong-tin-mo-ban-1104-can-ho-chung-cu-nha-o-xa-hoi-hap1-thuoc-du-an-khu-dan-cu-theo-quy-hoach-tai-phuong-nhon-trach-thanh-pho-dong-nai-13403.html",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "tong-giam-doc-mb-ly-giai-lai-suat-nua-cuoi-nam-kho-giam",
     title: "Tổng Giám đốc MB: Lãi suất nửa cuối năm khó giảm, người mua nhà cần lưu ý gì?",
     category: "Tài chính",
