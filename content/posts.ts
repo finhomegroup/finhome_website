@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tphcm-thu-hoi-51-ha-dat-vang-du-an-sai-gon-silicon",
+    title: "TP.HCM thu hồi hơn 51 ha đất “vàng” bỏ hoang tại dự án Công viên Sài Gòn Silicon",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "TP.HCM chính thức thu hồi hơn 51 ha đất của Công ty Công viên Sài Gòn Silicon sau nhiều năm bỏ hoang. Động thái này cho thấy chính quyền thành phố quyết liệt xử lý các dự án chậm triển khai.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-thu-hoi-51-ha-dat-vang-du-an-sai-gon-silicon.jpg",
+    date: "2026-08-11",
+    source: {
+        "name": "baodautu.vn",
+        "url": "https://baodautu.vn/tphcm-thu-hoi-hon-51-ha-dat-vang-bo-hoang-cua-du-an-cong-vien-sai-gon-silicon-d669072.html",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "dong-nai-mo-ban-1104-can-ho-nha-o-xa-hoi-hap1-nhon-trach",
     title: "Đồng Nai mở bán 1.104 căn hộ nhà ở xã hội HAP1 tại Nhơn Trạch",
     category: "Nhà ở xã hội",
