@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dat-nen-co-so-do-dien-tu-2027-vneid",
+    title: "Đất nền có sổ điện tử gắn mã định danh từ 2027: Minh bạch hóa thị trường bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","gia-cung"],
+    excerpt: "Việt Nam đặt mục tiêu hoàn thành cơ sở dữ liệu đất đai quốc gia tích hợp VNeID vào cuối 2027, giúp người mua truy xuất thông tin pháp lý nhanh chóng và hạn chế tranh chấp.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dat-nen-co-so-do-dien-tu-2027-vneid.jpg",
+    date: "2026-08-11",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/moi-manh-dat-se-co-so-do-dien-tu-gan-voi-ma-dinh-danh-5107524.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=tienngo&fbclid=IwY2xjawToIvFwZG9mBWV4dG4DYWVtAjEwAGJyaWQRMUFuZ3dkUWF1Vnl1dHA1WVdzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeELpT315zPmLmDsHJNSHYInbYc59JQ2-6qfO-VfpqYpHo23U8aEJe-cxFIZg_aem_L1qGMOrKyAT5kjmX3GGjIA",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "agribank-bidv-ncb-dieu-chinh-lai-sau-chi-dao-ngan-hang-nha-nuoc",
     title: "Agribank, BIDV, NCB điều chỉnh lãi suất sau chỉ đạo Ngân hàng Nhà nước",
     category: "Tài chính",
