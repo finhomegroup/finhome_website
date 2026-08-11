@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "agribank-bidv-ncb-dieu-chinh-lai-sau-chi-dao-ngan-hang-nha-nuoc",
+    title: "Agribank, BIDV, NCB điều chỉnh lãi suất sau chỉ đạo Ngân hàng Nhà nước",
+    category: "Tài chính",
+    topics: ["chinh-sach-su-kien","cau-thanh-khoan"],
+    excerpt: "Sau chỉ đạo của Ngân hàng Nhà nước, Agribank, BIDV và NCB đã có động thái điều chỉnh lãi suất mới, phản ánh xu hướng tín dụng hiện nay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/agribank-bidv-ncb-dieu-chinh-lai-sau-chi-dao-ngan-hang-nha-nuoc.jpg",
+    date: "2026-08-11",
+    source: {
+        "name": "nguoiquansat.vn",
+        "url": "https://nguoiquansat.vn/sau-chi-dao-cua-ngan-hang-nha-nuoc-agribank-bidv-ncb-lap-tuc-co-dong-thai-moi-309864.html?fbclid=IwY2xjawToEQ5wZG9mBWV4dG4DYWVtAjEwAGJyaWQRMVFzY2JXTDdHS0Nsa0NQcndzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEevzlfZkzJ0MaThbnnOQ5VRi5DEzGArHv5ImV1KOvMsNEmetAPDLQmtMsDZHk_aem_OlNtKc6vTsGcOzZB4MLGWQ",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "vay-mua-nha-thoi-lai-cao-luu-y-diem-gi",
     title: "Vay mua nhà thời lãi cao: 3 điểm cần lưu ý để tránh rủi ro tài chính",
     category: "Tài chính",
