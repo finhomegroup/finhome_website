@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-nha-thich-ung-mat-bang-lai-suat",
+    title: "Người mua nhà thích ứng với mặt bằng lãi suất mới: Giảm vay, tăng vốn tự có",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Không còn kỳ vọng lãi suất vay mua nhà quay về mức thấp, người mua chủ động giảm tỷ lệ vay, tăng vốn tự có và tìm kiếm gói hỗ trợ tài chính để giảm áp lực trả nợ dài hạn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-nha-thich-ung-mat-bang-lai-suat.jpg",
+    date: "2026-08-11",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nguoi-mua-nha-tim-cach-thich-ung-voi-mat-bang-lai-suat-moi-5105411.html",
+        "accessed": "2026-08-11"
+      },
+  },
+  {
     slug: "tphcm-thu-hoi-51-ha-dat-vang-du-an-sai-gon-silicon",
     title: "TP.HCM thu hồi hơn 51 ha đất “vàng” bỏ hoang tại dự án Công viên Sài Gòn Silicon",
     category: "Chính sách",
