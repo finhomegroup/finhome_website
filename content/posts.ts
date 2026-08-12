@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "vo-chong-tre-mua-nha-4-6-ty-chiu-ap-luc-tra-60-trieu-thang",
+    title: "Vợ chồng trẻ mua nhà 4,6 tỷ đồng: Áp lực trả 60 triệu/tháng khi lãi suất vay neo cao",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Trường hợp thực tế vợ chồng trẻ mua căn hộ 4,6 tỷ đồng với khoản vay 3,6 tỷ, phải trả 60 triệu đồng mỗi tháng trong bối cảnh lãi suất vay mua nhà neo cao 13-15%.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/vo-chong-tre-mua-nha-4-6-ty-chiu-ap-luc-tra-60-trieu-thang.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/lieu-mua-nha-46-ty-dong-vo-chong-tre-chat-vat-tra-60-trieu-dong-moi-thang-20260811163808865.htm?fbclid=IwRlRTSATpM_VwZG9mBWZkaWQWUMXHhAYiK8XE_0srPfKkRFPBT0f8fmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5dA1AFN0EwkfQy66dkaRz5xFI_BzQ3H839vLSKrecDAHWi-QM-6UThPNU9rw_aem_btd1Web4EdvfLJkFqRTYDg",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "tp-hcm-chuyen-doi-10000-m2-dat-nong-nghiep-binh-hoa-khu-phuc-hop",
     title: "TP.HCM chuyển đổi hơn 10.000 m2 đất nông nghiệp Bình Hòa xây khu phức hợp",
     category: "Chính sách",
