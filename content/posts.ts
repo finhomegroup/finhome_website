@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "trung-tam-tai-chinh-tp-hcm-hut-khach-van-phong-hang-a",
+    title: "Trung tâm tài chính TP.HCM hút dòng văn phòng hạng A: Nguồn cung mới tập trung vào đâu?",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Phần lớn nguồn cung văn phòng hạng A sắp tới tại TP.HCM thuộc khu vực trung tâm tài chính mới, mở cơ hội thu hút ngân hàng và trung tâm công nghệ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/trung-tam-tai-chinh-tp-hcm-hut-khach-van-phong-hang-a.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/trung-tam-tai-chinh-thoi-dong-luc-cho-van-phong-hang-a-5107954.html",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "phong-tro-ha-noi-tang-gia-thue-2025",
     title: "Giá thuê phòng trọ Hà Nội tăng: Người thuê tính chuyện chuyển nhượng hoặc ghép phòng",
     category: "Thị trường",
