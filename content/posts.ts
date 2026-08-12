@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-chuyen-doi-10000-m2-dat-nong-nghiep-binh-hoa-khu-phuc-hop",
+    title: "TP.HCM chuyển đổi hơn 10.000 m2 đất nông nghiệp Bình Hòa xây khu phức hợp",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "UBND TP.HCM phê duyệt chuyển đổi hơn 10.000 m2 đất nông nghiệp tại Bình Hòa thành khu phức hợp căn hộ và thương mại dịch vụ, bổ sung nguồn cung mới cho khu vực.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-chuyen-doi-10000-m2-dat-nong-nghiep-binh-hoa-khu-phuc-hop.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/chuyen-doi-hon-10-000-m2-dat-nong-nghiep-binh-hoa-lam-khu-phuc-hop-5107992.html",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "chung-cu-ban-cham-van-khoi-cong-ly-do",
     title: "Chung cư bán chậm nhưng dự án vẫn ồ ạt khởi công: Cuộc chiến giữa dòng tiền và thị trường",
     category: "Thị trường",
