@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "chung-cu-ban-cham-van-khoi-cong-ly-do",
+    title: "Chung cư bán chậm nhưng dự án vẫn ồ ạt khởi công: Cuộc chiến giữa dòng tiền và thị trường",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Dù sức mua chung cư chậm lại, nhiều dự án vẫn đồng loạt khởi công do doanh nghiệp đã bỏ vốn mua đất và hoàn tất pháp lý, buộc phải triển khai theo kế hoạch để tránh rủi ro.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chung-cu-ban-cham-van-khoi-cong-ly-do.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/vi-sao-chung-cu-ban-cham-nhung-cac-du-an-van-o-at-khoi-cong-20260812130859150.htm",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "tp-hcm-80-du-an-gia-tren-120-trieu-m2-lai-suat-len-13",
     title: "TP.HCM: 80% dự án bán ra giá trên 120 triệu/m², lãi suất vay lên tới 13% gây áp lực kép lên người mua",
     category: "Thị trường",
