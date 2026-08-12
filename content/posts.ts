@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-giao-dat-khu-do-thi-sinh-thai-vuong-phat-xa-long-dien",
+    title: "TP.HCM giao đất làm khu đô thị sinh thái Vượng Phát tại xã Long Điền",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "UBND TP.HCM giao đất cho CTCP Đầu tư Quốc tế Diamond City triển khai dự án Khu đô thị sinh thái Vượng Phát tại xã Long Điền, bổ sung nguồn cung mới cho khu vực Đông TP.HCM.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-giao-dat-khu-do-thi-sinh-thai-vuong-phat-xa-long-dien.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "vietstock.vn",
+        "url": "https://vietstock.vn/2026/08/tphcm-giao-dat-lam-khu-do-thi-sinh-thai-vuong-phat-tai-xa-long-dien-4222-1479216.htm",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "trung-tam-tai-chinh-tp-hcm-hut-khach-van-phong-hang-a",
     title: "Trung tâm tài chính TP.HCM hút dòng văn phòng hạng A: Nguồn cung mới tập trung vào đâu?",
     category: "Thị trường",
