@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-80-du-an-gia-tren-120-trieu-m2-lai-suat-len-13",
+    title: "TP.HCM: 80% dự án bán ra giá trên 120 triệu/m², lãi suất vay lên tới 13% gây áp lực kép lên người mua",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: " Khoảng 80% dự án bất động sản TP.HCM đang mở bán có giá trên 120 triệu đồng/m², trong khi lãi suất vay mua nhà sau ưu đãi leo thang lên 13%, tạo áp lực tài chính kép cho người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-80-du-an-gia-tren-120-trieu-m2-lai-suat-len-13.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "m.cafebiz.vn",
+        "url": "https://m.cafebiz.vn/tphcm-80-du-an-ban-ra-co-gia-tren-120-trieu-m2-lai-suat-len-toi-13-176260812121448909.chn?cpa_tid=51TBELOGGI005ZTFRVAJWR70DK39NNSMTXTB&dmn=s.biz.vn&fbclid=IwZnRzaATpB2FwZG9mBWZkaWQWUMWvt0E5Mu4lr94tlOCwSCPYIP2IpWV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6p6FHui_bsGMZRMNc25rmWLd0VGwI-85sEt-NLgr1t8tSxk7u_ks093Hnm6A_aem_aj_zlTIjvcAc2ySaPYykTg",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "tp-hcm-giao-dat-khu-do-thi-sinh-thai-vuong-phat-xa-long-dien",
     title: "TP.HCM giao đất làm khu đô thị sinh thái Vượng Phát tại xã Long Điền",
     category: "Thị trường",
