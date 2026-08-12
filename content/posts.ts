@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "phong-tro-ha-noi-tang-gia-thue-2025",
+    title: "Giá thuê phòng trọ Hà Nội tăng: Người thuê tính chuyện chuyển nhượng hoặc ghép phòng",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Giá thuê phòng trọ tại một số khu vực Hà Nội tăng 10% sau khi hết hợp đồng, khiến người thuê cân nhắc chuyển sang nơi rẻ hơn hoặc tìm cách tiết chi phí.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/phong-tro-ha-noi-tang-gia-thue-2025.jpg",
+    date: "2026-08-12",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nhieu-phong-tro-ha-noi-tang-gia-5106840.html",
+        "accessed": "2026-08-12"
+      },
+  },
+  {
     slug: "dat-nen-co-so-do-dien-tu-2027-vneid",
     title: "Đất nền có sổ điện tử gắn mã định danh từ 2027: Minh bạch hóa thị trường bất động sản",
     category: "Chính sách",
