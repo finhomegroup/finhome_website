@@ -34,6 +34,20 @@ export const POSTS: Post[] = [
         "accessed": "2026-08-13"
       },
   },
+    slug: "day-nhanh-tien-do-duong-bo-cao-toc-dong-nam-bo-tay-nam-bo",
+    title: "Đẩy nhanh tiến độ đường bộ cao tốc Đông Nam Bộ, Tây Nam Bộ: Cơ hội bất động sản vùng ven",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "Phó Thủ tướng ký công điện thúc đẩy các dự án cao tốc khu vực Đông Nam Bộ và Tây Nam Bộ, hạ tầng giao thông kết nối vùng có thể tác động đến thị trường bất động sản lân cận.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/day-nhanh-tien-do-duong-bo-cao-toc-dong-nam-bo-tay-nam-bo.jpg",
+    date: "2026-08-13",
+    source: {
+        "name": "baochinhphu.vn",
+        "url": "https://baochinhphu.vn/day-nhanh-tien-do-cac-du-an-duong-bo-cao-toc-khu-vuc-dong-nam-bo-va-tay-nam-bo-102260812181708471.htm",
+        "accessed": "2026-08-13"
+      },
+  },
   {
     slug: "nhca-gia-cao-kho-ban-tp-hcm-thanh-khoan-ap-luc",
     title: "Nhà giá cao TP.HCM khó bán dù chấp nhận cắt lỗ: Thị trường phân hóa rõ nét",
