@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "gia-cao-ap-luc-lai-suat-kho-ban-nha-cu-tphcm",
+    title: "Giá nhà cao kết hợp áp lực lãi suất: Bài toán khó cho người bán và cơ hội cho người mua",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Mặt bằng giá tăng cao và lãi suất vay neo ở mức 13% khiến nhiều chủ nhà tại TP.HCM khó sang tay căn hộ cao cấp, dù chấp nhận cắt lỗ. Người mua có cơ hội thương lượng tốt hơn trong bối cảnh thanh khoản suy giảm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/gia-cao-ap-luc-lai-suat-kho-ban-nha-cu-tphcm.jpg",
+    date: "2026-08-13",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nha-gia-cao-ngay-cang-kho-ban-5108282.html",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "nhca-gia-cao-kho-ban-tp-hcm-thanh-khoan-ap-luc",
     title: "Nhà giá cao TP.HCM khó bán dù chấp nhận cắt lỗ: Thị trường phân hóa rõ nét",
     category: "Thị trường",
