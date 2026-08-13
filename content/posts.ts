@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nhca-gia-cao-kho-ban-tp-hcm-thanh-khoan-ap-luc",
+    title: "Nhà giá cao TP.HCM khó bán dù chấp nhận cắt lỗ: Thị trường phân hóa rõ nét",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Mặt bằng giá tăng cao và áp lực lãi suất khiến nhiều chủ nhà tại TP.HCM khó sang tay căn hộ cao cấp dù chấp nhận cắt lỗ chênh lệch.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nhca-gia-cao-kho-ban-tp-hcm-thanh-khoan-ap-luc.jpg",
+    date: "2026-08-13",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nha-gia-cao-ngay-cang-kho-ban-5108282.html",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "vietinbank-chuyen-nhuong-quyen-su-dung-dat-chau-lau-cho-lon-tphcm",
     title: "Vietinbank ủy quyền đấu giá đất tại Chợ Lớn, TP.HCM ngày 13/8/2026",
     category: "Thị trường",
