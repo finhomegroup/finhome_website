@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-khoi-cong-16-du-an-dip-quoc-khanh",
+    title: "TP.HCM khởi công, khánh thành 16 dự án dịp Quốc khánh với tổng vốn 249.000 tỷ đồng",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "TP.HCM đồng loạt khởi công và khánh thành 16 dự án dịp 2/9, trong đó đáng chú ý là đường sắt Thủ Thiêm - Long Thành và chỉnh trang khu Mả Lạng - Chợ Gà Gạo.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-khoi-cong-16-du-an-dip-quoc-khanh.jpg",
+    date: "2026-08-13",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-khoi-cong-khanh-thanh-16-du-an-dip-quoc-khanh-5108410.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=phuonguyen&fbclid=IwZnRzaATqCQlwZG9mBWZkaWQWUMakptMw1Vjb73oseUVkVM8vC88EamV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR68mDKR0QJ4OmuFn4T6boq1Bkk6eyxn43f3ZEEGdB_LCGxqQPOZlHTP4Xlj2g_aem_dB6S7_FJN-eBvSx1nHVq3g",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "vo-chong-tre-mua-nha-4-6-ty-chiu-ap-luc-tra-60-trieu-thang",
     title: "Vợ chồng trẻ mua nhà 4,6 tỷ đồng: Áp lực trả 60 triệu/tháng khi lãi suất vay neo cao",
     category: "Tài chính",
