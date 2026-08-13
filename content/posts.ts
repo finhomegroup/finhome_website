@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thu-tuong-yeu-cau-ngan-hang-giam-lai-suat-cho-vay-2026",
+    title: "Thủ tướng yêu cầu hệ thống ngân hàng giảm lãi suất cho vay: Liệu có tác động đến thị trường bất động sản?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan","chinh-sach-su-kien"],
+    excerpt: "Thủ tướng yêu cầu NHNN và hệ thống ngân hàng giảm lãi suất cho vay, ổn định mặt bằng lãi suất và đưa tín dụng vào đúng lĩnh vực. Đây là chỉ đạo mới nhất trong bối cảnh lãi suất vay mua nhà neo cao 13-15% sau ưu đãi.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thu-tuong-yeu-cau-ngan-hang-giam-lai-suat-cho-vay-2026.jpg",
+    date: "2026-08-13",
+    source: {
+        "name": "vietnammoi.vn",
+        "url": "https://vietnammoi.vn/thu-tuong-yeu-cau-he-thong-ngan-hang-giam-lai-suat-cho-vay-20268131710937.htm?fbclid=IwZnRzaATqlRFwZG9mBWZkaWQWUMZCzxmDKtKigI50MLJUaaHSUeq3ymV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR631Gy1zRqjnEDQ0LDH-Yk0vIGhlZqkXYhD_lbacA7IED75cx8kaQSZdEJq8A_aem_BurxMYd-b0yaN_242ZjMlg",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "lai-vay-tang-cao-anh-huong-loi-nhuan-dau-tu-bat-dong-san",
     title: "Lãi vay tăng cao 'bào mòn' lợi nhuận đầu tư bất động sản: Bài học từ trường hợp thực tế",
     category: "Tài chính",
