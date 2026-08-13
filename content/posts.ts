@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-vay-tang-cao-anh-huong-loi-nhuan-dau-tu-bat-dong-san",
+    title: "Lãi vay tăng cao 'bào mòn' lợi nhuận đầu tư bất động sản: Bài học từ trường hợp thực tế",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Dù bán căn hộ cao hơn giá mua 700 triệu đồng, nhà đầu tư vẫn gần như không có lời sau 3 năm nắm giữ do lãi vay và chi phí giao dịch bào mòn phần chênh lệch.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-vay-tang-cao-anh-huong-loi-nhuan-dau-tu-bat-dong-san.webp",
+    date: "2026-08-13",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/lai-vay-tang-cao-bao-mon-loi-nhuan-nha-dau-tu-bat-dong-san-5107561.html",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "vingroup-sun-group-masterise-giai-ngan-tieu-ty-du-an-tphcm",
     title: "Vingroup, Sun Group, Masterise giải ngân hàng chục nghìn tỷ đồng vào dự án lớn tại TP.HCM",
     category: "Thị trường",
