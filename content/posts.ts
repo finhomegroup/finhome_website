@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "vietinbank-chuyen-nhuong-quyen-su-dung-dat-chau-lau-cho-lon-tphcm",
+    title: "Vietinbank ủy quyền đấu giá đất tại Chợ Lớn, TP.HCM ngày 13/8/2026",
+    category: "Thị trường",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Ngân hàng TMCP Công thương Việt Nam ủy quyền đấu giá quyền sử dụng đất và tài sản gắn liền với đất tại Phường Chợ Lớn trong tháng 8/2026.",
+    readingTime: "2 phút đọc",
+    cover: "/images/blog/vietinbank-chuyen-nhuong-quyen-su-dung-dat-chau-lau-cho-lon-tphcm.webp",
+    date: "2026-08-13",
+    source: {
+        "name": "baodauthau.vn",
+        "url": "https://baodauthau.vn/ngay-1382026-dau-gia-quyen-su-dung-dat-va-tai-san-khac-gan-lien-voi-dat-tai-phuong-cho-lon-tphcm-post203588.html",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "tp-hcm-khoi-cong-16-du-an-dip-quoc-khanh",
     title: "TP.HCM khởi công, khánh thành 16 dự án dịp Quốc khánh với tổng vốn 249.000 tỷ đồng",
     category: "Thị trường",
