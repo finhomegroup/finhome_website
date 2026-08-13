@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "vingroup-sun-group-masterise-giai-ngan-tieu-ty-du-an-tphcm",
+    title: "Vingroup, Sun Group, Masterise giải ngân hàng chục nghìn tỷ đồng vào dự án lớn tại TP.HCM",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Vingroup dự kiến giải ngân 56.132 tỷ đồng, Masterise gần 10.000 tỷ, Sun Group gần 4.000 tỷ vào các dự án lớn tại TP.HCM trong thời gian tới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/vingroup-sun-group-masterise-giai-ngan-tieu-ty-du-an-tphcm.png",
+    date: "2026-08-13",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/vingroup-sun-group-sap-giai-ngan-hang-chuc-nghin-ty-dong-vao-du-an-lon-o-tphcm-188260813070341461.chn",
+        "accessed": "2026-08-13"
+      },
+  },
+  {
     slug: "nhca-gia-cao-kho-ban-tp-hcm-thanh-khoan-ap-luc",
     title: "Nhà giá cao TP.HCM khó bán dù chấp nhận cắt lỗ: Thị trường phân hóa rõ nét",
     category: "Thị trường",
