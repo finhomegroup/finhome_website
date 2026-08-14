@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "no-xau-bat-dong-san-tang-10-5-dau-2026",
+    title: "Nợ xấu bất động sản tăng 10,5% đầu năm 2026: Áp lực tín dụng ngày càng lớn",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Đến cuối tháng 6/2026, nợ xấu bất động sản tăng 10,5% so với cuối năm 2025, trong khi dư nợ tín dụng ngành đạt 5.146 triệu tỷ đồng, chiếm 25,5% tổng dư nợ tín dụng toàn nền kinh tế.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/no-xau-bat-dong-san-tang-10-5-dau-2026.png",
+    date: "2026-08-14",
+    source: {
+        "name": "vneconomy.vn",
+        "url": "https://vneconomy.vn/den-cuoi-thang-62026-no-xau-bat-dong-san-tang-105-so-cuoi-nam-ngoai.htm",
+        "accessed": "2026-08-14"
+      },
+  },
+  {
     slug: "da-nang-tai-khoi-dong-du-an-lan-bien-da-phuoc-gan-55000-ty-dong",
     title: "Đà Nẵng tái khởi động dự án lấn biển Đa Phước gần 55.000 tỷ đồng",
     category: "Thị trường",
