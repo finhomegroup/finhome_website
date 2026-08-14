@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-tai-khoi-dong-du-an-lan-bien-da-phuoc-gan-55000-ty-dong",
+    title: "Đà Nẵng tái khởi động dự án lấn biển Đa Phước gần 55.000 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Dự án khu đô thị quốc tế Đa Phước với vốn đầu tư gần 54.800 tỷ đồng dự kiến khởi động lại từ quý III/2025 và hoàn thành giữa năm 2033, bổ sung nguồn cung lớn cho thị trường bất động sản miền Trung.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-tai-khoi-dong-du-an-lan-bien-da-phuoc-gan-55000-ty-dong.jpg",
+    date: "2026-08-14",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/da-nang-tai-khoi-dong-du-an-lan-bien-da-phuoc-gan-55-000-ty-dong-5108479.html",
+        "accessed": "2026-08-14"
+      },
+  },
+  {
     slug: "thu-tuong-yeu-cau-ngan-hang-giam-lai-suat-cho-vay-2026",
     title: "Thủ tướng yêu cầu hệ thống ngân hàng giảm lãi suất cho vay: Liệu có tác động đến thị trường bất động sản?",
     category: "Tài chính",
