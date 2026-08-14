@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "sua-doi-luat-dat-dai-2024-thao-go-diem-nghen",
+    title: "Sửa đổi Luật Đất đai 2024: Tháo gỡ điểm nghẽn thu hồi, định giá và đấu giá đất",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Luật Đất đai sửa đổi 2024 tập trung tháo gỡ các điểm nghẽn về thu hồi, định giá, đấu giá đất và phân cấp quản lý nhằm khơi thông nguồn lực phát triển.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/sua-doi-luat-dat-dai-2024-thao-go-diem-nghen.jpg",
+    date: "2026-08-14",
+    source: {
+        "name": "nongnghiepmoitruong.vn",
+        "url": "https://nongnghiepmoitruong.vn/sua-doi-luat-dat-dai-de-khoi-thong-nguon-luc-phat-trien-d826038.html",
+        "accessed": "2026-08-14"
+      },
+  },
+  {
     slug: "nguoi-mua-chung-cu-ha-noi-ky-tinh-gia",
     title: "Người mua chung cư Hà Nội trở nên kỹ tính hơn giữa bài toán khả năng chi trả",
     category: "Thị trường",
