@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-chung-cu-ha-noi-ky-tinh-gia",
+    title: "Người mua chung cư Hà Nội trở nên kỹ tính hơn giữa bài toán khả năng chi trả",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Savills nhận định người mua chung cư Hà Nội ngày càng thận trọng về giá trong khi nhu cầu nhà ở vẫn cao, nhưng khả năng chi trả vẫn là rào cản lớn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-chung-cu-ha-noi-ky-tinh-gia.jpg",
+    date: "2026-08-14",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/savills-nguoi-mua-chung-cu-dang-tro-nen-ky-tinh-va-nhay-cam-hon-ve-gia-188260814061941227.chn",
+        "accessed": "2026-08-14"
+      },
+  },
+  {
     slug: "no-xau-bat-dong-san-tang-10-5-dau-2026",
     title: "Nợ xấu bất động sản tăng 10,5% đầu năm 2026: Áp lực tín dụng ngày càng lớn",
     category: "Tài chính",
