@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bai-toan-mua-hay-thue-nha-cua-nguoi-tre",
+    title: "Mua nhà hay thuê nhà: Bài toán tài chính khó giải của người trẻ thành thị",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Giá nhà đô thị lớn tạo khoảng cách lớn với thu nhập, nhiều người trẻ chọn thuê căn hộ trung tâm với chi phí 15-20 triệu đồng/tháng thay vì theo đuổi giấc mơ sở hữu.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bai-toan-mua-hay-thue-nha-cua-nguoi-tre.jpg",
+    date: "2026-08-15",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/kinh-doanh/bai-toan-mua-hay-thue-nha-cua-nhieu-nguoi-tre-20260814160202386.htm",
+        "accessed": "2026-08-15"
+      },
+  },
+  {
     slug: "dong-nai-khoi-cong-418-can-ho-nha-o-xa-hoi-long-hung",
     title: "Đồng Nai khởi công dự án nhà ở xã hội 418 căn hộ tại phường Long Hưng",
     category: "Nhà ở xã hội",
