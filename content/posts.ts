@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dong-nai-khoi-cong-418-can-ho-nha-o-xa-hoi-long-hung",
+    title: "Đồng Nai khởi công dự án nhà ở xã hội 418 căn hộ tại phường Long Hưng",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Đồng Nai vừa khởi công dự án nhà ở xã hội 418 căn hộ tại phường Long Hưng, bổ sung nguồn cung nhà ở giá phù hợp cho người thu nhập thấp khu vực.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-nai-khoi-cong-418-can-ho-nha-o-xa-hoi-long-hung.jpg",
+    date: "2026-08-15",
+    source: {
+        "name": "beta.baodongnai.com.vn",
+        "url": "https://beta.baodongnai.com.vn/khoi-cong-them-du-an-nha-o-xa-hoi-418-can-ho-tai-phuong-long-hung-74480.html",
+        "accessed": "2026-08-15"
+      },
+  },
+  {
     slug: "tphcm-khoi-cong-10000-can-nha-o-xa-hoi-dip-quoc-khanh",
     title: "TP.HCM khởi công 10.000 căn nhà ở xã hội dịp Quốc khánh, quý 3 có thêm 56.400 căn",
     category: "Nhà ở xã hội",
