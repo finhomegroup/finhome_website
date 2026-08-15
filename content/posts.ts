@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tphcm-khoi-cong-10000-can-nha-o-xa-hoi-dip-quoc-khanh",
+    title: "TP.HCM khởi công 10.000 căn nhà ở xã hội dịp Quốc khánh, quý 3 có thêm 56.400 căn",
+    category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien","gia-cung"],
+    excerpt: "TP.HCM chuẩn bị khởi công 5 dự án nhà ở xã hội khoảng 10.000 căn dịp Quốc khánh 2.9, quý 3/2026 tiếp tục triển khai 57 dự án với 56.400 căn, đánh dấu bước tiến lớn trong chính sách nhà ở xã hội.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-khoi-cong-10000-can-nha-o-xa-hoi-dip-quoc-khanh.jpg",
+    date: "2026-08-15",
+    source: {
+        "name": "thanhnien.vn",
+        "url": "https://thanhnien.vn/tphcm-chuan-bi-khoi-cong-10000-can-nha-o-xa-hoi-dip-quoc-khanh-29-185260813175530394.htm",
+        "accessed": "2026-08-15"
+      },
+  },
+  {
     slug: "sua-doi-luat-dat-dai-2024-thao-go-diem-nghen",
     title: "Sửa đổi Luật Đất đai 2024: Tháo gỡ điểm nghẽn thu hồi, định giá và đấu giá đất",
     category: "Chính sách",
