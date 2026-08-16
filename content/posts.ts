@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "van-phong-hang-a-ha-noi-trong-gan-30",
+    title: "Văn phòng hạng A Hà Nội trống gần 30%: Nguồn cung mới dồi dào đẩy tỷ lệ trống lên cao",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Nguồn cung văn phòng hạng A tại Hà Nội tăng mạnh khiến tỷ lệ trống lên gần 30%, chủ đầu tư phải đẩy mạnh chính sách ưu đãi thuê.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/van-phong-hang-a-ha-noi-trong-gan-30.webp",
+    date: "2026-08-16",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/van-phong-hang-a-trong-gan-30-5109403.html",
+        "accessed": "2026-08-16"
+      },
+  },
+  {
     slug: "pho-thu-tuong-xu-ly-vuong-mac-dat-dai-doanh-nghiep",
     title: "Phó thủ tướng yêu cầu xử lý đến cùng vướng mắc đất đai của doanh nghiệp",
     category: "Chính sách",
