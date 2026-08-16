@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-ho-chi-minh-phe-duyet-huong-tuyen-ba-du-an-metro-thang-8-2026",
+    title: "TP.HCM phê duyệt hướng tuyến 3 dự án metro gần 90km trong tháng 8/2026",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "TP.HCM sẽ phê duyệt hướng tuyến ba dự án metro với tổng chiều dài gần 90km, vốn đầu tư sơ bộ khoảng 254.530 tỷ đồng từ ngân sách nhà nước.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-ho-chi-minh-phe-duyet-huong-tuyen-ba-du-an-metro-thang-8-2026.png",
+    date: "2026-08-16",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/tphcm-se-phe-duyet-huong-tuyen-ba-du-an-metro-trong-thang-8-2026-100260813141558648.htm",
+        "accessed": "2026-08-16"
+      },
+  },
+  {
     slug: "van-phong-hang-a-ha-noi-trong-gan-30",
     title: "Văn phòng hạng A Hà Nội trống gần 30%: Nguồn cung mới dồi dào đẩy tỷ lệ trống lên cao",
     category: "Thị trường",
