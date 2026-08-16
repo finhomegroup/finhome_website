@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "duong-sat-thu-thiem-long-thanh-khoi-cong-5-ty-usd",
+    title: "Tuyến đường sắt Thủ Thiêm - Long Thành 5 tỷ USD khởi công dịp Quốc khánh, kết nối TP.HCM với siêu sân bay",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Doanh nghiệp của tỷ phú Trần Bá Dương chuẩn bị khởi công tuyến đường sắt nối TP.HCM với sân bay Long Thành vốn đầu tư 5 tỷ USD, dự kiến đúng dịp Quốc khánh 2/9.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/duong-sat-thu-thiem-long-thanh-khoi-cong-5-ty-usd.png",
+    date: "2026-08-16",
+    source: {
+        "name": "cafebiz.vn",
+        "url": "https://cafebiz.vn/chua-day-20-ngay-nua-doanh-nghiep-cua-ty-phu-tran-ba-duong-se-khoi-cong-tuyen-duong-sat-5-ty-usd-noi-thanh-pho-giau-nhat-viet-nam-voi-sieu-san-bay-16-ty-usd-176260813133227333.chn?cpa_tid=61TBESEARC00505J95D5MW3F0Z73KT04B2ZD&dmn=s.biz.vn&fbclid=IwY2xjawTus21wZG9mBWV4dG4DYWVtAjEwAGJyaWQRMWxjV0xkcmVueHFXMVJmQVlzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEe840PHQmdZYZ-H1YYlcfbLRdhfuDmfPoigLK0RWanQ9U3xtA6tQHPODVBp64_aem_qCl93BURI_cO3r7CFbM2WA",
+        "accessed": "2026-08-16"
+      },
+  },
+  {
     slug: "tp-ho-chi-minh-phe-duyet-huong-tuyen-ba-du-an-metro-thang-8-2026",
     title: "TP.HCM phê duyệt hướng tuyến 3 dự án metro gần 90km trong tháng 8/2026",
     category: "Chính sách",
