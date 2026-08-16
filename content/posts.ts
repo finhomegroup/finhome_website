@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "pho-thu-tuong-xu-ly-vuong-mac-dat-dai-doanh-nghiep",
+    title: "Phó thủ tướng yêu cầu xử lý đến cùng vướng mắc đất đai của doanh nghiệp",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Phó thủ tướng Hồ Quốc Dũng yêu cầu rà soát, xử lý vướng mắc đất đai của doanh nghiệp về giá, tiền thuê đất, quy hoạch và cập nhật vào sửa đổi Luật Đất đai.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/pho-thu-tuong-xu-ly-vuong-mac-dat-dai-doanh-nghiep.png",
+    date: "2026-08-16",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/pho-thu-tuong-xu-ly-den-cung-vuong-mac-dat-dai-cua-doanh-nghiep-5108459.html",
+        "accessed": "2026-08-16"
+      },
+  },
+  {
     slug: "bai-toan-mua-hay-thue-nha-cua-nguoi-tre",
     title: "Mua nhà hay thuê nhà: Bài toán tài chính khó giải của người trẻ thành thị",
     category: "Thị trường",
