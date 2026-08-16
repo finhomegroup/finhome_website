@@ -20,21 +20,6 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
-    slug: "duong-quat-chuyen-doi-cong-nghe-cao",
-    title: "Dung Quất chuyển hướng công nghệ cao sau 30 năm phát triển công nghiệp nặng",
-    category: "Chính sách",
-    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
-    excerpt: "Phó thủ tướng Phạm Gia Túc yêu cầu Dung Quất (Quảng Ngãi) thu hút dự án công nghệ cao sau 30 năm phát triển trung tâm lọc dầu và công nghiệp nặng, hướng tới mô hình phát triển bền vững hơn.",
-    readingTime: "3 phút đọc",
-    cover: "/images/blog/duong-quat-chuyen-doi-cong-nghe-cao.jpg",
-    date: "2026-08-16",
-    source: {
-        "name": "vnexpress.net",
-        "url": "https://vnexpress.net/pho-thu-tuong-pham-gia-tuc-dung-quat-can-thu-hut-du-an-cong-nghe-cao-5109355.html",
-        "accessed": "2026-08-16"
-      },
-  },
-  {
     slug: "pho-thu-tuong-xu-ly-vuong-mac-dat-dai-doanh-nghiep",
     title: "Phó thủ tướng yêu cầu xử lý đến cùng vướng mắc đất đai của doanh nghiệp",
     category: "Chính sách",
