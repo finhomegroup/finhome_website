@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "sun-group-mo-ban-221-can-nha-xa-hoi-da-nang",
+    title: "Sun Group được phê duyệt bán 221 căn nhà xã hội tại Đà Nẵng",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Sở Xây dựng Đà Nẵng vừa phê duyệt cho Sun Group mở bán 221 căn nhà xã hội tại dự án An Hòa - Sun Homes, phường Sơn Trà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/sun-group-mo-ban-221-can-nha-xa-hoi-da-nang.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/khu-nha-xa-hoi-cua-sun-group-o-da-nang-du-dieu-kien-mo-ban-5109692.html",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "tp-hcm-dau-thang-8-giao-dat-cho-loat-du-an-bat-dong-san",
     title: "Đầu tháng 8, TP.HCM giao hàng chục nghìn m² đất cho loạt dự án bất động sản",
     category: "Thị trường",
