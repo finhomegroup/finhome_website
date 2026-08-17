@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-gia-lo-dat-thu-thiem-1900-ti-dong",
+    title: "TP.HCM phê duyệt đấu giá lô đất Thủ Thiêm hơn 6.400m² với giá khởi điểm gần 1.900 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung","chinh-sach-su-kien"],
+    excerpt: "UBND TP.HCM vừa phê duyệt đấu giá lô đất 1.K3.4.HH tại Khu đô thị mới Thủ Thiêm rộng 6.446m², giá khởi điểm hơn 1.900 tỷ đồng. Đây là một trong những lô đất có quy mô và giá trị lớn được đưa ra đấu giá gần đây tại khu vực.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-lo-dat-thu-thiem-1900-ti-dong.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/tphcm-phe-duyet-phuong-an-dau-gia-lo-dat-hon-6400m-tai-thu-thiem-gia-khoi-diem-hon-1900-ti-dong-100260817125752136.htm?fbclid=IwZnRzaATvumpwZG9mBWZkaWQWUMotrgYXJzZHgGE7YVseZxGtfcuCYWV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6KGorrrJcnrkNzoAd89ztPi898KoXUimalywIKqi4YXJimBxiWbYtkBWvLyA_aem_9OtteMIXz2kzrOv-jDjE2A",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "thanh-tra-26-du-an-quang-ngai-vuong-mac-10-nam",
     title: "Thanh tra 26 dự án tại Quảng Ngãi: Cảnh báo rủi ro từ các dự án 'treo' gần 10 năm",
     category: "Chính sách",
