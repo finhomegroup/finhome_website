@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thong-nhat-phap-ly-bat-dong-san-the-chap",
+    title: "Thống nhất pháp lý bất động sản thế chấp: Ba luật lớn sửa đổi đặt ra yêu cầu mới",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Ba luật đất đai, kinh doanh bất động sản và nhà ở cùng sửa đổi yêu cầu thống nhất quy định thế chấp, chuyển nhượng tài sản trong tín dụng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thong-nhat-phap-ly-bat-dong-san-the-chap.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "thoibaonganhang.vn",
+        "url": "https://thoibaonganhang.vn/thong-nhat-phap-ly-bat-dong-san-the-chap-186132.html?fbclid=IwZnRzaATvve5wZG9mBWZkaWQWUMqhFa6F2oDUqIGPCs_ijKwNXSodOWV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR4yJvzs19thwRTg4bzKzSAR9x7aEJUVj7fV9DztONUagOmvOFZDaAXtKK_28A_aem_qU_MpUA1RjqlkFGlKCVKVw",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "tp-hcm-dau-gia-lo-dat-thu-thiem-1900-ti-dong",
     title: "TP.HCM phê duyệt đấu giá lô đất Thủ Thiêm hơn 6.400m² với giá khởi điểm gần 1.900 tỷ đồng",
     category: "Thị trường",
