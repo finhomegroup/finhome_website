@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-mo-kho-du-lieu-quy-hoach-nguoi-dan-tra-cuu-hien-trang-dat-dai",
+    title: "TP.HCM mở kho dữ liệu quy hoạch: Người dân có thể tra cứu hiện trạng đất đai trực tuyến",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "TP.HCM công khai dữ liệu quy hoạch phân khu và kế hoạch sử dụng đất, giúp người dân tra cứu trực tuyến thông tin về quy hoạch, thời gian và cơ quan phê duyệt.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-mo-kho-du-lieu-quy-hoach-nguoi-dan-tra-cuu-hien-trang-dat-dai.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "vietstock.vn",
+        "url": "https://vietstock.vn/2026/08/tphcm-mo-kho-du-lieu-quy-hoach-nguoi-dan-de-tra-cuu-hien-trang-dat-dai-4221-1481201.htm",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "sun-group-mo-ban-221-can-nha-xa-hoi-da-nang",
     title: "Sun Group được phê duyệt bán 221 căn nhà xã hội tại Đà Nẵng",
     category: "Nhà ở xã hội",
