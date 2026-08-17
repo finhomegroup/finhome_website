@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "vietinbank-ban-toa-thap-ciputra",
+    title: "VietinBank chuẩn bị bán tòa tháp dở dang hơn 15 năm tại Ciputra",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "VietinBank sắp bán lại tòa tháp dang dở hơn 15 năm qua tại khu đô thị Ciputra cho một doanh nghiệp bất động sản hàng đầu trong nước, theo Chứng khoán MB.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/vietinbank-ban-toa-thap-ciputra.png",
+    date: "2026-08-17",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/mbs-vietinbank-sap-ban-toa-thap-tai-ciputra-5109267.html",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "duong-sat-thu-thiem-long-thanh-khoi-cong-5-ty-usd",
     title: "Tuyến đường sắt Thủ Thiêm - Long Thành 5 tỷ USD khởi công dịp Quốc khánh, kết nối TP.HCM với siêu sân bay",
     category: "Thị trường",
