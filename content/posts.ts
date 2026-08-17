@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-thang-8-giao-dat-cho-loat-du-an-bat-dong-san",
+    title: "Đầu tháng 8, TP.HCM giao hàng chục nghìn m² đất cho loạt dự án bất động sản",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Đầu tháng 8/2026, TP.HCM liên tiếp giao, chuyển mục đích sử dụng đất cho các dự án khu đô thị sinh thái quy mô hàng chục ha, căn hộ thương mại dịch vụ và khách sạn nghỉ dưỡng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-thang-8-giao-dat-cho-loat-du-an-bat-dong-san.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "doanhnhanvn.vn",
+        "url": "https://doanhnhanvn.vn/dau-thang-8-tp-hcm-mo-khoa-hang-chuc-nghin-m2-dat-cho-loat-du-an-bat-dong-san.html",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "vietinbank-ban-toa-thap-ciputra",
     title: "VietinBank chuẩn bị bán tòa tháp dở dang hơn 15 năm tại Ciputra",
     category: "Thị trường",
