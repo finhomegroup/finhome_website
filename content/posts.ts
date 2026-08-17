@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "uu-tien-cap-von-du-an-bat-dong-san-hoan-thanh",
+    title: "Chuyên gia đề xuất ưu tiên cấp vốn cho dự án bất động sản có khả năng hoàn thành",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "VARS IRE kiến nghị không nên cào bằng khi kiểm soát tín dụng bất động sản, thay vào đó cần nắn dòng vốn theo từng loại dự án để đảm bảo nguồn cung hoàn thiện đúng hạn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/uu-tien-cap-von-du-an-bat-dong-san-hoan-thanh.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/can-uu-tien-cap-von-du-an-bat-dong-san-co-kha-nang-hoan-thanh-5109706.html",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "thong-nhat-phap-ly-bat-dong-san-the-chap",
     title: "Thống nhất pháp lý bất động sản thế chấp: Ba luật lớn sửa đổi đặt ra yêu cầu mới",
     category: "Chính sách",
