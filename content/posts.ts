@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thanh-tra-26-du-an-quang-ngai-vuong-mac-10-nam",
+    title: "Thanh tra 26 dự án tại Quảng Ngãi: Cảnh báo rủi ro từ các dự án 'treo' gần 10 năm",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Thanh tra tỉnh Quảng Ngãi phát hiện cả 26 dự án được cấp chủ trương đầu tư từ 10 năm trước đều có vấn đề, tiềm ẩn rủi ro trong quản lý nhà nước.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thanh-tra-26-du-an-quang-ngai-vuong-mac-10-nam.jpg",
+    date: "2026-08-17",
+    source: {
+        "name": "cafebiz.vn",
+        "url": "https://cafebiz.vn/thanh-tra-26-du-an-duoc-cap-chu-truong-dau-tu-tu-10-nam-truoc-ca-26-du-an-deu-co-van-de-176260817144311751.chn?cpa_tid=29TBELOGGI00507E7CZG83DXZQH67SVBWPAR&dmn=s.biz.vn&fbclid=IwY2xjawTvqPZwZG9mBWV4dG4DYWVtAjEwAGJyaWQRMWFtQk9aTWFIZmtXaWhYcDFzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEedSagUsDHlBmKihsaCNuZcIJ5hk4PtaZfLzdzfyFth-BjOIgqH9g3PJcKLGk_aem_AzvvV5nkLXrDRrxi7Olm5w",
+        "accessed": "2026-08-17"
+      },
+  },
+  {
     slug: "tp-hcm-mo-kho-du-lieu-quy-hoach-nguoi-dan-tra-cuu-hien-trang-dat-dai",
     title: "TP.HCM mở kho dữ liệu quy hoạch: Người dân có thể tra cứu hiện trạng đất đai trực tuyến",
     category: "Chính sách",
