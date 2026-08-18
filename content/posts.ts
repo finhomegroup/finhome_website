@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ubtvqh-cho-thao-luat-bat-dong-san",
+    title: "Ủy ban Thường vụ Quốc hội cho ý kiến dự án luật liên quan bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Ủy ban Thường vụ Quốc hội họp thảo luận các dự án luật liên quan đến bất động sản, đánh giá tác động đến thị trường và người mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ubtvqh-cho-thao-luat-bat-dong-san.jpg",
+    date: "2026-08-18",
+    source: {
+        "name": "quochoi.vn",
+        "url": "https://quochoi.vn/UBTVQH/Pages/default2.aspx?ItemID=2526&utm_source=chatgpt.com",
+        "accessed": "2026-08-18"
+      },
+  },
+  {
     slug: "dau-tu-son-mua-nha-pho-gia-giam-ty-dong-tphcm",
     title: "Nhà đầu tư \"săn\" nhà phố, riêng lẻ giá giảm hàng tỷ: Cơ hội hay rủi ro khi chủ nhà tháo chạy?",
     category: "Thị trường",
