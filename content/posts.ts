@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dau-tu-son-mua-nha-pho-gia-giam-ty-dong-tphcm",
+    title: "Nhà đầu tư \"săn\" nhà phố, riêng lẻ giá giảm hàng tỷ: Cơ hội hay rủi ro khi chủ nhà tháo chạy?",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Nhiều nhà đầu tư tại TP.HCM đang tìm kiếm nhà phố, riêng lẻ giá giảm hàng tỷ đồng do chủ nhà chịu áp lực nợ vay. FinHome phân tích cơ hội và rủi ro trong bối cảnh thị trường chuyển nhượng phân hóa.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/dau-tu-son-mua-nha-pho-gia-giam-ty-dong-tphcm.jpg",
+    date: "2026-08-18",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nhieu-nha-dau-tu-san-nha-pho-rieng-le-gia-ngop-5109995.html",
+        "accessed": "2026-08-18"
+      },
+  },
+  {
     slug: "ha-noi-phat-moi-thau-khu-do-thi-nam-dai-lo-thang-long",
     title: "Hà Nội phát mời thầu khu đô thị Nam Đại lộ Thăng Long vốn hơn 20.000 tỷ đồng",
     category: "Thị trường",
