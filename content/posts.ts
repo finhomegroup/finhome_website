@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bcons-central-park-ra-mat-tam-hiep-dong-nai",
+    title: "Bcons ra mắt dự án đầu tiên tại Đồng Nai: gần 2.900 căn hộ và shophouse từ tháng 9",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Bcons sẽ đưa dự án Bcons Central Park ra thị trường từ tháng 9/2026 với 2.820 căn hộ và 113 shophouse tại Tam Hiệp, Đồng Nai, tổng vốn gần 4.400 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bcons-central-park-ra-mat-tam-hiep-dong-nai.png",
+    date: "2026-08-18",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/bcons-sap-ra-mat-du-an-gan-4-400-ty-tai-dong-nai-5110157.html",
+        "accessed": "2026-08-18"
+      },
+  },
+  {
     slug: "ubtvqh-cho-thao-luat-bat-dong-san",
     title: "Ủy ban Thường vụ Quốc hội cho ý kiến dự án luật liên quan bất động sản",
     category: "Chính sách",
