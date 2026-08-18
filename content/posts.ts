@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-phat-moi-thau-khu-do-thi-nam-dai-lo-thang-long",
+    title: "Hà Nội phát mời thầu khu đô thị Nam Đại lộ Thăng Long vốn hơn 20.000 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Hà Nội vừa duyệt hồ sơ mời thầu dự án khu chức năng đô thị Nam Đại lộ Thăng Long với vốn đầu tư khoảng 20.246 tỷ đồng, bổ sung nguồn cung lớn cho thị trường bất động sản phía Tây thủ đô.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-phat-moi-thau-khu-do-thi-nam-dai-lo-thang-long.webp",
+    date: "2026-08-18",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ha-noi-tim-nha-dau-tu-khu-do-thi-hon-20-000-ty-dong-sat-dai-lo-thang-long-5109675.html",
+        "accessed": "2026-08-18"
+      },
+  },
+  {
     slug: "uu-tien-cap-von-du-an-bat-dong-san-hoan-thanh",
     title: "Chuyên gia đề xuất ưu tiên cấp vốn cho dự án bất động sản có khả năng hoàn thành",
     category: "Chính sách",
