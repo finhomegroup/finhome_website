@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dau-gia-dat-thu-thiem-gia-khoi-diem-gan-2000-ty",
+    title: "Đấu giá đất Thủ Thiêm gần 2.000 tỷ đồng: Cơ hội và tín hiệu thị trường",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Lô đất 6.446 m² tại Khu đô thị mới Thủ Thiêm chuẩn bị đấu giá với giá khởi điểm gần 1.902 tỷ đồng, phản ánh xu hướng nguồn cung đất thương mại tại khu vực trung tâm mới TP.HCM.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dau-gia-dat-thu-thiem-gia-khoi-diem-gan-2000-ty.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/thu-thiem-sap-dau-gia-lo-dat-vang-voi-khoi-diem-gan-1-902-ty-dong-5110005.html",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "bcons-central-park-ra-mat-tam-hiep-dong-nai",
     title: "Bcons ra mắt dự án đầu tiên tại Đồng Nai: gần 2.900 căn hộ và shophouse từ tháng 9",
     category: "Thị trường",
