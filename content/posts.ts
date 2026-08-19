@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "moi-gioi-bat-dong-san-chat-vat-kiem-khach",
+    title: "Môi giới bất động sản chật vật kiếm khách, thu nhập giảm mạnh mùa thị trường trầm lắng",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nhiều môi giới địa ốc phải chuyển sang nghề tạm để trang trải cuộc sống khi thị trường trầm lắng, giao dịch sụt giảm kéo dài.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/moi-gioi-bat-dong-san-chat-vat-kiem-khach.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/moi-gioi-dia-oc-chat-vat-kiem-khach-5110473.html",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "tphcm-phe-duyet-2-du-an-thanh-phan-duong-vanh-dai-4-khoi-cong-dip-29",
     title: "TP.HCM phê duyệt 2 dự án thành phần đường Vành đai 4, sẵn sàng khởi công dịp 2/9",
     category: "Thị trường",
