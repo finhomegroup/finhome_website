@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thu-tuong-nha-nuoc-dinh-gia-dat-giam-chi-phi-nha-dat",
+    title: "Thủ tướng: Nhà nước định giá đất để giảm chi phí nhà ở, người mua hưởng lợi",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Thủ tướng Lê Minh Hưng khẳng định Nhà nước sẽ định giá đất dựa trên cơ sở dữ liệu, đơn giản hóa thủ tục nhằm giảm chi phí đầu vào và kiểm soát giá nhà, đất.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thu-tuong-nha-nuoc-dinh-gia-dat-giam-chi-phi-nha-dat.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/thu-tuong-nha-nuoc-dinh-gia-de-giam-chi-phi-nha-dat-5110957.html?utm_source=facebook&utm_medium=vne_kinhdoanh&utm_term=mix&utm_campaign=tienngo&fbclid=IwZnRzaATyqu1wZG9mBWZkaWQWUMwn8wivkDYXOC7rLX3qjuwPohlvR2V4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6vWx_j5HuBVKf4fyPvDxlx6EU13JSetcB_0roX5fWDMGmpFMcwyEvDOu2kvA_aem_abVjrJUxdyU2SbS1eFjukQ",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "thi-truong-vang-nguoi-mua-nha-muc-gia-phu-hop",
     title: "Thị trường vắng người mua nhà: Nhu cầu cao nhưng giao dịch yếu vì thiếu căn hộ giá phù hợp",
     category: "Thị trường",
