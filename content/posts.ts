@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thue-han-che-dau-co-dat-nen",
+    title: "Thuế lũy tiến có thể là 'vũ khí' chống găm giữ đất: Chính phủ định hướng công cụ tài chính mới",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chính phủ định hướng sử dụng chính sách thuế lũy tiến để hạn chế đầu cơ, găm giữ đất - dự án chậm sử dụng đất có thể phải nộp tiền tăng dần theo thời gian.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thue-han-che-dau-co-dat-nen.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/dung-thue-de-han-che-dau-co-gam-giu-dat-5110642.html",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "moi-gioi-bat-dong-san-chat-vat-kiem-khach",
     title: "Môi giới bất động sản chật vật kiếm khách, thu nhập giảm mạnh mùa thị trường trầm lắng",
     category: "Thị trường",
