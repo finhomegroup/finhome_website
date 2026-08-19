@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tphcm-phe-duyet-2-du-an-thanh-phan-duong-vanh-dai-4-khoi-cong-dip-29",
+    title: "TP.HCM phê duyệt 2 dự án thành phần đường Vành đai 4, sẵn sàng khởi công dịp 2/9",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "UBND TP.HCM vừa phê duyệt 2 dự án thành phần thuộc Dự án đầu tư xây dựng đường Vành đai 4, chuẩn bị khởi công vào dịp Quốc khánh 2/9.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-phe-duyet-2-du-an-thanh-phan-duong-vanh-dai-4-khoi-cong-dip-29.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "baodautu.vn",
+        "url": "https://baodautu.vn/tphcm-phe-duyet-2-du-an-thanh-phan-duong-vanh-dai-4-khoi-cong-vao-dip-29-d676485.html",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "dau-gia-dat-thu-thiem-gia-khoi-diem-gan-2000-ty",
     title: "Đấu giá đất Thủ Thiêm gần 2.000 tỷ đồng: Cơ hội và tín hiệu thị trường",
     category: "Thị trường",
