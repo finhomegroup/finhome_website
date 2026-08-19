@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "thi-truong-vang-nguoi-mua-nha-muc-gia-phu-hop",
+    title: "Thị trường vắng người mua nhà: Nhu cầu cao nhưng giao dịch yếu vì thiếu căn hộ giá phù hợp",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Dù nhu cầu mua nhà đang ở mức cao, lượt tìm kiếm và giao dịch thực tế trên thị trường bất động sản vẫn yếu — nguyên nhân chính là thiếu căn hộ trong tầm giá số đông có thể chi trả.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thi-truong-vang-nguoi-mua-nha-muc-gia-phu-hop.jpg",
+    date: "2026-08-19",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ly-do-thi-truong-vang-nguoi-mua-nha-5110567.html",
+        "accessed": "2026-08-19"
+      },
+  },
+  {
     slug: "thue-han-che-dau-co-dat-nen",
     title: "Thuế lũy tiến có thể là 'vũ khí' chống găm giữ đất: Chính phủ định hướng công cụ tài chính mới",
     category: "Chính sách",
