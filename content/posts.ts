@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "fdi-chat-luong-cao-thuc-day-kho-xuong-xay-san",
+    title: "FDI chất lượng cao thúc đẩy nhu cầu kho xưởng xây sẵn tại Việt Nam",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Dòng FDI chất lượng cao tăng mạnh tạo cơ hội cho dự án kho xưởng xây sẵn, nhưng yêu cầu về vị trí kết nối và hạ tầng xanh ngày càng cao.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/fdi-chat-luong-cao-thuc-day-kho-xuong-xay-san.webp",
+    date: "2026-08-20",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/fdi-chat-luong-cao-mo-cua-sang-cho-kho-xuong-xay-san-5110358.html",
+        "accessed": "2026-08-20"
+      },
+  },
+  {
     slug: "thu-tuong-nha-nuoc-dinh-gia-dat-giam-chi-phi-nha-dat",
     title: "Thủ tướng: Nhà nước định giá đất để giảm chi phí nhà ở, người mua hưởng lợi",
     category: "Chính sách",
