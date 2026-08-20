@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "khang-dien-lap-cong-ty-2500-ty-lam-du-an-ma-lang-cho-ga-gao",
+    title: "Khang Điền lập công ty vốn 2.500 tỷ đồng triển khai dự án BT khu Mả Lạng, Chợ Gà - Gạo tại TP.HCM",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Khang Điền thành lập công ty vốn 2.500 tỷ đồng thực hiện dự án BT chỉnh trang khu Mả Lạng và chợ Gà - Gạo với tổng vốn gần 16.400 tỷ đồng, hưởng ứng phát triển hạ tầng đô thị tại TP.HCM.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/khang-dien-lap-cong-ty-2500-ty-lam-du-an-ma-lang-cho-ga-gao.jpg",
+    date: "2026-08-20",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/khang-dien-lap-cong-ty-von-2-500-ty-dong-lam-du-an-ma-lang-cho-ga-gao-5110924.html",
+        "accessed": "2026-08-20"
+      },
+  },
+  {
     slug: "fdi-chat-luong-cao-thuc-day-kho-xuong-xay-san",
     title: "FDI chất lượng cao thúc đẩy nhu cầu kho xưởng xây sẵn tại Việt Nam",
     category: "Thị trường",
