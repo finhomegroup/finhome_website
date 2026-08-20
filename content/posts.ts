@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "chinh-phu-chi-ra-thu-pham-day-gia-nha-len-cao-2026",
+    title: "Lãnh đạo Chính phủ chỉ rõ nguyên nhân đẩy giá nhà lên cao giữa thanh khoản sụt giảm",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: "Thị trường bất động sản 2026 chứng kiến nghịch lý thanh khoản giảm nhưng giá sơ cấp liên tục lập đỉnh. Lãnh đạo Chính phủ và chuyên gia đã chỉ ra căn nguyên của vấn đề này.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chinh-phu-chi-ra-thu-pham-day-gia-nha-len-cao-2026.jpg",
+    date: "2026-08-20",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/lanh-dao-chinh-phu-chi-ro-thu-pham-day-gia-nha-len-cao-20260819203655953.htm",
+        "accessed": "2026-08-20"
+      },
+  },
+  {
     slug: "khang-dien-lap-cong-ty-2500-ty-lam-du-an-ma-lang-cho-ga-gao",
     title: "Khang Điền lập công ty vốn 2.500 tỷ đồng triển khai dự án BT khu Mả Lạng, Chợ Gà - Gạo tại TP.HCM",
     category: "Thị trường",
