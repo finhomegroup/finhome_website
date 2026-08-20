@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nen-giu-hay-ban-nha-gan-duong-sat-thu-thiem-long-thanh",
+    title: "Nhà gần đường sắt Thủ Thiêm - Long Thành tăng giá chậm: Cân nhắc chiến lược thoát hay giữ tài sản",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","khu-vuc-ha-tang"],
+    excerpt: "Giá nhà khu vực gần tuyến đường sắt Thủ Thiêm - Long Thành tăng chậm dù hạ tầng hoàn thiện, chuyên gia cảnh báo pháp lý là yếu tố cần cân nhắc kỹ trước khi quyết định đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nen-giu-hay-ban-nha-gan-duong-sat-thu-thiem-long-thanh.jpg",
+    date: "2026-08-20",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nha-tang-gia-cham-nhung-gan-duong-sat-thu-thiem-long-thanh-nen-giu-hay-mua-can-khac-5110845.html",
+        "accessed": "2026-08-20"
+      },
+  },
+  {
     slug: "chinh-phu-chi-ra-thu-pham-day-gia-nha-len-cao-2026",
     title: "Lãnh đạo Chính phủ chỉ rõ nguyên nhân đẩy giá nhà lên cao giữa thanh khoản sụt giảm",
     category: "Thị trường",
