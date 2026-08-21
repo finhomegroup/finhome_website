@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "can-ho-sieu-sang-tp-hcm-gia-1-ty-dong-moi-m2",
+    title: "Căn hộ siêu sang TP.HCM tiệm cận 470 triệu/m², cao nhất lên tới 1 tỷ đồng/m²",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Phân khúc căn hộ siêu sang tại TP.HCM đạt mức giá trung bình gần 470 triệu đồng/m², trong khi một số dự án hạng sang đã chạm ngưỡng 1 tỷ đồng/m², theo chuyên gia.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/can-ho-sieu-sang-tp-hcm-gia-1-ty-dong-moi-m2.jpg",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/can-ho-sieu-sang-tai-tp-hcm-gia-len-toi-mot-ty-dong-moi-m2-5111446.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
     slug: "novaland-dat-muc-tieu-ban-giao-2300-can-nua-cuoi-nam",
     title: "Novaland đẩy mạnh bàn giao nhà nửa cuối năm: Victoria Village và Aqua City dẫn đầu nguồn cung",
     category: "Thị trường",
