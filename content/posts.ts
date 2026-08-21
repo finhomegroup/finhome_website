@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "novaland-dat-muc-tieu-ban-giao-2300-can-nua-cuoi-nam",
+    title: "Novaland đẩy mạnh bàn giao nhà nửa cuối năm: Victoria Village và Aqua City dẫn đầu nguồn cung",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Novaland đặt mục tiêu bàn giao gần 2.300 căn trong nửa cuối năm, gấp 6,6 lần so với đầu năm, tập trung tại hai dự án trọng điểm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/novaland-dat-muc-tieu-ban-giao-2300-can-nua-cuoi-nam.png",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/novaland-dat-muc-tieu-ban-giao-gan-2-300-can-nha-trong-nua-cuoi-nam-5111458.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
     slug: "dong-tien-bat-dong-san-phia-nam-dich-chuyen-theo-ha-tang-khu-vuc-moi",
     title: "Dòng tiền bất động sản phía Nam dịch chuyển theo hạ tầng: Không phải nơi nào có cao tốc, sân bay cũng hút được nhà đầu tư",
     category: "Thị trường",
