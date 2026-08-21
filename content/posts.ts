@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dong-tien-bat-dong-san-phia-nam-dich-chuyen-theo-ha-tang-khu-vuc-moi",
+    title: "Dòng tiền bất động sản phía Nam dịch chuyển theo hạ tầng: Không phải nơi nào có cao tốc, sân bay cũng hút được nhà đầu tư",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","cau-thanh-khoan"],
+    excerpt: "Dòng tiền bất động sản phía Nam có xu hướng rời khu vực lõi, dịch chuyển theo hạ tầng đến các đô thị mới, nhưng không phải nơi nào có cao tốc, sân bay cũng thu hút được nhà đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-tien-bat-dong-san-phia-nam-dich-chuyen-theo-ha-tang-khu-vuc-moi.jpg",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/dong-tien-bat-dong-san-phia-nam-dang-di-dau-5110789.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
     slug: "nen-giu-hay-ban-nha-gan-duong-sat-thu-thiem-long-thanh",
     title: "Nhà gần đường sắt Thủ Thiêm - Long Thành tăng giá chậm: Cân nhắc chiến lược thoát hay giữ tài sản",
     category: "Thị trường",
