@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ba-luat-sua-doi-thi-truong-bat-dong-san-2026",
+    title: "Ba luật bất động sản cùng sửa đổi: Tác động đến giá đất, chung cư và dòng tiền mua nhà",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Quốc hội đang xem xét đồng thời sửa đổi Luật Đất đai, Luật Nhà ở và Luật Kinh doanh bất động sản với nhiều đề xuất tác động trực tiếp đến giá đất, thu hồi đất, chung cư và thị trường cho thuê.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ba-luat-sua-doi-thi-truong-bat-dong-san-2026.png",
+    date: "2026-08-21",
+    source: {
+        "name": "moneyf.vn",
+        "url": "https://moneyf.vn/ba-luat-cung-sua-thi-truong-bat-dong-san-dung-truo-ibgwkd8o?fbclid=IwY2xjawT1GRRwZG9mBWV4dG4DYWVtAjEwAGJyaWQRMXhPUU9zd3BnTnhSdm50ZUdzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeoHFEmsqZzQWfY2ocU7tPclY2kX6u1B8SvL1ef0GEP4s8us0zgyw7TqUMio4_aem_rNzSiyUVl2pZcojDQI1nGg",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
     slug: "can-ho-sieu-sang-tp-hcm-gia-1-ty-dong-moi-m2",
     title: "Căn hộ siêu sang TP.HCM tiệm cận 470 triệu/m², cao nhất lên tới 1 tỷ đồng/m²",
     category: "Thị trường",
