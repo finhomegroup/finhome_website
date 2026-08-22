@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-gia-ba-khu-dat-binh-thanh-quan-3",
+    title: "TP.HCM sắp đấu giá ba khu đất vàng tại Bình Thạnh và quận 3 cũ",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Ba khu đất tại Nơ Trang Long, Nguyễn Văn Đậu và Lê Văn Sỹ thuộc Bình Thạnh và quận 3 cũ vừa được TP.HCM phê duyệt phương án đấu giá.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-ba-khu-dat-binh-thanh-quan-3.png",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-ba-khu-dat-vang-o-binh-thanh-quan-3-cu-5111778.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
     slug: "da-nang-go-vuong-ba-du-an-bat-dong-san-co-che-dac-thu",
     title: "Đà Nẵng gỡ vướng ba dự án bất động sản: Gần 39 ha đô thị và nhà ở xã hội được tiếp tục triển khai",
     category: "Chính sách",
