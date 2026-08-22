@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-go-vuong-ba-du-an-bat-dong-san-co-che-dac-thu",
+    title: "Đà Nẵng gỡ vướng ba dự án bất động sản: Gần 39 ha đô thị và nhà ở xã hội được tiếp tục triển khai",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "UBND TP Đà Nẵng vừa cho phép tiếp tục giao đất, cho thuê đất với hai khu đô thị gần 39 ha và một dự án nhà ở xã hội tại phường Điện Bàn Đông theo cơ chế đặc thù.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-go-vuong-ba-du-an-bat-dong-san-co-che-dac-thu.jpg",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/da-nang-go-vuong-cho-ba-du-an-bat-dong-san-theo-co-che-dac-thu-5111804.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
     slug: "tp-hcm-dau-gia-them-ba-lo-dat-thu-thiem-7600-ty-dong",
     title: "TP.HCM tiếp tục đấu giá thêm ba lô đất Thủ Thiêm, tổng giá khởi điểm hơn 7.600 tỷ đồng",
     category: "Thị trường",
