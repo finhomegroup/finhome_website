@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-gia-them-ba-lo-dat-thu-thiem-7600-ty-dong",
+    title: "TP.HCM tiếp tục đấu giá thêm ba lô đất Thủ Thiêm, tổng giá khởi điểm hơn 7.600 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "TP.HCM phê duyệt đấu giá ba lô đất tại Khu đô thị mới Thủ Thiêm với tổng giá khởi điểm dự kiến hơn 7.600 tỷ đồng, tiếp tục bổ sung nguồn cung từ đất công cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-them-ba-lo-dat-thu-thiem-7600-ty-dong.jpg",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/sap-dau-gia-them-ba-lo-dat-thu-thiem-khoi-diem-thap-nhat-147-trieu-dong-moi-m2-5111330.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
     slug: "ba-luat-sua-doi-thi-truong-bat-dong-san-2026",
     title: "Ba luật bất động sản cùng sửa đổi: Tác động đến giá đất, chung cư và dòng tiền mua nhà",
     category: "Chính sách",
