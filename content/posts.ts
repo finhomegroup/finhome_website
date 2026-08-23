@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "quy-dinh-thoi-han-su-dung-chung-cu-giam-gia-can-ho-cu",
+    title: "Quy định rõ thời hạn sử dụng chung cư: Giải pháp hạ nhiệt giá căn hộ cũ?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","gia-cung"],
+    excerpt: "Đại biểu Tạ Văn Hạ đề xuất quy định thời hạn sử dụng chung cư rõ ràng nhằm giảm giá căn hộ cũ, tăng khả năng tiếp cận nhà ở cho người dân.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/quy-dinh-thoi-han-su-dung-chung-cu-giam-gia-can-ho-cu.jpg",
+    date: "2026-08-23",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/quy-dinh-ro-thoi-han-chung-cu-co-the-giup-giam-gia-can-ho-cu-5111734.html",
+        "accessed": "2026-08-23"
+      },
+  },
+  {
     slug: "tp-hcm-dau-gia-ba-khu-dat-binh-thanh-quan-3",
     title: "TP.HCM sắp đấu giá ba khu đất vàng tại Bình Thạnh và quận 3 cũ",
     category: "Thị trường",
