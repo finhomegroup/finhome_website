@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "quoc-hoi-khoa-xvi-ky-hop-khong-thuong-le-lan-1",
+    title: "Quốc hội khóa XVI họp kỳ không thường lệ lần đầu: Các nghị sự trọng tâm về thị trường bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Quốc hội khóa XVI tổ chức kỳ họp không thường lệ lần đầu tại Hà Nội dưới sự chủ trì của Chủ tịch Quốc hội Trần Thanh Mẫn, thảo luận các nghị sự quan trọng về kinh tế-xã hội và thị trường bất động sản.",
+    readingTime: "2 phút đọc",
+    cover: "/images/blog/quoc-hoi-khoa-xvi-ky-hop-khong-thuong-le-lan-1.jpg",
+    date: "2026-08-23",
+    source: {
+        "name": "daibieunhandan.vn",
+        "url": "https://daibieunhandan.vn/thong-cao-bao-chi-so-15-ky-hop-khong-thuong-le-thu-nhat-quoc-hoi-khoa-xvi-10428286.html",
+        "accessed": "2026-08-23"
+      },
+  },
+  {
     slug: "quy-dinh-thoi-han-su-dung-chung-cu-giam-gia-can-ho-cu",
     title: "Quy định rõ thời hạn sử dụng chung cư: Giải pháp hạ nhiệt giá căn hộ cũ?",
     category: "Chính sách",
