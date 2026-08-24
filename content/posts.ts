@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-3000-can-nha-xa-hoi-ngu-hanh-son",
+    title: "Đà Nẵng phê duyệt dự án nhà xã hội gần 3.000 căn tại Ngũ Hành Sơn",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Đà Nẵng vừa chấp thuận chủ trương đầu tư khu nhà ở xã hội hơn 3.000 căn tại Ngũ Hành Sơn với vốn gần 4.200 tỷ đồng, bổ sung nguồn cung nhà giá phù hợp cho thành phố.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-3000-can-nha-xa-hoi-ngu-hanh-son.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/da-nang-co-them-hon-3-000-can-nha-xa-hoi-o-phuong-ngu-hanh-son-5112394.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
     slug: "trung-thuy-group-mo-ban-lai-du-an-lancaster-lincoln-sau-10-nam",
     title: "Trung Thủy Group mở bán lại dự án Lancaster Lincoln sau gần 10 năm vướng pháp lý",
     category: "Thị trường",
