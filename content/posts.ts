@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "trung-thuy-group-mo-ban-lai-du-an-lancaster-lincoln-sau-10-nam",
+    title: "Trung Thủy Group mở bán lại dự án Lancaster Lincoln sau gần 10 năm vướng pháp lý",
+    category: "Thị trường",
+    topics: ["gia-cung","chinh-sach-su-kien"],
+    excerpt: "Dự án Lancaster Lincoln tại TP.HCM được phép mở bán gần 400 căn hộ sau gần một thập kỷ vướng mắc pháp lý, bổ sung nguồn cung cho thị trường khan hiếm căn hộ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/trung-thuy-group-mo-ban-lai-du-an-lancaster-lincoln-sau-10-nam.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/trung-thuy-group-mo-ban-lai-du-an-dat-vang-nguyen-tat-thanh-sau-10-nam-dinh-tre-5112455.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
     slug: "han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-quang-ninh",
     title: "Quảng Ninh siết xây dựng ven bờ bảo vệ tầm nhìn Vịnh Hạ Long",
     category: "Chính sách",
