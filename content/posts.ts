@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong",
+    title: "Dư nợ kinh doanh bất động sản vượt 2,5 triệu tỷ đồng, tăng gần 13% quý II",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Dư nợ kinh doanh bất động sản quý II đạt khoảng 2,5 triệu tỷ đồng, tăng gần 13% so với quý I theo Bộ Xây dựng. Bài viết phân tích tác động đến thị trường và người mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong-5112649.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=tienngo&fbclid=IwZnRzaAT5GiJwZG9mBWZkaWQWUNFo-S7JXC_G4ib7gqMXg70TIBcgWmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR4XIN6uUUKKW7L4QulDiSwJmz_q-ynTnNfodz_SmC5wl97fTaTJpVRoO1RzuQ_aem_GUfG-v_uiWKYildd4WlDWw",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
     slug: "da-nang-3000-can-nha-xa-hoi-ngu-hanh-son",
     title: "Đà Nẵng phê duyệt dự án nhà xã hội gần 3.000 căn tại Ngũ Hành Sơn",
     category: "Nhà ở xã hội",
