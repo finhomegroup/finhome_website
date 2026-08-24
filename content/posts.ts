@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-quang-ninh",
+    title: "Quảng Ninh siết xây dựng ven bờ bảo vệ tầm nhìn Vịnh Hạ Long",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "Chính phủ siết kiểm soát xây dựng ven bờ, hạn chế công trình cao tầng che khuất tầm nhìn Vịnh Hạ Long khi Quảng Ninh lên thành phố trực thuộc Trung ương.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-quang-ninh.webp",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-5112470.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
     slug: "quoc-hoi-khoa-xvi-ky-hop-khong-thuong-le-lan-1",
     title: "Quốc hội khóa XVI họp kỳ không thường lệ lần đầu: Các nghị sự trọng tâm về thị trường bất động sản",
     category: "Chính sách",
