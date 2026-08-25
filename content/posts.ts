@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dau-gia-5-khu-dat-vang-thu-thiem-tong-gia-khoi-diem-12500-ty",
+    title: "TP.HCM đấu giá 5 khu đất vàng Thủ Thiêm tổng giá khởi điểm hơn 12.500 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "5 khu đất vàng tại Thủ Thiêm được đấu giá với tổng giá khởi điểm hơn 12.500 tỷ đồng, vị trí đắc địa và hạ tầng hoàn chỉnh.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dau-gia-5-khu-dat-vang-thu-thiem-tong-gia-khoi-diem-12500-ty.webp",
+    date: "2026-08-25",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hien-trang-5-khu-dat-vang-thu-thiem-sap-duoc-dau-gia-5112186.html",
+        "accessed": "2026-08-25"
+      },
+  },
+  {
     slug: "du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong",
     title: "Dư nợ kinh doanh bất động sản vượt 2,5 triệu tỷ đồng, tăng gần 13% quý II",
     category: "Tài chính",
