@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-gia-8-khu-dat-quan-5-6-11-tan-binh",
+    title: "TP.HCM đấu giá 8 khu đất tại quận 5, 6, 11 và Tân Bình: Giá khởi điểm từ 4,4 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "TP.HCM chuẩn bị đấu giá 8 khu đất quy mô vừa và nhỏ tại các phường Chợ Lớn, Phú Lâm, Bình Thới, Minh Phụng và Tân Bình với mức khởi điểm từ 4,4 đến hơn 80 tỷ đồng, bổ sung nguồn cung cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-8-khu-dat-quan-5-6-11-tan-binh.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-them-8-khu-dat-5113113.html",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
     slug: "tp-hcm-tra-loi-kien-nghi-chinh-sach-nha-o-xa-hoi",
     title: "TP.HCM trả lời kiến nghị về nhà ở xã hội: Giải pháp tháo gỡ vướng mắc cho người thu nhập thấp",
     category: "Nhà ở xã hội",
