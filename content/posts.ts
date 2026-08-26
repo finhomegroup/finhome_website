@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-tra-loi-kien-nghi-chinh-sach-nha-o-xa-hoi",
+    title: "TP.HCM trả lời kiến nghị về nhà ở xã hội: Giải pháp tháo gỡ vướng mắc cho người thu nhập thấp",
+    category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Bộ Xây dựng và TP.HCM trả lời kiến nghị của Đoàn Đại biểu Quốc hội về triển khai chính sách nhà ở xã hội, đề xuất giải pháp đẩy nhanh nguồn cung cho đối tượng thu nhập thấp.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-tra-loi-kien-nghi-chinh-sach-nha-o-xa-hoi.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "moc.gov.vn",
+        "url": "https://moc.gov.vn/vn/Pages/chitiettin.aspx?ChuyenmucID=1179&IDNews=96482&tieude=tra-loi-kien-nghi-cua-doan-dai-bieu-quoc-hoi-thanh-pho-ho-chi-minh-ve-viec-thuc-hien-chinh-sachphap-luat-ve-phat-trien-nha-o-xa-hoi-tren-dia-ban-thanh....aspx",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
     slug: "dau-gia-5-khu-dat-vang-thu-thiem-tong-gia-khoi-diem-12500-ty",
     title: "TP.HCM đấu giá 5 khu đất vàng Thủ Thiêm tổng giá khởi điểm hơn 12.500 tỷ đồng",
     category: "Thị trường",
