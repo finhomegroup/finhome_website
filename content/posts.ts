@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tin-dung-tang-toc-bat-dong-san-nua-dau-2026",
+    title: "Tín dụng bất động sản nửa đầu 2026 tăng mạnh: Dòng vốn đổ vào bất động sản có thể đẩy giá lên?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Hàng trăm nghìn tỷ đồng đã được bơm vào bất động sản nửa đầu 2026, trong khi dự án mới mọc lên nhanh. FinHome phân tích tác động đến giá và khả năng tiếp cận nhà ở.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tin-dung-tang-toc-bat-dong-san-nua-dau-2026.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/tin-dung-tang-toc-vao-bat-dong-san-d149722.html?fbclid=IwZnRzaAT70F5wZG9mBWZkaWQWUNPyFaL5rXBRltsBNSsho5Wv295SE2V4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR7OSgHGAxVgqz4Edsc2mR3R6yk7bKo6p0f00yd1Y3pTatHKhaj7SMefSOGkRQ_aem_owvhDC4XlcPvtlXb2u4tfw",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
     slug: "cap-so-do-rieng-bat-dong-san-tam-linh",
     title: "Đề xuất cấp sổ đỏ riêng cho bất động sản tâm linh: Mở đường chuyển nhượng, thế chấp",
     category: "Chính sách",
