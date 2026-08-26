@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "cap-so-do-rieng-bat-dong-san-tam-linh",
+    title: "Đề xuất cấp sổ đỏ riêng cho bất động sản tâm linh: Mở đường chuyển nhượng, thế chấp",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Luật sư Hoàng Ngọc đề xuất nghiên cứu cấp giấy chứng nhận riêng cho bất động sản tâm linh để người dân có thể chuyển nhượng, tặng cho hay thế chấp — hướng giải quyết vướng mắc pháp lý lâu nay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/cap-so-do-rieng-bat-dong-san-tam-linh.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-cap-so-do-rieng-cho-bat-dong-san-tam-linh-5113122.html",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
     slug: "tp-hcm-dau-gia-8-khu-dat-quan-5-6-11-tan-binh",
     title: "TP.HCM đấu giá 8 khu đất tại quận 5, 6, 11 và Tân Bình: Giá khởi điểm từ 4,4 tỷ đồng",
     category: "Thị trường",
