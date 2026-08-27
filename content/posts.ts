@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "khu-nam-tp-hcm-mo-ban-du-an-chung-cu-cuoi-nam",
+    title: "Khu Nam TP.HCM bất ngờ dẫn đầu nguồn cung căn hộ cuối năm",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: "Sau nhiều năm nhường spotlight cho khu Đông, khu Nam TP.HCM bất ngờ chiếm hơn một nửa nguồn cung căn hộ mới nhờ loạt dự án đồng loạt mở bán cuối năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/khu-nam-tp-hcm-mo-ban-du-an-chung-cu-cuoi-nam.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/khu-nam-tp-hcm-mo-ban-loat-du-an-chung-cu-cuoi-nam-5113610.html",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
     slug: "nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon",
     title: "Nguồn cung bất động sản tích cực ra hàng, người mua thêm lựa chọn",
     category: "Thị trường",
