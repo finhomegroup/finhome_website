@@ -2,7 +2,7 @@
 //
 // Flow: the browser signs in, deletes its OWN Cognito identity first
 // (DeleteUser — reachable from the browser), then calls the backend to
-// cascade-delete RDS data + anonymize loan leads (PDPL / Nghị định 13/2023).
+// cascade-delete account data and process legally required retention (PDPL / Nghị định 13/2023).
 // Cognito-first ordering means a Cognito failure aborts before any data is
 // touched — nothing to roll back.
 
@@ -72,17 +72,16 @@ export const DELETE_ACCOUNT_CONTENT = {
   dataDeleted: [
     "Kết quả La bàn tài chính và các phiên phân tích",
     "Danh sách bất động sản đã lưu",
-    "Hồ sơ tài chính cá nhân (thu nhập, ngân sách, khả năng vay)",
+    "Kế hoạch tài chính cá nhân (thu nhập, ngân sách, kịch bản chi trả)",
     "Lịch sử hoạt động và tùy chọn cá nhân",
     "Danh tính đăng nhập (email và mật khẩu) của bạn",
   ],
 
   dataRetainedTitle: "Dữ liệu được giữ lại theo quy định pháp luật",
   dataRetained: [
-    "Hồ sơ vay đã gửi tới ngân hàng sẽ được ẩn danh và lưu tối đa 5 năm theo quy định của Ngân hàng Nhà nước (NHNN).",
     "Bản sao lưu hệ thống được giữ tối đa khoảng 7 ngày rồi tự động xóa.",
   ],
 
   retentionNote:
-    "Việc xóa tài khoản tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân (PDPL). Hồ sơ vay được ẩn danh — không còn gắn với danh tính của bạn — trước khi lưu trữ theo yêu cầu pháp lý.",
+    "Việc xóa tài khoản tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân (PDPL). Dữ liệu chỉ được giữ lại trong phạm vi và thời hạn pháp luật yêu cầu.",
 } as const;

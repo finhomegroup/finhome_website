@@ -2,7 +2,7 @@
 // Image values are Framer base filenames; resolve with img() from "@/lib/images".
 
 export const HERO = {
-  headline: "FinHome giúp bạn chọn đúng nhà, vay đúng sức",
+  headline: "FinHome giúp bạn lập kế hoạch mua nhà vững vàng",
   subhead:
     "Ứng dụng về tài chính BĐS hoàn toàn miễn phí và bảo mật an toàn tuyệt đối",
   cta: "Thử ngay",
@@ -22,7 +22,7 @@ export const STEPS_SECTION = {
   ],
   leadTitle: "Khởi động bằng dữ liệu",
   leadBody:
-    "Nhập thông tin cơ bản, FinHome sẽ xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính cho bạn",
+    "Nhập thông tin cơ bản, FinHome sẽ ước tính tầm giá phù hợp, mô phỏng kế hoạch chi trả và mở khóa la bàn định hướng tài chính cho bạn",
   /** Shorter copy on narrow viewports — matches Framer mobile breakpoint. */
   leadBodyMobile:
     "Nhập thông tin cơ bản, FinHome sẽ định hướng tài chính cho bạn",
@@ -33,7 +33,7 @@ export const STEPS_SECTION = {
   ],
   leadBodyLines: [
     "Nhập thông tin cơ bản, FinHome sẽ xác định",
-    "vùng mua nhà an toàn, đánh giá khả năng vay",
+    "tầm giá phù hợp, mô phỏng kế hoạch chi trả",
     "và mở khóa la bàn định hướng tài chính cho bạn",
   ],
   cta: "Thử ngay",
@@ -44,8 +44,8 @@ export const STEPS_SECTION = {
       icon: "9DWQzTIfFOk6ZkCVfnfpg9Fnz5Q.svg",
     },
     {
-      title: "Đánh giá phương án vay vốn",
-      desc: "Kiểm tra khả năng vay và áp lực trả nợ trước khi mua nhà",
+      title: "Mô phỏng kế hoạch chi trả",
+      desc: "Thử các kịch bản chi trả hàng tháng trước khi mua nhà",
       icon: "5Q3gFip1lY8vWKmRLAHPnkJqAis.svg",
     },
     {
@@ -106,14 +106,14 @@ export const TESTIMONIALS_SECTION = {
     },
     {
       quote:
-        "FinHome không giúp tôi mua nhanh hơn, mà giúp tôi mua chắc hơn. Tôi hiểu rõ ngân sách, khả năng vay và các rủi ro cần cân nhắc trước khi bước tiếp.",
+        "FinHome không giúp tôi mua nhanh hơn, mà giúp tôi mua chắc hơn. Tôi hiểu rõ ngân sách, kế hoạch chi trả và các rủi ro cần cân nhắc trước khi bước tiếp.",
       name: "Thùy Như",
       role: "Người mua nhà lần đầu",
       avatar: "dTeZrxbqIYr4yq8uPXe5gxdbM.jpg",
     },
     {
       quote:
-        "Trước đây tôi tìm nhà khá cảm tính. Dùng FinHome rồi, tôi mới biết mình phù hợp với mức giá nào, nên vay bao nhiêu và cần tránh những rủi ro gì.",
+        "Trước đây tôi tìm nhà khá cảm tính. Dùng FinHome rồi, tôi mới biết mình phù hợp với mức giá nào, nên chuẩn bị dòng tiền ra sao và cần tránh những rủi ro gì.",
       name: "Thái Vin",
       role: "Nhà đầu tư bất động sản",
       avatar: "4F8Fzhd4rrU9Yv83jWxZjg6pqLc.jpg",
@@ -132,15 +132,15 @@ export const FAQ_SECTION = {
   items: [
     {
       q: "FinHome là gì và giúp tôi điều gì?",
-      a: "FinHome là ứng dụng hỗ trợ bạn hiểu rõ khả năng tài chính cá nhân khi mua nhà, từ mức giá phù hợp, khả năng vay an toàn đến các gợi ý giúp ra quyết định tự tin hơn.",
+      a: "FinHome là ứng dụng giúp bạn tự lập kế hoạch mua nhà, từ ước tính tầm giá phù hợp và mô phỏng chi trả đến các gợi ý tham khảo để ra quyết định tự tin hơn.",
     },
     {
       q: "FinHome đánh giá khả năng tài chính như thế nào?",
-      a: "FinHome dựa trên các thông tin cơ bản bạn cung cấp để ước tính vùng giá mua nhà phù hợp, khả năng vay và áp lực trả nợ, từ đó đưa ra nhận định rõ ràng về tình hình tài chính của bạn.",
+      a: "FinHome dựa trên thông tin bạn chủ động cung cấp để ước tính tầm giá và mô phỏng các kịch bản chi trả, từ đó đưa ra nhận định tham khảo về kế hoạch tài chính của bạn.",
     },
     {
-      q: "FinHome có giúp tôi biết mình vay bao nhiêu là an toàn không?",
-      a: "Có. FinHome đánh giá khả năng vay và mức trả nợ phù hợp với thu nhập, giúp bạn xác định khoản vay an toàn trước khi quyết định mua nhà.",
+      q: "FinHome có đánh giá khả năng được ngân hàng duyệt vay không?",
+      a: "Không. FinHome không đại diện ngân hàng, không đánh giá khả năng được duyệt và không cung cấp hay giới thiệu gói vay. Các mô phỏng chỉ giúp bạn tự tham khảo khi lập kế hoạch mua nhà.",
     },
     {
       q: "La bàn trong FinHome là gì và mở khóa như thế nào?",

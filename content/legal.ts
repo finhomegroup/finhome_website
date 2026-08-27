@@ -38,7 +38,7 @@ export const TERMS_CONTENT: LegalDocContent = {
       content: "FinHome cung cấp các dịch vụ tài chính bao gồm:",
       checkmarks: [
         "Phân tích tài chính cá nhân",
-        "Tính toán khoản vay mua nhà",
+        "Mô phỏng kế hoạch chi trả khi mua nhà",
         "Lập kế hoạch tiết kiệm",
         "Tìm kiếm bất động sản",
       ],
@@ -75,7 +75,7 @@ export const PRIVACY_CONTENT: LegalDocContent = {
       subSections: [
         {
           title: "Thông tin cá nhân",
-          bullets: ["Họ tên, số điện thoại, email", "Ngày sinh, địa chỉ", "Số CMND/CCCD (khi đăng ký tư vấn vay)"],
+          bullets: ["Họ tên, số điện thoại, email", "Ngày sinh, địa chỉ"],
         },
         {
           title: "Thông tin tài chính",
@@ -101,8 +101,8 @@ export const PRIVACY_CONTENT: LegalDocContent = {
       content: "Thông tin của bạn được sử dụng cho các mục đích sau, dựa trên cơ sở đồng ý hoặc thực hiện hợp đồng dịch vụ:",
       checkmarks: [
         "Cung cấp và cá nhân hóa các tính năng tài chính",
-        "Tính toán ngân sách mua nhà và so sánh gói vay",
-        "Xác minh danh tính khi đăng ký tư vấn",
+        "Ước tính tầm giá và mô phỏng kế hoạch chi trả khi mua nhà",
+        "Lưu lại kế hoạch và tùy chọn do người dùng chủ động tạo",
         "Cải thiện chất lượng ứng dụng qua phân tích dữ liệu ẩn danh",
         "Gửi thông báo liên quan đến dịch vụ (với sự đồng ý riêng)",
       ],

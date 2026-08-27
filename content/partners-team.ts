@@ -46,7 +46,7 @@ export const BUYER_JOURNEY = {
       cells: [
         "Cần niềm tin và định hướng ban đầu",
         "Cần rõ ràng về khả năng chi trả",
-        "Cần tự tin về lựa chọn nhà và gói vay",
+        "Cần tự tin về lựa chọn nhà và kế hoạch chi trả",
         "Cần rõ ràng về quy trình để thực hiện",
         "Cần hỗ trợ dài hạn sau khi mua",
       ],
@@ -55,9 +55,9 @@ export const BUYER_JOURNEY = {
       label: "Hành động",
       cells: [
         "Tìm hiểu nhà ở, khám phá thị trường",
-        "Ước tính ngân sách, kiểm tra khả năng vay",
-        "So sánh căn nhà, gói vay và lộ trình vay",
-        "Hoàn thiện hồ sơ, theo dõi tiến độ",
+        "Ước tính ngân sách và tầm giá phù hợp",
+        "So sánh lựa chọn nhà và kịch bản chi trả",
+        "Hoàn thiện kế hoạch mua nhà cá nhân",
         "Theo dõi tài sản và rà soát kế hoạch tài chính hằng năm",
       ],
     },
@@ -65,9 +65,9 @@ export const BUYER_JOURNEY = {
       label: "Tính năng FinHome",
       cells: [
         "Cẩm nang, nghiên cứu và kiểm tra dự án bằng AI",
-        "Xác định tầm giá, ước tính khả năng vay",
-        "La bàn mua nhà, so sánh gói vay",
-        "Chuyển tiếp và theo dõi hồ sơ",
+        "Xác định tầm giá và mô phỏng chi trả",
+        "La bàn mua nhà và so sánh lựa chọn",
+        "Kế hoạch hành động do người dùng tự quản lý",
         "Hub theo dõi tài chính và quản lý sau mua nhà",
       ],
     },
@@ -80,8 +80,8 @@ export const PARTNER_TOUCHPOINTS = {
   rows: [
     { label: "Nhà đầu tư", states: [true, true, true, true, true] },
     { label: "Chủ đầu tư BĐS", states: [true, false, true, false, false] },
-    { label: "Ngân hàng", states: [false, false, true, true, true] },
-    { label: "Chuyên viên tư vấn", states: [false, false, false, true, false] },
+    { label: "Đơn vị cung cấp dữ liệu", states: [true, true, true, false, false] },
+    { label: "Đơn vị hỗ trợ người mua nhà", states: [true, false, true, true, false] },
   ] satisfies readonly PartnerTouchpointRow[],
 } as const;
 

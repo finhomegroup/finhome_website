@@ -42,7 +42,7 @@ export const CONTACT = {
   email: "hotro@finhome.group",
   phone: "0963 177 497",
   phoneTel: "0963177497",
-  phoneLabel: "Chuyên gia tư vấn BĐS: 0963 177 497",
+  phoneLabel: "Hỗ trợ FinHome: 0963 177 497",
   address: "Toà Nhà Lexington, 67 Mai Chí Thọ, Bình Trưng, Hồ Chí Minh",
 };
 
@@ -54,7 +54,7 @@ export const FOOTER = {
       links: [
         { label: "La bàn tài chính", href: "#" },
         { label: "Đánh giá khả năng tài chính", href: "#" },
-        { label: "Đánh giá khả năng vay vốn", href: "#" },
+        { label: "Mô phỏng kế hoạch chi trả", href: "#" },
       ],
     },
     {
@@ -80,15 +80,15 @@ export const SITE = {
   name: "FinHome",
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:
-    "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
+    "FinHome giúp bạn tự lập kế hoạch mua nhà: xác định tầm giá phù hợp, mô phỏng kế hoạch chi trả và nhận định hướng tài chính tham khảo.",
   locale: "vi_VN",
   ogImage: "/og-image.png", // 1200x630, resolved against SITE.url via metadataBase
   keywords: [
     "FinHome",
     "mua nhà",
-    "vay mua nhà",
+    "kế hoạch mua nhà",
     "la bàn tài chính",
-    "khả năng vay",
+    "khả năng chi trả",
     "bất động sản",
     "nhà ở xã hội",
     "tài chính cá nhân",

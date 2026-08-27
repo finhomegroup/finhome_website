@@ -4,8 +4,8 @@ import { cn } from "@/lib/cn";
 const TOUCHPOINT_ICONS: Record<string, string> = {
   "Nhà đầu tư": "/images/partners-team/partner-person.svg",
   "Chủ đầu tư BĐS": "/images/partners-team/partner-shield.svg",
-  "Ngân hàng": "/images/partners-team/partner-settings.svg",
-  "Chuyên viên tư vấn": "/images/partners-team/partner-chat.svg",
+  "Đơn vị cung cấp dữ liệu": "/images/partners-team/partner-settings.svg",
+  "Đơn vị hỗ trợ người mua nhà": "/images/partners-team/partner-chat.svg",
 };
 
 function TableShell({ children }: { children: React.ReactNode }) {

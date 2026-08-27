@@ -26,11 +26,11 @@ export const BRAND_IDENTITY = {
     },
     {
       title: "Tầm nhìn",
-      body: "Đến năm 2030, sở hữu nhà bền vững, minh bạch và có trách nhiệm sẽ là chuẩn mực tại Việt Nam — được thúc đẩy bởi dữ liệu rõ ràng, tài chính có kỷ luật và niềm tin giữa người mua, ngân hàng và chủ đầu tư.",
+      body: "Đến năm 2030, sở hữu nhà bền vững, minh bạch và có trách nhiệm sẽ là chuẩn mực tại Việt Nam — được thúc đẩy bởi dữ liệu rõ ràng, tài chính có kỷ luật và niềm tin giữa người mua cùng các bên tham gia thị trường.",
     },
     {
       title: "Sứ mệnh",
-      body: "Chúng tôi giúp các quyết định bất động sản trở nên đơn giản, minh bạch và an toàn về tài chính cho tất cả mọi người — người mua, nhà đầu tư, ngân hàng và chủ đầu tư — qua nền tảng Real Estate Decision Intelligence, vận hành bởi dữ liệu đã kiểm chứng, mô hình đánh giá khả năng chi trả và gợi ý hành động thay thế đầu cơ bằng sự rõ ràng.",
+      body: "Chúng tôi giúp các quyết định bất động sản trở nên đơn giản, minh bạch và an toàn về tài chính cho người mua, nhà đầu tư và chủ đầu tư — qua nền tảng Real Estate Decision Intelligence, vận hành bởi dữ liệu đã kiểm chứng, mô hình đánh giá khả năng chi trả và gợi ý hành động thay thế đầu cơ bằng sự rõ ràng.",
     },
   ] as const,
 
