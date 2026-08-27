@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-phat-trien-nha-o-cho-thue-2026-2030",
+    title: "Đà Nẵng đẩy mạnh nhà ở cho thuê giai đoạn 2026-2030 đáp ứng nhu cầu an cư",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","cau-thanh-khoan"],
+    excerpt: "Đà Nẵng phê duyệt kế hoạch phát triển nhà ở cho thuê giai đoạn 2026-2030 nhằm đáp ứng nhu cầu an cư của người dân, bổ sung nguồn cung nhà ở xã hội cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-phat-trien-nha-o-cho-thue-2026-2030.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "baodautu.vn",
+        "url": "https://baodautu.vn/batdongsan/da-nang-se-phat-trien-manh-nha-o-cho-thue-d683399.html",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
     slug: "tin-dung-tang-toc-bat-dong-san-nua-dau-2026",
     title: "Tín dụng bất động sản nửa đầu 2026 tăng mạnh: Dòng vốn đổ vào bất động sản có thể đẩy giá lên?",
     category: "Tài chính",
