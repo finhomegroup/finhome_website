@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon",
+    title: "Nguồn cung bất động sản tích cực ra hàng, người mua thêm lựa chọn",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Nguồn cung từ các dự án bất động sản quy mô lớn được đầu tư bài bản đang tích cực ra hàng, mở thêm lựa chọn cho người mua trong bối cảnh thị trường đang phục hồi.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon-20260826181215665.htm",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
     slug: "da-nang-phat-trien-nha-o-cho-thue-2026-2030",
     title: "Đà Nẵng đẩy mạnh nhà ở cho thuê giai đoạn 2026-2030 đáp ứng nhu cầu an cư",
     category: "Chính sách",
