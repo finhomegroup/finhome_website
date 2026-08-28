@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-tang-ve-lai-ban-do-bat-dong-san",
+    title: "Hạ tầng đang vẽ lại bản đồ bất động sản: Từ Hạ Long đến Cần Giờ",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Hàng loạt dự án hạ tầng quy mô lớn đồng loạt triển khai đang rút ngắn khoảng cách giữa các cực kinh tế, mở rộng không gian đô thị và tạo thêm dư địa phát triển cho thị trường bất động sản.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/ha-tang-ve-lai-ban-do-bat-dong-san.jpg",
+    date: "2026-08-28",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tu-ha-long-den-can-gio-khi-ha-tang-ve-lai-ban-do-bat-dong-san-20260828070205040.htm",
+        "accessed": "2026-08-28"
+      },
+  },
+  {
     slug: "de-xuat-chia-nhom-giai-cuu-bat-dong-san-nghi-duong-ton-dong-da-nang",
     title: "Đề xuất phân nhóm giải cứu bất động sản nghỉ dưỡng tồn đọng: Giải pháp tháo gỡ trong 12 tháng",
     category: "Chính sách",
