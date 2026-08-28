@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-chia-nhom-giai-cuu-bat-dong-san-nghi-duong-ton-dong-da-nang",
+    title: "Đề xuất phân nhóm giải cứu bất động sản nghỉ dưỡng tồn đọng: Giải pháp tháo gỡ trong 12 tháng",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chuyên gia VNREA đề xuất phân loại dự án bất động sản nghỉ dưỡng tồn đọng theo từng nhóm vướng mắc để tháo gỡ dứt điểm trong 12 tháng tới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-chia-nhom-giai-cuu-bat-dong-san-nghi-duong-ton-dong-da-nang.webp",
+    date: "2026-08-28",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-chia-nhom-de-giai-cuu-bat-dong-san-nghi-duong-ton-dong-5113722.html",
+        "accessed": "2026-08-28"
+      },
+  },
+  {
     slug: "khu-nam-tp-hcm-mo-ban-du-an-chung-cu-cuoi-nam",
     title: "Khu Nam TP.HCM bất ngờ dẫn đầu nguồn cung căn hộ cuối năm",
     category: "Thị trường",
