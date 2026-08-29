@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tphcm-thu-hoi-895ha-dat-58-du-an",
+    title: "TP.HCM thu hồi gần 895ha đất để làm 58 dự án: Nguồn cung mới sẽ định hình thị trường ra sao?",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "HĐND TP.HCM thông qua kế hoạch thu hồi 895ha đất cho 58 dự án phát triển hạ tầng. FinHome phân tích tác động đến nguồn cung và chiến lược an cư của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-thu-hoi-895ha-dat-58-du-an.jpg",
+    date: "2026-08-29",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tphcm-thu-hoi-gan-895ha-dat-de-lam-58-du-an-20260827152827631.htm",
+        "accessed": "2026-08-29"
+      },
+  },
+  {
     slug: "ha-tang-ve-lai-ban-do-bat-dong-san",
     title: "Hạ tầng đang vẽ lại bản đồ bất động sản: Từ Hạ Long đến Cần Giờ",
     category: "Thị trường",
