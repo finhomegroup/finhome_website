@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the",
+    title: "Chuyên gia: Bảng giá đất khó thay thế hoàn toàn giá đất cụ thể, cần hoàn thiện quy định bồi thường",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Góp ý dự thảo Luật Đất đai sửa đổi, chuyên gia cho rằng bảng giá đất khó có thể thay thế hoàn toàn giá đất cụ thể, đồng thời kiến nghị bổ sung khung xác định mức bồi thường và hoàn thiện hệ số điều chỉnh giá đất.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the.jpg",
+    date: "2026-08-29",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the-20260827113913928.htm",
+        "accessed": "2026-08-29"
+      },
+  },
+  {
     slug: "tphcm-thu-hoi-895ha-dat-58-du-an",
     title: "TP.HCM thu hồi gần 895ha đất để làm 58 dự án: Nguồn cung mới sẽ định hình thị trường ra sao?",
     category: "Chính sách",
