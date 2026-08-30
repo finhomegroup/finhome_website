@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-khanh-thanh-khoi-cong-11-du-an-181000-ty-dong-quoc-khanh",
+    title: "TP.HCM khánh thành, khởi công 11 dự án hơn 181.000 tỷ đồng dịp Quốc khánh",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Sáng 29.8, TP.HCM đồng loạt tổ chức lễ khánh thành, khởi công 11 dự án chào mừng 81 ngày Quốc khánh với tổng vốn đầu tư hơn 181.000 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-khanh-thanh-khoi-cong-11-du-an-181000-ty-dong-quoc-khanh.jpg",
+    date: "2026-08-30",
+    source: {
+        "name": "thanhnien.vn",
+        "url": "https://thanhnien.vn/tphcm-khanh-thanh-khoi-cong-loat-du-an-von-hon-181000-ti-dong-185260829083356685.htm?fbclid=IwZnRzaAUAqjhwZG9mBWZkaWQWUNevtlkbOpoR4jOMRiu71_YrG02PKWV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5PkNQ3dB6wTD9gnvEdL-Ts01JFzjQhm9r1FoZF2BXC2HsIzocZjQQNQDEd_A_aem_5LEwV5dGOgvJ90zzDefRKQ#mtff31py7jcdn8blg9b",
+        "accessed": "2026-08-30"
+      },
+  },
+  {
     slug: "lai-suat-vay-mua-nha-tiep-tuc-tang-2026",
     title: "Lãi suất vay mua nhà tiếp tục tăng, mức ưu đãi 12 tháng lên trên 10%",
     category: "Tài chính",
