@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-vay-mua-nha-tiep-tuc-tang-2026",
+    title: "Lãi suất vay mua nhà tiếp tục tăng, mức ưu đãi 12 tháng lên trên 10%",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất ưu đãi vay mua nhà nhiều ngân hàng đẩy lên trên 10%/năm kỳ hạn 12 tháng, cao hơn đáng kể so với nửa đầu năm. Người mua cần cân nhắc kỹ chi phí vốn dài hạn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-nha-tiep-tuc-tang-2026.jpg",
+    date: "2026-08-30",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/lai-suat-vay-mua-nha-tiep-tuc-tang-5114187.html",
+        "accessed": "2026-08-30"
+      },
+  },
+  {
     slug: "chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the",
     title: "Chuyên gia: Bảng giá đất khó thay thế hoàn toàn giá đất cụ thể, cần hoàn thiện quy định bồi thường",
     category: "Chính sách",
