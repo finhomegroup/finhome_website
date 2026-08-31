@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-vay-mua-nha-cao-nguoi-mua-chon-thue-thay-vi-mua",
+    title: "Lãi vay mua nhà 13-16%/năm: Nhu cầu vẫn có nhưng người mua chùn bước",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất vay mua nhà lên tới 13-16%/năm khiến nhiều người có nhu cầu ở thực phải chọn thuê thay vì mua, gây áp lực lên thanh khoản toàn thị trường bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-vay-mua-nha-cao-nguoi-mua-chon-thue-thay-vi-mua.jpg",
+    date: "2026-08-31",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/co-nhu-cau-van-khong-dam-mua-bat-dong-san-can-gi-de-hoi-phuc-20260830193850104.htm",
+        "accessed": "2026-08-31"
+      },
+  },
+  {
     slug: "du-an-ma-lang-khoi-cong-tai-dinh-cu-tai-cho",
     title: "Dự án chỉnh trang Mả Lạng khởi công: Người dân mong tái định cư tại chỗ, bảo đảm quyền lợi",
     category: "Thị trường",
