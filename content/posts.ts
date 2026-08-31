@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "du-an-ma-lang-khoi-cong-tai-dinh-cu-tai-cho",
+    title: "Dự án chỉnh trang Mả Lạng khởi công: Người dân mong tái định cư tại chỗ, bảo đảm quyền lợi",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Dự án chỉnh trang Mả Lạng TP.HCM chính thức khởi công với quy mô nghìn tỷ đồng, người dân địa phương đặt kỳ vọng lớn về tái định cư tại chỗ và chính sách bồi thường công bằng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-an-ma-lang-khoi-cong-tai-dinh-cu-tai-cho.jpg",
+    date: "2026-08-31",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/thoi-su/mong-cho-cua-nguoi-dan-ma-lang-khi-du-an-nghin-ty-duoc-khoi-cong-20260828213236906.htm",
+        "accessed": "2026-08-31"
+      },
+  },
+  {
     slug: "tp-hcm-khanh-thanh-khoi-cong-11-du-an-181000-ty-dong-quoc-khanh",
     title: "TP.HCM khánh thành, khởi công 11 dự án hơn 181.000 tỷ đồng dịp Quốc khánh",
     category: "Thị trường",
