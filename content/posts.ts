@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "suc-khoe-thuoc-do-moi-bat-dong-san-cao-cap",
+    title: "Sức khỏe trở thành thước đo mới trong bất động sản cao cấp",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Tiêu chuẩn chăm sóc sức khỏe (wellness) đang len lỏi vào các báo cáo thị trường và dự án bất động sản cao cấp, định hình lại tiêu chí lựa chọn của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/suc-khoe-thuoc-do-moi-bat-dong-san-cao-cap.jpg",
+    date: "2026-09-01",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/su-dich-chuyen-cua-bat-dong-san-cao-cap-suc-khoe-tro-thanh-thuoc-do-moi-100260831142416235.htm",
+        "accessed": "2026-09-01"
+      },
+  },
+  {
     slug: "lai-vay-mua-nha-cao-nguoi-mua-chon-thue-thay-vi-mua",
     title: "Lãi vay mua nhà 13-16%/năm: Nhu cầu vẫn có nhưng người mua chùn bước",
     category: "Tài chính",
