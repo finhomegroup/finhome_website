@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dau-gia-92-ha-dat-ben-cat",
+    title: "TP.HCM đấu giá 92 ha đất Bến Cát: Nguồn cung ngoại thành giá gần 3.000 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Hơn 234 ha đất từ San Miguel Pure Foods tại Bến Cát được TP.HCM thu hồi, trong đó 92 ha đấu giá với giá khởi điểm tạm tính gần 2.756 tỷ đồng, mở ra nguồn cung đất nền ngoại thành.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-92-ha-dat-ben-cat.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-92-ha-dat-o-ben-cat-khoi-diem-hon-2-700-ty-dong-5115505.html",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
     slug: "ha-tang-250-du-an-tp-hcm-thay-doi-dinh-gia-bat-dong-san-phia-nam-2026-2030",
     title: "Hạ tầng 250 dự án TP.HCM 2026-2030: Định giá bất động sản phía Nam thay đổi thế nào?",
     category: "Thị trường",
