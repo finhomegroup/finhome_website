@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ma-dinh-danh-dien-tu-12-so-cho-thua-dat-tung-buoc-ap-dung",
+    title: "Mã định danh điện tử 12 số cho thửa đất: Bước tiến minh bạch hóa thị trường bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Từ ngày 1/9, mỗi thửa đất và công trình xây dựng chính thức được gắn mã định danh điện tử 12 chữ số, cho phép người dân tra cứu thông tin công khai qua VNeID.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ma-dinh-danh-dien-tu-12-so-cho-thua-dat-tung-buoc-ap-dung.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tu-hom-nay-moi-thua-dat-chinh-thuc-co-ma-dinh-danh-dien-tu-20260901092535337.htm",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
     slug: "tp-hcm-dau-gia-92-ha-dat-ben-cat",
     title: "TP.HCM đấu giá 92 ha đất Bến Cát: Nguồn cung ngoại thành giá gần 3.000 tỷ đồng",
     category: "Thị trường",
