@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-tang-250-du-an-tp-hcm-thay-doi-dinh-gia-bat-dong-san-phia-nam-2026-2030",
+    title: "Hạ tầng 250 dự án TP.HCM 2026-2030: Định giá bất động sản phía Nam thay đổi thế nào?",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","gia-cung"],
+    excerpt: "Giai đoạn 2026-2030, TP.HCM triển khai khoảng 250 dự án hạ tầng, thay đổi cách định giá bất động sản phía Nam theo hướng nào?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-tang-250-du-an-tp-hcm-thay-doi-dinh-gia-bat-dong-san-phia-nam-2026-2030.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "nhipsongkinhdoanh.vn",
+        "url": "https://nhipsongkinhdoanh.vn/ha-tang-dang-thay-doi-cach-dinh-gia-bat-dong-san-phia-nam-32425.htm",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
     slug: "suc-khoe-thuoc-do-moi-bat-dong-san-cao-cap",
     title: "Sức khỏe trở thành thước đo mới trong bất động sản cao cấp",
     category: "Thị trường",
