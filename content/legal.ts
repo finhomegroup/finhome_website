@@ -123,6 +123,7 @@ export const PRIVACY_CONTENT: LegalDocContent = {
         "Cung cấp và cá nhân hóa các công cụ lập kế hoạch tài chính",
         "Ước tính tầm giá và mô phỏng kế hoạch chi trả mua nhà",
         "Tạo báo cáo nghiên cứu bất động sản khi bạn chủ động yêu cầu và đồng ý sử dụng AI",
+        "Lưu lại kế hoạch và tùy chọn do người dùng chủ động tạo",
         "Cải thiện chất lượng ứng dụng qua phân tích dữ liệu ẩn danh",
         "Gửi thông báo liên quan đến dịch vụ (với sự đồng ý riêng)",
       ],

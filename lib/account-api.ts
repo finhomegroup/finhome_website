@@ -1,7 +1,7 @@
 /**
  * Backend account-data deletion client — wraps `POST /me/account/delete`.
  *
- * The backend endpoint now deletes RDS data + anonymizes loan leads ONLY; the
+ * The backend endpoint deletes account data and processes legally required retention; the
  * Cognito identity is removed by the client (see delete-account-form). This is
  * called AFTER the client has deleted its Cognito identity, using the ID token
  * captured beforehand (still valid by JWT expiry even though the user is gone).

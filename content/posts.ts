@@ -20,6 +20,501 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ma-dinh-danh-dien-tu-12-so-cho-thua-dat-tung-buoc-ap-dung",
+    title: "Mã định danh điện tử 12 số cho thửa đất: Bước tiến minh bạch hóa thị trường bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Từ ngày 1/9, mỗi thửa đất và công trình xây dựng chính thức được gắn mã định danh điện tử 12 chữ số, cho phép người dân tra cứu thông tin công khai qua VNeID.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ma-dinh-danh-dien-tu-12-so-cho-thua-dat-tung-buoc-ap-dung.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tu-hom-nay-moi-thua-dat-chinh-thuc-co-ma-dinh-danh-dien-tu-20260901092535337.htm",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
+    slug: "tp-hcm-dau-gia-92-ha-dat-ben-cat",
+    title: "TP.HCM đấu giá 92 ha đất Bến Cát: Nguồn cung ngoại thành giá gần 3.000 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Hơn 234 ha đất từ San Miguel Pure Foods tại Bến Cát được TP.HCM thu hồi, trong đó 92 ha đấu giá với giá khởi điểm tạm tính gần 2.756 tỷ đồng, mở ra nguồn cung đất nền ngoại thành.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-92-ha-dat-ben-cat.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-92-ha-dat-o-ben-cat-khoi-diem-hon-2-700-ty-dong-5115505.html",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
+    slug: "ha-tang-250-du-an-tp-hcm-thay-doi-dinh-gia-bat-dong-san-phia-nam-2026-2030",
+    title: "Hạ tầng 250 dự án TP.HCM 2026-2030: Định giá bất động sản phía Nam thay đổi thế nào?",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","gia-cung"],
+    excerpt: "Giai đoạn 2026-2030, TP.HCM triển khai khoảng 250 dự án hạ tầng, thay đổi cách định giá bất động sản phía Nam theo hướng nào?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-tang-250-du-an-tp-hcm-thay-doi-dinh-gia-bat-dong-san-phia-nam-2026-2030.jpg",
+    date: "2026-09-02",
+    source: {
+        "name": "nhipsongkinhdoanh.vn",
+        "url": "https://nhipsongkinhdoanh.vn/ha-tang-dang-thay-doi-cach-dinh-gia-bat-dong-san-phia-nam-32425.htm",
+        "accessed": "2026-09-02"
+      },
+  },
+  {
+    slug: "suc-khoe-thuoc-do-moi-bat-dong-san-cao-cap",
+    title: "Sức khỏe trở thành thước đo mới trong bất động sản cao cấp",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Tiêu chuẩn chăm sóc sức khỏe (wellness) đang len lỏi vào các báo cáo thị trường và dự án bất động sản cao cấp, định hình lại tiêu chí lựa chọn của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/suc-khoe-thuoc-do-moi-bat-dong-san-cao-cap.jpg",
+    date: "2026-09-01",
+    source: {
+        "name": "tuoitre.vn",
+        "url": "https://tuoitre.vn/su-dich-chuyen-cua-bat-dong-san-cao-cap-suc-khoe-tro-thanh-thuoc-do-moi-100260831142416235.htm",
+        "accessed": "2026-09-01"
+      },
+  },
+  {
+    slug: "lai-vay-mua-nha-cao-nguoi-mua-chon-thue-thay-vi-mua",
+    title: "Lãi vay mua nhà 13-16%/năm: Nhu cầu vẫn có nhưng người mua chùn bước",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất vay mua nhà lên tới 13-16%/năm khiến nhiều người có nhu cầu ở thực phải chọn thuê thay vì mua, gây áp lực lên thanh khoản toàn thị trường bất động sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-vay-mua-nha-cao-nguoi-mua-chon-thue-thay-vi-mua.jpg",
+    date: "2026-08-31",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/co-nhu-cau-van-khong-dam-mua-bat-dong-san-can-gi-de-hoi-phuc-20260830193850104.htm",
+        "accessed": "2026-08-31"
+      },
+  },
+  {
+    slug: "du-an-ma-lang-khoi-cong-tai-dinh-cu-tai-cho",
+    title: "Dự án chỉnh trang Mả Lạng khởi công: Người dân mong tái định cư tại chỗ, bảo đảm quyền lợi",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Dự án chỉnh trang Mả Lạng TP.HCM chính thức khởi công với quy mô nghìn tỷ đồng, người dân địa phương đặt kỳ vọng lớn về tái định cư tại chỗ và chính sách bồi thường công bằng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-an-ma-lang-khoi-cong-tai-dinh-cu-tai-cho.jpg",
+    date: "2026-08-31",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/thoi-su/mong-cho-cua-nguoi-dan-ma-lang-khi-du-an-nghin-ty-duoc-khoi-cong-20260828213236906.htm",
+        "accessed": "2026-08-31"
+      },
+  },
+  {
+    slug: "tp-hcm-khanh-thanh-khoi-cong-11-du-an-181000-ty-dong-quoc-khanh",
+    title: "TP.HCM khánh thành, khởi công 11 dự án hơn 181.000 tỷ đồng dịp Quốc khánh",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Sáng 29.8, TP.HCM đồng loạt tổ chức lễ khánh thành, khởi công 11 dự án chào mừng 81 ngày Quốc khánh với tổng vốn đầu tư hơn 181.000 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-khanh-thanh-khoi-cong-11-du-an-181000-ty-dong-quoc-khanh.jpg",
+    date: "2026-08-30",
+    source: {
+        "name": "thanhnien.vn",
+        "url": "https://thanhnien.vn/tphcm-khanh-thanh-khoi-cong-loat-du-an-von-hon-181000-ti-dong-185260829083356685.htm?fbclid=IwZnRzaAUAqjhwZG9mBWZkaWQWUNevtlkbOpoR4jOMRiu71_YrG02PKWV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5PkNQ3dB6wTD9gnvEdL-Ts01JFzjQhm9r1FoZF2BXC2HsIzocZjQQNQDEd_A_aem_5LEwV5dGOgvJ90zzDefRKQ#mtff31py7jcdn8blg9b",
+        "accessed": "2026-08-30"
+      },
+  },
+  {
+    slug: "lai-suat-vay-mua-nha-tiep-tuc-tang-2026",
+    title: "Lãi suất vay mua nhà tiếp tục tăng, mức ưu đãi 12 tháng lên trên 10%",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất ưu đãi vay mua nhà nhiều ngân hàng đẩy lên trên 10%/năm kỳ hạn 12 tháng, cao hơn đáng kể so với nửa đầu năm. Người mua cần cân nhắc kỹ chi phí vốn dài hạn.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-nha-tiep-tuc-tang-2026.jpg",
+    date: "2026-08-30",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/lai-suat-vay-mua-nha-tiep-tuc-tang-5114187.html",
+        "accessed": "2026-08-30"
+      },
+  },
+  {
+    slug: "chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the",
+    title: "Chuyên gia: Bảng giá đất khó thay thế hoàn toàn giá đất cụ thể, cần hoàn thiện quy định bồi thường",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Góp ý dự thảo Luật Đất đai sửa đổi, chuyên gia cho rằng bảng giá đất khó có thể thay thế hoàn toàn giá đất cụ thể, đồng thời kiến nghị bổ sung khung xác định mức bồi thường và hoàn thiện hệ số điều chỉnh giá đất.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the.jpg",
+    date: "2026-08-29",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/chuyen-gia-bang-gia-dat-kho-thay-the-hoan-toan-gia-dat-cu-the-20260827113913928.htm",
+        "accessed": "2026-08-29"
+      },
+  },
+  {
+    slug: "tphcm-thu-hoi-895ha-dat-58-du-an",
+    title: "TP.HCM thu hồi gần 895ha đất để làm 58 dự án: Nguồn cung mới sẽ định hình thị trường ra sao?",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "HĐND TP.HCM thông qua kế hoạch thu hồi 895ha đất cho 58 dự án phát triển hạ tầng. FinHome phân tích tác động đến nguồn cung và chiến lược an cư của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-thu-hoi-895ha-dat-58-du-an.jpg",
+    date: "2026-08-29",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tphcm-thu-hoi-gan-895ha-dat-de-lam-58-du-an-20260827152827631.htm",
+        "accessed": "2026-08-29"
+      },
+  },
+  {
+    slug: "ha-tang-ve-lai-ban-do-bat-dong-san",
+    title: "Hạ tầng đang vẽ lại bản đồ bất động sản: Từ Hạ Long đến Cần Giờ",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Hàng loạt dự án hạ tầng quy mô lớn đồng loạt triển khai đang rút ngắn khoảng cách giữa các cực kinh tế, mở rộng không gian đô thị và tạo thêm dư địa phát triển cho thị trường bất động sản.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/ha-tang-ve-lai-ban-do-bat-dong-san.jpg",
+    date: "2026-08-28",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/tu-ha-long-den-can-gio-khi-ha-tang-ve-lai-ban-do-bat-dong-san-20260828070205040.htm",
+        "accessed": "2026-08-28"
+      },
+  },
+  {
+    slug: "de-xuat-chia-nhom-giai-cuu-bat-dong-san-nghi-duong-ton-dong-da-nang",
+    title: "Đề xuất phân nhóm giải cứu bất động sản nghỉ dưỡng tồn đọng: Giải pháp tháo gỡ trong 12 tháng",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chuyên gia VNREA đề xuất phân loại dự án bất động sản nghỉ dưỡng tồn đọng theo từng nhóm vướng mắc để tháo gỡ dứt điểm trong 12 tháng tới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-chia-nhom-giai-cuu-bat-dong-san-nghi-duong-ton-dong-da-nang.webp",
+    date: "2026-08-28",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-chia-nhom-de-giai-cuu-bat-dong-san-nghi-duong-ton-dong-5113722.html",
+        "accessed": "2026-08-28"
+      },
+  },
+  {
+    slug: "khu-nam-tp-hcm-mo-ban-du-an-chung-cu-cuoi-nam",
+    title: "Khu Nam TP.HCM bất ngờ dẫn đầu nguồn cung căn hộ cuối năm",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: "Sau nhiều năm nhường spotlight cho khu Đông, khu Nam TP.HCM bất ngờ chiếm hơn một nửa nguồn cung căn hộ mới nhờ loạt dự án đồng loạt mở bán cuối năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/khu-nam-tp-hcm-mo-ban-du-an-chung-cu-cuoi-nam.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/khu-nam-tp-hcm-mo-ban-loat-du-an-chung-cu-cuoi-nam-5113610.html",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
+    slug: "nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon",
+    title: "Nguồn cung bất động sản tích cực ra hàng, người mua thêm lựa chọn",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Nguồn cung từ các dự án bất động sản quy mô lớn được đầu tư bài bản đang tích cực ra hàng, mở thêm lựa chọn cho người mua trong bối cảnh thị trường đang phục hồi.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/nguon-cung-bat-dong-san-tich-cuc-ra-hang-nguoi-mua-them-lua-chon-20260826181215665.htm",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
+    slug: "da-nang-phat-trien-nha-o-cho-thue-2026-2030",
+    title: "Đà Nẵng đẩy mạnh nhà ở cho thuê giai đoạn 2026-2030 đáp ứng nhu cầu an cư",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","cau-thanh-khoan"],
+    excerpt: "Đà Nẵng phê duyệt kế hoạch phát triển nhà ở cho thuê giai đoạn 2026-2030 nhằm đáp ứng nhu cầu an cư của người dân, bổ sung nguồn cung nhà ở xã hội cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-phat-trien-nha-o-cho-thue-2026-2030.jpg",
+    date: "2026-08-27",
+    source: {
+        "name": "baodautu.vn",
+        "url": "https://baodautu.vn/batdongsan/da-nang-se-phat-trien-manh-nha-o-cho-thue-d683399.html",
+        "accessed": "2026-08-27"
+      },
+  },
+  {
+    slug: "tin-dung-tang-toc-bat-dong-san-nua-dau-2026",
+    title: "Tín dụng bất động sản nửa đầu 2026 tăng mạnh: Dòng vốn đổ vào bất động sản có thể đẩy giá lên?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Hàng trăm nghìn tỷ đồng đã được bơm vào bất động sản nửa đầu 2026, trong khi dự án mới mọc lên nhanh. FinHome phân tích tác động đến giá và khả năng tiếp cận nhà ở.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tin-dung-tang-toc-bat-dong-san-nua-dau-2026.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/tin-dung-tang-toc-vao-bat-dong-san-d149722.html?fbclid=IwZnRzaAT70F5wZG9mBWZkaWQWUNPyFaL5rXBRltsBNSsho5Wv295SE2V4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR7OSgHGAxVgqz4Edsc2mR3R6yk7bKo6p0f00yd1Y3pTatHKhaj7SMefSOGkRQ_aem_owvhDC4XlcPvtlXb2u4tfw",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
+    slug: "cap-so-do-rieng-bat-dong-san-tam-linh",
+    title: "Đề xuất cấp sổ đỏ riêng cho bất động sản tâm linh: Mở đường chuyển nhượng, thế chấp",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Luật sư Hoàng Ngọc đề xuất nghiên cứu cấp giấy chứng nhận riêng cho bất động sản tâm linh để người dân có thể chuyển nhượng, tặng cho hay thế chấp — hướng giải quyết vướng mắc pháp lý lâu nay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/cap-so-do-rieng-bat-dong-san-tam-linh.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-cap-so-do-rieng-cho-bat-dong-san-tam-linh-5113122.html",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
+    slug: "tp-hcm-dau-gia-8-khu-dat-quan-5-6-11-tan-binh",
+    title: "TP.HCM đấu giá 8 khu đất tại quận 5, 6, 11 và Tân Bình: Giá khởi điểm từ 4,4 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "TP.HCM chuẩn bị đấu giá 8 khu đất quy mô vừa và nhỏ tại các phường Chợ Lớn, Phú Lâm, Bình Thới, Minh Phụng và Tân Bình với mức khởi điểm từ 4,4 đến hơn 80 tỷ đồng, bổ sung nguồn cung cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-8-khu-dat-quan-5-6-11-tan-binh.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-them-8-khu-dat-5113113.html",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
+    slug: "tp-hcm-tra-loi-kien-nghi-chinh-sach-nha-o-xa-hoi",
+    title: "TP.HCM trả lời kiến nghị về nhà ở xã hội: Giải pháp tháo gỡ vướng mắc cho người thu nhập thấp",
+    category: "Nhà ở xã hội",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Bộ Xây dựng và TP.HCM trả lời kiến nghị của Đoàn Đại biểu Quốc hội về triển khai chính sách nhà ở xã hội, đề xuất giải pháp đẩy nhanh nguồn cung cho đối tượng thu nhập thấp.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-tra-loi-kien-nghi-chinh-sach-nha-o-xa-hoi.jpg",
+    date: "2026-08-26",
+    source: {
+        "name": "moc.gov.vn",
+        "url": "https://moc.gov.vn/vn/Pages/chitiettin.aspx?ChuyenmucID=1179&IDNews=96482&tieude=tra-loi-kien-nghi-cua-doan-dai-bieu-quoc-hoi-thanh-pho-ho-chi-minh-ve-viec-thuc-hien-chinh-sachphap-luat-ve-phat-trien-nha-o-xa-hoi-tren-dia-ban-thanh....aspx",
+        "accessed": "2026-08-26"
+      },
+  },
+  {
+    slug: "dau-gia-5-khu-dat-vang-thu-thiem-tong-gia-khoi-diem-12500-ty",
+    title: "TP.HCM đấu giá 5 khu đất vàng Thủ Thiêm tổng giá khởi điểm hơn 12.500 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "5 khu đất vàng tại Thủ Thiêm được đấu giá với tổng giá khởi điểm hơn 12.500 tỷ đồng, vị trí đắc địa và hạ tầng hoàn chỉnh.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dau-gia-5-khu-dat-vang-thu-thiem-tong-gia-khoi-diem-12500-ty.webp",
+    date: "2026-08-25",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hien-trang-5-khu-dat-vang-thu-thiem-sap-duoc-dau-gia-5112186.html",
+        "accessed": "2026-08-25"
+      },
+  },
+  {
+    slug: "du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong",
+    title: "Dư nợ kinh doanh bất động sản vượt 2,5 triệu tỷ đồng, tăng gần 13% quý II",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Dư nợ kinh doanh bất động sản quý II đạt khoảng 2,5 triệu tỷ đồng, tăng gần 13% so với quý I theo Bộ Xây dựng. Bài viết phân tích tác động đến thị trường và người mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/du-no-kinh-doanh-bat-dong-san-vuot-2-5-trieu-ty-dong-5112649.html?utm_source=facebook&utm_medium=fanpage_VnE&utm_term=mix&utm_campaign=tienngo&fbclid=IwZnRzaAT5GiJwZG9mBWZkaWQWUNFo-S7JXC_G4ib7gqMXg70TIBcgWmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR4XIN6uUUKKW7L4QulDiSwJmz_q-ynTnNfodz_SmC5wl97fTaTJpVRoO1RzuQ_aem_GUfG-v_uiWKYildd4WlDWw",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
+    slug: "da-nang-3000-can-nha-xa-hoi-ngu-hanh-son",
+    title: "Đà Nẵng phê duyệt dự án nhà xã hội gần 3.000 căn tại Ngũ Hành Sơn",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Đà Nẵng vừa chấp thuận chủ trương đầu tư khu nhà ở xã hội hơn 3.000 căn tại Ngũ Hành Sơn với vốn gần 4.200 tỷ đồng, bổ sung nguồn cung nhà giá phù hợp cho thành phố.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-3000-can-nha-xa-hoi-ngu-hanh-son.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/da-nang-co-them-hon-3-000-can-nha-xa-hoi-o-phuong-ngu-hanh-son-5112394.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
+    slug: "trung-thuy-group-mo-ban-lai-du-an-lancaster-lincoln-sau-10-nam",
+    title: "Trung Thủy Group mở bán lại dự án Lancaster Lincoln sau gần 10 năm vướng pháp lý",
+    category: "Thị trường",
+    topics: ["gia-cung","chinh-sach-su-kien"],
+    excerpt: "Dự án Lancaster Lincoln tại TP.HCM được phép mở bán gần 400 căn hộ sau gần một thập kỷ vướng mắc pháp lý, bổ sung nguồn cung cho thị trường khan hiếm căn hộ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/trung-thuy-group-mo-ban-lai-du-an-lancaster-lincoln-sau-10-nam.jpg",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/trung-thuy-group-mo-ban-lai-du-an-dat-vang-nguyen-tat-thanh-sau-10-nam-dinh-tre-5112455.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
+    slug: "han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-quang-ninh",
+    title: "Quảng Ninh siết xây dựng ven bờ bảo vệ tầm nhìn Vịnh Hạ Long",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "Chính phủ siết kiểm soát xây dựng ven bờ, hạn chế công trình cao tầng che khuất tầm nhìn Vịnh Hạ Long khi Quảng Ninh lên thành phố trực thuộc Trung ương.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-quang-ninh.webp",
+    date: "2026-08-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/han-che-cong-trinh-che-khuat-tam-nhin-vinh-ha-long-5112470.html",
+        "accessed": "2026-08-24"
+      },
+  },
+  {
+    slug: "quoc-hoi-khoa-xvi-ky-hop-khong-thuong-le-lan-1",
+    title: "Quốc hội khóa XVI họp kỳ không thường lệ lần đầu: Các nghị sự trọng tâm về thị trường bất động sản",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Quốc hội khóa XVI tổ chức kỳ họp không thường lệ lần đầu tại Hà Nội dưới sự chủ trì của Chủ tịch Quốc hội Trần Thanh Mẫn, thảo luận các nghị sự quan trọng về kinh tế-xã hội và thị trường bất động sản.",
+    readingTime: "2 phút đọc",
+    cover: "/images/blog/quoc-hoi-khoa-xvi-ky-hop-khong-thuong-le-lan-1.jpg",
+    date: "2026-08-23",
+    source: {
+        "name": "daibieunhandan.vn",
+        "url": "https://daibieunhandan.vn/thong-cao-bao-chi-so-15-ky-hop-khong-thuong-le-thu-nhat-quoc-hoi-khoa-xvi-10428286.html",
+        "accessed": "2026-08-23"
+      },
+  },
+  {
+    slug: "quy-dinh-thoi-han-su-dung-chung-cu-giam-gia-can-ho-cu",
+    title: "Quy định rõ thời hạn sử dụng chung cư: Giải pháp hạ nhiệt giá căn hộ cũ?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","gia-cung"],
+    excerpt: "Đại biểu Tạ Văn Hạ đề xuất quy định thời hạn sử dụng chung cư rõ ràng nhằm giảm giá căn hộ cũ, tăng khả năng tiếp cận nhà ở cho người dân.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/quy-dinh-thoi-han-su-dung-chung-cu-giam-gia-can-ho-cu.jpg",
+    date: "2026-08-23",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/quy-dinh-ro-thoi-han-chung-cu-co-the-giup-giam-gia-can-ho-cu-5111734.html",
+        "accessed": "2026-08-23"
+      },
+  },
+  {
+    slug: "tp-hcm-dau-gia-ba-khu-dat-binh-thanh-quan-3",
+    title: "TP.HCM sắp đấu giá ba khu đất vàng tại Bình Thạnh và quận 3 cũ",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Ba khu đất tại Nơ Trang Long, Nguyễn Văn Đậu và Lê Văn Sỹ thuộc Bình Thạnh và quận 3 cũ vừa được TP.HCM phê duyệt phương án đấu giá.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-ba-khu-dat-binh-thanh-quan-3.png",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-sap-dau-gia-ba-khu-dat-vang-o-binh-thanh-quan-3-cu-5111778.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
+    slug: "da-nang-go-vuong-ba-du-an-bat-dong-san-co-che-dac-thu",
+    title: "Đà Nẵng gỡ vướng ba dự án bất động sản: Gần 39 ha đô thị và nhà ở xã hội được tiếp tục triển khai",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "UBND TP Đà Nẵng vừa cho phép tiếp tục giao đất, cho thuê đất với hai khu đô thị gần 39 ha và một dự án nhà ở xã hội tại phường Điện Bàn Đông theo cơ chế đặc thù.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-go-vuong-ba-du-an-bat-dong-san-co-che-dac-thu.jpg",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/da-nang-go-vuong-cho-ba-du-an-bat-dong-san-theo-co-che-dac-thu-5111804.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
+    slug: "tp-hcm-dau-gia-them-ba-lo-dat-thu-thiem-7600-ty-dong",
+    title: "TP.HCM tiếp tục đấu giá thêm ba lô đất Thủ Thiêm, tổng giá khởi điểm hơn 7.600 tỷ đồng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "TP.HCM phê duyệt đấu giá ba lô đất tại Khu đô thị mới Thủ Thiêm với tổng giá khởi điểm dự kiến hơn 7.600 tỷ đồng, tiếp tục bổ sung nguồn cung từ đất công cho thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dau-gia-them-ba-lo-dat-thu-thiem-7600-ty-dong.jpg",
+    date: "2026-08-22",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/sap-dau-gia-them-ba-lo-dat-thu-thiem-khoi-diem-thap-nhat-147-trieu-dong-moi-m2-5111330.html",
+        "accessed": "2026-08-22"
+      },
+  },
+  {
+    slug: "ba-luat-sua-doi-thi-truong-bat-dong-san-2026",
+    title: "Ba luật bất động sản cùng sửa đổi: Tác động đến giá đất, chung cư và dòng tiền mua nhà",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Quốc hội đang xem xét đồng thời sửa đổi Luật Đất đai, Luật Nhà ở và Luật Kinh doanh bất động sản với nhiều đề xuất tác động trực tiếp đến giá đất, thu hồi đất, chung cư và thị trường cho thuê.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ba-luat-sua-doi-thi-truong-bat-dong-san-2026.png",
+    date: "2026-08-21",
+    source: {
+        "name": "moneyf.vn",
+        "url": "https://moneyf.vn/ba-luat-cung-sua-thi-truong-bat-dong-san-dung-truo-ibgwkd8o?fbclid=IwY2xjawT1GRRwZG9mBWV4dG4DYWVtAjEwAGJyaWQRMXhPUU9zd3BnTnhSdm50ZUdzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeoHFEmsqZzQWfY2ocU7tPclY2kX6u1B8SvL1ef0GEP4s8us0zgyw7TqUMio4_aem_rNzSiyUVl2pZcojDQI1nGg",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
+    slug: "can-ho-sieu-sang-tp-hcm-gia-1-ty-dong-moi-m2",
+    title: "Căn hộ siêu sang TP.HCM tiệm cận 470 triệu/m², cao nhất lên tới 1 tỷ đồng/m²",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Phân khúc căn hộ siêu sang tại TP.HCM đạt mức giá trung bình gần 470 triệu đồng/m², trong khi một số dự án hạng sang đã chạm ngưỡng 1 tỷ đồng/m², theo chuyên gia.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/can-ho-sieu-sang-tp-hcm-gia-1-ty-dong-moi-m2.jpg",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/can-ho-sieu-sang-tai-tp-hcm-gia-len-toi-mot-ty-dong-moi-m2-5111446.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
+    slug: "novaland-dat-muc-tieu-ban-giao-2300-can-nua-cuoi-nam",
+    title: "Novaland đẩy mạnh bàn giao nhà nửa cuối năm: Victoria Village và Aqua City dẫn đầu nguồn cung",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Novaland đặt mục tiêu bàn giao gần 2.300 căn trong nửa cuối năm, gấp 6,6 lần so với đầu năm, tập trung tại hai dự án trọng điểm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/novaland-dat-muc-tieu-ban-giao-2300-can-nua-cuoi-nam.png",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/novaland-dat-muc-tieu-ban-giao-gan-2-300-can-nha-trong-nua-cuoi-nam-5111458.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
+    slug: "dong-tien-bat-dong-san-phia-nam-dich-chuyen-theo-ha-tang-khu-vuc-moi",
+    title: "Dòng tiền bất động sản phía Nam dịch chuyển theo hạ tầng: Không phải nơi nào có cao tốc, sân bay cũng hút được nhà đầu tư",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","cau-thanh-khoan"],
+    excerpt: "Dòng tiền bất động sản phía Nam có xu hướng rời khu vực lõi, dịch chuyển theo hạ tầng đến các đô thị mới, nhưng không phải nơi nào có cao tốc, sân bay cũng thu hút được nhà đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-tien-bat-dong-san-phia-nam-dich-chuyen-theo-ha-tang-khu-vuc-moi.jpg",
+    date: "2026-08-21",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/dong-tien-bat-dong-san-phia-nam-dang-di-dau-5110789.html",
+        "accessed": "2026-08-21"
+      },
+  },
+  {
     slug: "nen-giu-hay-ban-nha-gan-duong-sat-thu-thiem-long-thanh",
     title: "Nhà gần đường sắt Thủ Thiêm - Long Thành tăng giá chậm: Cân nhắc chiến lược thoát hay giữ tài sản",
     category: "Thị trường",

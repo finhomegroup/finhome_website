@@ -2,7 +2,7 @@
 // Image values are Framer base filenames; resolve with img() from "@/lib/images".
 
 export const HERO = {
-  headline: "FinHome giúp bạn chọn đúng nhà, hiểu rõ sức chi trả",
+  headline: "FinHome giúp bạn lập kế hoạch mua nhà vững vàng",
   subhead:
     "Công cụ lập kế hoạch mua nhà với các phép tính minh bạch và dữ liệu do bạn kiểm soát",
   cta: "Thử ngay",
@@ -43,7 +43,7 @@ export const STEPS_SECTION = {
       icon: "9DWQzTIfFOk6ZkCVfnfpg9Fnz5Q.svg",
     },
     {
-      title: "Mô phỏng phương án chi trả",
+      title: "Mô phỏng kế hoạch chi trả",
       desc: "Thử lãi suất và kỳ hạn giả định để xem áp lực dòng tiền",
       icon: "5Q3gFip1lY8vWKmRLAHPnkJqAis.svg",
     },
@@ -112,7 +112,7 @@ export const TESTIMONIALS_SECTION = {
     },
     {
       quote:
-        "Trước đây tôi tìm nhà khá cảm tính. Dùng FinHome rồi, tôi mới biết mình phù hợp với mức giá nào, nên vay bao nhiêu và cần tránh những rủi ro gì.",
+        "Trước đây tôi tìm nhà khá cảm tính. Dùng FinHome rồi, tôi mới biết mình phù hợp với mức giá nào, nên chuẩn bị dòng tiền ra sao và cần tránh những rủi ro gì.",
       name: "Thái Vin",
       role: "Nhà đầu tư bất động sản",
       avatar: "4F8Fzhd4rrU9Yv83jWxZjg6pqLc.jpg",
