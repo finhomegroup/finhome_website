@@ -54,7 +54,7 @@ export const FOOTER = {
       links: [
         { label: "La bàn tài chính", href: "#" },
         { label: "Đánh giá khả năng tài chính", href: "#" },
-        { label: "Đánh giá khả năng vay vốn", href: "#" },
+        { label: "Mô phỏng kế hoạch chi trả", href: "#" },
       ],
     },
     {
@@ -80,15 +80,15 @@ export const SITE = {
   name: "FinHome",
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:
-    "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
+    "FinHome giúp bạn ước tính tầm giá, mô phỏng kế hoạch chi trả và hiểu rõ dòng tiền trước khi mua nhà.",
   locale: "vi_VN",
   ogImage: "/og-image.png", // 1200x630, resolved against SITE.url via metadataBase
   keywords: [
     "FinHome",
     "mua nhà",
-    "vay mua nhà",
+    "kế hoạch mua nhà",
     "la bàn tài chính",
-    "khả năng vay",
+    "mô phỏng chi trả",
     "bất động sản",
     "nhà ở xã hội",
     "tài chính cá nhân",

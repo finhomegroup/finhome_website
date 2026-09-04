@@ -1575,6 +1575,24 @@ export const POSTS: Post[] = [
   },
 ];
 
+/**
+ * Public editorial boundary for the planning-only product.
+ *
+ * Keep lender names, current rates and credit-product reporting out of the
+ * public website while FinHome is distributed without a licensed financial
+ * institution. Source articles remain in the repository for editorial review,
+ * but are not listed, indexed or routable by the production site.
+ */
+const REGULATED_FINANCE_EDITORIAL =
+  /(vay|lãi suất|ngân hàng|tín dụng|thế chấp|giải ngân|nợ xấu|bank)/i;
+
+export const PUBLIC_POSTS = POSTS.filter(
+  (post) =>
+    !REGULATED_FINANCE_EDITORIAL.test(
+      `${post.title}\n${post.excerpt}\n${post.source?.name ?? ""}`,
+    ),
+);
+
 export function getPost(slug: string): Post | undefined {
-  return POSTS.find((p) => p.slug === slug);
+  return PUBLIC_POSTS.find((p) => p.slug === slug);
 }

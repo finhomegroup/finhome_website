@@ -26,11 +26,11 @@ export const BRAND_IDENTITY = {
     },
     {
       title: "Tầm nhìn",
-      body: "Đến năm 2030, sở hữu nhà bền vững, minh bạch và có trách nhiệm sẽ là chuẩn mực tại Việt Nam — được thúc đẩy bởi dữ liệu rõ ràng, tài chính có kỷ luật và niềm tin giữa người mua, ngân hàng và chủ đầu tư.",
+      body: "Đến năm 2030, sở hữu nhà bền vững, minh bạch và có trách nhiệm sẽ là chuẩn mực tại Việt Nam — được thúc đẩy bởi dữ liệu rõ ràng, tài chính có kỷ luật và quyết định chủ động của người mua.",
     },
     {
       title: "Sứ mệnh",
-      body: "Chúng tôi giúp các quyết định bất động sản trở nên đơn giản, minh bạch và an toàn về tài chính cho tất cả mọi người — người mua, nhà đầu tư, ngân hàng và chủ đầu tư — qua nền tảng Real Estate Decision Intelligence, vận hành bởi dữ liệu đã kiểm chứng, mô hình đánh giá khả năng chi trả và gợi ý hành động thay thế đầu cơ bằng sự rõ ràng.",
+      body: "Chúng tôi giúp người mua tự chuẩn bị cho quyết định bất động sản rõ ràng và thận trọng hơn qua dữ liệu tham khảo, mô hình chi trả và các kịch bản do người dùng lựa chọn. FinHome không thay thế tư vấn tài chính, pháp lý hoặc quyết định tín dụng của tổ chức được cấp phép.",
     },
   ] as const,
 

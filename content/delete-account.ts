@@ -2,7 +2,8 @@
 //
 // Flow: the browser signs in, deletes its OWN Cognito identity first
 // (DeleteUser — reachable from the browser), then calls the backend to
-// cascade-delete RDS data + anonymize loan leads (PDPL / Nghị định 13/2023).
+// cascade-delete account-owned RDS data. Any legacy server records outside the
+// active product scope are handled by the backend retention policy.
 // Cognito-first ordering means a Cognito failure aborts before any data is
 // touched — nothing to roll back.
 
@@ -72,17 +73,17 @@ export const DELETE_ACCOUNT_CONTENT = {
   dataDeleted: [
     "Kết quả La bàn tài chính và các phiên phân tích",
     "Danh sách bất động sản đã lưu",
-    "Hồ sơ tài chính cá nhân (thu nhập, ngân sách, khả năng vay)",
+    "Hồ sơ tài chính cá nhân và các kịch bản chi trả đã lưu",
     "Lịch sử hoạt động và tùy chọn cá nhân",
     "Danh tính đăng nhập (email và mật khẩu) của bạn",
   ],
 
-  dataRetainedTitle: "Dữ liệu được giữ lại theo quy định pháp luật",
+  dataRetainedTitle: "Dữ liệu có thể được giữ lại trong thời gian giới hạn",
   dataRetained: [
-    "Hồ sơ vay đã gửi tới ngân hàng sẽ được ẩn danh và lưu tối đa 5 năm theo quy định của Ngân hàng Nhà nước (NHNN).",
-    "Bản sao lưu hệ thống được giữ tối đa khoảng 7 ngày rồi tự động xóa.",
+    "Bản sao lưu ngắn hạn có thể tồn tại cho đến khi chu kỳ sao lưu tiếp theo hoàn tất.",
+    "Dữ liệu đã tổng hợp hoặc ẩn danh và phần bắt buộc phải lưu theo pháp luật có thể được giữ lại mà không còn dùng để cung cấp tài khoản cho bạn.",
   ],
 
   retentionNote:
-    "Việc xóa tài khoản tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân (PDPL). Hồ sơ vay được ẩn danh — không còn gắn với danh tính của bạn — trước khi lưu trữ theo yêu cầu pháp lý.",
+    "FinHome không nhận hoặc gửi hồ sơ vay tới ngân hàng. Nếu bạn đã dùng AI Research, hãy liên hệ hotro@finhome.group để yêu cầu xác nhận việc xóa bản báo cáo trên máy chủ và chuyển tiếp yêu cầu tới nhà cung cấp AI khi cần.",
 } as const;
