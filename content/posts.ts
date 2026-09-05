@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "muc-xu-phat-vi-pham-quan-ly-nha-chung-cu-kinh-phi-bao-tri-2026",
+    title: "Phạt nặng vi phạm quản lý chung cư và kinh phí bảo trì: Bước siết chặt kỷ luật thị trường",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Nghị định 339/2026/NĐ-CP quy định mức phạt 80-300 triệu đồng cho vi phạm quản lý, sử dụng nhà chung cư và kinh phí bảo trì. Người mua cần lưu ý gì khi chọn dự án?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/muc-xu-phat-vi-pham-quan-ly-nha-chung-cu-kinh-phi-bao-tri-2026.webp",
+    date: "2026-09-05",
+    source: {
+        "name": "vietnamplus.vn",
+        "url": "https://www.vietnamplus.vn/muc-xu-phat-vi-pham-ve-quan-ly-su-dung-nha-chung-cu-va-kinh-phi-bao-tri-post1134304.vnp",
+        "accessed": "2026-09-05"
+      },
+  },
+  {
     slug: "nguoi-mua-nha-uu-tien-gia-tri-thuc-dong-tien-thay-vi-tang-gia",
     title: "Người mua nhà thay đổi ưu tiên: Giá trị thực và dòng tiền thắng vị trí, kỳ vọng tăng giá",
     category: "Thị trường",
