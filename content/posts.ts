@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-nha-uu-tien-gia-tri-thuc-dong-tien-thay-vi-tang-gia",
+    title: "Người mua nhà thay đổi ưu tiên: Giá trị thực và dòng tiền thắng vị trí, kỳ vọng tăng giá",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Giá nhà neo cao khiến người mua chuyển hướng từ săn vị trí, kỳ vọng tăng giá sang quan tâm pháp lý, chất lượng và khả năng dòng tiền. Đây là sự thay đổi đáng chú ý trong hành vi mua nhà để ở.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-nha-uu-tien-gia-tri-thuc-dong-tien-thay-vi-tang-gia.jpg",
+    date: "2026-09-05",
+    source: {
+        "name": "batdongsan.baoxaydung.vn",
+        "url": "https://batdongsan.baoxaydung.vn/nha-dat-thoi-gia-cao-nguoi-mua-ngay-cang-uu-tien-gia-tri-thuc-va-dong-tien-192260904194017411.htm",
+        "accessed": "2026-09-05"
+      },
+  },
+  {
     slug: "ma-dinh-danh-dien-tu-12-so-cho-thua-dat-tung-buoc-ap-dung",
     title: "Mã định danh điện tử 12 số cho thửa đất: Bước tiến minh bạch hóa thị trường bất động sản",
     category: "Chính sách",
