@@ -17,12 +17,12 @@ import {
   FH_CLICKABLE_CARD,
   FH_POINTER,
 } from "@/lib/interaction-styles";
-import { PUBLIC_POSTS, getPost } from "@/content/posts";
+import { POSTS, getPost } from "@/content/posts";
 import { canonicalPath, absUrl, articleSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 
 export function generateStaticParams() {
-  return PUBLIC_POSTS.map((p) => ({ slug: p.slug }));
+  return POSTS.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -70,7 +70,7 @@ export default async function Page({
     "utf8",
   );
 
-  const related = PUBLIC_POSTS.filter((p) => p.slug !== slug).slice(0, 3);
+  const related = POSTS.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <>

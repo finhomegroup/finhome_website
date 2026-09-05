@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NEWS_SECTION } from "@/content/home";
-import { PUBLIC_POSTS, type Post } from "@/content/posts";
+import { POSTS, type Post } from "@/content/posts";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import {
@@ -121,7 +121,7 @@ function ViewMoreLink() {
 }
 
 export function News() {
-  const [featured, ...rest] = PUBLIC_POSTS;
+  const [featured, ...rest] = POSTS;
 
   return (
     <SectionFrame id="tintuc">

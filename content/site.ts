@@ -18,18 +18,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Nền tảng", href: "#nentang" },
   { label: "Trải nghiệm", href: "#trainghiem" },
   { label: "Hỗ trợ", href: "#hotro" },
-  {
-    label: "Đối tác",
-    href: "#doitac",
-    eyebrow: "Đối tác",
-    children: [
-      {
-        label: "Tầm nhìn & Sứ mệnh",
-        description: "Giá trị cốt lõi và nguyên tắc vận hành của FinHome",
-        href: "/vision",
-      },
-    ],
-  },
   // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
   { label: "Tin tức", href: "#tintuc" },
 ];
@@ -42,7 +30,7 @@ export const CONTACT = {
   email: "hotro@finhome.group",
   phone: "0963 177 497",
   phoneTel: "0963177497",
-  phoneLabel: "Hỗ trợ FinHome: 0963 177 497",
+  phoneLabel: "Chuyên gia tư vấn BĐS: 0963 177 497",
   address: "Toà Nhà Lexington, 67 Mai Chí Thọ, Bình Trưng, Hồ Chí Minh",
 };
 
@@ -54,7 +42,7 @@ export const FOOTER = {
       links: [
         { label: "La bàn tài chính", href: "#" },
         { label: "Đánh giá khả năng tài chính", href: "#" },
-        { label: "Mô phỏng kế hoạch chi trả", href: "#" },
+        { label: "Đánh giá khả năng vay vốn", href: "#" },
       ],
     },
     {
@@ -80,15 +68,15 @@ export const SITE = {
   name: "FinHome",
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:
-    "FinHome giúp bạn tự lập kế hoạch mua nhà: xác định tầm giá phù hợp, mô phỏng kế hoạch chi trả và nhận định hướng tài chính tham khảo.",
+    "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
   locale: "vi_VN",
   ogImage: "/og-image.png", // 1200x630, resolved against SITE.url via metadataBase
   keywords: [
     "FinHome",
     "mua nhà",
-    "kế hoạch mua nhà",
+    "vay mua nhà",
     "la bàn tài chính",
-    "mô phỏng chi trả",
+    "khả năng vay",
     "bất động sản",
     "nhà ở xã hội",
     "tài chính cá nhân",

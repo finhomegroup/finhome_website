@@ -24,9 +24,9 @@ export type TeamPortrait = {
 };
 
 export const PARTNER_CTA = {
-  title: "Lập kế hoạch mua nhà rõ ràng hơn",
-  subtitle: "Khám phá dữ liệu và công cụ FinHome dùng để hỗ trợ quyết định của bạn",
-  cta: "Thử ngay",
+  title: "Trở thành đối tác của FinHome",
+  subtitle: "Cùng FinHome kết nối cơ hội, kiến tạo giá trị bền vững",
+  cta: "Liên hệ ngay",
   hoverCta: "Tải xuống",
   tablesCta: "Xem chi tiết hành trình & điểm chạm",
 } as const;
@@ -46,8 +46,8 @@ export const BUYER_JOURNEY = {
       cells: [
         "Cần niềm tin và định hướng ban đầu",
         "Cần rõ ràng về khả năng chi trả",
-        "Cần tự tin về lựa chọn nhà và kịch bản chi trả",
-        "Cần rõ ràng về các bước tự chuẩn bị",
+        "Cần tự tin về lựa chọn nhà và gói vay",
+        "Cần rõ ràng về quy trình để thực hiện",
         "Cần hỗ trợ dài hạn sau khi mua",
       ],
     },
@@ -55,9 +55,9 @@ export const BUYER_JOURNEY = {
       label: "Hành động",
       cells: [
         "Tìm hiểu nhà ở, khám phá thị trường",
-        "Ước tính tầm giá và mô phỏng dòng tiền",
-        "So sánh căn nhà và các kịch bản giả định",
-        "Lưu kết quả và tự lập danh sách việc cần làm",
+        "Ước tính ngân sách, kiểm tra khả năng vay",
+        "So sánh căn nhà, gói vay và lộ trình vay",
+        "Hoàn thiện hồ sơ, theo dõi tiến độ",
         "Theo dõi tài sản và rà soát kế hoạch tài chính hằng năm",
       ],
     },
@@ -65,9 +65,9 @@ export const BUYER_JOURNEY = {
       label: "Tính năng FinHome",
       cells: [
         "Cẩm nang, nghiên cứu và kiểm tra dự án bằng AI",
-        "Xác định tầm giá, mô phỏng kế hoạch chi trả",
-        "La bàn mua nhà, so sánh kịch bản",
-        "Lưu kế hoạch và ghi chú cá nhân",
+        "Xác định tầm giá, ước tính khả năng vay",
+        "La bàn mua nhà, so sánh gói vay",
+        "Chuyển tiếp và theo dõi hồ sơ",
         "Hub theo dõi tài chính và quản lý sau mua nhà",
       ],
     },
@@ -75,13 +75,13 @@ export const BUYER_JOURNEY = {
 } as const;
 
 export const PARTNER_TOUCHPOINTS = {
-  title: "Các lớp thông tin trong FinHome App",
+  title: "Điểm chạm của đối tác với FinHome App",
   columns: BUYER_JOURNEY.stages.map((stage) => stage.label),
   rows: [
-    { label: "Dữ liệu tự nhập", states: [true, true, true, true, true] },
-    { label: "Nguồn công khai", states: [true, false, true, false, false] },
-    { label: "Mô hình tính toán", states: [false, true, true, true, true] },
-    { label: "AI Research", states: [true, false, true, false, false] },
+    { label: "Nhà đầu tư", states: [true, true, true, true, true] },
+    { label: "Chủ đầu tư BĐS", states: [true, false, true, false, false] },
+    { label: "Ngân hàng", states: [false, false, true, true, true] },
+    { label: "Chuyên viên tư vấn", states: [false, false, false, true, false] },
   ] satisfies readonly PartnerTouchpointRow[],
 } as const;
 

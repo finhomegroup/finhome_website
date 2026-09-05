@@ -6,7 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { BlogPostGrid } from "@/components/blog-post-grid";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
-import { PUBLIC_POSTS } from "@/content/posts";
+import { POSTS } from "@/content/posts";
 import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
 import { canonicalPath } from "@/lib/seo";
 import Link from "next/link";
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const pageCount = Math.max(1, Math.ceil(PUBLIC_POSTS.length / BLOG_PAGE_SIZE));
-  const initialPosts = PUBLIC_POSTS.slice(0, BLOG_PAGE_SIZE);
+  const pageCount = Math.max(1, Math.ceil(POSTS.length / BLOG_PAGE_SIZE));
+  const initialPosts = POSTS.slice(0, BLOG_PAGE_SIZE);
 
   return (
     <>

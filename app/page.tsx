@@ -5,7 +5,6 @@ import { Steps } from "@/components/sections/steps";
 import { Platform } from "@/components/sections/platform";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Faq } from "@/components/sections/faq";
-import { PartnersAndTeam } from "@/components/sections/partners-and-team";
 import { News } from "@/components/sections/news";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
@@ -22,7 +21,6 @@ export default function Home() {
         <Platform />
         <Testimonials />
         <Faq />
-        <PartnersAndTeam />
         <News />
       </main>
       <SiteFooter />

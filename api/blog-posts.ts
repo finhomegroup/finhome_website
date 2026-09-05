@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { PUBLIC_POSTS, type Topic } from "../content/posts.js";
+import { POSTS, type Topic } from "../content/posts.js";
 import { BLOG_PAGE_SIZE } from "../content/blog-pagination.js";
 import { TOPICS } from "../content/blog-topics.js";
 
@@ -13,9 +13,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   const rawTopic = typeof req.query.topic === "string" ? req.query.topic : undefined;
   const topic = rawTopic && TOPIC_IDS.has(rawTopic) ? (rawTopic as Topic) : undefined;
-  const filtered = topic
-    ? PUBLIC_POSTS.filter((p) => p.topics.includes(topic))
-    : PUBLIC_POSTS;
+  const filtered = topic ? POSTS.filter((p) => p.topics.includes(topic)) : POSTS;
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / BLOG_PAGE_SIZE));
   const requested = Number(req.query.page) || 1;

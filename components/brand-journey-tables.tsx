@@ -2,10 +2,10 @@ import { BUYER_JOURNEY, PARTNER_TOUCHPOINTS } from "@/content/partners-team";
 import { cn } from "@/lib/cn";
 
 const TOUCHPOINT_ICONS: Record<string, string> = {
-  "Dữ liệu tự nhập": "/images/partners-team/partner-person.svg",
-  "Nguồn công khai": "/images/partners-team/partner-shield.svg",
-  "Mô hình tính toán": "/images/partners-team/partner-settings.svg",
-  "AI Research": "/images/partners-team/partner-chat.svg",
+  "Nhà đầu tư": "/images/partners-team/partner-person.svg",
+  "Chủ đầu tư BĐS": "/images/partners-team/partner-shield.svg",
+  "Ngân hàng": "/images/partners-team/partner-settings.svg",
+  "Chuyên viên tư vấn": "/images/partners-team/partner-chat.svg",
 };
 
 function TableShell({ children }: { children: React.ReactNode }) {
