@@ -57,6 +57,23 @@ export const CATEGORY_ORDER: CalculatorCategory[] = [
   "khac",
 ];
 
+// Build-time guard. The hub iterates CATEGORY_ORDER rather than CALCULATORS, so
+// a category missing from the array would silently drop every calculator in it
+// from the page — with no type error (the array type-checks at any length) and
+// no test, since SP-0 adds none for the hub. CATEGORY_LABELS is a
+// Record<CalculatorCategory, string>, so the compiler already forces IT to stay
+// complete; checking the array against its keys is therefore equivalent to
+// checking against the union itself. This throws during `next build` instead of
+// shipping a page with a missing section.
+for (const category of Object.keys(CATEGORY_LABELS) as CalculatorCategory[]) {
+  if (!CATEGORY_ORDER.includes(category)) {
+    throw new Error(
+      `content/calculators/registry.ts: CATEGORY_ORDER is missing "${category}". ` +
+        "Add it, or the hub page will silently omit that category.",
+    );
+  }
+}
+
 export const CALCULATORS: CalculatorEntry[] = [
   {
     slug: "quy-tac-72",
