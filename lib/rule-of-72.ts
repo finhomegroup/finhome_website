@@ -9,21 +9,6 @@
 const LN2 = Math.log(2);
 
 /**
- * Plain decimal numbers only. Anything else — exponent notation, stray
- * letters, a bare separator — is rejected. A single trailing separator is
- * allowed so results don't blank out mid-typing when the user hits "7,".
- */
-const DECIMAL = /^-?(\d+[.]?\d*|[.]\d+)$/;
-
-/** Parse the rate field. Accepts "7.5" and "7,5" (Vietnamese decimal comma). */
-export function parseRate(raw: string): number | null {
-  const cleaned = raw.trim().replace(",", ".");
-  if (!DECIMAL.test(cleaned)) return null;
-  const value = Number(cleaned);
-  return Number.isFinite(value) ? value : null;
-}
-
-/**
  * Rule-of-72 estimate: 72 / rate.
  *
  * Null when `rate` is not a doubling rate — at 0% the principal never doubles
@@ -44,15 +29,4 @@ export function rule72Years(rate: number): number | null {
 export function exactYears(rate: number): number | null {
   if (!Number.isFinite(rate) || rate <= 0) return null;
   return LN2 / Math.log(1 + rate / 100);
-}
-
-/**
- * 11.8957 -> "11,90".
- *
- * Hand-rolled rather than `Intl.NumberFormat("vi-VN", …)`: the input is
- * prefilled, so the server prerenders a result string the client must hydrate
- * to identically, and this removes any Node-ICU vs. browser-ICU mismatch.
- */
-export function formatYears(value: number): string {
-  return value.toFixed(2).replace(".", ",");
 }

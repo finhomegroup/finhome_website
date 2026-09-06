@@ -6,7 +6,8 @@ import { Reveal } from "@/components/reveal";
 import { Accordion } from "@/components/ui/accordion";
 import { JsonLd } from "@/components/json-ld";
 import { RuleOf72Calculator } from "@/components/rule-of-72-calculator";
-import { RULE_OF_72 as C } from "@/content/rule-of-72";
+import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
+import { RULE_OF_72 as C } from "@/content/calculators/rule-of-72";
 import { canonicalPath, calculatorSchema, faqSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -96,9 +97,7 @@ export default function RuleOf72Page() {
             </section>
 
             {/* Mandatory: this page outputs return figures on a finance domain. */}
-            <p className="rounded-xl border border-ink-4/15 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-              {C.disclaimer}
-            </p>
+            <CalculatorDisclaimer />
           </div>
         </Container>
       </main>

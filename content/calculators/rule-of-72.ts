@@ -18,7 +18,7 @@ export const RULE_OF_72 = {
     "Quy tắc 72 là cách nhẩm nhanh: lấy 72 chia cho lãi suất hằng năm, bạn có ngay số năm để số tiền gốc nhân đôi nhờ lãi kép. Nhập lãi suất bên dưới để xem kết quả.",
 
   form: {
-    rateLabel: "Lãi suất hằng năm (%)",
+    rateLabel: "Lãi suất hằng năm",
     rateSuffix: "%",
     rateHelp: "Nhập lãi suất kép hằng năm, ví dụ 6 hoặc 7,5.",
     rateInvalid: "Vui lòng nhập lãi suất lớn hơn 0 để tính thời gian nhân đôi.",
@@ -80,7 +80,4 @@ export const RULE_OF_72 = {
       },
     ],
   },
-
-  disclaimer:
-    "Công cụ này chỉ mang tính minh họa, dựa trên mức lãi suất do bạn tự nhập và giả định lãi suất không đổi. Kết quả không trừ thuế, phí và lạm phát, không phải cam kết lợi nhuận và không phải lời khuyên đầu tư. Vui lòng cân nhắc kỹ hoặc tham khảo chuyên gia trước khi ra quyết định tài chính.",
 } as const;
