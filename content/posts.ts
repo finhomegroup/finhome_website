@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-cho-thue-8300m2-dat-khu-cong-nghiep-hoa-ninh",
+    title: "Đà Nẵng cho thuê 8.300m2 đất tại Bà Nà xây khu công nghiệp Hòa Ninh",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Đà Nẵng cho Công ty CP Thanh Bình Phú Mỹ thuê hơn 8.300m2 đất tại xã Bà Nà triển khai dự án khu công nghiệp Hòa Ninh, thời hạn 50 năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-cho-thue-8300m2-dat-khu-cong-nghiep-hoa-ninh.jpg",
+    date: "2026-09-06",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/da-nang-cho-thue-8300m2-dat-lam-khu-cong-nghiep-hoa-ninh-d150160.html",
+        "accessed": "2026-09-06"
+      },
+  },
+  {
     slug: "muc-xu-phat-vi-pham-quan-ly-nha-chung-cu-kinh-phi-bao-tri-2026",
     title: "Phạt nặng vi phạm quản lý chung cư và kinh phí bảo trì: Bước siết chặt kỷ luật thị trường",
     category: "Chính sách",
