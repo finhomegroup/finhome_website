@@ -28,7 +28,7 @@ export function CalculatorDisclaimer({
       className={cn(
         "rounded-xl border p-4 text-sm leading-relaxed",
         isUsRules
-          ? "border-red-400/40 bg-red-50 text-ink-2"
+          ? "border-red-400/40 bg-bg-soft text-ink-2"
           : "border-ink-4/15 bg-bg-soft text-ink-2",
         className,
       )}
