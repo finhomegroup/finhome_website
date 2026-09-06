@@ -73,3 +73,43 @@ export function articleSchema(post: Post): Record<string, unknown> {
       : {}),
   };
 }
+
+/**
+ * FAQPage structured data. Callers pass the same array they render as prose,
+ * so the visible copy and the markup cannot drift apart.
+ */
+export function faqSchema(
+  items: readonly { q: string; a: string }[],
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+}
+
+/** WebApplication structured data for a free on-site calculator tool. */
+export function calculatorSchema(input: {
+  name: string;
+  description: string;
+  /** Site-relative route, e.g. "/cong-cu/quy-tac-72". */
+  path: string;
+}): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: input.name,
+    description: input.description,
+    url: absUrl(canonicalPath(input.path)),
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "All",
+    inLanguage: "vi-VN",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "VND" },
+    publisher: { "@type": "Organization", name: SITE.name },
+  };
+}
