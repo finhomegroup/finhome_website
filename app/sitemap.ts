@@ -9,6 +9,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absUrl(canonicalPath("/")), changeFrequency: "weekly", priority: 1 },
     { url: absUrl(canonicalPath("/blog")), changeFrequency: "weekly", priority: 0.8 },
     { url: absUrl(canonicalPath("/vision")), changeFrequency: "monthly", priority: 0.5 },
+    {
+      url: absUrl(canonicalPath("/cong-cu/quy-tac-72")),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
     { url: absUrl(canonicalPath("/privacy-policy")), changeFrequency: "yearly", priority: 0.3 },
     { url: absUrl(canonicalPath("/terms")), changeFrequency: "yearly", priority: 0.3 },
   ];
