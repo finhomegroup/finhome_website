@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "quang-ninh-chap-thuan-dau-tu-du-an-nha-o-xa-hoi-647-ty-dong-doi-thuy-san",
+    title: "Quảng Ninh chấp thuận đầu tư dự án nhà ở xã hội 647 tỷ đồng tại đồi Thủy Sản",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "UBND TP Quảng Ninh chấp thuận chủ trương đầu tư dự án nhà ở xã hội tại đồi Thủy Sản, phường Bãi Cháy với vốn 647 tỷ đồng, cung 551 căn hộ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/quang-ninh-chap-thuan-dau-tu-du-an-nha-o-xa-hoi-647-ty-dong-doi-thuy-san.png",
+    date: "2026-09-06",
+    source: {
+        "name": "batdongsan.baoxaydung.vn",
+        "url": "https://batdongsan.baoxaydung.vn/quang-ninh-chap-thuan-dau-tu-du-an-nha-o-xa-hoi-647-ty-dong-tai-doi-thuy-san-192260904162803455.htm",
+        "accessed": "2026-09-06"
+      },
+  },
+  {
     slug: "muc-xu-phat-vi-pham-quan-ly-nha-chung-cu-kinh-phi-bao-tri-2026",
     title: "Phạt nặng vi phạm quản lý chung cư và kinh phí bảo trì: Bước siết chặt kỷ luật thị trường",
     category: "Chính sách",
