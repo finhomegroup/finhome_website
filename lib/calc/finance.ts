@@ -61,7 +61,12 @@ export function toNominal(effective: number, periods: number): number {
   return periods * ((1 + effective) ** (1 / periods) - 1);
 }
 
-/** Payment per period. Negative for a loan you are repaying. */
+/**
+ * Payment per period. Negative for a loan you are repaying.
+ *
+ * Undefined for `periods = 0` (returns `-Infinity`); callers must validate
+ * before calling.
+ */
 export function pmt(
   rate: number,
   periods: number,
@@ -107,7 +112,12 @@ export function fv(
   );
 }
 
-/** Number of periods required. */
+/**
+ * Number of periods required.
+ *
+ * Undefined for `payment = 0` (returns `-Infinity` in the zero-rate branch);
+ * callers must validate before calling.
+ */
 export function nper(
   rate: number,
   payment: number,
@@ -128,6 +138,14 @@ export function nper(
  *
  * Null when no rate in the searched bracket satisfies the cash flows, which
  * callers must surface as "no solution" rather than substituting a guess.
+ *
+ * The upper bracket is a TERM CEILING, not a cure for overflow: `(1 + rate)
+ * ** periods` still overflows float64 for very large `periods` at this
+ * bracket's rate, and the solver will return `null` rather than a wrong
+ * answer. At the current bound this is safe through 480 monthly periods
+ * (40 years), which covers every calculator in this suite. Daily
+ * compounding over multiple years (periods in the thousands) can still
+ * overflow and return `null` — that case is out of scope here.
  */
 export function solveRate(
   periods: number,
@@ -137,10 +155,13 @@ export function solveRate(
   type: 0 | 1 = 0,
 ): number | null {
   // Lower bound just above -100%: at exactly -1 the growth term collapses.
+  // Upper bound 1 (100%/period, ~119,000%/year) is far above any real
+  // product, and keeps (1 + rate) ** periods from overflowing float64
+  // through the term lengths this suite's calculators use.
   return bisect(
     (rate) => fv(rate, periods, payment, present, type) - future,
     -0.999_999,
-    10,
+    1,
   );
 }
 
@@ -175,17 +196,21 @@ export type AmortizeInput = {
  * presentation-shaped helper feeding a table a user reads.
  *
  * Extra payments shorten the schedule, so the returned array can be shorter
- * than `periods`. The final row is trimmed so the balance lands exactly on
- * zero instead of a rounding residue.
+ * than `periods`. The final row's principal portion is forced to exactly
+ * the outstanding balance (whether that final row is the scheduled last
+ * period or an earlier one reached via extra payments), so the schedule
+ * ends at exactly zero by construction rather than a rounding residue.
  *
- * Null when the inputs cannot describe a loan.
+ * Null when the inputs cannot describe a loan, including a non-integer
+ * `periods`.
  */
 export function amortize(input: AmortizeInput): ScheduleRow[] | null {
   const { principal, ratePerPeriod, periods, extraPerPeriod = 0 } = input;
 
   if (!Number.isFinite(principal) || principal <= 0) return null;
   if (!Number.isFinite(ratePerPeriod) || ratePerPeriod < 0) return null;
-  if (!Number.isFinite(periods) || periods <= 0) return null;
+  if (!Number.isFinite(periods) || periods <= 0 || !Number.isInteger(periods))
+    return null;
   if (!Number.isFinite(extraPerPeriod) || extraPerPeriod < 0) return null;
 
   const scheduled = Math.abs(pmt(ratePerPeriod, periods, principal));
@@ -195,12 +220,13 @@ export function amortize(input: AmortizeInput): ScheduleRow[] | null {
   for (let period = 1; period <= periods && balance > 0; period += 1) {
     const interest = balance * ratePerPeriod;
     let principalPart = scheduled + extraPerPeriod - interest;
-    // Final period: never repay more than is outstanding.
-    if (principalPart > balance) principalPart = balance;
+    // Final period (scheduled or forced by extra payments): never repay
+    // more than is outstanding, and force the payoff on the last scheduled
+    // period so the balance lands on exactly zero by construction rather
+    // than relying on a rounding tolerance.
+    if (period >= periods || principalPart > balance) principalPart = balance;
     const payment = interest + principalPart;
     balance -= principalPart;
-    // Squash a floating-point residue so the last row reads exactly zero.
-    if (Math.abs(balance) < 1e-6) balance = 0;
     rows.push({ period, payment, interest, principal: principalPart, balance });
   }
 

@@ -10,6 +10,7 @@ import {
   toNominal,
   amortize,
 } from "@/lib/calc/finance";
+import type { ScheduleRow } from "@/lib/calc/finance";
 
 // A 100 million đồng loan over 12 months at 12%/năm nominal, compounded
 // monthly -> 1%/period. Used across several tests below.
@@ -74,6 +75,12 @@ describe("solveRate", () => {
     // writing this plan.
     expect(solveRate(12, 1000, 100_000_000)).toBeNull();
   });
+
+  it("resolves a 30-year monthly mortgage", () => {
+    const solved = solveRate(360, pmt(0.009, 360, 2_000_000_000), 2_000_000_000);
+    expect(solved).not.toBeNull();
+    expect(solved as number).toBeCloseTo(0.009, 6);
+  });
 });
 
 describe("periodsPerYear", () => {
@@ -104,51 +111,97 @@ describe("toEffective / toNominal", () => {
   });
 });
 
-describe("amortize", () => {
-  const schedule = amortize({
-    principal: PRINCIPAL,
-    ratePerPeriod: RATE,
-    periods: N,
+describe("nonzero future value and annuity due", () => {
+  const R2 = 0.01;
+  const N2 = 12;
+  const PV2 = 100_000_000;
+  const FV2 = 5_000_000;
+
+  it("pins pmt for both annuity types", () => {
+    expect(pmt(R2, N2, PV2, FV2, 0)).toBeCloseTo(-9_279_122.811226, 4);
+    expect(pmt(R2, N2, PV2, FV2, 1)).toBeCloseTo(-9_187_250.308144, 4);
   });
 
+  it("pv inverts pmt with a future value, both types", () => {
+    expect(pv(R2, N2, pmt(R2, N2, PV2, FV2, 0), FV2, 0)).toBeCloseTo(PV2, 4);
+    expect(pv(R2, N2, pmt(R2, N2, PV2, FV2, 1), FV2, 1)).toBeCloseTo(PV2, 4);
+  });
+
+  it("fv returns the target future value, both types", () => {
+    expect(fv(R2, N2, pmt(R2, N2, PV2, FV2, 0), PV2, 0)).toBeCloseTo(FV2, 4);
+    expect(fv(R2, N2, pmt(R2, N2, PV2, FV2, 1), PV2, 1)).toBeCloseTo(FV2, 4);
+  });
+
+  it("nper recovers the term with a future value, both types", () => {
+    expect(nper(R2, pmt(R2, N2, PV2, FV2, 0), PV2, FV2, 0)).toBeCloseTo(N2, 6);
+    expect(nper(R2, pmt(R2, N2, PV2, FV2, 1), PV2, FV2, 1)).toBeCloseTo(N2, 6);
+  });
+});
+
+describe("amortize", () => {
   it("produces one row per period", () => {
+    const schedule = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    });
     expect(schedule).not.toBeNull();
-    expect((schedule as []).length).toBe(N);
+    expect((schedule as ScheduleRow[]).length).toBe(N);
   });
 
   it("presents the payment as a positive figure", () => {
-    expect((schedule as { payment: number }[])[0].payment).toBeGreaterThan(0);
+    const schedule = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    }) as ScheduleRow[];
+    expect(schedule[0].payment).toBeGreaterThan(0);
   });
 
   // The two invariants that catch a sign-convention error before it reaches
   // 17 loan calculators. These matter more than any single spot value.
   it("repays exactly the principal, no more and no less", () => {
-    const rows = schedule as { principal: number }[];
+    const rows = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    }) as ScheduleRow[];
     const repaid = rows.reduce((sum, row) => sum + row.principal, 0);
     expect(repaid).toBeCloseTo(PRINCIPAL, 2);
   });
 
   it("ends at a zero balance", () => {
-    const rows = schedule as { balance: number }[];
+    const rows = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    }) as ScheduleRow[];
     expect(rows[rows.length - 1].balance).toBeCloseTo(0, 2);
   });
 
   it("splits every row into interest plus principal", () => {
-    const rows = schedule as
-      { payment: number; interest: number; principal: number }[];
+    const rows = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    }) as ScheduleRow[];
     for (const row of rows) {
       expect(row.interest + row.principal).toBeCloseTo(row.payment, 6);
     }
   });
 
   it("charges interest on the opening balance in period 1", () => {
-    const rows = schedule as { interest: number }[];
+    const rows = amortize({
+      principal: PRINCIPAL,
+      ratePerPeriod: RATE,
+      periods: N,
+    }) as ScheduleRow[];
     expect(rows[0].interest).toBeCloseTo(PRINCIPAL * RATE, 6);
   });
 
   it("handles a zero rate as pure principal repayment", () => {
     const flat = amortize({ principal: 1200, ratePerPeriod: 0, periods: 12 });
-    const rows = flat as { payment: number; interest: number }[];
+    const rows = flat as ScheduleRow[];
     expect(rows.length).toBe(12);
     expect(rows[0].payment).toBeCloseTo(100, 10);
     expect(rows[0].interest).toBeCloseTo(0, 10);
@@ -161,7 +214,7 @@ describe("amortize", () => {
       periods: N,
       extraPerPeriod: 2_000_000,
     });
-    const rows = withExtra as { balance: number }[];
+    const rows = withExtra as ScheduleRow[];
     expect(rows.length).toBeLessThan(N);
     expect(rows[rows.length - 1].balance).toBeCloseTo(0, 2);
   });
@@ -172,9 +225,61 @@ describe("amortize", () => {
       ratePerPeriod: RATE,
       periods: N,
       extraPerPeriod: 2_000_000,
-    }) as { principal: number }[];
+    }) as ScheduleRow[];
     const repaid = withExtra.reduce((sum, row) => sum + row.principal, 0);
     expect(repaid).toBeCloseTo(PRINCIPAL, 2);
+  });
+
+  // toBeCloseTo(0, 2) above passes on a residue of a few thousandths of a
+  // đồng, which is exactly what shipped in round 1. This asserts strict
+  // equality on a long, large schedule so a returning residue fails loudly.
+  it("ends at exactly zero on a long, large schedule", () => {
+    const rows = amortize({
+      principal: 100_000_000_000,
+      ratePerPeriod: 0.0075,
+      periods: 360,
+    }) as ScheduleRow[];
+    expect(rows.length).toBe(360);
+    expect(rows[rows.length - 1].balance).toBe(0);
+  });
+
+  it("amortizes a realistic 20-year monthly loan", () => {
+    const rows = amortize({
+      principal: 1_000_000_000,
+      ratePerPeriod: 0.008,
+      periods: 240,
+    }) as ScheduleRow[];
+    expect(rows.length).toBe(240);
+    expect(rows.reduce((sum, row) => sum + row.principal, 0)).toBeCloseTo(
+      1_000_000_000,
+      2,
+    );
+    expect(rows[rows.length - 1].balance).toBe(0);
+  });
+
+  it("rejects a negative or non-finite extra payment", () => {
+    expect(
+      amortize({
+        principal: PRINCIPAL,
+        ratePerPeriod: RATE,
+        periods: N,
+        extraPerPeriod: -1,
+      }),
+    ).toBeNull();
+    expect(
+      amortize({
+        principal: PRINCIPAL,
+        ratePerPeriod: RATE,
+        periods: N,
+        extraPerPeriod: Number.NaN,
+      }),
+    ).toBeNull();
+  });
+
+  it("rejects a non-integer term", () => {
+    expect(
+      amortize({ principal: PRINCIPAL, ratePerPeriod: RATE, periods: 12.5 }),
+    ).toBeNull();
   });
 
   it("returns null on inputs that cannot produce a schedule", () => {
