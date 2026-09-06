@@ -20,8 +20,9 @@ export type BisectOptions = {
 /**
  * Find x in [lo, hi] with f(x) = 0.
  *
- * Returns null when f is non-finite at either endpoint, or when f(lo) and
- * f(hi) share a sign so no root is bracketed.
+ * Returns null when f is non-finite at either endpoint, when f(lo) and
+ * f(hi) share a sign so no root is bracketed, or when the bracket is
+ * reversed or degenerate (lo >= hi, including a NaN bound).
  */
 export function bisect(
   f: (x: number) => number,
@@ -29,6 +30,8 @@ export function bisect(
   hi: number,
   { tolerance = 1e-10, maxIterations = 200 }: BisectOptions = {},
 ): number | null {
+  if (!(lo < hi)) return null;
+
   let a = lo;
   let b = hi;
   let fa = f(a);

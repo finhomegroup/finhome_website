@@ -23,6 +23,14 @@ describe("bisect", () => {
     expect(bisect((x) => 1 / x, 0, 1)).toBeNull();
   });
 
+  it("returns null for a reversed or degenerate bracket", () => {
+    // Same function and bounds as the bracketing test, but the wrong way round.
+    // Without the guard this returns 5 — a confident non-root.
+    expect(bisect((x) => x * x - 4, 10, 0)).toBeNull();
+    expect(bisect((x) => x * x - 4, 5, 5)).toBeNull();
+    expect(bisect((x) => x * x - 4, Number.NaN, 10)).toBeNull();
+  });
+
   it("recovers a known IRR from a cash-flow series", () => {
     const flows = [-1000, 500, 500, 500];
     const npv = (r: number) =>

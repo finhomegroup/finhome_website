@@ -52,13 +52,13 @@ export function periodsPerYear(compounding: Compounding): number {
 }
 
 /** Nominal annual rate -> effective annual rate. 0.12 monthly -> 0.126825. */
-export function toEffective(nominal: number, periods: number): number {
-  return (1 + nominal / periods) ** periods - 1;
+export function toEffective(nominal: number, perYear: number): number {
+  return (1 + nominal / perYear) ** perYear - 1;
 }
 
 /** Effective annual rate -> nominal annual rate. The inverse of toEffective. */
-export function toNominal(effective: number, periods: number): number {
-  return periods * ((1 + effective) ** (1 / periods) - 1);
+export function toNominal(effective: number, perYear: number): number {
+  return perYear * ((1 + effective) ** (1 / perYear) - 1);
 }
 
 /**
@@ -81,7 +81,11 @@ export function pmt(
   );
 }
 
-/** Present value of a stream of payments. */
+/**
+ * Present value of a stream of payments.
+ *
+ * Excel/HP-12C convention: outflows negative, inflows positive; `rate` is per period.
+ */
 export function pv(
   rate: number,
   periods: number,
@@ -96,7 +100,11 @@ export function pv(
   );
 }
 
-/** Future value of a stream of payments. */
+/**
+ * Future value of a stream of payments.
+ *
+ * Excel/HP-12C convention: outflows negative, inflows positive; `rate` is per period.
+ */
 export function fv(
   rate: number,
   periods: number,
@@ -117,6 +125,8 @@ export function fv(
  *
  * Undefined for `payment = 0` (returns `-Infinity` in the zero-rate branch);
  * callers must validate before calling.
+ *
+ * Excel/HP-12C convention: outflows negative, inflows positive; `rate` is per period.
  */
 export function nper(
   rate: number,
@@ -146,6 +156,8 @@ export function nper(
  * (40 years), which covers every calculator in this suite. Daily
  * compounding over multiple years (periods in the thousands) can still
  * overflow and return `null` — that case is out of scope here.
+ *
+ * Excel/HP-12C convention: outflows negative, inflows positive; the returned rate is per period.
  */
 export function solveRate(
   periods: number,
@@ -214,6 +226,7 @@ export function amortize(input: AmortizeInput): ScheduleRow[] | null {
   if (!Number.isFinite(extraPerPeriod) || extraPerPeriod < 0) return null;
 
   const scheduled = Math.abs(pmt(ratePerPeriod, periods, principal));
+  if (!Number.isFinite(scheduled)) return null;
   const rows: ScheduleRow[] = [];
   let balance = principal;
 

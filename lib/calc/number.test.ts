@@ -5,6 +5,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  PLACEHOLDER,
 } from "@/lib/calc/number";
 
 describe("parseDecimal", () => {
@@ -78,6 +79,14 @@ describe("formatDecimal", () => {
     expect(formatDecimal(7.2725, 0)).toBe("7");
     expect(formatDecimal(7.2725, 4)).toBe("7,2725");
   });
+
+  it("renders the placeholder rather than non-finite or scientific output", () => {
+    expect(formatDecimal(Number.NaN)).toBe(PLACEHOLDER);
+    expect(formatDecimal(Number.POSITIVE_INFINITY)).toBe(PLACEHOLDER);
+    expect(formatDecimal(1e21)).toBe(PLACEHOLDER);
+    expect(formatPercent(Number.NaN)).toBe(PLACEHOLDER);
+    expect(formatPercent(Number.NEGATIVE_INFINITY)).toBe(PLACEHOLDER);
+  });
 });
 
 describe("formatMoney", () => {
@@ -106,6 +115,11 @@ describe("formatMoney", () => {
     expect(formatMoney(Number.NaN)).toBe("—");
     expect(formatMoney(Number.POSITIVE_INFINITY)).toBe("—");
     expect(formatMoney(1e21)).toBe("—");
+  });
+
+  it("never renders negative zero from a float residue", () => {
+    expect(formatMoney(-0.4)).toBe("0");
+    expect(formatMoney(-0.0001, 2)).toBe("0,00");
   });
 });
 

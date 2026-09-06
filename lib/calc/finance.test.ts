@@ -291,4 +291,18 @@ describe("amortize", () => {
       amortize({ principal: PRINCIPAL, ratePerPeriod: Number.NaN, periods: N }),
     ).toBeNull();
   });
+
+  it("returns null instead of a schedule of NaN when pmt overflows", () => {
+    expect(
+      amortize({ principal: 1e8, ratePerPeriod: 0.5, periods: 2000 }),
+    ).toBeNull();
+  });
+
+  it("presents the same payment pmt() returns, with the sign flipped", () => {
+    // amortize is the one deliberate presentation-shaped exception to the
+    // Excel sign convention. Pinning the relationship stops a caller mixing
+    // the two and rendering a negative "Tổng lãi phải trả".
+    const rows = amortize({ principal: PRINCIPAL, ratePerPeriod: RATE, periods: N }) as ScheduleRow[];
+    expect(rows[0].payment).toBeCloseTo(-pmt(RATE, N, PRINCIPAL), 6);
+  });
 });

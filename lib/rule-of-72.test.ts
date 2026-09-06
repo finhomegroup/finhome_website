@@ -36,6 +36,10 @@ describe("exactYears", () => {
     expect(exactYears(Number.NaN)).toBeNull();
     expect(exactYears(Number.POSITIVE_INFINITY)).toBeNull();
   });
+
+  it("returns null when the rate is too small for log1p to resolve above zero", () => {
+    expect(exactYears(1e-21)).toBeNull();
+  });
 });
 
 // The reference table from the spec, end to end through parse -> compute ->

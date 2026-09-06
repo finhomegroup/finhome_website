@@ -9,7 +9,7 @@ export default defineConfig({
     // Pure logic only — no jsdom, no component tests. Keeps the runner fast
     // and the dependency surface at exactly one package.
     environment: "node",
-    include: ["lib/**/*.test.ts"],
+    include: ["{lib,content,components}/**/*.test.ts"],
   },
   resolve: {
     // Mirror the `@/*` -> repo-root alias from tsconfig.json so test files can

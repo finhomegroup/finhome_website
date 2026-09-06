@@ -28,5 +28,8 @@ export function rule72Years(rate: number): number | null {
  */
 export function exactYears(rate: number): number | null {
   if (!Number.isFinite(rate) || rate <= 0) return null;
-  return LN2 / Math.log(1 + rate / 100);
+  const years = LN2 / Math.log(1 + rate / 100);
+  // A rate small enough that log1p underflows to 0 gives Infinity, which the
+  // signature does not permit.
+  return Number.isFinite(years) ? years : null;
 }

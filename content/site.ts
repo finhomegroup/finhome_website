@@ -47,7 +47,10 @@ export const FOOTER = {
     },
     {
       title: "Công cụ",
-      links: [{ label: "Quy tắc 72", href: "/cong-cu/quy-tac-72" }],
+      links: [
+        { label: "Tất cả công cụ", href: "/cong-cu/" },
+        { label: "Quy tắc 72", href: "/cong-cu/quy-tac-72/" },
+      ],
     },
     {
       title: "FinHome",

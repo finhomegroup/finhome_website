@@ -19,11 +19,21 @@
 export const PLACEHOLDER = "—";
 
 /**
- * Above this magnitude `toFixed` drifts toward exponential notation, and the
+ * Above this magnitude `toFixed` drifts toward exponential notation (the
+ * actual drift point is 1e21 — see `formatDecimal(1e21)` -> "1e+21"), and the
  * figure is meaningless in Vietnamese prose anyway. We show the placeholder
- * rather than emit "7.2e+302" into a sentence about đồng.
+ * rather than emit "7.2e+302" into a sentence about đồng. 1e18 remains the
+ * right ceiling for VND — Vietnam's GDP is on the order of 4.5e14 VND.
  */
 const MAX_DISPLAY = 1e18;
+
+/**
+ * Non-finite and absurd magnitudes render as the placeholder, never as
+ * "NaN", "Infinity", or scientific notation, in Vietnamese prose.
+ */
+function unrenderable(value: number): boolean {
+  return !Number.isFinite(value) || Math.abs(value) >= MAX_DISPLAY;
+}
 
 /**
  * Plain decimal numbers only. Exponent notation, stray letters and a bare
@@ -61,16 +71,18 @@ export function parseMoney(raw: string): number | null {
 
 /** 11.8957 -> "11,90". */
 export function formatDecimal(value: number, dp = 2): string {
+  if (unrenderable(value)) return PLACEHOLDER;
   return value.toFixed(dp).replace(".", ",");
 }
 
 /** 1440000 -> "1.440.000". `dp` defaults to 0: VND has no circulating subunit. */
 export function formatMoney(value: number, dp = 0): string {
-  if (!Number.isFinite(value) || Math.abs(value) >= MAX_DISPLAY) {
-    return PLACEHOLDER;
-  }
-  const sign = value < 0 ? "-" : "";
+  if (unrenderable(value)) return PLACEHOLDER;
   const [whole, fraction] = Math.abs(value).toFixed(dp).split(".");
+  // Determine the sign from the ROUNDED value, not the raw one, so a float
+  // residue like -0.4 (which rounds to 0) never renders as "-0".
+  const roundedIsZero = /^0+$/.test(whole) && (!fraction || /^0+$/.test(fraction));
+  const sign = value < 0 && !roundedIsZero ? "-" : "";
   // Insert "." at every thousands boundary, right to left.
   const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return `${sign}${grouped}${fraction ? `,${fraction}` : ""}`;
@@ -78,5 +90,6 @@ export function formatMoney(value: number, dp = 0): string {
 
 /** 12.6825 -> "12,68%". */
 export function formatPercent(value: number, dp = 2): string {
+  if (unrenderable(value)) return PLACEHOLDER;
   return `${formatDecimal(value, dp)}%`;
 }
