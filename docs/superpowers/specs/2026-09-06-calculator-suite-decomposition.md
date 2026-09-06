@@ -118,7 +118,9 @@ Eleven calculators cannot be cloned as client-side arithmetic. `next.config.ts` 
 | Unit Conversion | Conversion factor table | Vendored static table — genuinely fine |
 | Date Calculator | Current date | Needs `new Date()`, which collides with the hydration determinism rule the suite is built on. Solvable (compute in an effect after mount), but it is the one calculator that must break the existing pattern |
 
-**My recommendation, which you should overrule if you disagree:** vendor the static datasets (inflation, unit conversion, tax tables), special-case the Date calculator's clock, and **omit the two live-data calculators** (Currency Converter, Commodities and Futures) rather than ship rates that are either stale or dependent on an unowned third-party key. If you want those two, the honest version is a page that clearly labels the data source and its timestamp.
+**DECIDED (2026-09-06):** vendor the static datasets (inflation, unit conversion, tax tables), special-case the Date calculator's clock, and **omit Currency Converter and Commodities and Futures**. Shipping FX or commodity rates that are either stale between deploys or dependent on a third-party key embedded in the client bundle is not acceptable on a bank-adjacent domain. Neither tool is revisited unless an owned rate source (e.g. an internal or SBV feed) becomes available.
+
+**Target is therefore 75 calculators, not 77.**
 
 ## The US-specific question, recorded
 
@@ -193,7 +195,9 @@ SP-0 (foundation + hub + retrofit)   <- blocks everything
               └─ SP-8 suite-wide finish
 ```
 
-SP-1 through SP-6 are mutually independent once SP-0 lands, so their order can follow whatever you want live soonest. My recommendation is SP-2 immediately after SP-0, ahead of the easier SP-1, because loan and mortgage tools are the ones FinHome's users actually search for.
+SP-1 through SP-6 are mutually independent once SP-0 lands, so their order can follow whatever you want live soonest.
+
+**DECIDED (2026-09-06):** **SP-2 (loan/mortgage) runs immediately after SP-0**, ahead of the easier SP-1. Loan and mortgage tools are what FinHome's users actually search for, and putting the amortization table second validates SP-0's hardest design decision against a real consumer straight away rather than after five easy sub-projects have already built on it. Remaining order after SP-2: SP-1, SP-3, SP-4, SP-6, SP-5, SP-7, SP-8.
 
 ## Honest estimate
 
