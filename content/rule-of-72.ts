@@ -1,7 +1,7 @@
 // Copy for /cong-cu/quy-tac-72/ — the Rule of 72 calculator.
 //
 // Original FinHome copy. The arithmetic is standard finance, but none of the
-// wording or layout here is taken from the reference tool at fncalculator.com.
+// wording or layout here is copied from any third-party reference tool.
 //
 // `faq.items` is reused verbatim as FAQPage JSON-LD on the page, so the prose
 // and the structured data cannot drift apart.
