@@ -13,7 +13,7 @@
 
 Three further gaps block the suite:
 
-1. **No shared numeric primitives.** 6 calculators need root-finding (IRR, NPV, bond YTM, APR, APR advanced, TVM's rate solve), 1 needs a normal CDF (Black-Scholes), and 17 need an amortization schedule. None exists.
+1. **No shared numeric primitives.** 6 calculators need root-finding (IRR, NPV, bond YTM, APR, APR advanced, TVM's rate solve), 1 needs a normal CDF (Black-Scholes), and 17 need an amortization schedule. None exists. SP-0 closes the root-finder and the annuity/schedule functions; the normal CDF is deferred to SP-6, its only consumer.
 2. **No Vietnamese money formatting.** `formatYears` handles two decimals and nothing else. The final review flagged that `0,05%` already renders `1440,00 năm` where Vietnamese convention is `1.440,00`. Money fields make this unavoidable.
 3. **`/cong-cu/` returns a hard 404.** The namespace was chosen deliberately, but nothing serves its index, so a user trimming the URL or a crawler walking the hierarchy hits a dead end.
 
@@ -33,19 +33,14 @@ lib/calc/
   number.ts      parse + format, Vietnamese convention, hydration-deterministic
   finance.ts     pmt/pv/fv/nper/rate, compounding conversion, amortize()
   solve.ts       bisect() root-finder
-  stats.ts       normalCdf()
   *.test.ts      one suite per module, reference values from published sources
 
 components/calc/
   calculator-card.tsx    <CalculatorCard>   shell + optional disclaimer slot
   field-group.tsx        <FieldGroup>       titled section of fields
   number-field.tsx       <NumberField>      owns label/id, describedby, invalid, message live region
-  select-field.tsx       <SelectField>
-  radio-group-field.tsx  <RadioGroupField>
-  unit-toggle.tsx        <UnitToggle>       value + unit pair (năm/tháng)
   result-group.tsx       <ResultGroup>      owns THE single results aria-live region
   result-row.tsx         <ResultRow>
-  schedule-table.tsx     <ScheduleTable>    class-T schedules
   use-calc-fields.ts     useCalcFields()    state + bind()
   disclaimer.tsx         <CalculatorDisclaimer variant>
 
@@ -53,7 +48,7 @@ content/calculators/
   registry.ts      the ONE list of all calculators; drives hub, sitemap, cross-links
 
 app/cong-cu/
-  page.tsx                    hub: all calculators by category, filterable
+  page.tsx                    hub: all built calculators, grouped by category
   quy-tac-72/page.tsx         unchanged route, retrofitted island
 ```
 
@@ -63,9 +58,9 @@ Generalizes and replaces `parseRate`/`formatYears`.
 
 ```ts
 parseDecimal(raw: string): number | null   // "7,5" | "7.5" | "7," -> 7.5 ; rejects "1e9"
-parseMoney(raw: string): number | null    // "500.000.000" | "500,000,000" -> 5e8
+parseMoney(raw: string): number | null     // "500.000.000" -> 5e8 ; "," is the DECIMAL mark
 formatDecimal(value: number, dp?: number): string  // 11.8957 -> "11,90"
-formatMoney(value: number): string        // 1440000 -> "1.440.000"
+formatMoney(value: number, dp?: number): string    // 1440000 -> "1.440.000" (dp defaults to 0)
 formatPercent(value: number, dp?: number): string
 ```
 
@@ -104,14 +99,6 @@ bisect(f: (x: number) => number, lo: number, hi: number, opts?): number | null
 
 Bisection, not Newton: it cannot diverge, needs no derivative, and returns `null` on a non-bracketing interval rather than a plausible wrong answer. For IRR on a well-formed cash-flow series that trade is correct — a returned number must be trustworthy. Tolerance and max-iteration defaults are explicit, and `null` propagates to the UI as "no solution" exactly as `rule72Years(0)` already does.
 
-### `lib/calc/stats.ts`
-
-```ts
-normalCdf(z: number): number
-```
-
-Abramowitz–Stegun 7.1.26 (|error| < 7.5e-8), which is ample for an option-price display and avoids a dependency.
-
 ### UI primitives — the accessibility contract
 
 Every contract the final review established lives in exactly one place, and no calculator author can forget one:
@@ -119,12 +106,8 @@ Every contract the final review established lives in exactly one place, and no c
 - `NumberField` generates its own `id` via React 19's `useId`, wires `htmlFor`/`id`, points `aria-describedby` at its own help/validation paragraph, sets `aria-invalid`, and puts **`aria-live="polite"` on that paragraph** — the defect the final review caught, fixed once for 75 calculators.
 - `NumberField` renders `type="text"` + `inputMode="decimal"`, because `type="number"` rejects the comma decimal separator Vietnamese keyboards produce.
 - A field's unit must be in its **label text**, not only in a visual suffix. The Rule of 72 review found the `%` suffix was `aria-hidden`, leaving non-visual users no unit at all. `NumberField` takes `unit` and appends it to the accessible label rather than relying on the decorative suffix.
-- `ResultGroup` renders **the one** `aria-live="polite"` region wrapping all its rows, with `aria-atomic="true"` so a screen reader announces "Trả hằng tháng: 12.500.000 ₫" rather than a bare number with no label — the second half of a finding the last review raised and I deferred.
+- `ResultGroup` renders **the one** `aria-live="polite"` region wrapping all its rows. `aria-atomic="true"` goes on **each `ResultRow`, not on the group** — this is a correction to my own earlier draft. `aria-atomic` applies to the changed node's nearest ancestor carrying it, so putting it on the group would re-announce all six outputs of a loan calculator on every keystroke. On the row, it announces just the changed row as "Trả hằng tháng: 12.500.000 ₫" — label plus value, which was the point of the finding the last review raised and I deferred.
 - `ResultRow` renders `—` for `null`, never `NaN` or `Infinity`.
-
-### `<ScheduleTable>`
-
-A 30-year monthly amortization is 360 rows; prerendering all of them for 17 calculators is real payload. Default view is the **yearly summary** (≤ 40 rows), with a control to expand to monthly. The yearly rows are what the server prerenders; monthly is computed client-side on expand. Table markup uses a real `<table>` with `<caption>` and `<th scope>` — a schedule is tabular data and a div grid would be inaccessible.
 
 ### `content/calculators/registry.ts`
 
@@ -135,19 +118,23 @@ export type CalculatorCategory = "tai-chinh-dau-tu" | "vay-the-chap" | "huu-tri"
 export type CalculatorEntry = {
   slug: string;              // "quy-tac-72" -> /cong-cu/quy-tac-72/
   title: string;             // Vietnamese, shown on the hub
+  summary: string;           // one line, shown under the title on the hub
   category: CalculatorCategory;
-  status: "live" | "planned"; // planned entries render greyed on the hub, excluded from sitemap
-  usRules?: true;             // gates the US-rules disclaimer + sitemap de-prioritisation
+  usRules?: true;            // gates the US-rules disclaimer + sitemap de-prioritisation
 };
 ```
 
-One array is the single source of truth for the hub listing, the sitemap, and future cross-links — replacing what would otherwise be three drifting lists. `app/sitemap.ts` derives calculator entries from `status === "live"`, and `usRules` entries get `priority: 0.3` rather than `0.6`, honouring the decomposition's commitment not to drive Vietnamese users into US-law tools.
+One array is the single source of truth for the hub listing, the sitemap, and future cross-links — replacing what would otherwise be three drifting lists. `app/sitemap.ts` derives its calculator entries from it, and `usRules` entries get `priority: 0.3` rather than `0.6`, honouring the decomposition's commitment not to drive Vietnamese users into US-law tools.
 
-SP-0 seeds the registry with **all 75 entries** — Rule of 72 `live`, the other 74 `planned`. That makes the hub immediately useful as a roadmap, makes each later sub-project a `planned → live` flip, and means the sitemap can never accidentally advertise an unbuilt route.
+**AMENDED (2026-09-06):** the registry contains **only calculators that are actually built** — one entry today. My earlier draft seeded all 75 with a `status: "live" | "planned"` field so the hub could double as a public roadmap; you chose to show only finished calculators, which removes that field's only consumer. Seeding 74 `planned` entries would mean inventing 74 Vietnamese names and slugs now that each sub-project would then revise when it actually designs that calculator — speculative work with a drift risk and no reader. The `status` field is therefore dropped (YAGNI) and each sub-project appends its own entries as it builds them. The full 75-tool inventory already lives in the decomposition doc, which is the roadmap.
 
 ### `/cong-cu/` hub page
 
-Server component listing every `live` and `planned` calculator grouped by category, with a small client island for text filtering. `planned` entries are visibly non-links. Fixes the 404 and gives the suite an entry point.
+Server component listing every registered calculator grouped by category. **Only built calculators appear** — there is no "coming soon" state. Fixes the current 404 and gives the suite an entry point.
+
+With one calculator today, the hub renders one card in one category. The client-side text filter described earlier is therefore **deferred to the sub-project that first pushes the hub past roughly a dozen entries** — a search box over one item is not a feature. The grouped-by-category layout ships now, since that is what makes adding entries a data change rather than a layout change.
+
+The header nav is deliberately left alone: `NAV_ITEMS` is anchor-based for the one-page homepage and drives the active-section highlighting in `components/site-header.tsx`, so a route link there would fight that logic. Discovery stays via the footer `Công cụ` column that already exists. Revisit once enough calculators are live to justify reworking that highlighting.
 
 ### Disclaimers
 
@@ -177,21 +164,22 @@ Reference values come from published sources, not from the implementation:
 | `finance.amortize` | Sum of `principal` column equals the original principal; final `balance` is 0 |
 | `finance.toEffective` | 12% nominal compounded monthly → 12,6825% effective |
 | `solve.bisect` | Recovers a known IRR for a textbook cash-flow series; returns `null` on a non-bracketing interval |
-| `stats.normalCdf` | `normalCdf(0) = 0,5`; `normalCdf(1,96) ≈ 0,975` |
-| `number.formatMoney` | `1440000 -> "1.440.000"`; `1234.5 -> "1.234,5"` |
-| `number.parseMoney` | `"500.000.000" -> 5e8`; `"500,5" -> 500.5` |
+| `number.formatMoney` | `formatMoney(1440000) -> "1.440.000"`; `formatMoney(1234.5, 1) -> "1.234,5"` |
+| `number.parseMoney` | `"500.000.000" -> 5e8`; `"500,5" -> 500.5`; `"1,2,3" -> null` |
+
+`formatMoney`'s default is **0 decimal places**, since VND has no circulating subunit. The two-decimal case must therefore be requested explicitly — my earlier draft of this table implied `formatMoney(1234.5)` alone would yield `"1.234,5"`, which is wrong under that default (it yields `"1.235"`). Corrected here rather than left to surface as a failing test.
 
 `amortize`'s invariant tests (principal sums to the loan, balance ends at zero) matter more than any single spot value — they are what will catch a sign-convention error before it reaches 17 calculators.
 
 No component tests: consistent with the suite's existing decision, and the accessibility wiring is verified by asserting on the built HTML instead.
 
-## The CI gap is now load-bearing
+## The test gate — DECIDED
 
-I deferred this on the Rule of 72 branch and I am escalating it here, because the risk changed shape.
+I deferred this on the Rule of 72 branch and escalated it here, because the risk changed shape. With one calculator, no gate meant one page could silently break. With 75 sharing `pmt`, `amortize`, `bisect` and `formatMoney`, **a single regression in a shared primitive silently produces wrong financial figures across dozens of pages** — on a domain that gives Vietnamese consumers home-loan numbers.
 
-There is still no automated test gate: `vercel.json` runs `next build` alone, and there is no `.github/`. With one calculator, that meant one page could silently break. With 75 sharing `pmt`, `amortize`, `bisect` and `formatMoney`, **a single regression in a shared primitive silently produces wrong financial figures across dozens of pages** — on a domain that gives Vietnamese consumers home-loan numbers.
+**DECIDED (2026-09-06):** SP-0 changes `vercel.json`'s `buildCommand` from `next build` to `vitest run && next build`. No deploy can ship failing math. No GitHub Actions workflow for now.
 
-**Recommendation:** SP-0 adds the gate. The minimal version is `"buildCommand": "vitest run && next build"` in `vercel.json`, which blocks any deploy whose tests fail. A GitHub Actions workflow is the better long-term answer if you'd rather not couple deploys to tests. This is the one item in this spec I would not ship the suite without, and it needs your decision because it touches deployment policy.
+Accepted trade-off, recorded so nobody is surprised by it later: a failing test also blocks deploys of unrelated content changes — a blog post cannot ship while a calculator test is red. That is the intended behaviour, not a defect.
 
 ## Risks
 
@@ -200,6 +188,21 @@ There is still no automated test gate: `vercel.json` runs `next build` alone, an
 - **Premature abstraction.** The shapes were surveyed from the two hardest reference calculators (loan, TVM), not guessed — but if SP-2 finds the primitives fight the amortization work, the honest response is to amend SP-0 rather than bend 17 calculators around a bad shell. SP-2 running second exists to surface that early.
 - **Schedule table payload.** Mitigated by prerendering yearly and computing monthly on demand.
 
-## Out of scope for SP-0
+## Out of scope for SP-0 — AMENDED, and why
 
-No new calculators beyond the Rule of 72 retrofit. No declarative config layer. No cross-linking between calculators (SP-8). No hub search beyond simple text filtering. No changes to `components/site-header.tsx` or `scripts/header-cmp.mjs` (both carry pre-existing lint errors outside this work).
+My first draft of this spec had SP-0 build `SelectField`, `RadioGroupField`, `UnitToggle`, `ScheduleTable` and `stats.normalCdf`. **None of them has a consumer in SP-0.** The only calculator that exists uses a single number field and two result rows. Building five components against imagined requirements is exactly the speculation I used to reject the declarative-config approach three sections ago, and I should not get to apply that standard selectively.
+
+Deferred, each to the sub-project that first actually needs it:
+
+| Deferred | To | Why it can't be designed well now |
+|---|---|---|
+| `SelectField`, `RadioGroupField`, `UnitToggle` | SP-2 | Their props should be shaped by the loan calculator's real grouped form (Years/Months toggle, PMI radio, compounding select), not guessed |
+| `ScheduleTable` | SP-2 | The amortization table is its first and defining consumer; its collapse behaviour and column set fall out of that work |
+| `stats.normalCdf` | SP-6 | Only Black-Scholes uses it, and SP-6 is five sub-projects away |
+
+**Retained** despite having no SP-0 consumer, with justification, because "no consumer yet" is not the same as "cannot be specified correctly yet":
+
+- `lib/calc/finance.ts` — pure, fully specifiable from published references without knowing any UI, verifiable against hard reference values, and **its sign convention must be decided centrally before 17 loan calculators depend on it.** Deciding that inside SP-2 would mean deciding it while also building a table and a form.
+- `lib/calc/solve.ts` — same, and SP-2's APR calculators need it immediately.
+
+Also out of scope: no new calculators beyond the retrofit; no declarative config layer; no cross-linking (SP-8); no hub text filter (deferred until the hub exceeds ~a dozen entries); no header nav entry; no changes to `components/site-header.tsx` or `scripts/header-cmp.mjs` (both carry pre-existing lint errors outside this work).
