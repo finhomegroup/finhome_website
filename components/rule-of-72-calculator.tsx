@@ -68,6 +68,7 @@ export function RuleOf72Calculator() {
 
       <p
         id="rule72-rate-help"
+        aria-live="polite"
         className={cn(
           "mt-2 text-sm leading-relaxed",
           invalid ? "text-red-600" : "text-ink-3",

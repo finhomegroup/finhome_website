@@ -28,13 +28,19 @@ export function parseRate(raw: string): number | null {
  *
  * Null when `rate` is not a doubling rate — at 0% the principal never doubles
  * (and 72/0 is Infinity), and at a negative rate it shrinks.
+ *
+ * @param rate Annual rate in percent — 6 means 6%/năm.
  */
 export function rule72Years(rate: number): number | null {
   if (!Number.isFinite(rate) || rate <= 0) return null;
   return 72 / rate;
 }
 
-/** Exact solution of (1 + r)^t = 2, i.e. t = ln2 / ln(1 + r). */
+/**
+ * Exact solution of (1 + r)^t = 2, i.e. t = ln2 / ln(1 + r).
+ *
+ * @param rate Annual rate in percent — 6 means 6%/năm.
+ */
 export function exactYears(rate: number): number | null {
   if (!Number.isFinite(rate) || rate <= 0) return null;
   return LN2 / Math.log(1 + rate / 100);

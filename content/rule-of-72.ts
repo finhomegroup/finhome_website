@@ -18,7 +18,7 @@ export const RULE_OF_72 = {
     "Quy tắc 72 là cách nhẩm nhanh: lấy 72 chia cho lãi suất hằng năm, bạn có ngay số năm để số tiền gốc nhân đôi nhờ lãi kép. Nhập lãi suất bên dưới để xem kết quả.",
 
   form: {
-    rateLabel: "Lãi suất hằng năm",
+    rateLabel: "Lãi suất hằng năm (%)",
     rateSuffix: "%",
     rateHelp: "Nhập lãi suất kép hằng năm, ví dụ 6 hoặc 7,5.",
     rateInvalid: "Vui lòng nhập lãi suất lớn hơn 0 để tính thời gian nhân đôi.",
@@ -45,7 +45,7 @@ export const RULE_OF_72 = {
     title: "Ví dụ với 500 triệu đồng",
     body: [
       "Giả sử bạn có 500 triệu đồng và đầu tư ở mức 7%/năm với lãi kép. Theo quy tắc 72, thời gian để khoản này thành 1 tỷ đồng là 72 ÷ 7 ≈ 10,3 năm. Công thức chính xác cho 10,24 năm — chênh lệch chưa tới một tháng.",
-      "Cùng số tiền đó, nếu lãi suất chỉ 5%/năm thì cần khoảng 14,4 năm; nếu đạt 10%/năm thì chỉ cần khoảng 7,2 năm. Mỗi điểm phần trăm lãi suất đều rút ngắn đáng kể thời gian chờ.",
+      "Cùng số tiền đó, nếu lãi suất chỉ 5%/năm thì cần khoảng 14,4 năm; nếu đạt 10%/năm thì chỉ cần khoảng 7,2 năm. Mỗi điểm phần trăm lãi suất đều rút ngắn đáng kể thời gian chờ, nhưng mức lãi suất càng cao thường đi kèm rủi ro càng lớn.",
     ],
   },
 
