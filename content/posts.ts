@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ban-bds-khong-du-dieu-kien-phat-600-trieu",
+    title: "Môi giới bất động sản chú ý: Bán nhà không đủ điều kiện lên sàn chịu phạt đến 600 triệu đồng",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Nghị định 339 quy định phạt 400-600 triệu đồng với hành vi đưa bất động sản không đủ điều kiện kinh doanh lên sàn giao dịch, siết chặt quản lý thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ban-bds-khong-du-dieu-kien-phat-600-trieu.jpg",
+    date: "2026-09-06",
+    source: {
+        "name": "m.cafebiz.vn",
+        "url": "https://m.cafebiz.vn/moi-gioi-nha-dat-chu-y-ban-bat-dong-san-khong-du-dieu-kien-len-san-se-bi-phat-toi-600-trieu-dong-176260906200624278.chn?cpa_tid=61TBESEARC0051VMHK94MGCSVRJFCZ6RYJZ7&dmn=s.biz.vn&fbclid=IwZnRzaAUKYp5wZG9mBWZkaWQWUN6sRGn3-lZnaQ0FBrG1WOpmzIRzrGV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6Vp1xv1hER6PBqVE_9lEyF2o0tQHgI79i9RJDq5v04QzTP5EITTy-XUc7nGg_aem_H4OapZelZDAKj9H6Pjo5ow",
+        "accessed": "2026-09-06"
+      },
+  },
+  {
     slug: "quang-ninh-chap-thuan-dau-tu-du-an-nha-o-xa-hoi-647-ty-dong-doi-thuy-san",
     title: "Quảng Ninh chấp thuận đầu tư dự án nhà ở xã hội 647 tỷ đồng tại đồi Thủy Sản",
     category: "Nhà ở xã hội",
