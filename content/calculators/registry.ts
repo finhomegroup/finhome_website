@@ -394,7 +394,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Điểm pivot",
     summary: "Các mức hỗ trợ và kháng cự tính từ giá cao, thấp và đóng cửa.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "fibonacci",
