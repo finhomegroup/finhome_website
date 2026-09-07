@@ -408,7 +408,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Thuế cổ tức",
     summary: "Thuế phải nộp trên cổ tức, theo quy định Hoa Kỳ.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
 
