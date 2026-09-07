@@ -14,9 +14,15 @@ export type FieldBinding = {
  * Values are kept as raw STRINGS, never parsed numbers. The parse happens at
  * render time, in the calculator, so that a half-typed "7," survives in the
  * input instead of being normalised away under the user's cursor.
+ *
+ * `values` is widened to `string` per key rather than keeping the literal
+ * types TypeScript infers from `initial`. Those literals are wrong the moment
+ * the user types: a field initialised to `"no"` is not of type `"no"`, and
+ * narrowing it to that turns a legitimate `values.x === "yes"` check into a
+ * compile error about types with "no overlap".
  */
 export function useCalcFields<T extends Record<string, string>>(initial: T) {
-  const [values, setValues] = useState<T>(initial);
+  const [values, setValues] = useState<Record<keyof T, string>>(initial);
 
   function bind(key: keyof T & string): FieldBinding {
     return {

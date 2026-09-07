@@ -10,20 +10,29 @@ import { cn } from "@/lib/cn";
  *
  * `title` renders as an `h2`, which suits every current page — the calculator
  * sits under the page `h1` alongside the prose sections.
+ *
+ * `live` defaults to true and exists to be turned OFF. A group holding many
+ * rows — a side-by-side comparison of three loans, a per-year breakdown — is
+ * table-shaped, and announcing every cell of it on each keystroke is the same
+ * failure mode `ResultTable` avoids by not being live at all. When a page has
+ * both, keep exactly one live group: the summary.
  */
 export function ResultGroup({
   title,
   className,
+  live = true,
   children,
 }: {
   title: string;
   className?: string;
+  /** Set false for a group with many rows; see the note above. */
+  live?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className={cn("rounded-2xl bg-bg-soft p-5", className)}>
       <h2 className="font-display text-base font-medium text-ink">{title}</h2>
-      <div className="mt-2" aria-live="polite">
+      <div className="mt-2" aria-live={live ? "polite" : undefined}>
         {children}
       </div>
     </div>
