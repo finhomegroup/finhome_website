@@ -560,7 +560,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lương giờ sang lương tháng",
     summary: "Quy đổi giữa lương theo giờ, theo tuần và theo năm.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tang-luong",
