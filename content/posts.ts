@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "cap-so-do-lan-dau-tai-gia-lai-2026-quy-trinh-thu-tuc",
+    title: "Cấp sổ đỏ lần đầu tại Gia Lai 2026: Quy trình và thủ tục cần biết",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Hướng dẫn chi tiết quy trình cấp sổ đỏ lần đầu tại Gia Lai năm 2026, gồm thành phần hồ sơ, thời gian giải quyết và cơ quan tiếp nhận.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/cap-so-do-lan-dau-tai-gia-lai-2026-quy-trinh-thu-tuc.jpg",
+    date: "2026-09-07",
+    source: {
+        "name": "cafeland.vn",
+        "url": "https://cafeland.vn/kien-thuc/cap-so-do-lan-dau-tai-gia-lai-nam-2026-thuc-hien-theo-trinh-tu-nao-154767.html",
+        "accessed": "2026-09-07"
+      },
+  },
+  {
     slug: "ban-bds-khong-du-dieu-kien-phat-600-trieu",
     title: "Môi giới bất động sản chú ý: Bán nhà không đủ điều kiện lên sàn chịu phạt đến 600 triệu đồng",
     category: "Chính sách",
