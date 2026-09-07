@@ -630,7 +630,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lạm phát Hoa Kỳ",
     summary: "Sức mua của một số tiền theo chỉ số giá tiêu dùng Hoa Kỳ.",
     category: "khac",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
