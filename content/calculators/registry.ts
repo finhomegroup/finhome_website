@@ -352,7 +352,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Cổ phiếu tăng trưởng không đều",
     summary: "Định giá khi tốc độ tăng cổ tức thay đổi theo từng giai đoạn.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "capm",
