@@ -110,7 +110,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính tái cấp vốn",
     summary: "So sánh khoản vay hiện tại với khoản vay mới và tìm điểm hoàn vốn.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "apr",
