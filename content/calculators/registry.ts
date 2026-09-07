@@ -254,7 +254,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "IRR và NPV",
     summary: "Tỷ suất hoàn vốn nội bộ và giá trị hiện tại thuần của một dòng tiền.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "trai-phieu",
