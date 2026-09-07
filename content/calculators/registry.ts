@@ -532,7 +532,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lãi suất thực tế",
     summary: "Quy lãi suất danh nghĩa về lãi suất thực tế theo kỳ ghép lãi.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tinh-phan-tram",
