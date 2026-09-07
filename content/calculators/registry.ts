@@ -103,7 +103,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "So sánh khoản vay",
     summary: "Đặt hai hoặc ba phương án vay cạnh nhau để chọn phương án rẻ hơn.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tai-cap-von",
