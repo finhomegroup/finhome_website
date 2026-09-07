@@ -4,6 +4,8 @@
 
 Last updated: 2026-09-07
 Branch: `feat/rule-of-72-calculator` — **35 commits, not merged, not pushed.**
+The work described in §1's table below the first six rows is **uncommitted** on
+top of those 35.
 
 ---
 
@@ -13,10 +15,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **5** |
-| Listed with a placeholder page | 70 |
+| Working calculators | **27** |
+| Listed with a placeholder page | 48 |
 | Total routes built | 75 |
-| Tests | 170, across 9 suites |
+| Tests | 553, across 30 suites |
 
 **Working:**
 
@@ -27,6 +29,28 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/chi-tra-lai/` | Interest-only phase, then amortizing |
 | `/cong-cu/lai-kep/` | Compound interest, with contributions |
 | `/cong-cu/quy-tac-72/` | Rule of 72, both directions, plus a reference table |
+| `/cong-cu/vay-mua-xe/` | Vehicle loan — amount financed derived from price, deposit and trade-in |
+| `/cong-cu/so-sanh-khoan-vay/` | Three loan options side by side, ranked on interest + arrangement fee |
+| `/cong-cu/phan-tich-khoan-vay/` | Cost structure over time: crossover month, halfway points, per-quarter split |
+| `/cong-cu/tinh-phan-tram/` | Percentage of, share of, and change between |
+| `/cong-cu/ty-suat-loi-nhuan-roi/` | ROI and CAGR |
+| `/cong-cu/tang-luong/` | Pay rise from a percentage, an amount or a target |
+| `/cong-cu/luong-gio-sang-luong-thang/` | Wage conversion across five units |
+| `/cong-cu/giam-gia-va-thue/` | Discount and VAT, tax-inclusive by default |
+| `/cong-cu/margin-va-markup/` | Margin/markup/price, any two given |
+| `/cong-cu/lai-suat-thuc-te/` | Nominal ↔ effective, plus every compounding frequency |
+| `/cong-cu/tinh-tien-tip/` | Bill split with service charge, VAT and per-share rounding |
+| `/cong-cu/chi-phi-nhien-lieu/` | Trip fuel cost, both consumption units |
+| `/cong-cu/tai-cap-von/` | Refinance: break-even months **and** lifetime saving, which can disagree |
+| `/cong-cu/kha-nang-mua-nha/` | Affordability, solved backwards via `pv()`; names which DTI limit bound |
+| `/cong-cu/diem-chiet-khau/` | Discount points, judged on a hold horizon rather than naive break-even |
+| `/cong-cu/muc-tieu-tiet-kiem/` | Savings goal: solves for contribution, horizon or final balance |
+| `/cong-cu/tien-gui-co-ky-han/` | Term deposit on Vietnamese conventions, plus the early-withdrawal loss |
+| `/cong-cu/thue-mua-xe/` | Vehicle lease: depreciation + finance charge, money factor |
+| `/cong-cu/tra-het-the-tin-dung/` | Card payoff, daily accrual, both directions |
+| `/cong-cu/tra-toi-thieu-the-tin-dung/` | Minimum payment vs the same amount held flat |
+| `/cong-cu/bat-dong-san-cho-thue/` | Rental yields: gross, cap rate, cash-on-cash, DSCR + VN rental tax |
+| `/cong-cu/thue-hay-mua/` | Rent vs buy on net cost, month-by-month, with a break-even month |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -38,11 +62,11 @@ Five files. Nothing else needs wiring: the hub, the sitemap and the placeholder 
 2. **`lib/calc/<name>.test.ts`** — verify against a published closed form or a hand-computed reference, not against your own implementation. Include the invariants (see §4).
 3. **`content/calculators/<name>.ts`** — every Vietnamese string, exported as one `as const` object. No user-facing text in components.
 4. **`components/<name>-calculator.tsx`** — `"use client"`, assembles the primitives from `components/calc/`.
-5. **`app/cong-cu/<slug>/page.tsx`** — server component: metadata, JSON-LD, the island, prose, FAQ accordion, `<CalculatorDisclaimer />`.
+5. **`app/cong-cu/<slug>/page.tsx`** — a `metadata` export from `calculatorMetadata()` plus one `<CalculatorPage>` element. Roughly 30 lines; see §3.
 
 Then in **`content/calculators/registry.ts`**: flip that slug's `status` from `"planned"` to `"live"`.
 
-Copy `app/cong-cu/tra-no-hai-tuan/page.tsx` as your page template — it is the simplest complete example.
+Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the shortest complete example on the shell. `app/cong-cu/tra-no-hai-tuan/page.tsx` is the old hand-written shape; do not copy that one for new work.
 
 ## 3. Available building blocks
 
@@ -55,11 +79,36 @@ Copy `app/cong-cu/tra-no-hai-tuan/page.tsx` as your page template — it is the 
 | `solve.ts` | `bisect` — root finder, returns `null` when not bracketed |
 | `loan.ts` | `computeLoan`, `yearlySummary` |
 | `loan-variants.ts` | `amortizeFixedPayment`, `computeBiweekly`, `computeInterestOnly` |
+| `loan-compare.ts` | `compareLoans` — options priced against one principal, ranked on interest + fee |
+| `loan-analysis.ts` | `analyseLoan` — crossover month, halfway points, per-quarter split |
 | `compound.ts` | `computeCompound` |
+| `auto-loan.ts` | `computeAutoLoan` |
+| `percent.ts` | `computePercent` |
+| `roi.ts` | `computeRoi` |
+| `raise.ts` | `computeRaise` |
+| `wage.ts` | `convertWage` |
+| `price-adjust.ts` | `adjustPrice` |
+| `margin.ts` | `computeMargin` |
+| `effective-rate.ts` | `convertRate`, `COMPOUNDING_ORDER` |
+| `tip.ts` | `splitBill` |
+| `fuel.ts` | `computeFuelCost` |
+| `refinance.ts` | `compareRefinance` |
+| `affordability.ts` | `computeAffordability` — the reverse solve, via `pv()` |
+| `points.ts` | `computePoints` — includes the balance-aware hold comparison |
+| `savings-goal.ts` | `computeSavingsGoal` — one entry point, three modes |
+| `term-deposit.ts` | `computeTermDeposit` — simple interest in-term, compounding at rollover |
+| `auto-lease.ts` | `computeAutoLease` |
+| `card-debt.ts` | `payFixed`, `payMinimum`, `paymentForMonths` |
+| `rental-property.ts` | `computeRentalProperty` |
+| `rent-vs-buy.ts` | `compareRentVsBuy` |
 
-**UI** (`components/calc/`): `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
+**UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
-**Not built yet, and their first consumer should build them:** a unit-toggle field, and a monthly (rather than yearly) schedule view with collapse.
+**`CalculatorPage` is the page shell, and it owns the two contracts a hand-written page could silently drop:** it always renders `<CalculatorDisclaimer />`, and it reads the registry's `usRules` flag itself and renders the `us-rules` variant above the calculator. It also throws during `next build` on a slug that is not in the registry. Both gaps from the SP-0 review are closed by using it.
+
+The six calculators built before the shell existed still render their own page bodies. That is deliberate: their built HTML is a regression gate, and rewriting them through the shell would move rendered markup for no functional gain. Migrate them whenever their markup is next allowed to change.
+
+**Not built yet, and their first consumer should build them:** a unit-toggle field (`SelectField` alongside the number field is the current idiom — see `fuel-calculator.tsx`), and a monthly (rather than yearly) schedule view with collapse.
 
 ## 4. Conventions that will bite you if you skip them
 
@@ -71,7 +120,9 @@ Copy `app/cong-cu/tra-no-hai-tuan/page.tsx` as your page template — it is the 
 
 **`rate` in `finance.ts` is always PER PERIOD, never annual.** A 12%/năm nominal rate compounded monthly is `0.12 / 12`.
 
-**Accessibility lives in the primitives, not in your page.** `NumberField` owns the label/`id` pairing, `aria-describedby`, `aria-invalid`, and an `aria-live` on its own help paragraph. `ResultGroup` owns the single results live region; `ResultRow` carries `aria-atomic`. Do not re-implement any of that, and do not add a second live region.
+**Accessibility lives in the primitives, not in your page.** `NumberField` owns the label/`id` pairing, `aria-describedby`, `aria-invalid`, and an `aria-live` on its own help paragraph. `ResultGroup` owns the results live region; `ResultRow` carries `aria-atomic`. Do not re-implement any of that.
+
+**Exactly one live results region per page.** `ResultGroup` now takes `live`, defaulting to true and existing to be turned off. A second `ResultGroup` for a breakdown or a secondary view must pass `live={false}` — see `tip-calculator.tsx` (2 live rows, 7 not) and `fuel-calculator.tsx`. Keep the live group to the handful of rows the user came for; a nine-row group re-announced on every keystroke is the same failure mode a live table is.
 
 **Never put a table inside a live region.** `ResultTable` is deliberately outside `ResultGroup`. A 360-row amortization schedule inside a polite live region re-announces on every keystroke and makes the page unusable with a screen reader.
 
@@ -104,15 +155,19 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** 35 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. The owner has been asked three times and has not chosen; nothing has been pushed as a result.
-- **Visual layout.** The `/cong-cu/` hub's three-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`.
+- **The branch.** 35 commits on `feat/rule-of-72-calculator`, unmerged and unpushed, plus the eleven newest calculators and the page shell **still uncommitted in the working tree**. The owner has been asked three times and has not chosen; nothing has been pushed as a result.
+- **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
-**Should be fixed early, from the SP-0 final review:**
+**Closed since the SP-0 review:**
 
-- **The disclaimer is the one contract the primitives do NOT own.** `CalculatorCard` has no disclaimer slot, and nothing wires the registry's `usRules` flag to `<CalculatorDisclaimer variant="us-rules">` despite a code comment claiming it does. A calculator can therefore ship with no disclaimer by simple omission. Highest-consequence gap in the suite.
-- **`ResultGroup` has no `aria-live` opt-out.** Ten of the remaining loan tools are table-shaped; add `live?: boolean` before somebody wraps a schedule in one.
-- **No component tests, and no automated check on the accessibility markup.** The vitest glob now covers `components/`, so tests *can* be written. Either write them, or put the built-HTML greps into a script the build gate runs.
+- ~~The disclaimer is the one contract the primitives do NOT own.~~ `CalculatorPage` now owns both the disclaimer and the `usRules` wiring. Only applies to routes that use the shell; the six pre-shell pages still carry their own disclaimer inline, correctly, but by hand.
+- ~~`ResultGroup` has no `aria-live` opt-out.~~ It takes `live?: boolean` now.
+
+**Still open:**
+
+- **No component tests, and no automated check on the accessibility markup.** The vitest glob now covers `components/`, so tests *can* be written. Either write them, or put the built-HTML greps into a script the build gate runs. The greps that were run by hand for the eleven newest routes: one `Công cụ này chỉ mang tính minh họa` per page, exactly one `aria-live="polite"` beyond the per-field ones, one `<h1>`, and both JSON-LD blocks.
 - **No PR-time CI.** The `vercel.json` gate catches a broken build at deploy time, not at review time.
+- **Nothing enforces "one live region per page".** It is a convention plus a code comment; a grep in a build-gate script would make it real.
 
 **Deferred minors** are recorded in `.superpowers/sdd/2026-09-06-sp0-calculator-foundation/progress.md` if that directory still exists (it is git-ignored scratch).
 
@@ -120,22 +175,20 @@ There is **no browser automation** in this environment. Every check above is a t
 
 Ordered by value per unit of effort. Each is independently mergeable.
 
-**Fast — reuse `computeLoan`, need only new copy:**
-`vay-mua-xe`, `so-sanh-khoan-vay`, `phan-tich-khoan-vay`
+**Done** — the three tiers that used to head this list are built: the two fast tiers (`vay-mua-xe`, `so-sanh-khoan-vay`, `phan-tich-khoan-vay` and all nine simple-math tools) and the whole medium tier (`tai-cap-von`, `kha-nang-mua-nha`, `diem-chiet-khau`, `muc-tieu-tiet-kiem`, `tien-gui-co-ky-han`, `thue-mua-xe`, `thue-hay-mua`, `bat-dong-san-cho-thue`, and both credit-card tools).
 
-**Fast — simple math, 1–3 inputs:**
-`tinh-phan-tram`, `ty-suat-loi-nhuan-roi`, `tang-luong`, `luong-gio-sang-luong-thang`, `giam-gia-va-thue`, `margin-va-markup`, `lai-suat-thuc-te`, `tinh-tien-tip`, `chi-phi-nhien-lieu`
+**Needs the root finder — next:**
+`apr`, `apr-nang-cao`, `irr-npv`, `trai-phieu`. `bisect` in `lib/calc/solve.ts` and `solveRate` in `finance.ts` are already there and tested; read the bracket note in `solveRate`'s docstring first.
 
-**Medium — new math needed:**
-`tai-cap-von` (+ break-even), `kha-nang-mua-nha` (reverse solve from income), `diem-chiet-khau`, `muc-tieu-tiet-kiem`, `tien-gui-co-ky-han`, `thue-hay-mua`, `bat-dong-san-cho-thue`, `vay-mua-xe`/`thue-mua-xe`, the two credit-card tools
+**Also outstanding and VN-relevant, no new machinery needed:**
+`gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`, and the ten equity tools (`capm`, `wacc`, `loi-nhuan-ky-vong`, `loi-nhuan-ky-nam-giu`, `co-phieu-tang-truong-deu`, `co-phieu-tang-truong-khong-deu`, `loi-nhuan-co-phieu`, `diem-pivot`, `fibonacci`).
 
-**Needs the root finder:**
-`apr`, `apr-nang-cao`, `irr-npv`, `trai-phieu`
+Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suite's rule is **no `Date` in `lib/calc/`** because prerendered output must hydrate byte-identically. Pass the reference date in as an input from the client, or the page will differ between build time and view time.
 
 **Needs a normal CDF (not yet written):**
-`quyen-chon-black-scholes`
+`quyen-chon-black-scholes`. An Abramowitz–Stegun or Hart approximation is fine; put it in `lib/calc/` as its own tested module, not inline.
 
-**Last, and lowest value to Vietnamese users:** the 29 tools governed by United States tax and retirement law, and the 11 that need vendored datasets (US tax tables, CPI series, Social Security formulas, unit-conversion factors). These are listed in the registry and are honest about what they are.
+**Last, and lowest value to Vietnamese users:** the 29 tools governed by United States tax and retirement law, and those among them needing vendored datasets (US tax tables, CPI series, Social Security formulas). All are flagged `usRules` in the registry, and `CalculatorPage` now renders the `us-rules` notice from that flag automatically — no per-page wiring.
 
 ## 8. Design record
 
@@ -149,4 +202,9 @@ Two defects worth knowing about, because both came from a plan rather than from 
 1. `solveRate`'s search bracket was originally 1000% per period, which overflowed float64 at 289 periods — so **every loan term over ~24 years returned "no solution"**, including standard 25- and 30-year Vietnamese mortgages. The test suite at the time used only 12-period loans and was structurally incapable of catching it. **Pin at least one realistic-term case (240/300/360 periods) in any module that touches loans.**
 2. `formatDecimal` had no finite guard, so a tiny rate rendered `"Infinity năm"` on a live page.
 
-Verify numbers by executing the module, not by re-reading the code.
+Two more from the medium tier, both caught by tests rather than by review:
+
+3. `savings-goal.ts` negated `fv()` in one branch and not the others. Both the starting balance and the contributions are outflows, so they go in negative and `fv` comes back **positive** — the extra flip made every "what will I have" answer negative. `pmt()` in the same module *does* need a flip. **The sign convention is per-function, not per-module; check each call against `finance.ts`'s docstring.**
+4. `rent-vs-buy.ts` counted the buyer's upfront cash on the buying side only. Renting therefore looked cheaper by the whole deposit — about 1 tỷ on the defaults — and the verdict was biased. **In any two-sided comparison, assert that both sides start from identical wealth**; the `netCost = totalRent − investmentGain` identity test is what caught it.
+
+Verify numbers by executing the module, not by re-reading the code. Several figures quoted in `content/calculators/*.ts` prose were wrong on the first pass and only fixed by running the module — the comment at the top of each content file records which figures came from where, so re-read the module if you change a default.
