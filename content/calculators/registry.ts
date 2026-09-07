@@ -646,7 +646,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Thuế lương Hoa Kỳ",
     summary: "Thuế và các khoản trừ trên phiếu lương, theo quy định Hoa Kỳ.",
     category: "khac",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
 ];
