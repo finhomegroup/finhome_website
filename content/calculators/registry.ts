@@ -595,7 +595,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Số tiền nhận ròng",
     summary: "Số tiền còn lại sau thuế và phí khi rút một khoản.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "chi-phi-nhien-lieu",
