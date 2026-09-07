@@ -240,7 +240,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tiền gửi có kỳ hạn",
     summary: "Số tiền nhận được khi đáo hạn sổ tiết kiệm, theo từng kỳ ghép lãi.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "ty-suat-loi-nhuan-roi",
