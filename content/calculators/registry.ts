@@ -124,7 +124,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính APR nâng cao",
     summary: "APR với nhiều loại phí, điểm chiết khấu và chi phí trả trước.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "vay-thuong-mai",
