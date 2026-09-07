@@ -329,7 +329,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính thuê mua xe",
     summary: "Chi phí thuê mua xe và so sánh với phương án vay để mua.",
     category: "vay-mua-xe",
-    status: "planned",
+    status: "live",
   },
 
   // ----------------------------------------------------------------- Chứng khoán
