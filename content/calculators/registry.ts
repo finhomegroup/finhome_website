@@ -609,7 +609,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính tiền tip",
     summary: "Tiền tip và cách chia hóa đơn cho nhiều người.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tinh-ngay",
