@@ -117,7 +117,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính lãi suất thực tế (APR)",
     summary: "Quy các loại phí về một mức lãi suất duy nhất để so sánh công bằng.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "apr-nang-cao",
