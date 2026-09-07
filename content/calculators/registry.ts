@@ -387,7 +387,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Định giá quyền chọn Black-Scholes",
     summary: "Giá quyền chọn mua và bán theo mô hình Black-Scholes.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "diem-pivot",
