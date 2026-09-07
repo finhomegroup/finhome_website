@@ -289,7 +289,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phí quỹ đầu tư",
     summary: "Phí quản lý ăn vào lợi nhuận dài hạn bao nhiêu.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tai-khoan-tiet-kiem-y-te-hoa-ky",
