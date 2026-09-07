@@ -167,7 +167,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Điểm chiết khấu",
     summary: "Trả trước một khoản để hạ lãi suất có đáng hay không.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "lai-suat-tha-noi",
