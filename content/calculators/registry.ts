@@ -226,7 +226,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Giá trị tiền tệ theo thời gian",
     summary: "Giải một trong năm biến: giá trị hiện tại, tương lai, kỳ hạn, lãi suất, khoản trả.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "muc-tieu-tiet-kiem",
