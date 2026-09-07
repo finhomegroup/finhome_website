@@ -3,7 +3,7 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-07
-Branch: `feat/rule-of-72-calculator` — **78 commits, not merged, not pushed.**
+Branch: `feat/rule-of-72-calculator` — **88 commits, not merged, not pushed.**
 Everything below is committed; nothing is in the working tree.
 
 ---
@@ -14,10 +14,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **44** |
-| Listed with a placeholder page | 31 |
+| Working calculators | **50** |
+| Listed with a placeholder page | 25 |
 | Total routes built | 75 |
-| Tests | 862, across 45 suites |
+| Tests | 1008, across 52 suites |
 
 **Working:**
 
@@ -67,6 +67,12 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/lai-suat-tha-noi/` | Promo-then-floating; instalment recalculated at each reset |
 | `/cong-cu/lai-co-dinh-hay-tha-noi/` | Leads with the break-even fixed rate, not the verdict |
 | `/cong-cu/phi-quy-dau-tu/` | Fee drag: 2%/năm takes ~36% of the gain over 20 years |
+| `/cong-cu/vay-thuong-mai/` | Grace period + balloon; three payments, not one |
+| `/cong-cu/loi-suat-tuong-duong-thue/` | Untaxed deposit vs 5%-taxed coupon, on one footing |
+| `/cong-cu/tiet-kiem-hoc-phi/` | Tuition as a stream, discounted to the start of study |
+| `/cong-cu/thu-nhap-dau-tu/` | Sustainable withdrawal, computed on the REAL return |
+| `/cong-cu/doi-don-vi/` | Sào/mẫu by region, lượng vàng at 37,5 g |
+| `/cong-cu/quyen-chon-black-scholes/` | Call, put and all five greeks |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -132,6 +138,13 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `tvm.ts` | `solveTvm` — solves any one of PV/FV/PMT/N/rate; raw sign convention |
 | `floating-loan.ts` | `computeFloatingLoan`, `buildPhases`, `compareFixedFloating` |
 | `fund-fees.ts` | `computeFundFees` — runs the plan with and without fees |
+| `commercial-loan.ts` | `computeCommercialLoan` — grace period and balloon |
+| `tax-equivalent.ts` | `computeTaxEquivalent` |
+| `education-savings.ts` | `computeEducationSavings` — target is a discounted stream |
+| `withdrawal.ts` | `computeWithdrawal` — perpetual draw off the real return |
+| `units.ts` | `convertUnit`, `UNITS` — one factor per unit, no pairwise table |
+| `normal.ts` | `normalCdf`, `normalPdf`, `inverseNormalCdf` |
+| `black-scholes.ts` | `computeBlackScholes` — European call/put plus greeks |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
@@ -190,7 +203,7 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** 78 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
+- **The branch.** 88 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
 **Closed since the SP-0 review:**
@@ -216,10 +229,12 @@ Ordered by value per unit of effort. Each is independently mergeable.
 
 **Equity tier — done**, all nine. The only equity slugs left are `quyen-chon-black-scholes` (needs the normal CDF) and `thue-co-tuc` (United States law).
 
-**Next, and VN-relevant, no new machinery needed:**
-`vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`.
+**Needs a normal CDF — done.** `lib/calc/normal.ts` exists and is tested against published tables; `quyen-chon-black-scholes` is built on it.
 
-`floating-loan.ts`'s phase list is the right primitive for `vay-thuong-mai` too — a grace period is a phase at an interest-only rate.
+**Next, and VN-relevant, no new machinery needed:**
+`du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`.
+
+`tinh-ngay` is the one with a trap: **no `Date` in `lib/calc/`**, because prerendered output must hydrate byte-identically. Pass today's date in from the client as a plain `{year, month, day}` and keep the module pure.
 
 Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suite's rule is **no `Date` in `lib/calc/`** because prerendered output must hydrate byte-identically. Pass the reference date in as an input from the client, or the page will differ between build time and view time.
 
@@ -246,6 +261,10 @@ Two more from the medium tier, both caught by tests rather than by review:
 
 3. `savings-goal.ts` negated `fv()` in one branch and not the others. Both the starting balance and the contributions are outflows, so they go in negative and `fv` comes back **positive** — the extra flip made every "what will I have" answer negative. `pmt()` in the same module *does* need a flip. **The sign convention is per-function, not per-module; check each call against `finance.ts`'s docstring.**
 4. `rent-vs-buy.ts` counted the buyer's upfront cash on the buying side only. Renting therefore looked cheaper by the whole deposit — about 1 tỷ on the defaults — and the verdict was biased. **In any two-sided comparison, assert that both sides start from identical wealth**; the `netCost = totalRent − investmentGain` identity test is what caught it.
+
+**Transcribed numeric coefficients are a defect class of their own.** Both Beasley–Springer–Moro coefficient sets in `normal.ts` were wrong on the first pass — the tail from the fourth term on, and the central region using a five-term variant from a different algorithm. Neither was visible by reading the code, and both would have surfaced downstream as a plausible option price. What caught them was **testing the module against published reference values, and round-tripping the inverse through the forward**. Any approximation copied from a paper needs both.
+
+**A tolerance can be too TIGHT as well as too loose.** `normal.test.ts` first asserted `normalCdf` to seven decimal places; the approximation's own stated error is 7,5 × 10⁻⁸, so a correct implementation failed. Assert to the method's documented accuracy and say so in a comment — and remember composite figures (an interval is two CDF calls) accumulate error.
 
 **Testing a solved rate: mind the tolerance.** `bisect` stops at a 1e-10 bracket on the rate it is solving for, so anything derived from that rate carries a matching relative error. On a 2 tỷ loan that is a couple of đồng of present value; on an APR it is ±1,2e-7 percentage points. Assert an absolute bound with a comment (`expect(Math.abs(npv)).toBeLessThan(1)`) rather than `toBeCloseTo(0, 8)`, which fails for a correct answer. Three tests in `apr.test.ts` and `irr-npv.test.ts` were written the tight way first and had to be loosened.
 
