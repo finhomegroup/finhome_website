@@ -638,7 +638,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tín phiếu kho bạc Hoa Kỳ",
     summary: "Giá và lợi suất tín phiếu kho bạc Hoa Kỳ.",
     category: "khac",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
