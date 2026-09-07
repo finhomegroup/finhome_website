@@ -152,7 +152,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Thuê hay mua nhà",
     summary: "So sánh tổng chi phí thuê và mua trong cùng một khoảng thời gian.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tiet-kiem-thue-vay-mua-nha",
