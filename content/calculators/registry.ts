@@ -247,7 +247,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tỷ suất lợi nhuận (ROI)",
     summary: "Lợi nhuận trên vốn đầu tư, tính cả theo năm.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "irr-npv",
