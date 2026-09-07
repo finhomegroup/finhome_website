@@ -588,7 +588,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân tích báo cáo tài chính",
     summary: "Đọc bảng cân đối kế toán và báo cáo kết quả kinh doanh theo tỷ trọng.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "phan-phoi-rong",
