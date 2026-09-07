@@ -282,7 +282,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Thu nhập từ đầu tư",
     summary: "Dòng thu nhập một khoản đầu tư tạo ra mỗi năm.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "phi-quy-dau-tu",
