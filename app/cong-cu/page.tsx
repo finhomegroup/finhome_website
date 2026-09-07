@@ -56,24 +56,50 @@ export default function CalculatorHubPage() {
                   {CATEGORY_LABELS[group.category]}
                 </h2>
                 <ul className="mt-4 space-y-3">
-                  {group.items.map((calc) => (
-                    <li key={calc.slug}>
-                      <Link
-                        href={`${calculatorPath(calc.slug)}/`}
-                        className={cn(
-                          "block rounded-2xl border border-ink-4/15 bg-white p-5 shadow-sm transition-colors hover:border-brand-green/50",
-                          FH_POINTER,
-                        )}
-                      >
-                        <span className="block font-display text-base font-medium text-ink">
-                          {calc.title}
-                        </span>
-                        <span className="mt-1 block text-sm leading-relaxed text-ink-2">
-                          {calc.summary}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
+                  {group.items.map((calc) => {
+                    const isLive = calc.status === "live";
+                    return (
+                      <li key={calc.slug}>
+                        {/* Every tool is a link, so no click is a dead end —
+                            but an unbuilt one is visually quieter and says so,
+                            rather than looking identical to a working tool. */}
+                        <Link
+                          href={`${calculatorPath(calc.slug)}/`}
+                          className={cn(
+                            "block rounded-2xl border p-5 transition-colors",
+                            isLive
+                              ? "border-ink-4/15 bg-white shadow-sm hover:border-brand-green/50"
+                              : "border-ink-4/15 bg-bg-soft hover:border-ink-4/40",
+                            FH_POINTER,
+                          )}
+                        >
+                          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                            <span
+                              className={cn(
+                                "font-display text-base font-medium",
+                                isLive ? "text-ink" : "text-ink-2",
+                              )}
+                            >
+                              {calc.title}
+                            </span>
+                            {isLive ? null : (
+                              <span className="rounded-full bg-ink-4/20 px-2 py-0.5 text-xs font-medium text-ink-3">
+                                {C.plannedBadge}
+                              </span>
+                            )}
+                          </span>
+                          <span
+                            className={cn(
+                              "mt-1 block text-sm leading-relaxed",
+                              isLive ? "text-ink-2" : "text-ink-3",
+                            )}
+                          >
+                            {calc.summary}
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </section>
             ))}

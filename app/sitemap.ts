@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absUrl, canonicalPath } from "@/lib/seo";
 import { POSTS } from "@/content/posts";
-import { CALCULATORS, calculatorPath } from "@/content/calculators/registry";
+import { liveCalculators, calculatorPath } from "@/content/calculators/registry";
 
 export const dynamic = "force-static";
 
@@ -25,7 +25,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Derived from the registry so a new calculator never needs a sitemap edit.
   // US-rules tools get a lower priority: they exist for parity with the
   // reference site, but we don't advertise them to Vietnamese searchers.
-  const calculatorEntries: MetadataRoute.Sitemap = CALCULATORS.map((calc) => ({
+  // Only calculators that actually work. `planned` entries are listed on the
+  // hub for a complete menu but are noindex and deliberately absent here —
+  // 70-odd near-empty pages in a search index is thin content.
+  const calculatorEntries: MetadataRoute.Sitemap = liveCalculators().map((calc) => ({
     url: absUrl(canonicalPath(calculatorPath(calc.slug))),
     changeFrequency: "monthly",
     priority: calc.usRules ? 0.3 : 0.6,
