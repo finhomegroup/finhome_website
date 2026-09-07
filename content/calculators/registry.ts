@@ -380,7 +380,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Chi phí vốn bình quân (WACC)",
     summary: "Chi phí vốn bình quân gia quyền của một doanh nghiệp.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "quyen-chon-black-scholes",
