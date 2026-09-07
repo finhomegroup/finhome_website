@@ -366,7 +366,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lợi nhuận kỳ vọng",
     summary: "Lợi nhuận kỳ vọng của một danh mục theo xác suất từng tình huống.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "loi-nhuan-ky-nam-giu",
