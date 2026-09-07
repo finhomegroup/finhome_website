@@ -313,7 +313,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Trả mức tối thiểu thẻ tín dụng",
     summary: "Chỉ trả mức tối thiểu thì mất bao lâu và tốn thêm bao nhiêu.",
     category: "the-tin-dung",
-    status: "planned",
+    status: "live",
   },
 
   // ------------------------------------------------------------ Vay & Thuê mua xe
