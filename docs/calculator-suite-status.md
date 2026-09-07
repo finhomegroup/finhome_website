@@ -3,7 +3,7 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-07
-Branch: `feat/rule-of-72-calculator` — **73 commits, not merged, not pushed.**
+Branch: `feat/rule-of-72-calculator` — **78 commits, not merged, not pushed.**
 Everything below is committed; nothing is in the working tree.
 
 ---
@@ -14,10 +14,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **40** |
-| Listed with a placeholder page | 35 |
+| Working calculators | **44** |
+| Listed with a placeholder page | 31 |
 | Total routes built | 75 |
-| Tests | 798, across 42 suites |
+| Tests | 862, across 45 suites |
 
 **Working:**
 
@@ -63,6 +63,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/loi-nhuan-co-phieu/` | Trade return net of VN fees; transfer tax charged on losses too |
 | `/cong-cu/co-phieu-tang-truong-deu/` | Gordon growth; leads with the implied growth and return |
 | `/cong-cu/co-phieu-tang-truong-khong-deu/` | Two-stage DDM; terminal share in the headline |
+| `/cong-cu/gia-tri-tien-te-theo-thoi-gian/` | TVM solver; the one page that exposes the sign convention |
+| `/cong-cu/lai-suat-tha-noi/` | Promo-then-floating; instalment recalculated at each reset |
+| `/cong-cu/lai-co-dinh-hay-tha-noi/` | Leads with the break-even fixed rate, not the verdict |
+| `/cong-cu/phi-quy-dau-tu/` | Fee drag: 2%/năm takes ~36% of the gain over 20 years |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -125,6 +129,9 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `stock-return.ts` | `computeStockReturn` — closed-form break-even price |
 | `ddm.ts` | `computeDdm` — rejects `g >= r`; closed-form inversions |
 | `ddm-multi.ts` | `computeDdmMulti` — first stage may exceed `r`, terminal may not |
+| `tvm.ts` | `solveTvm` — solves any one of PV/FV/PMT/N/rate; raw sign convention |
+| `floating-loan.ts` | `computeFloatingLoan`, `buildPhases`, `compareFixedFloating` |
+| `fund-fees.ts` | `computeFundFees` — runs the plan with and without fees |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
@@ -175,13 +182,15 @@ pnpm lint                                  # see the baseline below
 
 `vercel.json`'s `buildCommand` is `vitest run && next build`, so a failing test blocks deployment. Accepted trade-off: a red test also blocks deploys of unrelated content changes.
 
+**The build needs about 1,3 GB of free disk** for `.next` plus 125 MB for `out`. This machine ran out of space mid-session at 127 MiB free, which broke every tool call until `.next` and `out` were cleared. Both are gitignored and regenerable, so deleting them is the fix. If a verification step fails oddly, check `df -h /` first.
+
 There is **no browser automation** in this environment. Every check above is a test, a typecheck, a build, or a grep on the built HTML in `out/`. Do not fake a browser observation; report visual items as unverified.
 
 ## 6. Open decisions and known gaps
 
 **Needs a human:**
 
-- **The branch.** 73 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
+- **The branch.** 78 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
 **Closed since the SP-0 review:**
@@ -208,7 +217,9 @@ Ordered by value per unit of effort. Each is independently mergeable.
 **Equity tier — done**, all nine. The only equity slugs left are `quyen-chon-black-scholes` (needs the normal CDF) and `thue-co-tuc` (United States law).
 
 **Next, and VN-relevant, no new machinery needed:**
-`gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`.
+`vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`.
+
+`floating-loan.ts`'s phase list is the right primitive for `vay-thuong-mai` too — a grace period is a phase at an interest-only rate.
 
 Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suite's rule is **no `Date` in `lib/calc/`** because prerendered output must hydrate byte-identically. Pass the reference date in as an input from the client, or the page will differ between build time and view time.
 
