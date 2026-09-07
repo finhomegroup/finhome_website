@@ -574,7 +574,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Dự báo kinh doanh",
     summary: "Dự báo doanh thu và chi phí theo tốc độ tăng trưởng.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "cac-chi-so-tai-chinh",
