@@ -3,9 +3,8 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-07
-Branch: `feat/rule-of-72-calculator` — **35 commits, not merged, not pushed.**
-The work described in §1's table below the first six rows is **uncommitted** on
-top of those 35.
+Branch: `feat/rule-of-72-calculator` — **62 commits, not merged, not pushed.**
+Everything below is committed; nothing is in the working tree.
 
 ---
 
@@ -15,10 +14,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **27** |
-| Listed with a placeholder page | 48 |
+| Working calculators | **31** |
+| Listed with a placeholder page | 44 |
 | Total routes built | 75 |
-| Tests | 553, across 30 suites |
+| Tests | 638, across 34 suites |
 
 **Working:**
 
@@ -51,6 +50,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/tra-toi-thieu-the-tin-dung/` | Minimum payment vs the same amount held flat |
 | `/cong-cu/bat-dong-san-cho-thue/` | Rental yields: gross, cap rate, cash-on-cash, DSCR + VN rental tax |
 | `/cong-cu/thue-hay-mua/` | Rent vs buy on net cost, month-by-month, with a break-even month |
+| `/cong-cu/apr/` | APR — the first tool needing the root finder; upfront vs financed fees |
+| `/cong-cu/apr-nang-cao/` | Itemised fees, and the APR that applies if you repay early |
+| `/cong-cu/irr-npv/` | NPV, IRR, MIRR, profitability index, payback both ways |
+| `/cong-cu/trai-phieu/` | Bond price ↔ yield, three yields kept apart, duration in years |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -101,6 +104,9 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `card-debt.ts` | `payFixed`, `payMinimum`, `paymentForMonths` |
 | `rental-property.ts` | `computeRentalProperty` |
 | `rent-vs-buy.ts` | `compareRentVsBuy` |
+| `apr.ts` | `computeApr` — shared by both APR pages; solves via `solveRate` |
+| `irr-npv.ts` | `computeIrrNpv`, `netPresentValue` — declines a non-unique IRR |
+| `bond.ts` | `computeBond` — price↔yield, duration in YEARS not periods |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
@@ -155,7 +161,7 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** 35 commits on `feat/rule-of-72-calculator`, unmerged and unpushed, plus the eleven newest calculators and the page shell **still uncommitted in the working tree**. The owner has been asked three times and has not chosen; nothing has been pushed as a result.
+- **The branch.** 62 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
 **Closed since the SP-0 review:**
@@ -177,10 +183,9 @@ Ordered by value per unit of effort. Each is independently mergeable.
 
 **Done** — the three tiers that used to head this list are built: the two fast tiers (`vay-mua-xe`, `so-sanh-khoan-vay`, `phan-tich-khoan-vay` and all nine simple-math tools) and the whole medium tier (`tai-cap-von`, `kha-nang-mua-nha`, `diem-chiet-khau`, `muc-tieu-tiet-kiem`, `tien-gui-co-ky-han`, `thue-mua-xe`, `thue-hay-mua`, `bat-dong-san-cho-thue`, and both credit-card tools).
 
-**Needs the root finder — next:**
-`apr`, `apr-nang-cao`, `irr-npv`, `trai-phieu`. `bisect` in `lib/calc/solve.ts` and `solveRate` in `finance.ts` are already there and tested; read the bracket note in `solveRate`'s docstring first.
+**Needs the root finder — done.** `apr`, `apr-nang-cao`, `irr-npv` and `trai-phieu` are built. Read §8's tolerance note before writing tests against a solved rate.
 
-**Also outstanding and VN-relevant, no new machinery needed:**
+**Next, and VN-relevant, no new machinery needed:**
 `gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`, and the ten equity tools (`capm`, `wacc`, `loi-nhuan-ky-vong`, `loi-nhuan-ky-nam-giu`, `co-phieu-tang-truong-deu`, `co-phieu-tang-truong-khong-deu`, `loi-nhuan-co-phieu`, `diem-pivot`, `fibonacci`).
 
 Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suite's rule is **no `Date` in `lib/calc/`** because prerendered output must hydrate byte-identically. Pass the reference date in as an input from the client, or the page will differ between build time and view time.
@@ -206,5 +211,7 @@ Two more from the medium tier, both caught by tests rather than by review:
 
 3. `savings-goal.ts` negated `fv()` in one branch and not the others. Both the starting balance and the contributions are outflows, so they go in negative and `fv` comes back **positive** — the extra flip made every "what will I have" answer negative. `pmt()` in the same module *does* need a flip. **The sign convention is per-function, not per-module; check each call against `finance.ts`'s docstring.**
 4. `rent-vs-buy.ts` counted the buyer's upfront cash on the buying side only. Renting therefore looked cheaper by the whole deposit — about 1 tỷ on the defaults — and the verdict was biased. **In any two-sided comparison, assert that both sides start from identical wealth**; the `netCost = totalRent − investmentGain` identity test is what caught it.
+
+**Testing a solved rate: mind the tolerance.** `bisect` stops at a 1e-10 bracket on the rate it is solving for, so anything derived from that rate carries a matching relative error. On a 2 tỷ loan that is a couple of đồng of present value; on an APR it is ±1,2e-7 percentage points. Assert an absolute bound with a comment (`expect(Math.abs(npv)).toBeLessThan(1)`) rather than `toBeCloseTo(0, 8)`, which fails for a correct answer. Three tests in `apr.test.ts` and `irr-npv.test.ts` were written the tight way first and had to be loosened.
 
 Verify numbers by executing the module, not by re-reading the code. Several figures quoted in `content/calculators/*.ts` prose were wrong on the first pass and only fixed by running the module — the comment at the top of each content file records which figures came from where, so re-read the module if you change a default.
