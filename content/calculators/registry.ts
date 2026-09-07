@@ -602,7 +602,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Chi phí nhiên liệu",
     summary: "Chi phí nhiên liệu cho một chuyến đi hoặc mỗi tháng.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tinh-tien-tip",
