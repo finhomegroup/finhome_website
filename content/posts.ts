@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tphcm-xay-gan-20000-can-nha-o-xa-hoi",
+    title: "TP.HCM đẩy nhanh xây dựng gần 20.000 căn nhà ở xã hội, 10 dự án mới vừa khởi công",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "TP.HCM đang thi công 22 dự án nhà ở xã hội với gần 20.000 căn, trong đó 8 tháng đầu năm 2026 có 10 dự án mới khởi công hơn 11.300 căn. Nguồn cung giá phù hợp tăng thêm lựa chọn cho người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tphcm-xay-gan-20000-can-nha-o-xa-hoi.png",
+    date: "2026-09-07",
+    source: {
+        "name": "cafeland.vn",
+        "url": "https://cafeland.vn/tin-tuc/tphcm-dang-xay-gan-20000-can-nha-o-xa-hoi-10-du-an-moi-vua-khoi-cong-154766.html",
+        "accessed": "2026-09-07"
+      },
+  },
+  {
     slug: "cap-so-do-lan-dau-tai-gia-lai-2026-quy-trinh-thu-tuc",
     title: "Cấp sổ đỏ lần đầu tại Gia Lai 2026: Quy trình và thủ tục cần biết",
     category: "Chính sách",
