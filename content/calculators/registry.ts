@@ -138,7 +138,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân tích khoản vay",
     summary: "Bóc tách cơ cấu gốc, lãi và chi phí trong suốt kỳ hạn.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "kha-nang-mua-nha",
