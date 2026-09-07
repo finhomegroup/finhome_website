@@ -581,7 +581,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Các chỉ số tài chính",
     summary: "Các tỷ số thanh khoản, đòn bẩy và hiệu quả từ báo cáo tài chính.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "phan-tich-bao-cao-tai-chinh",
