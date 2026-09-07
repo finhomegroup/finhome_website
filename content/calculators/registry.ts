@@ -83,6 +83,13 @@ export const CALCULATORS: CalculatorEntry[] = [
     category: "vay-the-chap",
   },
   {
+    slug: "lai-kep",
+    title: "Tính lãi kép",
+    summary:
+      "Số tiền cuối kỳ, tổng lãi và mức tăng qua từng năm, kèm khoản gửi thêm định kỳ.",
+    category: "tai-chinh-dau-tu",
+  },
+  {
     slug: "quy-tac-72",
     title: "Quy tắc 72",
     summary: "Tính số năm để số tiền gốc nhân đôi nhờ lãi kép.",
