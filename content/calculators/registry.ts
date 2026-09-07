@@ -233,7 +233,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Mục tiêu tiết kiệm",
     summary: "Cần gửi bao nhiêu mỗi tháng để đạt số tiền mong muốn.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tien-gui-co-ky-han",
