@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { rule72Years, exactYears } from "@/lib/rule-of-72";
+import {
+  rule72Years,
+  exactYears,
+  rule72Rate,
+  exactRate,
+} from "@/lib/rule-of-72";
 import { parseDecimal, formatDecimal } from "@/lib/calc/number";
 
 describe("rule72Years", () => {
@@ -39,6 +44,49 @@ describe("exactYears", () => {
 
   it("returns null when the rate is too small for log1p to resolve above zero", () => {
     expect(exactYears(1e-21)).toBeNull();
+  });
+});
+
+describe("rule72Rate", () => {
+  it("divides 72 by the number of years", () => {
+    expect(rule72Rate(10)).toBeCloseTo(7.2, 10);
+    expect(rule72Rate(5)).toBeCloseTo(14.4, 10);
+    expect(rule72Rate(72)).toBeCloseTo(1, 10);
+  });
+
+  it("is the inverse of rule72Years", () => {
+    expect(rule72Rate(rule72Years(6) as number)).toBeCloseTo(6, 10);
+  });
+
+  it("returns null when the term cannot describe a doubling period", () => {
+    expect(rule72Rate(0)).toBeNull();
+    expect(rule72Rate(-5)).toBeNull();
+    expect(rule72Rate(Number.NaN)).toBeNull();
+    expect(rule72Rate(Number.POSITIVE_INFINITY)).toBeNull();
+  });
+});
+
+describe("exactRate", () => {
+  it("solves (1 + r)^t = 2 for r", () => {
+    expect(exactRate(10)).toBeCloseTo(7.1773, 4);
+    expect(exactRate(5)).toBeCloseTo(14.8698, 4);
+    expect(exactRate(1)).toBeCloseTo(100, 10);
+  });
+
+  it("is the inverse of exactYears", () => {
+    expect(exactRate(exactYears(6) as number)).toBeCloseTo(6, 8);
+    expect(exactRate(exactYears(10) as number)).toBeCloseTo(10, 8);
+  });
+
+  it("returns null when the term cannot describe a doubling period", () => {
+    expect(exactRate(0)).toBeNull();
+    expect(exactRate(-5)).toBeNull();
+    expect(exactRate(Number.NaN)).toBeNull();
+    expect(exactRate(Number.POSITIVE_INFINITY)).toBeNull();
+  });
+
+  it("returns null for a term so long the required rate rounds to zero", () => {
+    expect(exactRate(1e18)).toBeNull();
   });
 });
 

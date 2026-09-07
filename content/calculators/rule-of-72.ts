@@ -30,6 +30,30 @@ export const RULE_OF_72 = {
     // inside the 6–10% band where the rule is accurate. A default also means
     // the statically exported HTML ships a worked result, not empty fields.
     defaultRate: "6",
+
+    // The inverse direction: the user knows how long they have and wants the
+    // rate it would take. The reference tool offers both on one page.
+    yearsLabel: "Số năm bạn muốn nhân đôi",
+    yearsSuffix: "năm",
+    yearsHelp: "Nhập số năm bạn muốn số tiền nhân đôi, ví dụ 10.",
+    yearsInvalid:
+      "Vui lòng nhập số năm lớn hơn 0 để tính lãi suất cần thiết.",
+    rateResultTitle: "Lãi suất cần thiết để gốc nhân đôi",
+    rateUnit: "%/năm",
+    defaultYears: "10",
+  },
+
+  table: {
+    title: "Bảng tra nhanh quy tắc 72",
+    intro:
+      "Thời gian để số tiền nhân đôi ở các mức lãi suất thường gặp. Cột ước tính lấy 72 chia cho lãi suất; cột chính xác dùng công thức lãi kép.",
+    caption: "Số năm để gốc nhân đôi theo từng mức lãi suất",
+    rateColumn: "Lãi suất (%/năm)",
+    estimateColumn: "Ước tính theo quy tắc 72",
+    exactColumn: "Kết quả chính xác",
+    // The rates a Vietnamese saver or investor actually encounters, from a
+    // low-rate deposit through an optimistic equity return.
+    rates: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20],
   },
 
   formula: {

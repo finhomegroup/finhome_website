@@ -33,3 +33,32 @@ export function exactYears(rate: number): number | null {
   // signature does not permit.
   return Number.isFinite(years) ? years : null;
 }
+
+/**
+ * The inverse direction: what rate doubles the principal in `years`?
+ *
+ * Rule-of-72 estimate, 72 / years. Null when `years` cannot describe a
+ * doubling period.
+ *
+ * @param years Number of years, e.g. 10.
+ * @returns Annual rate in percent — 7.2 means 7,2%/năm.
+ */
+export function rule72Rate(years: number): number | null {
+  if (!Number.isFinite(years) || years <= 0) return null;
+  return 72 / years;
+}
+
+/**
+ * Exact inverse of `exactYears`: solving (1 + r)^t = 2 for r gives
+ * r = 2^(1/t) - 1.
+ *
+ * @param years Number of years, e.g. 10.
+ * @returns Annual rate in percent — 7.18 means 7,18%/năm.
+ */
+export function exactRate(years: number): number | null {
+  if (!Number.isFinite(years) || years <= 0) return null;
+  const rate = (2 ** (1 / years) - 1) * 100;
+  // A term long enough that 2^(1/t) rounds to exactly 1 yields 0, which is not
+  // a doubling rate; anything non-finite is likewise not a usable answer.
+  return Number.isFinite(rate) && rate > 0 ? rate : null;
+}
