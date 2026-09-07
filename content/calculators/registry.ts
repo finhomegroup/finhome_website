@@ -181,7 +181,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lãi cố định hay thả nổi",
     summary: "So sánh hai cấu trúc lãi suất trên cùng một khoản vay.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tra-no-hai-tuan",
