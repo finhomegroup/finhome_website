@@ -567,7 +567,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính tăng lương",
     summary: "Mức lương mới sau khi tăng theo phần trăm hoặc theo số tiền.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "du-bao-kinh-doanh",
