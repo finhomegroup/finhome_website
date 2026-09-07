@@ -546,7 +546,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Giảm giá và thuế",
     summary: "Giá sau khi giảm và sau khi cộng thuế.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "margin-va-markup",
