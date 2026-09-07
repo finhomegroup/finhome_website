@@ -268,7 +268,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lợi suất tương đương thuế",
     summary: "Quy lợi suất miễn thuế về mức trước thuế để so sánh.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tiet-kiem-hoc-phi",
