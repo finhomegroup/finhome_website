@@ -202,7 +202,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Bất động sản cho thuê",
     summary: "Dòng tiền, tỷ suất sinh lời và điểm hòa vốn của một căn cho thuê.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
 
   // ------------------------------------------------------------ Tài chính & Đầu tư
