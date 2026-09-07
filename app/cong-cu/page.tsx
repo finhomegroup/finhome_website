@@ -10,6 +10,7 @@ import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
   calculatorPath,
+  liveCalculators,
 } from "@/content/calculators/registry";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
@@ -28,12 +29,14 @@ export const metadata: Metadata = {
 };
 
 export default function CalculatorHubPage() {
-  // Only categories that actually have a built calculator are rendered, so
-  // the page grows as the registry does without ever showing an empty section.
+  // Only categories that hold at least one tool are rendered, so the page
+  // grows with the registry without ever showing an empty heading.
   const groups = CATEGORY_ORDER.map((category) => ({
     category,
     items: CALCULATORS.filter((calc) => calc.category === category),
   })).filter((group) => group.items.length > 0);
+
+  const liveCount = liveCalculators().length;
 
   return (
     <>
@@ -47,55 +50,69 @@ export default function CalculatorHubPage() {
             <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-2">
               {C.lede}
             </p>
+            <p className="mx-auto mt-4 text-sm leading-relaxed text-ink-3">
+              {C.legend
+                .replace("{live}", String(liveCount))
+                .replace("{total}", String(CALCULATORS.length))}
+            </p>
           </Reveal>
 
-          <div className="mx-auto mt-12 max-w-3xl space-y-10">
+          {/*
+            A dense multi-column index rather than a column of cards. Seventy-five
+            summary cards is a ~7,000px scroll and you cannot see the shape of the
+            suite; names alone in three columns fit almost the whole menu on one
+            screen. The summary still appears on each tool's own page.
+
+            `columns` rather than a grid: category blocks have very different
+            heights (16 tools vs 2), and CSS columns flow them without leaving the
+            ragged gaps a grid row would.
+          */}
+          <div className="mt-12 gap-x-10 md:columns-2 xl:columns-3">
             {groups.map((group) => (
-              <section key={group.category}>
-                <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+              <section
+                key={group.category}
+                // Keeps a heading from being orphaned at the foot of a column.
+                className="mb-8 break-inside-avoid"
+              >
+                <h2 className="flex items-baseline gap-2 border-b border-ink-4/25 pb-2 font-display text-base font-medium text-ink">
                   {CATEGORY_LABELS[group.category]}
+                  <span className="text-sm font-normal text-ink-3">
+                    {group.items.length}
+                  </span>
                 </h2>
-                <ul className="mt-4 space-y-3">
+
+                <ul className="mt-2">
                   {group.items.map((calc) => {
                     const isLive = calc.status === "live";
                     return (
                       <li key={calc.slug}>
-                        {/* Every tool is a link, so no click is a dead end —
-                            but an unbuilt one is visually quieter and says so,
-                            rather than looking identical to a working tool. */}
+                        {/* Every tool is a link, so no click is a dead end. A
+                            tool that does not compute yet is muted and marked
+                            with a dot rather than a full badge — at this
+                            density a badge on 72 rows is just noise. */}
                         <Link
                           href={`${calculatorPath(calc.slug)}/`}
-                          className={cn(
-                            "block rounded-2xl border p-5 transition-colors",
+                          aria-label={
                             isLive
-                              ? "border-ink-4/15 bg-white shadow-sm hover:border-brand-green/50"
-                              : "border-ink-4/15 bg-bg-soft hover:border-ink-4/40",
+                              ? calc.title
+                              : `${calc.title} — ${C.plannedBadge}`
+                          }
+                          className={cn(
+                            "flex items-baseline gap-2 rounded-md px-1.5 py-1 text-sm leading-snug transition-colors",
+                            isLive
+                              ? "text-ink hover:bg-bg-soft hover:text-brand-green"
+                              : "text-ink-3 hover:bg-bg-soft hover:text-ink-2",
                             FH_POINTER,
                           )}
                         >
-                          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                            <span
-                              className={cn(
-                                "font-display text-base font-medium",
-                                isLive ? "text-ink" : "text-ink-2",
-                              )}
-                            >
-                              {calc.title}
-                            </span>
-                            {isLive ? null : (
-                              <span className="rounded-full bg-ink-4/20 px-2 py-0.5 text-xs font-medium text-ink-3">
-                                {C.plannedBadge}
-                              </span>
-                            )}
-                          </span>
                           <span
+                            aria-hidden
                             className={cn(
-                              "mt-1 block text-sm leading-relaxed",
-                              isLive ? "text-ink-2" : "text-ink-3",
+                              "mt-1.5 size-1.5 shrink-0 rounded-full",
+                              isLive ? "bg-brand-green" : "bg-ink-4/60",
                             )}
-                          >
-                            {calc.summary}
-                          </span>
+                          />
+                          <span className="min-w-0">{calc.title}</span>
                         </Link>
                       </li>
                     );
