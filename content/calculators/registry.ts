@@ -616,7 +616,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính ngày",
     summary: "Khoảng thời gian giữa hai ngày, hoặc ngày sau khi cộng thêm.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "doi-don-vi",
