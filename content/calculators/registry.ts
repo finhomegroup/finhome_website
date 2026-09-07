@@ -373,7 +373,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lợi nhuận kỳ nắm giữ",
     summary: "Lợi nhuận thực tế trong khoảng thời gian bạn nắm giữ tài sản.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "wacc",
