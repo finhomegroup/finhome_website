@@ -306,7 +306,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Trả hết nợ thẻ tín dụng",
     summary: "Bao lâu và bao nhiêu tiền lãi để trả hết dư nợ thẻ.",
     category: "the-tin-dung",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "tra-toi-thieu-the-tin-dung",
