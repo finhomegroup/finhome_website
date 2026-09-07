@@ -338,7 +338,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Lợi nhuận cổ phiếu",
     summary: "Tổng lợi nhuận gồm chênh lệch giá và cổ tức.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "co-phieu-tang-truong-deu",
