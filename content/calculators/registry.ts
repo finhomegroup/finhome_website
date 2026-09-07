@@ -145,7 +145,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Khả năng mua nhà",
     summary: "Từ thu nhập và chi phí hằng tháng, tính mức giá nhà bạn nên nhắm tới.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "thue-hay-mua",
