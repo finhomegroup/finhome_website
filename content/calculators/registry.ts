@@ -539,7 +539,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính phần trăm",
     summary: "Phần trăm của một số, mức tăng giảm và tỷ lệ giữa hai số.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "giam-gia-va-thue",
