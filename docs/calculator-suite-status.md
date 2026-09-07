@@ -3,7 +3,7 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-07
-Branch: `feat/rule-of-72-calculator` — **69 commits, not merged, not pushed.**
+Branch: `feat/rule-of-72-calculator` — **73 commits, not merged, not pushed.**
 Everything below is committed; nothing is in the working tree.
 
 ---
@@ -14,10 +14,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **37** |
-| Listed with a placeholder page | 38 |
+| Working calculators | **40** |
+| Listed with a placeholder page | 35 |
 | Total routes built | 75 |
-| Tests | 742, across 39 suites |
+| Tests | 798, across 42 suites |
 
 **Working:**
 
@@ -60,6 +60,9 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/loi-nhuan-ky-nam-giu/` | Holding period return split into capital gain and income |
 | `/cong-cu/diem-pivot/` | Pivot levels by four methods, shown together because they disagree |
 | `/cong-cu/fibonacci/` | Retracements and extensions; flags the two non-Fibonacci ratios |
+| `/cong-cu/loi-nhuan-co-phieu/` | Trade return net of VN fees; transfer tax charged on losses too |
+| `/cong-cu/co-phieu-tang-truong-deu/` | Gordon growth; leads with the implied growth and return |
+| `/cong-cu/co-phieu-tang-truong-khong-deu/` | Two-stage DDM; terminal share in the headline |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -119,6 +122,9 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `holding-period.ts` | `computeHoldingPeriod` |
 | `pivot.ts` | `computePivots` — four methods; Woodie absent without an open |
 | `fibonacci.ts` | `computeFibonacci` |
+| `stock-return.ts` | `computeStockReturn` — closed-form break-even price |
+| `ddm.ts` | `computeDdm` — rejects `g >= r`; closed-form inversions |
+| `ddm-multi.ts` | `computeDdmMulti` — first stage may exceed `r`, terminal may not |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
@@ -175,7 +181,7 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** 69 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
+- **The branch.** 73 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
 **Closed since the SP-0 review:**
@@ -199,7 +205,7 @@ Ordered by value per unit of effort. Each is independently mergeable.
 
 **Needs the root finder — done.** `apr`, `apr-nang-cao`, `irr-npv` and `trai-phieu` are built. Read §8's tolerance note before writing tests against a solved rate.
 
-**Equity tier — six of nine done.** `capm`, `wacc`, `loi-nhuan-ky-vong`, `loi-nhuan-ky-nam-giu`, `diem-pivot` and `fibonacci` are built. Still open in that category: `loi-nhuan-co-phieu` (stock return net of Vietnam's 0,1% transfer tax and 5% dividend tax), `co-phieu-tang-truong-deu` (Gordon growth — reject `g >= r`) and `co-phieu-tang-truong-khong-deu` (multi-stage DDM).
+**Equity tier — done**, all nine. The only equity slugs left are `quyen-chon-black-scholes` (needs the normal CDF) and `thue-co-tuc` (United States law).
 
 **Next, and VN-relevant, no new machinery needed:**
 `gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`.
@@ -219,6 +225,8 @@ Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suit
 - `docs/superpowers/specs/2026-09-06-rule-of-72-calculator-design.md` — the first calculator
 
 Two defects worth knowing about, because both came from a plan rather than from an implementation, and both were caught only by numeric verification:
+
+**A `verdict: "fair"` compared with `===` is unreachable.** `ddm.ts` first tested `price === intrinsicValue`, and `intrinsicValue` is a division that lands on 30000.000000000004 — so the verdict could never fire. Fixed with a documented half-percent band, which is also the honest resolution of a model built on estimates. **Any equality comparison against a computed float needs a band, and the band belongs in a named constant with a comment saying why.**
 
 1. `solveRate`'s search bracket was originally 1000% per period, which overflowed float64 at 289 periods — so **every loan term over ~24 years returned "no solution"**, including standard 25- and 30-year Vietnamese mortgages. The test suite at the time used only 12-period loans and was structurally incapable of catching it. **Pin at least one realistic-term case (240/300/360 periods) in any module that touches loans.**
 2. `formatDecimal` had no finite guard, so a tiny rate rendered `"Infinity năm"` on a live page.
