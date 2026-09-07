@@ -64,6 +64,11 @@ export type CommercialLoanResult = {
   /** Interest as a percent of the amount drawn. */
   interestToPrincipalPercent: number;
   /**
+   * Instalment a plain amortizing loan of the same size, rate and term would
+   * carry — the yardstick for what grace and balloon buy each month.
+   */
+  plainPayment: number;
+  /**
    * Interest a plain amortizing loan of the same size, rate and term would
    * have cost — the cost of the structure, made visible.
    */
@@ -179,6 +184,8 @@ export function computeCommercialLoan(
     (sum, row) => sum + row.interest,
     0,
   );
+  const plainPayment = Math.abs(pmt(monthlyRate, termMonths, amount));
+  if (!Number.isFinite(plainPayment)) return null;
 
   return {
     gracePayment: graceMonths > 0 ? gracePayment : 0,
@@ -191,6 +198,7 @@ export function computeCommercialLoan(
     totalInterest,
     totalPaid: amount + totalInterest,
     interestToPrincipalPercent: (totalInterest / amount) * 100,
+    plainPayment,
     plainTotalInterest,
     structureCost: totalInterest - plainTotalInterest,
     schedule,

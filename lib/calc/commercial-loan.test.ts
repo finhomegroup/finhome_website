@@ -171,11 +171,21 @@ describe("computeCommercialLoan — the cost of the structure", () => {
       termMonths: 84,
     })!;
     expect(result.plainTotalInterest).toBeCloseTo(plain.totalInterest, 2);
+    expect(result.plainPayment).toBeCloseTo(
+      plain.monthlyPrincipalInterest,
+      6,
+    );
     expect(result.structureCost).toBeCloseTo(
       result.totalInterest - result.plainTotalInterest,
       6,
     );
     expect(result.structureCost).toBeGreaterThan(0);
+  });
+
+  it("reports the plain instalment even when the structure has neither feature", () => {
+    // Then it must equal the loan's own amortizing payment.
+    const result = loan({ ...BASE, graceMonths: 0, balloonPercent: 0 });
+    expect(result.plainPayment).toBeCloseTo(result.amortizingPayment, 6);
   });
 
   it("keeps the schedule identities on every row", () => {

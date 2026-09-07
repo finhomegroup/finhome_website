@@ -131,7 +131,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính vay thương mại",
     summary: "Khoản vay kinh doanh có kỳ trả gốc cuối kỳ hoặc kỳ ân hạn.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "phan-tich-khoan-vay",
