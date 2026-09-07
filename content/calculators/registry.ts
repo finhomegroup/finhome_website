@@ -76,6 +76,13 @@ for (const category of Object.keys(CATEGORY_LABELS) as CalculatorCategory[]) {
 
 export const CALCULATORS: CalculatorEntry[] = [
   {
+    slug: "vay-mua-nha",
+    title: "Tính khoản vay mua nhà",
+    summary:
+      "Số tiền trả hằng tháng, tổng lãi và bảng trả nợ theo từng năm.",
+    category: "vay-the-chap",
+  },
+  {
     slug: "quy-tac-72",
     title: "Quy tắc 72",
     summary: "Tính số năm để số tiền gốc nhân đôi nhờ lãi kép.",
