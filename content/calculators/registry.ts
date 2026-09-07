@@ -401,7 +401,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Mức Fibonacci",
     summary: "Các mức điều chỉnh Fibonacci giữa một vùng giá.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "thue-co-tuc",
