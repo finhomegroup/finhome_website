@@ -322,7 +322,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính khoản vay mua xe",
     summary: "Số tiền trả hằng tháng và tổng chi phí của một khoản vay mua xe.",
     category: "vay-mua-xe",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "thue-mua-xe",
