@@ -359,7 +359,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Mô hình CAPM",
     summary: "Lợi nhuận yêu cầu của một tài sản theo hệ số beta và phần bù rủi ro.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "loi-nhuan-ky-vong",
