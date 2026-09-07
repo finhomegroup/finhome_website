@@ -345,7 +345,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Cổ phiếu tăng trưởng đều",
     summary: "Định giá cổ phiếu theo mô hình cổ tức tăng trưởng đều.",
     category: "chung-khoan",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "co-phieu-tang-truong-khong-deu",
