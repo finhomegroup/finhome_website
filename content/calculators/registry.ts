@@ -174,7 +174,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Khoản vay lãi thả nổi",
     summary: "Số tiền trả thay đổi thế nào khi lãi suất điều chỉnh theo kỳ.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "lai-co-dinh-hay-tha-noi",
