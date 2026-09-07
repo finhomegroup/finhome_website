@@ -3,7 +3,7 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-07
-Branch: `feat/rule-of-72-calculator` — **62 commits, not merged, not pushed.**
+Branch: `feat/rule-of-72-calculator` — **69 commits, not merged, not pushed.**
 Everything below is committed; nothing is in the working tree.
 
 ---
@@ -14,10 +14,10 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **31** |
-| Listed with a placeholder page | 44 |
+| Working calculators | **37** |
+| Listed with a placeholder page | 38 |
 | Total routes built | 75 |
-| Tests | 638, across 34 suites |
+| Tests | 742, across 39 suites |
 
 **Working:**
 
@@ -54,6 +54,12 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | `/cong-cu/apr-nang-cao/` | Itemised fees, and the APR that applies if you repay early |
 | `/cong-cu/irr-npv/` | NPV, IRR, MIRR, profitability index, payback both ways |
 | `/cong-cu/trai-phieu/` | Bond price ↔ yield, three yields kept apart, duration in years |
+| `/cong-cu/capm/` | CAPM + Jensen's alpha; rejects being given return *and* premium |
+| `/cong-cu/wacc/` | WACC with the tax shield on debt only, contributions itemised |
+| `/cong-cu/loi-nhuan-ky-vong/` | Expected return, σ, coefficient of variation, semi-deviation |
+| `/cong-cu/loi-nhuan-ky-nam-giu/` | Holding period return split into capital gain and income |
+| `/cong-cu/diem-pivot/` | Pivot levels by four methods, shown together because they disagree |
+| `/cong-cu/fibonacci/` | Retracements and extensions; flags the two non-Fibonacci ratios |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -107,12 +113,20 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `apr.ts` | `computeApr` — shared by both APR pages; solves via `solveRate` |
 | `irr-npv.ts` | `computeIrrNpv`, `netPresentValue` — declines a non-unique IRR |
 | `bond.ts` | `computeBond` — price↔yield, duration in YEARS not periods |
+| `capm.ts` | `computeCapm` |
+| `wacc.ts` | `computeWacc` |
+| `expected-return.ts` | `computeExpectedReturn` — rejects probabilities that miss 100 |
+| `holding-period.ts` | `computeHoldingPeriod` |
+| `pivot.ts` | `computePivots` — four methods; Woodie absent without an open |
+| `fibonacci.ts` | `computeFibonacci` |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
 **`CalculatorPage` is the page shell, and it owns the two contracts a hand-written page could silently drop:** it always renders `<CalculatorDisclaimer />`, and it reads the registry's `usRules` flag itself and renders the `us-rules` variant above the calculator. It also throws during `next build` on a slug that is not in the registry. Both gaps from the SP-0 review are closed by using it.
 
 The six calculators built before the shell existed still render their own page bodies. That is deliberate: their built HTML is a regression gate, and rewriting them through the shell would move rendered markup for no functional gain. Migrate them whenever their markup is next allowed to change.
+
+**A repeating-field primitive is now overdue.** `irr-npv` and `loi-nhuan-ky-vong` both needed a variable-length list of inputs and both solved it the same way: a fixed pool of keys in `useCalcFields` plus a count field deciding how many render. Keeping every key in state means shrinking the count and growing it again does not lose what was typed. The third tool to need this should extract it.
 
 **Not built yet, and their first consumer should build them:** a unit-toggle field (`SelectField` alongside the number field is the current idiom — see `fuel-calculator.tsx`), and a monthly (rather than yearly) schedule view with collapse.
 
@@ -161,7 +175,7 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** 62 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
+- **The branch.** 69 commits on `feat/rule-of-72-calculator`, unmerged and unpushed. One commit per calculator, each self-contained — the registry flip ships with its page, so no commit leaves `registry.test.ts` red. The owner has been asked repeatedly and has not chosen a merge strategy; nothing has been pushed as a result.
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers seventeen pages, including three that render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye.
 
 **Closed since the SP-0 review:**
@@ -185,8 +199,10 @@ Ordered by value per unit of effort. Each is independently mergeable.
 
 **Needs the root finder — done.** `apr`, `apr-nang-cao`, `irr-npv` and `trai-phieu` are built. Read §8's tolerance note before writing tests against a solved rate.
 
+**Equity tier — six of nine done.** `capm`, `wacc`, `loi-nhuan-ky-vong`, `loi-nhuan-ky-nam-giu`, `diem-pivot` and `fibonacci` are built. Still open in that category: `loi-nhuan-co-phieu` (stock return net of Vietnam's 0,1% transfer tax and 5% dividend tax), `co-phieu-tang-truong-deu` (Gordon growth — reject `g >= r`) and `co-phieu-tang-truong-khong-deu` (multi-stage DDM).
+
 **Next, and VN-relevant, no new machinery needed:**
-`gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`, and the ten equity tools (`capm`, `wacc`, `loi-nhuan-ky-vong`, `loi-nhuan-ky-nam-giu`, `co-phieu-tang-truong-deu`, `co-phieu-tang-truong-khong-deu`, `loi-nhuan-co-phieu`, `diem-pivot`, `fibonacci`).
+`gia-tri-tien-te-theo-thoi-gian`, `lai-suat-tha-noi`, `lai-co-dinh-hay-tha-noi`, `vay-thuong-mai`, `tiet-kiem-hoc-phi`, `thu-nhap-dau-tu`, `phi-quy-dau-tu`, `loi-suat-tuong-duong-thue`, `du-bao-kinh-doanh`, `cac-chi-so-tai-chinh`, `phan-tich-bao-cao-tai-chinh`, `phan-phoi-rong`, `tinh-ngay`, `doi-don-vi`.
 
 Note `tinh-ngay` and `doi-don-vi`: the first needs date arithmetic, and the suite's rule is **no `Date` in `lib/calc/`** because prerendered output must hydrate byte-identically. Pass the reference date in as an input from the client, or the page will differ between build time and view time.
 
