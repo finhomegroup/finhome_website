@@ -275,7 +275,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tiết kiệm học phí",
     summary: "Cần dành bao nhiêu mỗi tháng cho học phí của con trong tương lai.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "thu-nhap-dau-tu",
