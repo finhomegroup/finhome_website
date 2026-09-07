@@ -188,14 +188,14 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Trả nợ hai tuần một lần",
     summary: "Trả nửa kỳ mỗi hai tuần rút ngắn kỳ hạn và giảm lãi bao nhiêu.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "chi-tra-lai",
     title: "Khoản vay chỉ trả lãi",
     summary: "Giai đoạn chỉ trả lãi rồi chuyển sang trả cả gốc, và mức tăng khi đó.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "bat-dong-san-cho-thue",
