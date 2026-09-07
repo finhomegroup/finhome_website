@@ -623,7 +623,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Đổi đơn vị",
     summary: "Quy đổi giữa các đơn vị đo lường thường dùng.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "lam-phat-hoa-ky",
