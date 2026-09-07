@@ -261,7 +261,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính trái phiếu",
     summary: "Giá, lợi suất đáo hạn và tiền lãi coupon của một trái phiếu.",
     category: "tai-chinh-dau-tu",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "loi-suat-tuong-duong-thue",
