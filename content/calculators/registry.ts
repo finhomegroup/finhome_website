@@ -553,7 +553,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Margin và markup",
     summary: "Chuyển đổi giữa tỷ lệ lợi nhuận trên giá bán và trên giá vốn.",
     category: "khac",
-    status: "planned",
+    status: "live",
   },
   {
     slug: "luong-gio-sang-luong-thang",
