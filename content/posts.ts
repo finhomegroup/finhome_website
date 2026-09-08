@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "du-no-vay-doanh-nghiep-bat-dong-san-tang-20",
+    title: "Dư nợ vay doanh nghiệp bất động sản tăng 20,3%, đạt 360.000 tỷ đồng",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Dư nợ vay của các doanh nghiệp bất động sản niêm yết tiếp tục tăng mạnh, đạt 360.240 tỷ đồng, tăng 20,3% so với quý trước. Diễn biến này cần được theo dõi sát vì liên quan trực tiếp đến nguồn cung và khả năng tiếp cận nhà ở của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-no-vay-doanh-nghiep-bat-dong-san-tang-20.png",
+    date: "2026-09-08",
+    source: {
+        "name": "vneconomy.vn",
+        "url": "https://vneconomy.vn/du-no-vay-cua-doanh-nghiep-bat-dong-san-tang-manh-dat-360000-ty.htm",
+        "accessed": "2026-09-08"
+      },
+  },
+  {
     slug: "tphcm-xay-gan-20000-can-nha-o-xa-hoi",
     title: "TP.HCM đẩy nhanh xây dựng gần 20.000 căn nhà ở xã hội, 10 dự án mới vừa khởi công",
     category: "Nhà ở xã hội",
