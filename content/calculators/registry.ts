@@ -418,7 +418,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Kế hoạch hưu trí",
     summary: "Lập kế hoạch tích lũy và rút tiền cho tuổi nghỉ hưu, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
