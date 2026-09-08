@@ -159,7 +159,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tiết kiệm thuế từ lãi vay",
     summary: "Phần thuế được giảm nhờ khấu trừ lãi vay, theo quy định Hoa Kỳ.",
     category: "vay-the-chap",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
