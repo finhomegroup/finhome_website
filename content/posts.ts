@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-xay-dung-trien-khai-he-thong-du-lieu-nha-o-bat-dong-san-357-2025",
+    title: "Bộ Xây dựng triển khai hệ thống dữ liệu nhà ở, bất động sản theo Nghị định 357",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Ngày 7/9, Bộ Xây dựng tổ chức tập huấn triển khai hệ thống thông tin, cơ sở dữ liệu về nhà ở và thị trường bất động sản theo Nghị định 357/2025/NĐ-CP.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-xay-dung-trien-khai-he-thong-du-lieu-nha-o-bat-dong-san-357-2025.png",
+    date: "2026-09-08",
+    source: {
+        "name": "batdongsan.baoxaydung.vn",
+        "url": "https://batdongsan.baoxaydung.vn/bo-xay-dung-thuc-day-van-hanh-he-thong-du-lieu-nha-o-bat-dong-san-192260907165707445.htm",
+        "accessed": "2026-09-08"
+      },
+  },
+  {
     slug: "du-no-vay-doanh-nghiep-bat-dong-san-tang-20",
     title: "Dư nợ vay doanh nghiệp bất động sản tăng 20,3%, đạt 360.000 tỷ đồng",
     category: "Tài chính",
