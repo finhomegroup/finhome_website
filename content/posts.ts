@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nha-xa-hoi-hai-phong-mo-ban-545-trieu",
+    title: "Nhà xã hội Hải Phòng dự kiến mở bán từ 545 triệu đồng, giá tạm tính hơn 15 triệu/m²",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Hàng trăm căn nhà xã hội tại phường Kiến An, Hải Phòng có giá tạm tính hơn 15 triệu đồng mỗi m2, tương đương căn hộ từ 545 triệu đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nha-xa-hoi-hai-phong-mo-ban-545-trieu.jpg",
+    date: "2026-09-08",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nha-xa-hoi-o-hai-phong-du-kien-mo-ban-tu-545-trieu-dong-5117229.html",
+        "accessed": "2026-09-08"
+      },
+  },
+  {
     slug: "bo-xay-dung-trien-khai-he-thong-du-lieu-nha-o-bat-dong-san-357-2025",
     title: "Bộ Xây dựng triển khai hệ thống dữ liệu nhà ở, bất động sản theo Nghị định 357",
     category: "Chính sách",
