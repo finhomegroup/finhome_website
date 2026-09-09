@@ -120,21 +120,75 @@ describe("computeApr — fees rolled into the loan", () => {
       financedFees: 30_000_000,
     });
     expect(financed.principal).toBe(2_030_000_000);
-    expect(financed.netProceeds).toBe(2_030_000_000);
+    // A financed fee is borrowed, not received: the 30 triệu is paid straight
+    // back out to the bank, so what reaches the borrower is still `amount`.
+    expect(financed.netProceeds).toBe(2_000_000_000);
     expect(financed.monthlyPayment).toBeGreaterThan(
       apr({ ...BASE, upfrontFees: 0 }).monthlyPayment,
     );
   });
 
-  it("leaves the APR at the contract rate when nothing is paid up front", () => {
-    // Borrowing the fee is still borrowing at the contract rate: the cash
-    // flows are a bigger loan on the same terms, so the rate is unchanged.
+  it("raises the APR, because the fee is borrowed and not received", () => {
+    // 2 tỷ in hand, repaid as a 2,03 tỷ loan at 8,5%/240. Reg-Z APR of those
+    // cash flows, solved by an independent bisection: 8,704986031%. Six
+    // places, not more — `bisect` stops at a 1e-10 bracket on the MONTHLY
+    // rate, which is ±1,2e-7 once scaled to an annual percentage. The old
+    // expectation of exactly 8,5 was the double count, not a real answer.
     const financed = apr({
       ...BASE,
       upfrontFees: 0,
       financedFees: 30_000_000,
     });
-    expect(financed.aprPercent).toBeCloseTo(8.5, 6);
+    expect(financed.aprPercent!).toBeCloseTo(8.704_986_031, 6);
+    expect(financed.aprSpreadPoints!).toBeCloseTo(0.204_986_031, 6);
+    // Cheaper on the APR than paying the same fee in cash, because it is
+    // spread over the term — but not free, which is what the page used to say.
+    expect(financed.aprPercent!).toBeLessThan(apr(BASE).aprPercent!);
+    expect(financed.aprPercent!).toBeGreaterThan(8.5);
+  });
+
+  it("closes the ledger: everything paid, less what you got, is the cost", () => {
+    // The identity the double count broke — it was out by exactly the
+    // financed fee. Two places: totalPaid is a sum of 240 float rows, so the
+    // residue is ~1,7e-5 ₫, far below the smallest unit anyone quotes.
+    for (const input of [
+      BASE,
+      { ...BASE, upfrontFees: 0, financedFees: 30_000_000 },
+      { ...BASE, financedFees: 30_000_000, pointsPercent: 1 },
+    ]) {
+      const result = apr(input);
+      expect(result.totalCost).toBeCloseTo(
+        result.totalPaid - result.netProceeds,
+        2,
+      );
+    }
+  });
+
+  it("reports the APR that actually applies at an early payoff", () => {
+    // Solved on the real flows: 2 tỷ in, 60 payments of 17.616.812 ₫, then
+    // the 1.788.981.817 ₫ balance. Was 8,5000% — 0,386 points understated at
+    // the advanced page's own default payoff month.
+    const result = apr({
+      ...BASE,
+      upfrontFees: 0,
+      financedFees: 30_000_000,
+      payoffMonths: 60,
+    });
+    expect(result.payoffAprPercent!).toBeCloseTo(8.886_424_856, 6);
+  });
+
+  it("rejects points that swallow the money you asked for", () => {
+    // Points are a percent of the GROWN principal, so with a financed fee
+    // they can exceed `amount`: 99,9% of 2,03 tỷ is 2.027.970.000 ₫ against
+    // the 2 tỷ asked for. You would receive less than nothing.
+    expect(
+      computeApr({
+        ...BASE,
+        upfrontFees: 0,
+        financedFees: 30_000_000,
+        pointsPercent: 99.9,
+      }),
+    ).toBeNull();
   });
 
   it("still counts the financed fee in the total cost", () => {

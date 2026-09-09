@@ -16,7 +16,11 @@
  *   whole effect lands on the APR.
  * - **Financed** (rolled into the principal). These raise the amount interest
  *   is charged on, so the payment goes up while the net proceeds stay the
- *   same. The APR still rises, but the borrower feels it monthly instead.
+ *   same — a financed fee is BORROWED, never received. The APR still rises,
+ *   just by slightly LESS than the same fee paid in cash, because the fee is
+ *   spread over the term instead of surrendered on day one: on the defaults
+ *   (2 tỷ, 8,5%, 240 tháng, 30 triệu phí) financing gives 8,7050% against
+ *   8,7081% for paying up front. It is never left at the contract rate.
  *
  * The APR itself is solved numerically — there is no closed form — via
  * `solveRate`, and it comes back null rather than a guess when the cash flows
@@ -57,7 +61,10 @@ export type AprResult = {
   pointsCost: number;
   /** Every fee added up, financed or not. */
   totalFees: number;
-  /** What actually reaches you: principal less the fees paid up front. */
+  /**
+   * What actually reaches you: `amount` less the fees paid up front. Financed
+   * fees are not proceeds — they are borrowed to be paid straight back out.
+   */
   netProceeds: number;
   /** Scheduled instalment on `principal` at the contract rate. */
   monthlyPayment: number;
@@ -88,8 +95,8 @@ export type AprResult = {
  *
  * Null when the inputs cannot describe one: a non-positive amount or term, a
  * negative rate or fee, points at or above 100%, a non-integer number of
- * months, fees paid up front that exceed the principal (you would be paying
- * to receive nothing), or any non-finite number.
+ * months, fees paid up front that reach or exceed `amount` (you would be
+ * paying to receive nothing), or any non-finite number.
  *
  * The APR fields — not the whole result — come back null when `solveRate`
  * cannot bracket a rate. That is a real outcome to surface, not an error: the
@@ -123,10 +130,17 @@ export function computeApr(input: AprInput): AprResult | null {
   const principal = amount + financedFees;
   const pointsCost = principal * (pointsPercent / 100);
   const paidUpFront = upfrontFees + pointsCost;
-  // Paying more in fees than the loan is worth is not a loan.
-  if (paidUpFront >= principal) return null;
+  // Fees paid in cash that reach or exceed the money you asked for leave you
+  // receiving nothing — that is not a loan. Tested against `amount`, not
+  // `principal`: borrowing the fee does not enlarge what reaches you.
+  if (paidUpFront >= amount) return null;
 
-  const netProceeds = principal - paidUpFront;
+  // A financed fee is BORROWED, not received: it never reaches the borrower.
+  // `amount` is the money in hand (see AprInput above), so the proceeds are
+  // measured from `amount`, never from the grown principal. Counting the
+  // financed fee here AS WELL AS in totalCost charged it on both sides of the
+  // ledger and held the APR at exactly the contract rate.
+  const netProceeds = amount - paidUpFront;
   const monthlyRate = annualRatePercent / 100 / 12;
 
   const monthlyPayment = Math.abs(pmt(monthlyRate, termMonths, principal));

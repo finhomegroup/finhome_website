@@ -9,9 +9,11 @@
 //    guess a total. The itemisation is presentation only — the component sums
 //    it and hands the module one figure.
 // 2. Fees rolled into the loan, kept SEPARATE from fees paid in cash. They
-//    behave differently: financed fees raise the payment and leave the APR at
-//    the contract rate, upfront fees leave the payment alone and raise the
-//    APR. Merging them would hide the whole distinction.
+//    behave differently: financed fees raise the payment AND the APR, while
+//    upfront fees leave the payment alone and raise the APR MORE, because the
+//    fee is surrendered on day one instead of spread over the term. A
+//    financed fee is BORROWED, not received, so it never enters the net
+//    proceeds. Merging the two boxes would hide the whole distinction.
 // 3. APR at an early payoff. APR by definition assumes the loan runs to
 //    term, and most Vietnamese mortgages do not. Clearing at month 36 turns
 //    the default 8,7081% into 9,0902%.
@@ -19,7 +21,8 @@
 // Figures quoted are the tool's own output for 2 tỷ, 8,5%/năm, 240 tháng,
 // 30 triệu phí trả ngay: APR 8,7081%, tất toán tháng 60 → 8,8923% với dư nợ
 // 1.762.543.662 ₫, tất toán tháng 36 → 9,0902%. Gộp 30 triệu vào khoản vay:
-// trả 17.616.812 ₫/tháng, APR 8,5000%, tổng lãi 2.198.034.793 ₫.
+// trả 17.616.812 ₫/tháng, APR 8,7050% (tất toán tháng 60 → 8,8864%), tổng
+// lãi 2.198.034.793 ₫, thực nhận 2.000.000.000 ₫.
 
 export const APR_ADVANCED = {
   slug: "/cong-cu/apr-nang-cao",
@@ -83,7 +86,7 @@ export const APR_ADVANCED = {
     financedLabel: "Phí được cộng vào số tiền vay",
     financedUnit: "₫",
     financedHelp:
-      "Khoản phí bạn không trả bằng tiền mặt mà cho vào dư nợ. Nó làm tăng khoản trả hằng tháng nhưng KHÔNG làm tăng APR — bạn không bị đắt hơn theo lãi suất, bạn chỉ đang vay nhiều hơn.",
+      "Khoản phí bạn không trả bằng tiền mặt mà cho vào dư nợ. Nó làm tăng khoản trả hằng tháng VÀ làm tăng APR, vì bạn trả nợ cho một khoản lớn hơn số tiền thực nhận. Chỉ riêng APR là thấp hơn một chút so với trả ngay, vì khoản phí được trải ra theo kỳ hạn — còn tổng lãi thì cao hơn, nên đừng chọn phương án này theo APR.",
     financedInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultFinanced: "0",
 
@@ -126,9 +129,9 @@ export const APR_ADVANCED = {
     title: "Cách tính",
     body: [
       "Số tiền vay sau khi gộp phí = số tiền vay + phí gộp vào khoản vay. Đây là con số mà lãi được tính trên đó, nên nó quyết định khoản trả hằng tháng.",
-      "Số tiền thực nhận = số tiền vay sau khi gộp phí − tổng phí trả ngay − phí theo phần trăm. Phí theo phần trăm được tính trên số tiền vay ĐÃ gộp phí, vì đó là quy mô khoản vay thật.",
+      "Số tiền thực nhận = số tiền vay − tổng phí trả ngay − phí theo phần trăm. Phí gộp vào khoản vay KHÔNG nằm trong số thực nhận: đó là khoản bạn vay thêm để trả phí, không phải tiền vào tay bạn. Phí theo phần trăm được tính trên số tiền vay ĐÃ gộp phí, vì đó là quy mô khoản vay thật.",
       "APR là mức lãi suất mà tại đó chuỗi khoản trả hằng tháng có giá trị hiện tại bằng số tiền thực nhận. Công cụ giải bằng phương pháp chia đôi khoảng và trả về “không xác định” nếu dòng tiền không kẹp được nghiệm, thay vì một con số đoán.",
-      "Hai loại phí tác động khác nhau, và đây là lý do chúng được nhập riêng. Phí trả ngay không đổi khoản trả hằng tháng nhưng giảm số thực nhận, nên toàn bộ tác động dồn vào APR. Phí gộp vào khoản vay giữ nguyên số thực nhận nhưng tăng khoản trả — nên APR vẫn đúng bằng lãi hợp đồng, còn tổng lãi thì tăng. Với mặc định, gộp 30 triệu vào khoản vay cho khoản trả 17.616.812 ₫/tháng, APR 8,5000%, và tổng lãi 2.198.034.793 ₫.",
+      "Hai loại phí tác động khác nhau, và đây là lý do chúng được nhập riêng. Phí trả ngay không đổi khoản trả hằng tháng nhưng giảm số thực nhận, nên toàn bộ tác động dồn vào APR. Phí gộp vào khoản vay giữ nguyên số thực nhận nhưng tăng khoản trả, nên APR vẫn tăng — chỉ tăng ít hơn so với trả ngay cùng khoản phí, vì khoản phí được trải ra theo kỳ hạn thay vì mất ngay từ ngày đầu. Với mặc định, gộp 30 triệu vào khoản vay cho khoản trả 17.616.812 ₫/tháng, APR 8,7050% (so với 8,7081% nếu trả ngay), và tổng lãi 2.198.034.793 ₫.",
       "APR khi tất toán sớm được giải trên đúng chuỗi dòng tiền thực tế: số tiền thực nhận ở thời điểm 0, các khoản trả hằng tháng đến tháng tất toán, và một khoản trả cuối bằng dư nợ còn lại. Dư nợ đó lấy từ bảng trả nợ, không phải từ công thức xấp xỉ.",
     ],
   },
@@ -138,11 +141,11 @@ export const APR_ADVANCED = {
     items: [
       {
         q: "Nên trả phí bằng tiền mặt hay gộp vào khoản vay?",
-        a: "Trả bằng tiền mặt nếu bạn có tiền: gộp vào khoản vay nghĩa là bạn trả lãi cho khoản phí đó suốt kỳ hạn. Với mặc định, gộp 30 triệu làm tổng lãi tăng khoảng 32,5 triệu so với trả ngay — tức bạn trả hơn gấp đôi khoản phí. Nghịch lý là APR khi gộp phí lại trông đẹp hơn, đúng bằng lãi hợp đồng; đó là lý do đừng chọn phương án chỉ vì APR thấp hơn.",
+        a: "Trả bằng tiền mặt nếu bạn có tiền: gộp vào khoản vay nghĩa là bạn trả lãi cho khoản phí đó suốt kỳ hạn. Với mặc định, gộp 30 triệu làm tổng lãi tăng khoảng 32,5 triệu so với trả ngay — tức bạn trả hơn gấp đôi khoản phí. APR của hai phương án gần như không phân biệt được: 8,7050% khi gộp so với 8,7081% khi trả ngay. Vì thế đừng chọn phương án theo APR — hãy chọn theo tổng lãi.",
       },
       {
-        q: "Vì sao phí gộp vào khoản vay không làm APR tăng?",
-        a: "Vì APR đo mối quan hệ giữa tiền bạn nhận và tiền bạn trả, và khi phí được gộp thì cả hai đều tăng cùng tỷ lệ — bạn đang vay 2,03 tỷ và trả nợ cho 2,03 tỷ ở cùng mức lãi. Không có gì bị đắt hơn theo lãi suất. Cái tăng là tổng số tiền, và dòng tổng lãi cùng dòng tổng chi phí vay mới cho thấy điều đó.",
+        q: "Phí gộp vào khoản vay ảnh hưởng thế nào đến APR?",
+        a: "Nó làm APR tăng. APR đo mối quan hệ giữa tiền bạn NHẬN và tiền bạn TRẢ: khi gộp 30 triệu, bạn nhận về 2 tỷ nhưng trả nợ cho một khoản vay 2,03 tỷ, nên mức lãi mà dòng tiền đó hàm ý là 8,7050% chứ không phải 8,5%. Khoản phí gộp vào không phải tiền vào tay bạn, vì vậy nó không nằm trong số tiền thực nhận. Nếu tất toán sớm thì con số còn cao hơn: tất toán ở tháng 60 tương đương APR 8,8864%.",
       },
       {
         q: "Phí trả nợ trước hạn có được tính không?",

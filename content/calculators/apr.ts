@@ -7,7 +7,8 @@
 // APR 8,7081%/năm (danh nghĩa), lãi thực tế theo năm 9,0642%, cao hơn lãi
 // hợp đồng 0,2081 điểm phần trăm; tổng chi phí vay 2.195.551.520 ₫.
 // Nếu gộp 30 triệu vào khoản vay thay vì trả ngay: trả 17.616.812 ₫/tháng,
-// APR vẫn đúng 8,5000%, nhưng tổng lãi tăng lên 2.198.034.793 ₫.
+// APR 8,7050% (thấp hơn chút ít so với 8,7081% khi trả ngay), nhưng tổng lãi
+// tăng lên 2.198.034.793 ₫.
 // Re-read the module if the defaults move.
 
 export const APR = {
@@ -84,7 +85,7 @@ export const APR = {
       "Số tiền thực nhận = số tiền vay − phí trả ngay. Đây là chỗ phí phát huy tác dụng: bạn trả nợ như một khoản vay 2 tỷ nhưng chỉ nhận về 1,97 tỷ.",
       "APR là mức lãi suất mà tại đó chuỗi khoản trả hằng tháng có giá trị hiện tại đúng bằng số tiền thực nhận. Không có công thức đóng cho nó, nên công cụ giải bằng phương pháp chia đôi khoảng — và trả về “không xác định” thay vì một con số đoán nếu dòng tiền không kẹp được nghiệm.",
       "APR được quy thành lãi suất năm DANH NGHĨA, tức lãi suất mỗi tháng nhân 12, theo đúng thông lệ công bố. Dòng lãi thực tế theo năm là con số đã ghép lãi 12 kỳ: với mặc định, APR 8,7081% tương đương 9,0642% nếu tính ghép lãi. Hai con số này khác nhau, và khoảng cách rộng ra khi lãi suất cao.",
-      "Phí gộp vào khoản vay lại có hiệu ứng khác: nó làm tăng số tiền vay nên khoản trả hằng tháng tăng, còn số tiền thực nhận không đổi. Vì thế APR vẫn đúng bằng lãi hợp đồng — bạn không bị đắt hơn theo lãi suất, bạn chỉ đang vay nhiều hơn. Công cụ APR nâng cao của FinHome tách riêng hai loại phí này.",
+      "Phí gộp vào khoản vay lại có hiệu ứng khác: nó làm tăng số tiền vay nên khoản trả hằng tháng tăng, còn số tiền thực nhận không đổi — khoản phí đó là tiền bạn vay thêm để trả phí, không phải tiền vào tay bạn. Vì thế APR vẫn tăng, chỉ tăng ít hơn so với trả ngay cùng khoản phí: với mặc định, gộp 30 triệu cho APR 8,7050% thay vì 8,7081%. Công cụ APR nâng cao của FinHome tách riêng hai loại phí này.",
     ],
   },
 
