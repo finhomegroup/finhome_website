@@ -10,7 +10,8 @@
     "lint": "eslint",
     "check:lint": "node scripts/check-lint-baseline.mjs",
     "check:markup": "node scripts/check-built-markup.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:commits": "node scripts/verify-commits.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",
