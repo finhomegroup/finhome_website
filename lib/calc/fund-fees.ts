@@ -27,6 +27,8 @@
  * module, so the two agree on the fee-free case.
  */
 
+import { bisect } from "@/lib/calc/solve";
+
 export type FundFeesInput = {
   /** Lump sum paid in at the start, in đồng. */
   initial: number;
@@ -76,18 +78,98 @@ export type FundFeesResult = {
    */
   profitLostPercent: number | null;
 
-  /** Compound annual return actually achieved, in percent. */
-  netAnnualReturnPercent: number;
-  /** The same with no fees — close to, but not exactly, the gross input. */
-  grossAnnualReturnPercent: number;
-  /** Percentage points of annual return lost to fees. */
-  annualDragPoints: number;
+  /**
+   * Money-weighted annual return actually achieved, in percent. Null when the
+   * flows do not bracket a rate — see `moneyWeightedAnnual`.
+   */
+  netAnnualReturnPercent: number | null;
+  /**
+   * The same with no fees. With no fees this is the gross input back, to
+   * solver precision — which is what makes the row a self-check.
+   */
+  grossAnnualReturnPercent: number | null;
+  /** Percentage points of annual return lost to fees. Null if either rate is. */
+  annualDragPoints: number | null;
 };
 
-/** Compound annual rate that turns `paid` into `value` over `months`. */
-function annualised(value: number, paid: number, months: number): number {
-  if (paid <= 0 || value <= 0 || months <= 0) return 0;
-  return ((value / paid) ** (12 / months) - 1) * 100;
+/**
+ * Money-weighted annual return: the rate at which the actual cash flows have
+ * zero present value.
+ *
+ * Not the money multiple raised to 12/months — that would price 1,3 tỷ of
+ * monthly instalments as if every đồng arrived on day one, and it did: with
+ * every fee set to zero the previous version reported 6,119%/năm for a plan
+ * the user said earns 10%/năm. The flows are `initial` out at t=0,
+ * `contribution` out at the end of every month, and the terminal value in at
+ * t=`months` (the last contribution and the terminal value land at the same
+ * instant, which the discounting handles).
+ *
+ * Null rather than a guess when the flows do not bracket a rate. Three ways
+ * that happens, and NONE of them is a fixed month count or a fixed fee —
+ * every boundary below moves with the inputs, so do not write a guard or a
+ * test against a constant:
+ *
+ * 1. **Below the bracket floor.** `npv` decreases in `rate` here, so with
+ *    `npv(+1) < 0` — true of any plan whose monthly return is under the +1
+ *    ceiling, i.e. everything this page is for — the solve fails exactly when
+ *    `npv(−0,5) < 0` as well. At `rate = −0,5` every discount factor is `2^m`,
+ *    so that collapses to a closed form on the terminal value alone:
+ *      `terminal < initial·2^−months + contribution·(2 − 2^(1−months))`
+ *    — past a couple of years, simply "terminal below twice the monthly
+ *    contribution". This is NOT only the wiped-out plan. On the page's
+ *    default plan the threshold is exactly 10.000.000 ₫, so a 99,687% exit
+ *    fee still solves (terminal 10.007.200,42 ₫ → −99,975%/năm) while 99,7%
+ *    nulls (terminal 9.591.565,90 ₫), and both are inside the field's 0–100
+ *    range; a 100%/năm management fee nulls at 4.950.000 ₫ left. A 100% exit
+ *    fee (terminal 0) is just the far end of that band. What the null means
+ *    here is "the money-weighted return is below the −0,5 monthly floor",
+ *    i.e. worse than −99,9756%/năm — not "no rate exists". Reporting the
+ *    floor itself would be the fabrication.
+ * 2. **Above the bracket ceiling.** The mirror case, and the reason mode 1's
+ *    closed form is conditioned on `npv(+1) < 0`: a return over +1 monthly
+ *    (+409.500%/năm) leaves BOTH ends positive, so there is again no sign
+ *    change. Measured: `grossReturnPercent` 1.000.000 with months=1 and no
+ *    fees gives npv(−0,5) = +3,3e6 and npv(+1) = +7,7e4, and nulls with a
+ *    terminal value well ABOVE the mode-1 threshold. Only an absurd gross
+ *    return reaches this.
+ * 3. **Overflow at the floor.** `terminal / (1 + rate)^months` is
+ *    `terminal·2^months` at `rate = −0,5`, and the instalment sum is
+ *    `contribution·(2^(months+1) − 2)`; whichever leaves double range first
+ *    ends the solve. That cutoff scales with the terminal MAGNITUDE, so it
+ *    moves per leg and per plan: on the default plan the fee-free leg nulls
+ *    first at months=984 while the net leg still reports 7,7846%/năm and
+ *    holds out until 986; at initial 1e12 / contribution 1e11 it is 970 and
+ *    972; for a 1 ₫ lump with no contributions, 1013 and 1015. At the returns
+ *    this page is for it is always past 74 years (earliest measured 949
+ *    months at ≤30%/năm, 896 at ≤100%/năm), well outside what the page is
+ *    for; a hyperbolic gross return moves it arbitrarily early (1.000.000%
+ *    /năm overflows at months=1). A null there beats a fabricated rate.
+ *
+ * Modes 1 and 3 were checked as predicates against this module over a
+ * 51.040-leg sweep of months, amounts and fee schedules at gross returns from
+ * −90% to +50%/năm, with zero mismatches; mode 2 sits outside that range,
+ * which is how it escaped the sweep. The page renders a blank row for all
+ * three, and `fund-fees.test.ts` pins the mode-1 and mode-3 boundaries so the
+ * figures above cannot drift.
+ */
+function moneyWeightedAnnual(
+  initial: number,
+  contribution: number,
+  months: number,
+  terminal: number,
+): number | null {
+  const npv = (rate: number) => {
+    let value = -initial;
+    for (let month = 1; month <= months; month += 1) {
+      value += -contribution / (1 + rate) ** month;
+    }
+    return value + terminal / (1 + rate) ** months;
+  };
+  // Bracket the MONTHLY rate. −0,5 is −99,98%/năm and +1 is +409.500%/năm:
+  // wide enough for anything a fund can do, and it keeps the discount factors
+  // finite where a bound nearer −1 would overflow on a 240-month horizon.
+  const monthly = bisect(npv, -0.5, 1, { tolerance: 1e-12 });
+  return monthly === null ? null : ((1 + monthly) ** 12 - 1) * 100;
 }
 
 /**
@@ -174,11 +256,17 @@ export function computeFundFees(
 
   const netProfit = netValue - totalContributed;
   const grossProfit = grossValue - totalContributed;
-  const netAnnualReturnPercent = annualised(netValue, totalContributed, months);
-  const grossAnnualReturnPercent = annualised(
-    grossValue,
-    totalContributed,
+  const netAnnualReturnPercent = moneyWeightedAnnual(
+    initial,
+    monthlyContribution,
     months,
+    netValue,
+  );
+  const grossAnnualReturnPercent = moneyWeightedAnnual(
+    initial,
+    monthlyContribution,
+    months,
+    grossValue,
   );
 
   return {
@@ -200,6 +288,9 @@ export function computeFundFees(
         : null,
     netAnnualReturnPercent,
     grossAnnualReturnPercent,
-    annualDragPoints: grossAnnualReturnPercent - netAnnualReturnPercent,
+    annualDragPoints:
+      netAnnualReturnPercent === null || grossAnnualReturnPercent === null
+        ? null
+        : grossAnnualReturnPercent - netAnnualReturnPercent,
   };
 }

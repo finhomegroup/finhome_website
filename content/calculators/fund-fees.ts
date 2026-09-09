@@ -13,7 +13,8 @@
 // lý 2%/năm: bỏ vào 1.300.000.000 ₫; cuối kỳ 3.197.188.632 ₫ so với
 // 4.264.046.135 ₫ nếu không phí → mất 1.066.857.503 ₫, tức 35,99% toàn bộ
 // lợi nhuận. Phí quản lý 515.853.900 ₫, phí mua 13.000.000 ₫. Lợi nhuận
-// thực tế mỗi năm thấp hơn 1,517 điểm phần trăm.
+// thực tế mỗi năm 7,719% so với 10,000% nếu không phí — thấp hơn 2,281 điểm
+// phần trăm.
 
 export const FUND_FEES = {
   slug: "/cong-cu/phi-quy-dau-tu",
@@ -113,7 +114,8 @@ export const FUND_FEES = {
       "Phí mua trừ ngay trên mỗi khoản nộp vào: 1% của 1.300.000.000 ₫ tổng nộp là 13.000.000 ₫. Nhỏ, và nó không phải vấn đề.",
       "Phí quản lý được tính dồn theo tháng lên số dư, với hệ số (1 − phí)^(1/12) mỗi tháng để đủ 12 tháng đúng bằng mức phí năm. Với mặc định, tổng phí quản lý trong 20 năm là 515.853.900 ₫ — gấp gần 40 lần phí mua.",
       "Nhưng 515.853.900 ₫ phí quản lý lại làm mất 1.066.857.503 ₫ giá trị. Phần chênh là lãi kép trên số phí đã bị lấy: mỗi đồng phí trả năm thứ nhất còn mất thêm 19 năm sinh lãi. Đây là toàn bộ nội dung của trang này.",
-      "Lợi nhuận thực tế mỗi năm là mức lãi kép biến tổng số tiền bạn bỏ vào thành giá trị cuối kỳ. Với mặc định, phí làm nó thấp hơn 1,517 điểm phần trăm so với trường hợp không phí — nghe nhỏ hơn con số 2% vì phần lớn tiền được nộp vào muộn nên chưa chịu phí đủ 20 năm.",
+      "Lợi nhuận thực tế mỗi năm là lãi suất nội tại của đúng dòng tiền của bạn: mức lãi mà tại đó giá trị hiện tại của khoản ban đầu cộng toàn bộ khoản góp hằng tháng vừa bằng giá trị cuối kỳ. Định nghĩa này quan trọng vì tiền được nộp rải ra suốt 240 tháng chứ không phải một lần lúc đầu. Với mặc định: 7,719%/năm sau phí so với 10,000%/năm nếu không phí — thấp hơn 2,281 điểm phần trăm, tức HƠN mức phí quản lý 2%/năm, vì còn cộng thêm phí mua 1% trên mỗi lần nộp.",
+      "Tách riêng từng loại phí: phí quản lý 2%/năm một mình lấy 2,200 điểm (còn 7,800%/năm), phí mua 1% một mình lấy 0,079 điểm (còn 9,921%/năm); đi cùng nhau thì thành 2,281 điểm — nhiều hơn tổng của hai phần một chút, vì hai loại phí chồng lên nhau. Nhập cả ba ô phí bằng 0 thì con số này trả về đúng 10%/năm bạn đã nhập, và đó là cách kiểm tra công cụ.",
       "Khoản góp của mỗi tháng được nộp vào CUỐI tháng và chưa chịu phí quản lý trong tháng đó, vì nó chưa được đầu tư. Cách này khớp với công cụ mục tiêu tiết kiệm, nên hai công cụ cho cùng kết quả ở trường hợp không phí.",
     ],
   },

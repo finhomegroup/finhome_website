@@ -197,24 +197,43 @@ export function FundFeesCalculator() {
           label={C.form.totalFeesLabel}
           value={money(result?.totalFees)}
         />
+        {/* These three rows blank when the money-weighted rate has no root in
+            the module's monthly bracket. That is reachable well short of a
+            wipe-out, so do not assume it is a dead state: on the default plan
+            the cutoff is a final value below twice the monthly contribution —
+            10.000.000 ₫ — which a 99,7% exit fee reaches at 9.591.565,90 ₫
+            left, and a 100%/năm management fee at 4.950.000 ₫ left. Both are
+            inside the 0–100 the fields accept. Separately, months 984–985
+            blank the fee-free row and the drag ALONE, leaving a net rate
+            beside them, and 986 upward blanks all three (see
+            `moneyWeightedAnnual` — that cutoff moves with the plan size).
+            Deliberately no notice of its own: every one of those inputs is
+            orders of magnitude outside a real fee schedule or a human
+            holding period, unlike the no-profit case below, which a plausible
+            gross return reaches and which therefore does get copy. ResultRow
+            renders the placeholder in all of them. */}
         <ResultRow
           label={C.form.netAnnualLabel}
           value={
-            result ? formatPercent(result.netAnnualReturnPercent, 3) : null
+            result?.netAnnualReturnPercent == null
+              ? null
+              : formatPercent(result.netAnnualReturnPercent, 3)
           }
         />
         <ResultRow
           label={C.form.grossAnnualLabel}
           value={
-            result ? formatPercent(result.grossAnnualReturnPercent, 3) : null
+            result?.grossAnnualReturnPercent == null
+              ? null
+              : formatPercent(result.grossAnnualReturnPercent, 3)
           }
         />
         <ResultRow
           label={C.form.dragLabel}
           value={
-            result
-              ? `${formatDecimal(result.annualDragPoints, 3)} ${C.form.pointsUnit}`
-              : null
+            result?.annualDragPoints == null
+              ? null
+              : `${formatDecimal(result.annualDragPoints, 3)} ${C.form.pointsUnit}`
           }
         />
       </ResultGroup>
