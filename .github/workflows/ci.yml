@@ -1,0 +1,49 @@
+# PR-time CI. Until now the only gate was vercel.json's buildCommand, which
+# catches a broken build at DEPLOY time rather than at review time — so a
+# regression merged on Monday was found by whoever next deployed a content
+# change. This runs the same gate on the pull request.
+#
+# `pnpm lint` is NOT run directly: it exits 1 at baseline on three
+# pre-existing problems in two files that are out of scope. check:lint
+# asserts "exactly those three and no more".
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Both pinned to what the repo declares — see .nvmrc and the
+      # packageManager field. Change those and this together, never one alone.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Tests
+        run: pnpm exec vitest run
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint baseline
+        run: pnpm check:lint
+
+      - name: Build
+        run: pnpm exec next build
+
+      - name: Rendered markup contracts
+        run: pnpm check:markup
