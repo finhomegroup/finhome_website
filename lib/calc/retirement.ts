@@ -311,6 +311,13 @@ export function projectRetirement(
 /** Upper bound for the contribution solver, in the account's currency. */
 const MAX_ANNUAL_CONTRIBUTION = 1e9;
 
+/**
+ * Bracket width the contribution search stops at, in the account's currency
+ * per year — and therefore also the step used to settle onto the funded side
+ * of the root. Named because both uses have to be the same number.
+ */
+const CONTRIBUTION_TOLERANCE = 1e-4;
+
 export type RequiredContributionResult = {
   /** Annual contribution that just funds the plan to `endAge`. */
   annualContribution: number;
@@ -334,6 +341,9 @@ export type RequiredContributionResult = {
  * Returns null when the inputs are invalid, or when even the maximum
  * contribution cannot fund the plan. Null is the honest answer there: any
  * finite figure returned from an unbracketed search would be a guess.
+ *
+ * The returned `projection` is guaranteed to be a FUNDED one — see the
+ * settling step in the body for why that needs saying.
  */
 export function solveRequiredContribution(
   input: Omit<RetirementInput, "annualContribution">,
@@ -371,16 +381,39 @@ export function solveRequiredContribution(
   };
 
   const solved = bisect(shortfall, 0, MAX_ANNUAL_CONTRIBUTION, {
-    tolerance: 1e-4,
+    tolerance: CONTRIBUTION_TOLERANCE,
   });
   if (solved === null) return null;
 
-  const projection = at(solved);
-  if (projection === null) return null;
+  // Bisection converges on a BRACKET, so the midpoint it returns can sit a
+  // whisker on the DEPLETING side of the root: |mid - root| < tolerance, in
+  // either direction. That is 1e-4 of currency a year — economically nothing,
+  // and yet it breaks this function's whole contract, because the projection
+  // handed back then reports `depletionAge` at endAge - 1 while the headline
+  // it accompanies says this is the contribution that funds the plan. A page
+  // showing both would contradict itself.
+  //
+  // The search function is monotone, so stepping up by the tolerance crosses
+  // the root at most once: the loop below normally runs zero or one times and
+  // the ceiling is float paranoia, not a real bound. It is not a substitute
+  // for bracketing — an unbracketed search still returns null above.
+  //
+  // Caught by tinh-huu-tri, whose defaults (a 100.000 starting balance) land
+  // on the low side. The pre-existing test asserted this contract already but
+  // happened to use a 50.000 balance, which lands on the high side. Hence the
+  // sweep in retirement.test.ts rather than one more single case.
+  let annualContribution = solved;
+  let projection = at(annualContribution);
+  for (let step = 0; step < 4; step += 1) {
+    if (projection !== null && projection.depletionAge === null) break;
+    annualContribution += CONTRIBUTION_TOLERANCE;
+    projection = at(annualContribution);
+  }
+  if (projection === null || projection.depletionAge !== null) return null;
 
   return {
-    annualContribution: solved,
-    monthlyContribution: solved / 12,
+    annualContribution,
+    monthlyContribution: annualContribution / 12,
     projection,
     alreadyFunded: false,
   };

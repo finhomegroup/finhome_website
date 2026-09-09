@@ -433,6 +433,47 @@ describe("solveRequiredContribution", () => {
     expect(result.projection.depletionAge).toBe(null);
   });
 
+  it("returns a FUNDED projection at every starting balance, not just this one", () => {
+    // The assertion above holds for a 50.000 starting balance and used to be
+    // the only case, which made it luck: bisection stops on a bracket, so its
+    // midpoint can sit on either side of the root, and at a 100.000 balance it
+    // landed on the DEPLETING side — the returned projection reported
+    // depletion at age 94 while the figure beside it claimed to fund the plan
+    // to 95. Sweep the input that decides which side of the root the midpoint
+    // falls on, rather than pinning one value of it.
+    for (const currentBalance of [
+      0, 1_000, 25_000, 50_000, 100_000, 137_500, 200_000, 333_333, 500_000,
+      750_000,
+    ]) {
+      for (const contributionGrowthPercent of [0, 2, 5]) {
+        const result = solveRequiredContribution({
+          ...TARGET,
+          currentBalance,
+          contributionGrowthPercent,
+        });
+        expect(result, `balance ${currentBalance}`).not.toBe(null);
+        expect(
+          result!.projection.depletionAge,
+          `balance ${currentBalance}, growth ${contributionGrowthPercent}%`,
+        ).toBe(null);
+        // Still the MINIMUM, not merely something that works: the settling
+        // step may only move the answer by a few multiples of its 1e-4
+        // tolerance, so 1% less must still fail.
+        if (!result!.alreadyFunded) {
+          expect(
+            projectRetirement({
+              ...TARGET,
+              currentBalance,
+              contributionGrowthPercent,
+              annualContribution: result!.annualContribution * 0.99,
+            })!.depletionAge,
+            `balance ${currentBalance} should not be funded 1% cheaper`,
+          ).not.toBe(null);
+        }
+      }
+    }
+  });
+
   it("lands close to the boundary, not merely above it", () => {
     const result = solveRequiredContribution(TARGET)!;
     // A fraction less must fail, which is what makes it the answer rather

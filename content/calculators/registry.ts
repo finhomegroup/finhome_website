@@ -426,7 +426,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính hưu trí",
     summary: "Số tiền cần có khi nghỉ hưu và mức tích lũy mỗi tháng, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
