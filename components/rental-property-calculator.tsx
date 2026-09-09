@@ -26,7 +26,8 @@ export function RentalPropertyCalculator() {
     rent: C.form.defaultRent,
     vacancy: C.form.defaultVacancy,
     expenses: C.form.defaultExpenses,
-    taxRate: C.form.defaultTaxRate,
+    vatRate: C.form.defaultVatRate,
+    pitRate: C.form.defaultPitRate,
     threshold: C.form.defaultThreshold,
   });
 
@@ -38,7 +39,8 @@ export function RentalPropertyCalculator() {
   const rent = parseMoney(fields.values.rent);
   const vacancy = parseDecimal(fields.values.vacancy);
   const expenses = parseMoney(fields.values.expenses);
-  const taxRate = parseDecimal(fields.values.taxRate);
+  const vatRate = parseDecimal(fields.values.vatRate);
+  const pitRate = parseDecimal(fields.values.pitRate);
   const threshold = parseMoney(fields.values.threshold);
 
   const priceInvalid = price === null || price <= 0;
@@ -49,7 +51,8 @@ export function RentalPropertyCalculator() {
   const rentInvalid = rent === null || rent < 0;
   const vacancyInvalid = vacancy === null || vacancy < 0 || vacancy > 100;
   const expensesInvalid = expenses === null || expenses < 0;
-  const taxRateInvalid = taxRate === null || taxRate < 0 || taxRate > 100;
+  const vatRateInvalid = vatRate === null || vatRate < 0 || vatRate > 100;
+  const pitRateInvalid = pitRate === null || pitRate < 0 || pitRate > 100;
   const thresholdInvalid = threshold === null || threshold < 0;
 
   // A cash purchase needs no term, so the term is only required when there
@@ -67,7 +70,8 @@ export function RentalPropertyCalculator() {
     rentInvalid ||
     vacancyInvalid ||
     expensesInvalid ||
-    taxRateInvalid ||
+    vatRateInvalid ||
+    pitRateInvalid ||
     thresholdInvalid
       ? null
       : computeRentalProperty({
@@ -79,7 +83,8 @@ export function RentalPropertyCalculator() {
           monthlyRent: rent,
           vacancyPercent: vacancy,
           monthlyExpenses: expenses,
-          rentalTaxPercent: taxRate,
+          vatPercent: vatRate,
+          pitPercent: pitRate,
           taxThresholdPerYear: threshold,
         });
 
@@ -162,12 +167,20 @@ export function RentalPropertyCalculator() {
 
       <FieldGroup title={C.form.taxGroup} className="mt-8">
         <NumberField
-          {...fields.bind("taxRate")}
-          label={C.form.taxRateLabel}
-          unit={C.form.taxRateUnit}
-          help={C.form.taxRateHelp}
-          error={C.form.taxRateInvalid}
-          invalid={taxRateInvalid}
+          {...fields.bind("vatRate")}
+          label={C.form.vatRateLabel}
+          unit={C.form.vatRateUnit}
+          help={C.form.vatRateHelp}
+          error={C.form.vatRateInvalid}
+          invalid={vatRateInvalid}
+        />
+        <NumberField
+          {...fields.bind("pitRate")}
+          label={C.form.pitRateLabel}
+          unit={C.form.pitRateUnit}
+          help={C.form.pitRateHelp}
+          error={C.form.pitRateInvalid}
+          invalid={pitRateInvalid}
         />
         <NumberField
           {...fields.bind("threshold")}
@@ -236,6 +249,8 @@ export function RentalPropertyCalculator() {
           label={C.form.effectiveRentLabel}
           value={money(result?.effectiveRentPerYear)}
         />
+        <ResultRow label={C.form.vatLabel} value={money(result?.vatPerYear)} />
+        <ResultRow label={C.form.pitLabel} value={money(result?.pitPerYear)} />
         <ResultRow
           label={C.form.taxLabel}
           value={money(result?.rentalTaxPerYear)}

@@ -74,50 +74,127 @@ describe("computeRentalProperty — the income statement", () => {
 });
 
 describe("computeRentalProperty — the Vietnamese rental tax", () => {
-  it("charges 10% of collected rent above the threshold", () => {
-    // 171 triệu collected, above the 100 triệu threshold.
-    const result = rental(BASE);
-    expect(result.taxable).toBe(true);
-    expect(result.rentalTaxPerYear).toBeCloseTo(17_100_000, 6);
-  });
+  // A let collecting 570 triệu — above the 500 triệu default threshold, so
+  // both taxes bite. 50 triệu/tháng gross is 600 triệu, less 5% vacancy.
+  const TAXED: RentalPropertyInput = { ...BASE, monthlyRent: 50_000_000 };
 
-  it("charges nothing at all below the threshold", () => {
-    // A cliff, not a taper: below the threshold the tax is zero.
-    const result = rental({ ...BASE, monthlyRent: 8_000_000 });
-    expect(result.effectiveRentPerYear).toBeCloseTo(91_200_000, 6);
+  it("defaults to the statutory threshold, so a 171 triệu let owes nothing", () => {
+    // The prefilled threshold is a legal fact, not a modelling choice, so it
+    // is pinned: a revision must not land in the module without landing in
+    // the copy too. 500 triệu ₫/năm per Luật 149/2025/QH15 (GTGT) and Luật
+    // Thuế TNCN 109/2025/QH15.
+    const result = rental(BASE);
+    expect(result.effectiveRentPerYear).toBeCloseTo(171_000_000, 6);
     expect(result.taxable).toBe(false);
+    expect(result.vatPerYear).toBe(0);
+    expect(result.pitPerYear).toBe(0);
     expect(result.rentalTaxPerYear).toBe(0);
   });
 
+  it("charges VAT on ALL revenue but PIT only on the excess", () => {
+    // Hand-computed: 570 triệu collected against a 500 triệu threshold.
+    //   VAT = 5% × 570 triệu           = 28,5 triệu
+    //   PIT = 5% × (570 − 500) triệu   =  3,5 triệu
+    const result = rental(TAXED);
+    expect(result.effectiveRentPerYear).toBeCloseTo(570_000_000, 6);
+    expect(result.taxable).toBe(true);
+    expect(result.vatPerYear).toBeCloseTo(28_500_000, 6);
+    expect(result.pitPerYear).toBeCloseTo(3_500_000, 6);
+    expect(result.rentalTaxPerYear).toBeCloseTo(32_000_000, 6);
+  });
+
+  it("matches the published 900 triệu worked example, not a flat 10%", () => {
+    // The tax authority's own illustration: 900 triệu of rent owes 45 triệu of
+    // VAT plus 20 triệu of PIT = 65 triệu. A single combined 10% rate on gross
+    // would say 90 triệu. This test is the one that fails if the two bases are
+    // ever collapsed back into one.
+    const result = rental({
+      ...BASE,
+      monthlyRent: 75_000_000,
+      vacancyPercent: 0,
+    });
+    expect(result.effectiveRentPerYear).toBeCloseTo(900_000_000, 6);
+    expect(result.vatPerYear).toBeCloseTo(45_000_000, 6);
+    expect(result.pitPerYear).toBeCloseTo(20_000_000, 6);
+    expect(result.rentalTaxPerYear).toBeCloseTo(65_000_000, 6);
+    expect(result.rentalTaxPerYear).not.toBeCloseTo(90_000_000, 0);
+  });
+
+  it("overstates by exactly pitPercent of the threshold if collapsed to one rate", () => {
+    // The defect this split fixes, stated as an invariant: a flat 10% on gross
+    // charges PIT on the first 500 triệu as well, and that error is constant
+    // in the revenue — which is why it survived spot-checking one figure.
+    for (const monthlyRent of [50_000_000, 75_000_000, 200_000_000]) {
+      const result = rental({ ...BASE, monthlyRent, vacancyPercent: 0 });
+      const flat = result.effectiveRentPerYear * 0.1;
+      expect(flat - result.rentalTaxPerYear).toBeCloseTo(
+        500_000_000 * 0.05,
+        6,
+      );
+    }
+  });
+
+  it("charges nothing at all AT the threshold, and VAT on everything just past it", () => {
+    // The cliff lives in VAT, the taper in PIT. At exactly the threshold
+    // nothing is due; one đồng over, VAT applies to the whole 171 triệu while
+    // PIT is still almost nothing.
+    const at = rental({ ...BASE, taxThresholdPerYear: 171_000_000 });
+    expect(at.taxable).toBe(false);
+    expect(at.rentalTaxPerYear).toBe(0);
+
+    const over = rental({ ...BASE, taxThresholdPerYear: 170_999_999 });
+    expect(over.taxable).toBe(true);
+    expect(over.vatPerYear).toBeCloseTo(8_550_000, 6);
+    expect(over.pitPerYear).toBeCloseTo(0.05, 6);
+  });
+
   it("tests the threshold against rent COLLECTED, not rent contracted", () => {
-    // 8,8 triệu/tháng is 105,6 triệu gross — above the threshold — but only
-    // 100,32 triệu after 5% vacancy, which is still above. At 20% vacancy it
-    // falls below and the tax disappears.
-    expect(rental({ ...BASE, monthlyRent: 8_800_000 }).taxable).toBe(true);
+    // 8,8 triệu/tháng is 105,6 triệu gross — above a 100 triệu threshold — but
+    // only 100,32 triệu after 5% vacancy, which is still above. At 20% vacancy
+    // it falls below and the tax disappears.
+    const base = { ...BASE, taxThresholdPerYear: 100_000_000 };
+    expect(rental({ ...base, monthlyRent: 8_800_000 }).taxable).toBe(true);
     expect(
-      rental({ ...BASE, monthlyRent: 8_800_000, vacancyPercent: 20 }).taxable,
+      rental({ ...base, monthlyRent: 8_800_000, vacancyPercent: 20 }).taxable,
     ).toBe(false);
   });
 
   it("is a turnover tax: charged even when the property loses money", () => {
-    // 171 triệu collected, 168 triệu of costs, and the 17,1 triệu of tax is
-    // still charged in full — leaving the property 14,1 triệu in the red.
-    const result = rental({ ...BASE, monthlyExpenses: 14_000_000 });
-    expect(result.rentalTaxPerYear).toBeCloseTo(17_100_000, 6);
-    expect(result.netOperatingIncomePerYear).toBeCloseTo(-14_100_000, 6);
+    // 570 triệu collected, 600 triệu of running costs, and the 32 triệu of tax
+    // is still charged in full — leaving the property 62 triệu in the red.
+    const result = rental({ ...TAXED, monthlyExpenses: 50_000_000 });
+    expect(result.rentalTaxPerYear).toBeCloseTo(32_000_000, 6);
+    expect(result.netOperatingIncomePerYear).toBeCloseTo(-62_000_000, 6);
   });
 
-  it("honours a custom rate and threshold", () => {
+  it("keeps rentalTaxPerYear as exactly VAT plus PIT", () => {
+    for (const monthlyRent of [15_000_000, 50_000_000, 75_000_000]) {
+      const result = rental({ ...BASE, monthlyRent });
+      expect(result.rentalTaxPerYear).toBeCloseTo(
+        result.vatPerYear + result.pitPerYear,
+        6,
+      );
+    }
+  });
+
+  it("honours custom rates and a custom threshold", () => {
+    // Both rates and the threshold are inputs because all three have been
+    // revised. 3% on all of 171 triệu, 2% on the 71 triệu above 100 triệu.
     const result = rental({
       ...BASE,
-      rentalTaxPercent: 7,
-      taxThresholdPerYear: 200_000_000,
+      vatPercent: 3,
+      pitPercent: 2,
+      taxThresholdPerYear: 100_000_000,
     });
-    // 171 triệu is below a 200 triệu threshold.
-    expect(result.taxable).toBe(false);
-    expect(result.rentalTaxPerYear).toBe(0);
-    const taxed = rental({ ...BASE, rentalTaxPercent: 7 });
-    expect(taxed.rentalTaxPerYear).toBeCloseTo(171_000_000 * 0.07, 6);
+    expect(result.vatPerYear).toBeCloseTo(5_130_000, 6);
+    expect(result.pitPerYear).toBeCloseTo(1_420_000, 6);
+    expect(result.rentalTaxPerYear).toBeCloseTo(6_550_000, 6);
+
+    // A rate of zero is a legitimate answer, not a rejected input: it is how
+    // you model one of the two taxes not applying.
+    const vatOnly = rental({ ...TAXED, pitPercent: 0 });
+    expect(vatOnly.pitPerYear).toBe(0);
+    expect(vatOnly.rentalTaxPerYear).toBeCloseTo(28_500_000, 6);
   });
 });
 
@@ -199,6 +276,8 @@ describe("computeRentalProperty — edges and rejection", () => {
   it("handles full vacancy", () => {
     const result = rental({ ...BASE, vacancyPercent: 100 });
     expect(result.effectiveRentPerYear).toBe(0);
+    expect(result.vatPerYear).toBe(0);
+    expect(result.pitPerYear).toBe(0);
     expect(result.rentalTaxPerYear).toBe(0);
     expect(result.netOperatingIncomePerYear).toBeCloseTo(-24_000_000, 6);
   });
@@ -234,7 +313,13 @@ describe("computeRentalProperty — edges and rejection", () => {
     expect(computeRentalProperty({ ...BASE, monthlyRent: -1 })).toBeNull();
     expect(computeRentalProperty({ ...BASE, vacancyPercent: 101 })).toBeNull();
     expect(computeRentalProperty({ ...BASE, vacancyPercent: -1 })).toBeNull();
-    expect(computeRentalProperty({ ...BASE, rentalTaxPercent: 101 })).toBeNull();
+    expect(computeRentalProperty({ ...BASE, vatPercent: 101 })).toBeNull();
+    expect(computeRentalProperty({ ...BASE, pitPercent: 101 })).toBeNull();
+    expect(computeRentalProperty({ ...BASE, vatPercent: -1 })).toBeNull();
+    expect(computeRentalProperty({ ...BASE, pitPercent: -1 })).toBeNull();
+    expect(
+      computeRentalProperty({ ...BASE, taxThresholdPerYear: -1 }),
+    ).toBeNull();
     expect(computeRentalProperty({ ...BASE, monthlyExpenses: -1 })).toBeNull();
     expect(computeRentalProperty({ ...BASE, purchaseCosts: -1 })).toBeNull();
     expect(computeRentalProperty({ ...BASE, price: Number.NaN })).toBeNull();

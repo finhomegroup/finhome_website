@@ -18,12 +18,28 @@
  * - `dscr` — net operating income ÷ debt service. Below 1 means the rent does
  *   not cover the loan and the shortfall comes out of your salary.
  *
- * The Vietnamese tax rule is built in rather than left to the user: an
- * individual letting property pays 5% VAT plus 5% personal income tax on
- * GROSS rental revenue — 10% in total — once revenue exceeds the annual
- * threshold, and nothing at all below it. It is a turnover tax, not a profit
- * tax, so it is charged whether or not the property makes money. Defaults
- * reflect that; the threshold is an input because it has been revised.
+ * The Vietnamese tax rule is built in rather than left to the user, and it is
+ * TWO taxes on two different bases — which is why they are two inputs and two
+ * result rows rather than one combined 10%:
+ *
+ * - **VAT (thuế GTGT), 5%** — charged on ALL of the revenue collected, once
+ *   annual revenue passes the threshold. A cliff: nothing at or below the
+ *   threshold, then 5% of the whole amount.
+ * - **PIT (thuế TNCN), 5%** — charged only on the revenue ABOVE the
+ *   threshold. The threshold is deducted before the rate applies, so this
+ *   part is a taper.
+ *
+ * So at 900 triệu of collected rent against a 500 triệu threshold the bill is
+ * 45 triệu of VAT plus 20 triệu of PIT — 65 triệu, not the 90 triệu a flat
+ * 10% would give. Both are TURNOVER taxes, not profit taxes: they are charged
+ * whether or not the property makes money.
+ *
+ * Threshold and both rates are inputs, not constants, because all three have
+ * been revised more than once and this is a static page that cannot know the
+ * current figures. Defaults follow the 500 triệu/năm threshold set by Luật
+ * 149/2025/QH15 (VAT, in force 01/01/2026) and Luật Thuế TNCN 109/2025/QH15
+ * (PIT, in force 01/07/2026). The copy tells the reader to check rather than
+ * trust the prefill.
  */
 
 import { computeLoan } from "@/lib/calc/loan";
@@ -45,9 +61,17 @@ export type RentalPropertyInput = {
   vacancyPercent?: number;
   /** Recurring costs per month: management, maintenance, insurance, sinking fund. */
   monthlyExpenses?: number;
-  /** Combined VAT + PIT rate on gross rental revenue, in percent. */
-  rentalTaxPercent?: number;
-  /** Annual revenue below which no rental tax is due, in đồng. */
+  /**
+   * VAT rate in percent. Charged on ALL collected revenue once the threshold
+   * is passed, so the base is the whole amount — not just the excess.
+   */
+  vatPercent?: number;
+  /**
+   * Personal income tax rate in percent. Charged on the revenue ABOVE the
+   * threshold only, because the threshold is deducted before the rate.
+   */
+  pitPercent?: number;
+  /** Annual revenue at or below which no rental tax is due, in đồng. */
   taxThresholdPerYear?: number;
 };
 
@@ -62,7 +86,11 @@ export type RentalPropertyResult = {
   vacancyLossPerYear: number;
   /** Rent actually collected over a year. */
   effectiveRentPerYear: number;
-  /** Rental tax for the year. 0 below the threshold. */
+  /** VAT for the year: the rate on ALL collected revenue. 0 below the threshold. */
+  vatPerYear: number;
+  /** PIT for the year: the rate on the revenue ABOVE the threshold only. */
+  pitPerYear: number;
+  /** VAT + PIT — the whole rental tax bill for the year. */
   rentalTaxPerYear: number;
   /** Whether the tax threshold was exceeded. */
   taxable: boolean;
@@ -114,8 +142,13 @@ export function computeRentalProperty(
     monthlyRent,
     vacancyPercent = 0,
     monthlyExpenses = 0,
-    rentalTaxPercent = 10,
-    taxThresholdPerYear = 100_000_000,
+    vatPercent = 5,
+    pitPercent = 5,
+    // Luật 149/2025/QH15 (GTGT, hiệu lực 01/01/2026) và Luật Thuế TNCN
+    // 109/2025/QH15 (hiệu lực 01/07/2026) đều chốt 500 triệu ₫/năm. An input
+    // rather than a constant: this figure has been revised more than once
+    // (100 → 200 → 500 triệu) and a static page cannot know the current one.
+    taxThresholdPerYear = 500_000_000,
   } = input;
 
   const numbers = [
@@ -127,12 +160,13 @@ export function computeRentalProperty(
     monthlyRent,
     vacancyPercent,
     monthlyExpenses,
-    rentalTaxPercent,
+    vatPercent,
+    pitPercent,
     taxThresholdPerYear,
   ];
   if (numbers.some((value) => !Number.isFinite(value) || value < 0)) return null;
   if (price <= 0) return null;
-  if (vacancyPercent > 100 || rentalTaxPercent > 100) return null;
+  if (vacancyPercent > 100 || vatPercent > 100 || pitPercent > 100) return null;
   if (downPayment > price) return null;
 
   const loanAmount = price - downPayment;
@@ -153,13 +187,18 @@ export function computeRentalProperty(
   const vacancyLossPerYear = grossRentPerYear * (vacancyPercent / 100);
   const effectiveRentPerYear = grossRentPerYear - vacancyLossPerYear;
 
-  // A TURNOVER tax on gross revenue, charged only above the threshold, and
-  // charged whether or not the property is profitable. Assessed on the rent
-  // actually collected.
+  // TURNOVER taxes on the rent actually collected, charged whether or not the
+  // property is profitable — but on two different bases. VAT applies to the
+  // WHOLE amount once the threshold is passed (a cliff); PIT applies only to
+  // the part ABOVE it (a taper), because the threshold is deducted first.
+  // Collapsing them into one combined rate overstates the bill by
+  // `pitPercent` of the threshold at every revenue above it.
   const taxable = effectiveRentPerYear > taxThresholdPerYear;
-  const rentalTaxPerYear = taxable
-    ? effectiveRentPerYear * (rentalTaxPercent / 100)
+  const vatPerYear = taxable ? effectiveRentPerYear * (vatPercent / 100) : 0;
+  const pitPerYear = taxable
+    ? (effectiveRentPerYear - taxThresholdPerYear) * (pitPercent / 100)
     : 0;
+  const rentalTaxPerYear = vatPerYear + pitPerYear;
 
   const expensesPerYear = monthlyExpenses * 12;
   const netOperatingIncomePerYear =
@@ -175,6 +214,8 @@ export function computeRentalProperty(
     grossRentPerYear,
     vacancyLossPerYear,
     effectiveRentPerYear,
+    vatPerYear,
+    pitPerYear,
     rentalTaxPerYear,
     taxable,
     expensesPerYear,
