@@ -122,7 +122,53 @@ export type RetirementResult = {
   sustainableSpending: number | null;
   /** Shortfall between desired and sustainable spending, in today's money. */
   spendingShortfall: number;
+  /**
+   * The capital side of the same question, in today's money: the balance at
+   * retirement that would make `sustainableSpending` come out at exactly
+   * `desiredAnnualSpending`. Zero when other income already covers the
+   * spend — no capital is needed then, and a positive figure would be a
+   * fiction.
+   *
+   * Computed here, from the same annuity factor `sustainableSpending` uses,
+   * rather than in the page that wants it. The two are exact inverses by
+   * construction; two separate implementations of the annuity-due factor
+   * would drift, and the direction of the drift (a factor of 1 + real
+   * return) is precisely the error docs §8 records in this module already.
+   */
+  requiredRealBalanceAtRetirement: number;
+  /**
+   * The same requirement in the money of the retirement year, so it can be
+   * compared with an account statement. Inflated with the SAME deflator
+   * `balanceAtRetirement` is deflated by — a page doing this multiplication
+   * itself is the second inflation factor this module exists to prevent.
+   */
+  requiredBalanceAtRetirement: number;
+  /** Required minus reached, floored at zero. Zero means funded. */
+  realBalanceShortfallAtRetirement: number;
+  /**
+   * Reached / required, as a percent. Null when nothing is required, which
+   * is not the same as 100% and must not be rendered as one.
+   */
+  capitalCoveragePercent: number | null;
 };
+
+/**
+ * Present value factor for a level real spend over `span` years, withdrawn
+ * at the START of each year.
+ *
+ * An annuity DUE, not an ordinary annuity: the projection withdraws before
+ * it credits the year's return, so anything solved against it has to use the
+ * same convention. The end-of-period factor overstates a safe spend by
+ * (1 + real return) — enough to make a plan that reports "funded" run dry
+ * two years early.
+ *
+ * At a zero real return the annuity formula divides by zero and the answer
+ * is simply the span, which is the limit of the formula there.
+ */
+function realAnnuityDueFactor(realReturn: number, span: number): number {
+  if (Math.abs(realReturn) < 1e-12) return span;
+  return ((1 - Math.pow(1 + realReturn, -span)) / realReturn) * (1 + realReturn);
+}
 
 /** Years of retirement, used in several places. */
 function retirementSpan(input: RetirementInput): number {
@@ -272,6 +318,7 @@ export function projectRetirement(
   // money, as a level real annuity over the retirement span. Solved from
   // the real return so the answer is directly comparable to the input.
   const realReturn = (1 + rateAfter) / (1 + inflation) - 1;
+  const annuityFactor = realAnnuityDueFactor(realReturn, span);
   const realBalanceAtRetirement = balanceAtRetirement / retirementDeflator;
   let sustainableSpending: number | null;
   if (realBalanceAtRetirement <= 0) {
@@ -286,23 +333,21 @@ export function projectRetirement(
     // boundary: with no balance and 25.000 of other income, a 25.000 spend
     // never depletes and 25.000,01 depletes in the first year.
     sustainableSpending = otherAnnualIncome;
-  } else if (Math.abs(realReturn) < 1e-12) {
-    // A zero real return is a straight division, and the annuity formula
-    // would divide by zero here.
-    sustainableSpending = realBalanceAtRetirement / span + otherAnnualIncome;
   } else {
-    // An annuity DUE, not an ordinary annuity: the projection withdraws at
-    // the START of each year and only then credits the return, so the
-    // sustainable figure has to be solved on the same convention. Using the
-    // end-of-period factor overstates the safe spend by a factor of
-    // (1 + real return) — enough to make a plan that reports "funded" run
-    // dry two years early. Caught by the round-trip test below, which feeds
-    // this figure back through the projection.
-    const annuityDueFactor =
-      ((1 - Math.pow(1 + realReturn, -span)) / realReturn) * (1 + realReturn);
+    // `realAnnuityDueFactor` owns both the annuity-due convention and the
+    // zero-real-return case; see its docstring. The round-trip test feeds
+    // this figure back through the projection, which is what catches a
+    // convention error here.
     sustainableSpending =
-      realBalanceAtRetirement / annuityDueFactor + otherAnnualIncome;
+      realBalanceAtRetirement / annuityFactor + otherAnnualIncome;
   }
+
+  // The same relation, read the other way: what capital would be needed for
+  // the spend that was actually asked for. Floored at zero, because other
+  // income can already cover the spend and a negative requirement is not a
+  // thing a page can render.
+  const requiredRealBalanceAtRetirement =
+    Math.max(0, desiredAnnualSpending - otherAnnualIncome) * annuityFactor;
 
   const yearsFunded =
     depletionAge === null ? span : depletionAge - retirementAge;
@@ -325,6 +370,17 @@ export function projectRetirement(
       0,
       desiredAnnualSpending - (sustainableSpending ?? 0),
     ),
+    requiredRealBalanceAtRetirement,
+    requiredBalanceAtRetirement:
+      requiredRealBalanceAtRetirement * retirementDeflator,
+    realBalanceShortfallAtRetirement: Math.max(
+      0,
+      requiredRealBalanceAtRetirement - realBalanceAtRetirement,
+    ),
+    capitalCoveragePercent:
+      requiredRealBalanceAtRetirement <= 0
+        ? null
+        : (realBalanceAtRetirement / requiredRealBalanceAtRetirement) * 100,
   };
 }
 

@@ -450,7 +450,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân tích tiết kiệm hưu trí",
     summary: "Khoản tiết kiệm hiện tại có đủ cho tuổi nghỉ hưu hay không, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {

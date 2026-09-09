@@ -254,6 +254,85 @@ describe("projectRetirement — sustainable spending", () => {
     );
   });
 
+  it("makes the required capital the exact inverse of the sustainable spend", () => {
+    // The two directions share one annuity factor, so this is an identity,
+    // not an approximation — and it is the identity that a page computing
+    // the capital requirement itself would get wrong by (1 + real return).
+    // Swept across the inputs the factor depends on.
+    for (const returnAfterPercent of [0, 2.5, 4, 5, 8]) {
+      for (const inflationPercent of [0, 2.5, 5]) {
+        for (const endAge of [70, 85, 95, 110]) {
+          for (const desiredAnnualSpending of [0, 25_000, 40_000, 80_000]) {
+            const label = `${returnAfterPercent}/${inflationPercent}/${endAge}/${desiredAnnualSpending}`;
+            const r = projectRetirement({
+              ...BASE,
+              returnAfterPercent,
+              inflationPercent,
+              endAge,
+              desiredAnnualSpending,
+            })!;
+            const at = projectRetirement({
+              ...BASE,
+              returnAfterPercent,
+              inflationPercent,
+              endAge,
+              desiredAnnualSpending,
+              // Reach EXACTLY the required capital: retire today so the
+              // starting balance IS the balance at retirement, with no
+              // accumulation phase to deflate it.
+              currentAge: 65,
+              retirementAge: 65,
+              currentBalance: r.requiredRealBalanceAtRetirement,
+              annualContribution: 0,
+            })!;
+            expect(at.realBalanceAtRetirement, label).toBeCloseTo(
+              r.requiredRealBalanceAtRetirement,
+              6,
+            );
+            // Spending at or below the other income needs no capital at all.
+            if (desiredAnnualSpending <= 25_000) {
+              expect(r.requiredRealBalanceAtRetirement, label).toBe(0);
+              expect(r.capitalCoveragePercent, label).toBe(null);
+            } else {
+              expect(at.sustainableSpending!, label).toBeCloseTo(
+                desiredAnnualSpending,
+                6,
+              );
+              expect(at.spendingShortfall, label).toBeCloseTo(0, 6);
+              expect(at.capitalCoveragePercent!, label).toBeCloseTo(100, 6);
+              expect(at.realBalanceShortfallAtRetirement, label).toBeCloseTo(
+                0,
+                6,
+              );
+            }
+          }
+        }
+      }
+    }
+  });
+
+  it("makes reaching the required capital the same thing as funding the plan", () => {
+    // The capital figure has to agree with the projection's own depletion
+    // verdict, or the page would print "97% of what you need" beside a table
+    // showing the money lasting.
+    for (const currentBalance of [200_000, 500_000, 1_200_000, 2_000_000]) {
+      const r = projectRetirement({
+        ...BASE,
+        currentAge: 65,
+        retirementAge: 65,
+        currentBalance,
+        annualContribution: 0,
+      })!;
+      const funded = r.depletionAge === null;
+      // A hair of tolerance either way: the projection accumulates 30 float
+      // subtractions and the closed form does not, so the two can disagree
+      // within a rounding residue exactly AT the boundary. Measured residue
+      // on this sweep is under 1e-8 relative.
+      const covered = r.capitalCoveragePercent! > 100 - 1e-6;
+      expect(covered, `balance ${currentBalance}`).toBe(funded);
+    }
+  });
+
   it("divides straight through at a zero real return", () => {
     // The annuity factor divides by the real return, so this case would
     // otherwise be a division by zero rather than a simple split.
