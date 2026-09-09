@@ -47,14 +47,23 @@ console.log(
 // A worktree left behind by an interrupted run would make `git worktree add` fail.
 if (existsSync(WORKTREE)) {
   try {
-    sh(`git worktree remove --force ${WORKTREE}`);
+    sh(`git worktree remove --force "${WORKTREE}"`);
   } catch {
     rmSync(WORKTREE, { recursive: true, force: true });
     sh("git worktree prune");
   }
 }
-sh(`git worktree add --detach ${WORKTREE} ${commits[0]}`);
+sh(`git worktree add --detach "${WORKTREE}" ${commits[0]}`);
 symlinkSync(repoModules, resolve(WORKTREE, "node_modules"), "dir");
+
+// A command's diagnostic can land on either stream — vitest/tsc mostly use
+// stdout, but `next build` failures are as likely on stderr — so read both
+// rather than assuming one, and only fall back to the generic error message
+// (e.g. "Command failed: ...") if neither stream has anything.
+const tailOf = (err) => {
+  const combined = ((err.stderr || "") + (err.stdout || "")).trim() || err.message;
+  return combined.trim().split("\n").slice(-6).join("\n      ");
+};
 
 const results = [];
 try {
@@ -64,19 +73,27 @@ try {
       ["log", "-1", "--format=%s", sha],
       { encoding: "utf8" },
     ).trim();
-    sh(`git checkout --detach --force ${sha}`, WORKTREE);
 
     let status = "pass";
     let detail = "";
-    for (const step of testsOnly
-      ? ["pnpm exec vitest run", "pnpm exec tsc --noEmit"]
-      : ["pnpm exec vitest run", "pnpm exec tsc --noEmit", "pnpm exec next build"]) {
-      try {
-        sh(step, WORKTREE);
-      } catch (err) {
-        status = "FAIL";
-        detail = `${step}\n      ${(err.stdout || err.message).trim().split("\n").slice(-6).join("\n      ")}`;
-        break;
+    try {
+      sh(`git checkout --detach --force ${sha}`, WORKTREE);
+    } catch (err) {
+      status = "FAIL";
+      detail = `git checkout --detach --force ${sha}\n      ${tailOf(err)}`;
+    }
+
+    if (status === "pass") {
+      for (const step of testsOnly
+        ? ["pnpm exec vitest run", "pnpm exec tsc --noEmit"]
+        : ["pnpm exec vitest run", "pnpm exec tsc --noEmit", "pnpm exec next build"]) {
+        try {
+          sh(step, WORKTREE);
+        } catch (err) {
+          status = "FAIL";
+          detail = `${step}\n      ${tailOf(err)}`;
+          break;
+        }
       }
     }
     results.push({ sha: sha.slice(0, 8), subject, status, detail });
@@ -88,7 +105,7 @@ try {
 } finally {
   // Always clean up: a stale worktree breaks the next run and confuses `git status`.
   try {
-    sh(`git worktree remove --force ${WORKTREE}`);
+    sh(`git worktree remove --force "${WORKTREE}"`);
   } catch {
     rmSync(WORKTREE, { recursive: true, force: true });
     sh("git worktree prune");
