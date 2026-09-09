@@ -61,8 +61,10 @@ export function BlackScholesCalculator() {
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure, 2)} ₫`;
 
-  // Greeks are dimensionless or per-unit, so they get plain decimals rather
-  // than money formatting — except vega, theta and rho, which are in đồng.
+  // Delta is dimensionless and gamma is PER ĐỒNG (it scales as 1/spot), so
+  // both get plain decimals; vega, theta and rho are đồng amounts, so they
+  // get money formatting. The column is therefore mixed-unit, and the unit of
+  // each row lives in its label in the content file — not here.
   const greekRows = result
     ? [
         [

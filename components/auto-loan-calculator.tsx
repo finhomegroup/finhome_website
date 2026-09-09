@@ -15,51 +15,79 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
-import { computeAutoLoan } from "@/lib/calc/auto-loan";
+import { computeAutoLoan, type AutoLoanResult } from "@/lib/calc/auto-loan";
 import { yearlySummary } from "@/lib/calc/loan";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
 
-/**
- * The vehicle loan calculator.
- *
- * The amount borrowed is derived (price less deposit less trade-in) rather
- * than entered, which is the one thing that makes this different from the
- * mortgage calculator. `computeAutoLoan` owns that derivation so it is tested.
- */
-export function AutoLoanCalculator() {
-  const fields = useCalcFields({
-    price: C.form.defaultPrice,
-    down: C.form.defaultDown,
-    tradeIn: C.form.defaultTradeIn,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    termUnit: C.form.defaultTermUnit,
-  });
+/** The form's raw values, exactly as `useCalcFields` keeps them: strings. */
+export type AutoLoanFormValues = {
+  price: string;
+  down: string;
+  tradeIn: string;
+  rate: string;
+  /** "years" or "months"; anything else is read as months. */
+  termUnit: string;
+  term: string;
+};
 
-  const price = parseMoney(fields.values.price);
-  const down = parseMoney(fields.values.down);
-  const tradeIn = parseMoney(fields.values.tradeIn);
-  const rate = parseDecimal(fields.values.rate);
-  const term = parseDecimal(fields.values.term);
+/** Everything the page derives from those strings. */
+export type AutoLoanFormState = {
+  priceInvalid: boolean;
+  downInvalid: boolean;
+  tradeInInvalid: boolean;
+  rateInvalid: boolean;
+  termInvalid: boolean;
+  /** The entered term as whole months; null when the term does not parse. */
+  termMonths: number | null;
+  result: AutoLoanResult | null;
+  /** True when the note replaces the blank rows, rather than a field error. */
+  nothingToFinance: boolean;
+  /** Deposit + trade-in + every loan payment. Null without a loan. */
+  totalCost: number | null;
+};
+
+/**
+ * Parse the form, decide which fields are invalid, and compute the loan.
+ *
+ * Pure and exported so the field gates can be pinned without a DOM — see
+ * `auto-loan-calculator.test.ts`. `lib/calc/auto-loan.test.ts` covers only the
+ * lib contract (`termMonths` of 0 or 60,5 gives null); it cannot say WHICH
+ * field the page blames for that null, which is where both bugs below lived.
+ */
+export function autoLoanFormState(
+  values: AutoLoanFormValues,
+): AutoLoanFormState {
+  const price = parseMoney(values.price);
+  const down = parseMoney(values.down);
+  const tradeIn = parseMoney(values.tradeIn);
+  const rate = parseDecimal(values.rate);
+  const term = parseDecimal(values.term);
 
   const priceInvalid = price === null || price <= 0;
   const downInvalid = down === null || down < 0;
   const tradeInInvalid = tradeIn === null || tradeIn < 0;
   const rateInvalid = rate === null || rate < 0;
-  const termInvalid = term === null || term <= 0;
 
   const termMonths =
     term === null
       ? null
-      : Math.round(fields.values.termUnit === "years" ? term * 12 : term);
+      : Math.round(values.termUnit === "years" ? term * 12 : term);
+
+  // Gate the DERIVED month count, not only the entered term: `Math.round(0,4)`
+  // is 0 and `computeLoan` rejects `termMonths <= 0`, so any 0 < term < 0,5
+  // tháng (or < 1/24 năm) used to pass this flag and come back as a null the
+  // page then blamed on the deposit. A non-integer term stays legal on
+  // purpose — 5,5 năm is 66 months, a real loan — which is why this gates
+  // `termMonths`, not `Number.isInteger(term)`.
+  const termInvalid =
+    term === null || term <= 0 || termMonths === null || termMonths < 1;
 
   const fieldsUsable =
     !priceInvalid &&
     !downInvalid &&
     !tradeInInvalid &&
     !rateInvalid &&
-    !termInvalid &&
-    termMonths !== null;
+    !termInvalid;
 
   const result = fieldsUsable
     ? computeAutoLoan({
@@ -72,17 +100,64 @@ export function AutoLoanCalculator() {
     : null;
 
   // Every field is valid on its own, but the deposit and trade-in cover the
-  // price — nothing to finance. That is a note, not a field error.
-  const nothingToFinance = fieldsUsable && result === null;
-
-  const money = (value: number | null | undefined) =>
-    value === null || value === undefined ? null : `${formatMoney(value)} ₫`;
+  // price — nothing to finance. That is a note, not a field error. The cause
+  // is checked explicitly: a null from any OTHER source blanks the rows
+  // silently, as every sibling calculator does, rather than printing advice
+  // ("giảm tiền trả trước") that cannot help.
+  const nothingToFinance =
+    fieldsUsable && result === null && price - down - tradeIn <= 0;
 
   // What the car really costs: what the buyer hands over, plus every loan payment.
   const totalCost =
     result && down !== null && tradeIn !== null
       ? down + tradeIn + result.loan.totalPrincipalInterest
       : null;
+
+  return {
+    priceInvalid,
+    downInvalid,
+    tradeInInvalid,
+    rateInvalid,
+    termInvalid,
+    termMonths,
+    result,
+    nothingToFinance,
+    totalCost,
+  };
+}
+
+/**
+ * The vehicle loan calculator.
+ *
+ * The amount borrowed is derived (price less deposit less trade-in) rather
+ * than entered, which is the one thing that makes this different from the
+ * mortgage calculator. `computeAutoLoan` owns that derivation so it is tested;
+ * `autoLoanFormState` above owns the parsing and the field gates for the same
+ * reason. This function is only the wiring.
+ */
+export function AutoLoanCalculator() {
+  const fields = useCalcFields({
+    price: C.form.defaultPrice,
+    down: C.form.defaultDown,
+    tradeIn: C.form.defaultTradeIn,
+    rate: C.form.defaultRate,
+    term: C.form.defaultTerm,
+    termUnit: C.form.defaultTermUnit,
+  });
+
+  const {
+    priceInvalid,
+    downInvalid,
+    tradeInInvalid,
+    rateInvalid,
+    termInvalid,
+    result,
+    nothingToFinance,
+    totalCost,
+  } = autoLoanFormState(fields.values);
+
+  const money = (value: number | null | undefined) =>
+    value === null || value === undefined ? null : `${formatMoney(value)} ₫`;
 
   const tableRows = result
     ? yearlySummary(result.loan.schedule).map((year) => [

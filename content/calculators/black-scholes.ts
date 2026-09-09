@@ -12,10 +12,25 @@
 //    single most misread output of the model, so it is labelled as such in
 //    the results and explained in the prose.
 //
-// Figures quoted are the module's own output for the textbook case (spot 100,
-// strike 100, 1 năm, vol 20%, lãi 5%, không cổ tức): call 10,450584,
-// put 5,573526, d₁ = 0,35, d₂ = 0,15, delta call 0,636831, gamma 0,018762,
+// Every figure quoted here comes from RUNNING the module, except the two
+// prices explicitly marked below as the published closed form.
+//
+// Textbook case (spot 100, strike 100, 1 năm, vol 20%, lãi 5%, không cổ tức):
+// the PUBLISHED CLOSED-FORM prices are call 10,450584 and put 5,573526. The
+// module returns call 10,450576 and put 5,573518 — a gap of 8e-6, which is
+// normalCdf's documented ~7,5e-8 error scaled by the notional of 100. The
+// copy quotes the MODULE's figures, because those are the ones the page
+// renders; `black-scholes.test.ts` pins the published pair at a 5e-5
+// tolerance, which both sides satisfy.
+// Same case, straight from the module: d₁ = 0,35, d₂ = 0,15, delta call
+// 0,636831, gamma 0,018762 (per đồng, so it scales as 1/spot),
 // vega 0,375240 mỗi điểm phần trăm, N(d₂) = 55,9618%.
+//
+// The PAGE defaults are spot = strike = 100.000 ₫ — `parseMoney` reads
+// "100.000" as 100000, not as 100 — so the live rows read 10.450,58 ₫ and
+// 5.573,52 ₫, and vega/theta/rho are đồng amounts at that scale (vega
+// 375,24 ₫, theta −17,57 ₫, rho 532,32 ₫ cho quyền mua). Both prices are
+// linear in the underlying; delta, moneyness and N(d₂) are not.
 
 export const BLACK_SCHOLES = {
   slug: "/cong-cu/quyen-chon-black-scholes",
@@ -78,15 +93,15 @@ export const BLACK_SCHOLES = {
 
     greeksTitle: "Hệ số greek",
     deltaLabel: "Delta",
-    gammaLabel: "Gamma",
-    vegaLabel: "Vega — mỗi điểm % biến động",
-    thetaLabel: "Theta — mỗi ngày",
-    rhoLabel: "Rho — mỗi điểm % lãi suất",
+    gammaLabel: "Gamma — trên mỗi ₫",
+    vegaLabel: "Vega — ₫ mỗi điểm % biến động",
+    thetaLabel: "Theta — ₫ mỗi ngày",
+    rhoLabel: "Rho — ₫ mỗi điểm % lãi suất",
     callColumn: "Quyền mua",
     putColumn: "Quyền bán",
     greekColumn: "Hệ số",
     greeksIntro:
-      "Gamma và vega giống nhau cho quyền mua và quyền bán; delta, theta và rho thì không. Vega được tính theo mỗi ĐIỂM PHẦN TRĂM biến động và theta theo mỗi NGÀY, vì đó là đơn vị chúng thực sự được dùng — chứ không phải theo mỗi đơn vị biến động và mỗi năm như trong công thức gốc.",
+      "Gamma và vega giống nhau cho quyền mua và quyền bán; delta, theta và rho thì không. Vega được tính theo mỗi ĐIỂM PHẦN TRĂM biến động và theta theo mỗi NGÀY, vì đó là đơn vị chúng thực sự được dùng — chứ không phải theo mỗi đơn vị biến động và mỗi năm như trong công thức gốc. Hãy đọc kỹ đơn vị ở đầu mỗi dòng, vì cột giá trị không đồng nhất: vega, theta và rho là số TIỀN, tính bằng đồng; delta không có đơn vị; còn gamma là mức thay đổi của delta TRÊN MỖI đồng giá tài sản cơ sở, nên con số của nó rất nhỏ khi giá tài sản tính bằng đồng — đó là hệ quả của đơn vị, không phải dấu hiệu gamma không đáng kể. Gamma lớn nhất khi giá tài sản ở quanh giá thực hiện và nhỏ dần về cả hai phía, chứ không giảm đơn điệu theo giá tài sản: với các con số mặc định, hạ giá tài sản từ 85.000 xuống 50.000 làm gamma giảm gần 70 lần.",
 
     detailTitle: "Chi tiết",
     d1Label: "d₁",
@@ -111,7 +126,7 @@ export const BLACK_SCHOLES = {
     title: "Cách tính",
     body: [
       "d₁ = [ln(S ÷ K) + (r − q + σ² ÷ 2)·t] ÷ (σ·√t), và d₂ = d₁ − σ·√t. Giá quyền mua = S·e^(−qt)·N(d₁) − K·e^(−rt)·N(d₂); giá quyền bán = K·e^(−rt)·N(−d₂) − S·e^(−qt)·N(−d₁). N là hàm phân phối tích lũy chuẩn.",
-      "Với ví dụ sách giáo khoa — S = K, t = 1 năm, σ = 20%, r = 5% — ta có d₁ = 0,35 và d₂ = 0,15, cho quyền mua 10,450584 và quyền bán 5,573526 trên mỗi đơn vị giá.",
+      "Với mặc định của trang — S = K = 100.000 ₫, t = 1 năm, σ = 20%, r = 5% — ta có d₁ = 0,35 và d₂ = 0,15, cho quyền mua 10.450,58 ₫ và quyền bán 5.573,52 ₫. Hai con số này tỷ lệ thuận với giá: cùng bộ tham số ở S = K = 100 cho 10,450576 và 5,573518.",
       "Bất biến đáng tin hơn bất kỳ con số đơn lẻ nào là ngang giá quyền chọn: giá mua − giá bán = S·e^(−qt) − K·e^(−rt). Bộ kiểm thử của module kiểm bất biến này trên cả một lưới giá, thời gian, biến động và cổ tức, chứ không chỉ ở một điểm.",
       "Hàm N được cài trong một module riêng và kiểm thử độc lập với phần định giá, dựa trên bảng giá trị đã công bố. Đây là chủ ý: một sai số trong N sẽ hiện ra ở đây dưới dạng một giá quyền chọn trông hoàn toàn hợp lý.",
       "Hai trường hợp biên được xử lý riêng thay vì để công thức tự chạy, vì cả hai đều chia cho 0 ở d₁ và cả hai đều đến được từ ô nhập. Tại đáo hạn (t = 0), quyền chọn bằng đúng giá trị nội tại. Với biến động bằng 0, khoản chi trả là chắc chắn nên quyền chọn bằng giá trị nội tại của giá kỳ hạn, đã chiết khấu.",
