@@ -66,8 +66,11 @@ export type NetDistributionResult = {
    * How much MORE gross is needed to recover the percentage deductions, as a
    * percent of the net. The figure the intuitive answer gets wrong: at a 10%
    * deduction this is 11,11%, not 10%.
+   *
+   * Null when the net is zero or negative: there is no gross-up to quote.
+   * See the note at the return.
    */
-  grossUpPercent: number;
+  grossUpPercent: number | null;
 };
 
 /**
@@ -81,7 +84,8 @@ export type NetDistributionResult = {
  * A gross that the fixed deductions swallow entirely yields a NEGATIVE net,
  * which is reported rather than floored: it is a real outcome — a small
  * transfer eaten by a flat fee — and clamping it to zero would hide the
- * problem.
+ * problem. The gross-up beside it comes back null in that state, because a
+ * gross-up on a net of zero or less is not a quantity.
  */
 export function computeNetDistribution(
   input: NetDistributionInput,
@@ -143,6 +147,14 @@ export function computeNetDistribution(
     retentionPercent: (net / gross) * 100,
     // Relative to the NET, because that is the number the reader is trying
     // to protect. 10% off the gross needs 11,11% more gross to restore.
-    grossUpPercent: net > 0 ? ((gross - net) / net) * 100 : 0,
+    //
+    // Null rather than 0 at a net of zero or less. At a zero net the
+    // gross-up is unbounded — no finite figure quoted restores nothing to
+    // something — and at a negative net the ratio is not a gross-up at all:
+    // for a 100.000 ₫ gross eaten by a 200.000 ₫ fee the formula gives
+    // −195,24%, which would claim you must quote LESS in order to receive a
+    // negative amount. The honest output is "not applicable", which the page
+    // renders as the suite's "—" placeholder.
+    grossUpPercent: net > 0 ? ((gross - net) / net) * 100 : null,
   };
 }

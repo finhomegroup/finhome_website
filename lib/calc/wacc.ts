@@ -75,6 +75,8 @@ export function computeWacc(input: WaccInput): WaccResult | null {
     preferredValue = 0,
     costOfEquityPercent,
     costOfDebtPercent,
+    // Only reachable when there is no preferred capital at all: the guard
+    // below rejects a preferred value whose cost was left out.
     costOfPreferredPercent = 0,
     taxRatePercent = 20,
   } = input;
@@ -90,6 +92,27 @@ export function computeWacc(input: WaccInput): WaccResult | null {
   ];
   if (costs.some((value) => !Number.isFinite(value))) return null;
   if (taxRatePercent < 0 || taxRatePercent > 100) return null;
+
+  // Preferred capital with no cost given would be priced at 0%, which
+  // silently understates WACC by its whole weight — on a 700/300/100 tỷ
+  // structure that is a full percentage point (10,87% instead of 11,87%).
+  // capm.ts refuses the same shape for the same reason: choosing a number
+  // silently is a guess. The RAW input is read, not the destructured
+  // default, so an omitted cost is distinguishable from an explicit 0 — a
+  // stated 0% is a claim, an omitted one is not.
+  //
+  // `preferredValue > 0` is load-bearing: preferred stock is rare in
+  // Vietnam, so the ordinary equity-and-debt structure must stay valid with
+  // the cost omitted.
+  //
+  // Unreachable from /cong-cu/wacc/ today — the page always passes a parsed
+  // number inside its own usable-fields gate — so its "nothing in the
+  // capital structure" notice still reads correctly for every null it can
+  // see. If the cost of preferred is ever made an OPTIONAL field there, that
+  // notice has to be widened to cover this rejection too.
+  if (preferredValue > 0 && input.costOfPreferredPercent === undefined) {
+    return null;
+  }
 
   const totalCapital = equityValue + debtValue + preferredValue;
   if (totalCapital <= 0) return null;

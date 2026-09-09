@@ -75,6 +75,23 @@ describe("computeNetDistribution — gross to net", () => {
     });
     expect(result.net).toBeLessThan(0);
     expect(result.net).toBeCloseTo(-105_000, 6);
+    // And no gross-up beside it. The docstring formula would give
+    // −195,2381% here, i.e. "quote LESS to receive a negative amount", so
+    // the honest output is "not applicable" rather than a number.
+    expect(result.grossUpPercent).toBeNull();
+  });
+
+  it("has no gross-up at a net of exactly zero", () => {
+    // 2.000.000 × 0,9 − 1.800.000 = 0 exactly. Restoring nothing to
+    // something needs an unbounded gross-up, so no finite figure is honest.
+    const result = dist({
+      direction: "toNet",
+      amount: 2_000_000,
+      percentDeductions: [10],
+      fixedDeductions: [1_800_000],
+    });
+    expect(result.net).toBe(0);
+    expect(result.grossUpPercent).toBeNull();
   });
 });
 
@@ -142,7 +159,10 @@ describe("computeNetDistribution — net to gross", () => {
         amount: 100_000_000,
         percentDeductions: [rate],
       });
-      pairs.push([rate, result.grossUpPercent]);
+      // Every case here is toGross on 100 triệu, so the net is the positive
+      // input and the gross-up is always a number.
+      expect(result.grossUpPercent).not.toBeNull();
+      pairs.push([rate, result.grossUpPercent!]);
     }
     for (const [rate, grossUp] of pairs) {
       expect(grossUp).toBeGreaterThan(rate);

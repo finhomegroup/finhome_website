@@ -146,7 +146,11 @@ export function NetDistributionCalculator() {
         <ResultRow label={C.form.grossLabel} value={money(result?.gross)} />
         <ResultRow
           label={C.form.grossUpLabel}
-          value={result ? formatPercent(result.grossUpPercent, 4) : null}
+          value={
+            result && result.grossUpPercent !== null
+              ? formatPercent(result.grossUpPercent, 4)
+              : null
+          }
         />
       </ResultGroup>
 

@@ -100,8 +100,10 @@ export type RetirementResult = {
   /** First year's withdrawal as a percent of the balance at retirement. */
   initialWithdrawalRatePercent: number | null;
   /**
-   * Annual spending in today's money the balance WOULD support across the
-   * full retirement span. Compare with what was asked for.
+   * Annual spending in today's money the plan WOULD support across the full
+   * retirement span: the balance drawn down as a level real annuity PLUS
+   * other income. Compare with what was asked for. With no balance at all
+   * it is exactly the other income, not zero.
    */
   sustainableSpending: number | null;
   /** Shortfall between desired and sustainable spending, in today's money. */
@@ -253,7 +255,17 @@ export function projectRetirement(
   const realBalanceAtRetirement = balanceAtRetirement / retirementDeflator;
   let sustainableSpending: number | null;
   if (realBalanceAtRetirement <= 0) {
-    sustainableSpending = 0;
+    // Other income is still there when the portfolio is not. Both live
+    // branches below end in `+ otherAnnualIncome`, and the limit of the
+    // annuity-due branch as the balance goes to zero is exactly that — so
+    // returning 0 here put a discontinuity of a whole pension into the
+    // rendered row: at a balance of 1 USD this field reads 25.000,17 and at
+    // 0 it read 0. Nothing divides by zero at a zero balance, so this
+    // branch exists only to avoid a negative annuity, not to drop the
+    // income. Cross-checked against the projection's own depletion
+    // boundary: with no balance and 25.000 of other income, a 25.000 spend
+    // never depletes and 25.000,01 depletes in the first year.
+    sustainableSpending = otherAnnualIncome;
   } else if (Math.abs(realReturn) < 1e-12) {
     // A zero real return is a straight division, and the annuity formula
     // would divide by zero here.

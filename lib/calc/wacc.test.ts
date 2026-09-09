@@ -154,6 +154,26 @@ describe("computeWacc — rejected inputs", () => {
     ).toBeNull();
   });
 
+  it("rejects preferred capital with no cost given", () => {
+    // Priced at 0% it would understate WACC by its whole weight: 10,873%
+    // against the 11,873% the same structure gives at an 11% cost. The
+    // docstring promises null, and capm.ts refuses the same shape.
+    expect(
+      computeWacc({ ...BASE, preferredValue: 100_000_000_000 }),
+    ).toBeNull();
+    // The guard must not over-apply. No preferred capital needs no cost,
+    // and a STATED 0% is a claim the module is entitled to use.
+    expect(computeWacc({ ...BASE, preferredValue: 0 })).not.toBeNull();
+    expect(computeWacc(BASE)).not.toBeNull();
+    expect(
+      computeWacc({
+        ...BASE,
+        preferredValue: 100_000_000_000,
+        costOfPreferredPercent: 0,
+      }),
+    ).not.toBeNull();
+  });
+
   it("returns null rather than a guess", () => {
     expect(computeWacc({ ...BASE, equityValue: -1 })).toBeNull();
     expect(computeWacc({ ...BASE, debtValue: -1 })).toBeNull();

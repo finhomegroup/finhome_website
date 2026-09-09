@@ -136,6 +136,79 @@ describe("computeEducationSavings — funding it", () => {
     expect(result.alreadyFunded).toBe(true);
     expect(result.shortfallAtStart).toBe(0);
     expect(result.monthlyContribution).toBe(0);
+    // The return's share of REACHING the target is 0 here: principal alone
+    // already covers it. Unfloored, the difference would be
+    // −2.299.398.621 ₫ and the page would render that as "lãi đóng góp".
+    expect(result.interestEarned).toBe(0);
+  });
+
+  it("never reports a negative contribution from the return", () => {
+    // Swept across the over-funded range, where the shortfall floor makes
+    // the contributions 0 and the raw difference goes negative.
+    for (const currentSavings of [
+      600_000_000, 700_000_000, 1_000_000_000, 3_000_000_000, 50_000_000_000,
+    ]) {
+      const result = plan({ ...BASE, currentSavings });
+      expect(result.interestEarned).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("keeps a partly over-funded plan's return contribution positive", () => {
+    // 600 triệu is already-funded (it GROWS past the target by the start
+    // date) but is well under the target itself, so the floor must not
+    // clamp this one. Reference from the definition — the tuition stream
+    // discounted to the start of study, less the principal put in:
+    const target = [0, 1, 2, 3].reduce(
+      (sum, k) => sum + (80_000_000 * 1.08 ** (10 + k)) / 1.07 ** k,
+      0,
+    );
+    const result = plan({ ...BASE, currentSavings: 600_000_000 });
+    expect(result.alreadyFunded).toBe(true);
+    expect(result.totalContributions).toBe(0);
+    expect(result.interestEarned).toBeCloseTo(target - 600_000_000, 2);
+    expect(result.interestEarned).toBeCloseTo(100_601_379.336, 2);
+  });
+
+  it("reports a NEGATIVE return contribution when the return loses money", () => {
+    // The floor exists for the over-funded case only. A negative investment
+    // return is an input the page accepts (it rejects only <= -100), and there
+    // the return genuinely destroys value that the monthly contribution has to
+    // make up. Flooring it to 0 claimed the return contributed nothing and
+    // left the detail block not adding up.
+    //
+    // Reference from the definition, not from the implementation: the return's
+    // share is whatever the target is made of that the saver did not put in,
+    // i.e. target − today's savings − everything contributed.
+    for (const investmentReturnPercent of [-2, -5, -10]) {
+      const result = plan({ ...BASE, investmentReturnPercent });
+      expect(result.alreadyFunded).toBe(false);
+      expect(result.interestEarned).toBeLessThan(0);
+      expect(result.interestEarned).toBeCloseTo(
+        result.targetAtStart - 200_000_000 - result.totalContributions,
+        2,
+      );
+    }
+    // The figure the page shows at −5%/năm, pinned.
+    expect(
+      plan({ ...BASE, investmentReturnPercent: -5 }).interestEarned,
+    ).toBeCloseTo(-280_396_228.0, 0);
+    // A zero return contributes exactly nothing — the boundary between the two.
+    expect(
+      plan({ ...BASE, investmentReturnPercent: 0 }).interestEarned,
+    ).toBeCloseTo(0, 6);
+  });
+
+  it("has no return contribution when study starts now and savings cover it", () => {
+    // No time elapses, so the return provides nothing — and certainly not a
+    // negative amount, which is what the unfloored difference gave.
+    const result = plan({
+      annualTuitionToday: 50_000_000,
+      yearsUntilStart: 0,
+      yearsOfStudy: 1,
+      currentSavings: 100_000_000,
+    });
+    expect(result.monthsToSave).toBe(0);
+    expect(result.interestEarned).toBe(0);
   });
 
   it("has no contribution to solve when study starts now", () => {
@@ -162,6 +235,8 @@ describe("computeEducationSavings — funding it", () => {
       result.monthlyContribution * result.monthsToSave,
       6,
     );
+    // BASE is under-funded, so the floor on interestEarned is inactive and
+    // the raw identity holds exactly. Over-funded plans are covered above.
     expect(result.interestEarned).toBeCloseTo(
       result.targetAtStart - 200_000_000 - result.totalContributions,
       6,

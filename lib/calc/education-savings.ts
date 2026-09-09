@@ -71,7 +71,11 @@ export type EducationSavingsResult = {
   monthsToSave: number;
   /** Total of those contributions. */
   totalContributions: number;
-  /** How much of the target the investment return provides. */
+  /**
+   * How much of the target the investment return provides. Zero when today's
+   * savings alone already exceed the target — the return then provides none
+   * of it.
+   */
   interestEarned: number;
   /** True when today's savings already cover the target. */
   alreadyFunded: boolean;
@@ -148,6 +152,9 @@ export function computeEducationSavings(
   if (!Number.isFinite(currentSavingsAtStart)) return null;
 
   const shortfallAtStart = Math.max(0, targetAtStart - currentSavingsAtStart);
+  // Hoisted: `interestEarned` below is defined differently in this case, so
+  // the two cannot be allowed to drift apart.
+  const alreadyFunded = shortfallAtStart <= 0;
   const monthsToSave = yearsUntilStart * 12;
 
   // The contribution that turns the shortfall into zero by the start date.
@@ -176,8 +183,28 @@ export function computeEducationSavings(
     totalContributions,
     // What the return contributes: everything the target is made of that the
     // saver did not put in.
-    interestEarned: targetAtStart - currentSavings - totalContributions,
-    alreadyFunded: shortfallAtStart <= 0,
+    //
+    // Floored at 0 ONLY when no contribution is needed. There the shortfall is
+    // 0, so the contribution and its total are 0, and the raw difference is
+    // `targetAtStart − currentSavings` — which for a heavily over-funded plan
+    // is a large negative the page would render as "Phần do lãi đóng góp
+    // −2.299.398.621 ₫". By the definition of the field (target = principal in
+    // + the return's contribution), a target already covered by principal
+    // needs 0 đồng of return. Note that an alreadyFunded plan can still have a
+    // legitimately POSITIVE share — 600 triệu grown past a 700.601.379 ₫
+    // target reports 100.601.379 ₫ — so the floor must be a floor, not a zero.
+    //
+    // When a contribution IS needed the raw difference stands, INCLUDING when
+    // it is negative, which happens only for a negative investment return —
+    // an input this page accepts. There the return really did destroy value:
+    // at −5%/năm on the defaults it costs 280.396.228 ₫ that the monthly
+    // contribution is silently making up. Flooring that to "0 ₫" told the
+    // reader the return contributed nothing while it was working against them,
+    // and left the detail block not adding up.
+    interestEarned: alreadyFunded
+      ? Math.max(0, targetAtStart - currentSavings - totalContributions)
+      : targetAtStart - currentSavings - totalContributions,
+    alreadyFunded,
     noTimeToSave: monthsToSave === 0,
   };
 }

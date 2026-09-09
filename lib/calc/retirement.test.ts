@@ -241,7 +241,70 @@ describe("projectRetirement — sustainable spending", () => {
       annualContribution: 0,
     })!;
     expect(result.balanceAtRetirement).toBe(0);
-    expect(result.sustainableSpending).toBe(0);
+    // Exactly the other income — the title's own semantics. Cross-checked
+    // against the projection's depletion boundary below, which is the same
+    // definition of "sustainable" the round-trip test above uses.
+    expect(result.sustainableSpending).toBe(25_000);
+    expect(result.spendingShortfall).toBe(55_000);
+  });
+
+  it("puts the no-balance figure at the projection's own break-even spend", () => {
+    // Derived WITHOUT reading sustainableSpending: bisect the largest
+    // desiredAnnualSpending that never depletes. With no portfolio and
+    // 25.000 of other income, `needed` is zero every year while the spend
+    // is covered by the income, so the break-even is exactly 25.000.
+    const withoutBalance = { ...BASE, currentBalance: 0, annualContribution: 0 };
+    const depletes = (desiredAnnualSpending: number) =>
+      projectRetirement({ ...withoutBalance, desiredAnnualSpending })!
+        .depletionAge !== null;
+    let lasts = 0;
+    let dries = 200_000;
+    // 40 halvings take a 200.000 bracket well below a cent.
+    for (let i = 0; i < 40; i += 1) {
+      const mid = (lasts + dries) / 2;
+      if (depletes(mid)) dries = mid;
+      else lasts = mid;
+    }
+    const breakEven = projectRetirement(withoutBalance)!.sustainableSpending!;
+    // The bracket is narrower than 200.000 / 2^40, so a 0,01 tolerance is
+    // orders of magnitude looser than the search's own accuracy.
+    expect(breakEven).toBeGreaterThanOrEqual(lasts - 0.01);
+    expect(breakEven).toBeLessThanOrEqual(dries + 0.01);
+    expect(depletes(breakEven)).toBe(false);
+    expect(depletes(breakEven + 0.01)).toBe(true);
+  });
+
+  it("is continuous as the balance approaches zero", () => {
+    // The old zero-balance branch dropped other income, so one dollar of
+    // starting balance moved this row by a whole 25.000 USD.
+    const none = projectRetirement({
+      ...BASE,
+      currentBalance: 0,
+      annualContribution: 0,
+    })!;
+    const adollar = projectRetirement({
+      ...BASE,
+      currentBalance: 1,
+      annualContribution: 0,
+    })!;
+    expect(adollar.sustainableSpending! - none.sustainableSpending!).toBeLessThan(
+      1,
+    );
+    expect(adollar.sustainableSpending!).toBeGreaterThan(
+      none.sustainableSpending!,
+    );
+  });
+
+  it("keeps the same convention when retirement is today", () => {
+    const result = projectRetirement({
+      ...BASE,
+      currentAge: 65,
+      retirementAge: 65,
+      currentBalance: 0,
+      annualContribution: 0,
+    })!;
+    expect(result.sustainableSpending).toBe(25_000);
+    expect(result.spendingShortfall).toBe(55_000);
   });
 });
 
