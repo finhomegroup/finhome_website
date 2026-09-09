@@ -205,10 +205,14 @@ Getting this wrong is the single most repeated defect in this suite's history: i
 ## 5. Verification
 
 ```bash
+pnpm gate                                  # the whole deploy gate, one command — see below
 pnpm test                                  # all suites
 pnpm exec tsc --noEmit                     # must be clean
-pnpm exec vitest run && pnpm exec next build   # exactly what Vercel runs
-pnpm lint                                  # see the baseline below
+pnpm check:lint                            # pnpm lint fails at baseline; this is the real pass/fail
+pnpm exec next build                       # static export to out/
+pnpm check:markup                          # rendered-markup contracts; run AFTER next build
+pnpm verify:commits [range] [--tests-only] # per-commit gate over a range, in a throwaway worktree
+pnpm lint                                  # see the baseline below — do not use this as pass/fail
 ```
 
 **`pnpm lint` fails at baseline and always has.** Exactly three pre-existing problems, none in this suite's files:
@@ -219,7 +223,15 @@ pnpm lint                                  # see the baseline below
 
 **Pass condition is "no NEW problems beyond those three", never "clean".** Do not fix those two files; they are outside this work.
 
-`vercel.json`'s `buildCommand` is `vitest run && next build`, so a failing test blocks deployment. Accepted trade-off: a red test also blocks deploys of unrelated content changes.
+**`pnpm gate`** (`vitest run && tsc --noEmit && pnpm check:lint && next build && pnpm check:markup`)
+is the one place this sequence is defined. `vercel.json`'s `buildCommand` and
+`.github/workflows/ci.yml` both call it, so the deploy gate and the PR-time gate cannot
+silently drift into checking different things. `scripts/verify-commits.mjs` is deliberately
+narrower — it walks arbitrary history, and `check:lint`/`check:markup` did not exist for most
+of this branch's commits — so its full mode runs vitest + tsc + build only; see its own top
+comment. A failing step anywhere in `pnpm gate` blocks deployment. Accepted trade-off: a red
+test also blocks deploys of unrelated content changes, and now so does a rendered-markup
+contract breach.
 
 **The build needs about 1,3 GB of free disk** for `.next` plus 125 MB for `out`. This machine ran out of space mid-session at 127 MiB free, which broke every tool call until `.next` and `out` were cleared. Both are gitignored and regenerable, so deleting them is the fix. If a verification step fails oddly, check `df -h /` first.
 
@@ -249,6 +261,38 @@ There is **no browser automation** in this environment. Every check above is a t
 - ~~The disclaimer is the one contract the primitives do NOT own.~~ `CalculatorPage` now owns both the disclaimer and the `usRules` wiring. Only applies to routes that use the shell; the six pre-shell pages still carry their own disclaimer inline, correctly, but by hand.
 - ~~`ResultGroup` has no `aria-live` opt-out.~~ It takes `live?: boolean` now.
 
+**Closed since the 2026-09-09 post-audit remediation:**
+
+- ~~No automated check on the accessibility markup.~~ `scripts/check-built-markup.mjs`
+  (`pnpm check:markup`) now asserts, on the built export: one disclaimer, one `<h1>`, both
+  JSON-LD blocks parsing with no placeholder, the share-card tags, canonical/sitemap
+  membership for live pages, `noindex`/sitemap-absence for planned placeholders, and exactly
+  the allowed number of `data-results-live="true"` regions. It strips `<script>` before
+  counting, for the reason recorded above. It also covers the hub, `/vision/`, `/blog/` and
+  every blog post for the share-card tags — the four pages the metadata fix (below) actually
+  touched, which otherwise had no standing guard at all. It is wired into the deploy gate.
+- ~~No PR-time CI.~~ `.github/workflows/ci.yml` runs the same gate (`pnpm gate`: tests,
+  typecheck, `check:lint`, build, `check:markup`) on every pull request and on push to `main`.
+- ~~Nothing enforces "one live region per page".~~ `components/calc/live-region.test.ts`
+  checks it at the source-text level and `ResultGroup`'s `data-results-live` attribute lets
+  `check-built-markup.mjs` check it again on the built HTML — both now require an EXACT match
+  against the allowed count, not just a ceiling. **This enforces the count each page is
+  allowed, not that the count is low** — see "still open" below; the widest live regions have
+  not shrunk.
+- ~~Four non-calculator pages ship a degraded or wrong share card.~~ (`/cong-cu/`, `/vision`,
+  `/blog`, blog posts.) `lib/seo.ts`'s `pageMetadata()` states `openGraph` and `twitter` in
+  full for every page, because Next replaces both objects wholesale rather than merging them.
+  All four pages now use it. See `scripts/check-built-markup.mjs`'s non-calculator-page check,
+  above, for the standing guard.
+- ~~The rental-tax threshold has no visible vintage, and the copy can drift from the
+  constant.~~ `/cong-cu/bat-dong-san-cho-thue/` now states the threshold, both rates, both
+  statutes and both in-force dates under the tax rows, and
+  `content/calculators/rental-property.test.ts` asserts every consumer-facing site that
+  quotes the threshold — the vintage notice, the help text under the input field, and the
+  FAQ answer — agrees with the exported `VN_RENTAL_TAX_DEFAULTS`. **The citations still need a
+  tax professional's sign-off** — see "needs a human" above; this closed the drift risk, not
+  the sign-off.
+
 **Still open:**
 
 - **Almost no component-level coverage, and this is where the worst bugs live.** There is no
@@ -263,17 +307,20 @@ There is **no browser automation** in this environment. Every check above is a t
   content file's own default strings with the same parser the component uses, call the
   module, format with the same formatter, and pin the result.
   See `components/calc/calculator-page.test.ts` for the pure-helper pattern that does work.
-- **No automated check on the accessibility markup.** The built-HTML greps are still run by
-  hand: one `Công cụ này chỉ mang tính minh họa` per page, exactly one `aria-live="polite"`
-  beyond the per-field ones, one `<h1>`, both JSON-LD blocks parsing as valid JSON, and
-  `og:image`/`twitter:title` present. Putting these in a script the build gate runs is the
-  single cheapest win left. (When counting in `out/*/index.html`, strip `<script>` first —
-  the RSC flight payload duplicates every string, so a raw grep reports 2 for everything.)
-- **No PR-time CI.** The `vercel.json` gate catches a broken build at deploy time, not at review time.
-- **Nothing enforces "one live region per page".** It is a convention plus a code comment; a grep in a build-gate script would make it real.
-- **`vercel.json` runs `vitest run && next build`, so a fix and its test pins must land in
-  the same commit.** Several assertions in this suite pinned a *wrong* value, so correcting
-  a module without correcting its test blocks deployment of unrelated work.
+- **The widest live regions have not been shrunk, and that is a real unresolved concern.**
+  `loan-calculator.tsx` announces a 9-row live region on every keystroke, then `biweekly` and
+  `loan-analysis` at 8, and `auto-loan`, `interest-only` and `price-adjust` at 7 — which, by
+  §4's own standard above, is "the same failure mode a live table is" for at least the top
+  three. `live-region.test.ts`'s `MAX_LIVE_ROWS = 9` is a ratchet at today's maximum, not an
+  endorsement: it stops a new page from making things worse, and deliberately does not lower
+  the ceiling. Deciding which rows a user "came for" versus which belong in a non-live
+  breakdown is an editorial judgement per page, and it changes rendered markup on six pages
+  whose built HTML has been treated as a regression gate — worth its own pass, not a
+  mechanical fix.
+- **`pnpm gate` runs `check:markup` after `next build`, so a fix, its test pins, AND any
+  rendered-markup contract must land in the same commit.** Several assertions in this suite
+  pinned a *wrong* value, so correcting a module without correcting its test blocks
+  deployment of unrelated work; the same is now true of a rendered-HTML contract.
 
 **Deferred minors** are recorded in `.superpowers/sdd/2026-09-06-sp0-calculator-foundation/progress.md` if that directory still exists (it is git-ignored scratch).
 
