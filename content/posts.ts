@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "nhieu-ngan-hang-ha-lai-suat-cho-vay-mua-nha",
+    title: "Nhiều ngân hàng hạ lãi suất cho vay mua nhà sau thời gian neo cao",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Từ cuối tháng 8, đầu tháng 9, nhiều ngân hàng đã tung chương trình ưu đãi mới giảm lãi suất cho vay mua nhà hơn 1%/năm, tạo cơ hội cho người mua trong bối cảnh thị trường vẫn còn nhiều thách thức.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nhieu-ngan-hang-ha-lai-suat-cho-vay-mua-nha.jpg",
+    date: "2026-09-09",
+    source: {
+        "name": "vtcnews.vn",
+        "url": "https://vtcnews.vn/nhieu-ngan-hang-ha-lai-suat-cho-vay-mua-nha-ar1038433.html",
+        "accessed": "2026-09-09"
+      },
+  },
+  {
     slug: "nha-xa-hoi-hai-phong-mo-ban-545-trieu",
     title: "Nhà xã hội Hải Phòng dự kiến mở bán từ 545 triệu đồng, giá tạm tính hơn 15 triệu/m²",
     category: "Nhà ở xã hội",
