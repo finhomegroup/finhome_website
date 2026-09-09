@@ -474,7 +474,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "IRA truyền thống hay Roth",
     summary: "So sánh hai loại tài khoản hưu trí cá nhân, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
