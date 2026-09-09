@@ -255,6 +255,9 @@ export function RentalPropertyCalculator() {
           label={C.form.taxLabel}
           value={money(result?.rentalTaxPerYear)}
         />
+        <p className="mt-3 text-xs leading-relaxed text-ink-3">
+          {C.taxVintageNotice}
+        </p>
         <ResultRow
           label={C.form.taxableLabel}
           value={

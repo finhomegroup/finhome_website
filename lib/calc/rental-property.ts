@@ -120,6 +120,27 @@ export type RentalPropertyResult = {
 };
 
 /**
+ * The prefilled Vietnamese rental-tax parameters.
+ *
+ * Exported so the copy can quote them and a test can assert the two agree —
+ * this figure was prefilled at 100 triệu through two revisions
+ * (100 → 200 → 500), and the copy kept saying 100 while the law did not.
+ * See content/calculators/rental-property.test.ts.
+ *
+ * Numbers only: the statute names are user-facing text and belong in
+ * content/. All three are INPUTS on the page, so a revision is a one-line
+ * change here plus the copy the test forces you to update.
+ */
+export const VN_RENTAL_TAX_DEFAULTS = {
+  /** Luật 149/2025/QH15 (GTGT, 01/01/2026); Luật Thuế TNCN 109/2025/QH15 (01/07/2026). */
+  thresholdPerYear: 500_000_000,
+  /** On ALL collected revenue once the threshold is passed — a cliff. */
+  vatPercent: 5,
+  /** On the revenue ABOVE the threshold only — a taper. */
+  pitPercent: 5,
+} as const;
+
+/**
  * Assess a rental property.
  *
  * Null when the inputs cannot describe one: a non-positive price, a negative
@@ -142,13 +163,9 @@ export function computeRentalProperty(
     monthlyRent,
     vacancyPercent = 0,
     monthlyExpenses = 0,
-    vatPercent = 5,
-    pitPercent = 5,
-    // Luật 149/2025/QH15 (GTGT, hiệu lực 01/01/2026) và Luật Thuế TNCN
-    // 109/2025/QH15 (hiệu lực 01/07/2026) đều chốt 500 triệu ₫/năm. An input
-    // rather than a constant: this figure has been revised more than once
-    // (100 → 200 → 500 triệu) and a static page cannot know the current one.
-    taxThresholdPerYear = 500_000_000,
+    vatPercent = VN_RENTAL_TAX_DEFAULTS.vatPercent,
+    pitPercent = VN_RENTAL_TAX_DEFAULTS.pitPercent,
+    taxThresholdPerYear = VN_RENTAL_TAX_DEFAULTS.thresholdPerYear,
   } = input;
 
   const numbers = [

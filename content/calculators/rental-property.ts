@@ -146,6 +146,9 @@ export const RENTAL_PROPERTY = {
   fourNumbersNotice:
     "Với các con số mặc định, căn hộ này có tỷ suất gộp 6,00% và cap rate 4,90% — nghe như một khoản đầu tư ổn. Nhưng tỷ suất trên vốn tự có là −3,51% và DSCR là 0,76: tiền thuê chỉ bù được khoảng ba phần tư khoản trả nợ, nên mỗi tháng bạn phải bỏ thêm 3.945.067 ₫ từ thu nhập khác. Căn nhà có lãi; người mua thì không. Đây là điều mà tỷ suất gộp không bao giờ cho bạn thấy, và là lý do cần đọc cả bốn dòng.",
 
+  taxVintageNotice:
+    "Mức thuế trên đang tính theo ngưỡng 500.000.000 ₫ doanh thu mỗi năm: thuế GTGT 5% trên toàn bộ doanh thu khi vượt ngưỡng, và thuế TNCN 5% chỉ trên phần vượt ngưỡng. Ngưỡng này theo Luật 149/2025/QH15 (thuế GTGT, hiệu lực 01/01/2026) và Luật Thuế TNCN 109/2025/QH15 (hiệu lực 01/07/2026). Ngưỡng đã đổi nhiều lần — từ 100 lên 200 rồi lên 500 triệu — nên nếu bạn đọc trang này về sau, hãy tra lại con số hiện hành rồi nhập vào ô ngưỡng.",
+
   formula: {
     title: "Bốn con số nghĩa là gì",
     body: [
