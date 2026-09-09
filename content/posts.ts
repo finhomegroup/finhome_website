@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "phat-cho-thue-nha-o-xa-hoi-sai-doi-tuong-160-trieu",
+    title: "Bán, cho thuê nhà ở xã hội sai đối tượng bị phạt tới 160 triệu đồng",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Việc mua bán, sang nhượng hoặc cho thuê nhà ở xã hội không đúng đối tượng không chỉ bị phạt tiền tới 160 triệu đồng mà còn bị cưỡng chế thu hồi nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/phat-cho-thue-nha-o-xa-hoi-sai-doi-tuong-160-trieu.jpg",
+    date: "2026-09-09",
+    source: {
+        "name": "cafeland.vn",
+        "url": "https://cafeland.vn/kien-thuc/ban-cho-thue-nha-o-xa-hoi-khong-dung-doi-tuong-co-the-bi-phat-toi-160-trieu-dong-154788.html",
+        "accessed": "2026-09-09"
+      },
+  },
+  {
     slug: "bo-nguyen-tac-thi-truong-dinh-gia-dat-gia-nha-ha-nhiet",
     title: "Bỏ nguyên tắc thị trường khi định giá đất: Giá nhà có hạ nhiệt?",
     category: "Chính sách",
