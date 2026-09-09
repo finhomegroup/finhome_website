@@ -458,7 +458,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân tích thu nhập hưu trí",
     summary: "Các nguồn thu nhập sau khi nghỉ hưu, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {

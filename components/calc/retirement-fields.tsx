@@ -7,11 +7,17 @@ import { parseCount, parseDecimal, parseMoney } from "@/lib/calc/number";
 import type { RetirementInput } from "@/lib/calc/retirement";
 
 /**
- * The shared input block for the five retirement projection pages.
+ * The shared input block for the four retirement projection pages.
  *
- * Extracted because five pages read the SAME eleven inputs off the same
- * engine. `docs/calculator-suite-status.md` §3 says the third tool to need
- * a repeated primitive should extract it; this is the fifth.
+ * Extracted because four pages read the SAME eleven inputs off the same
+ * engine — `ke-hoach-huu-tri`, `tinh-huu-tri`, `thu-nhap-huu-tri` and
+ * `phan-tich-tiet-kiem-huu-tri`. `docs/calculator-suite-status.md` §3 says
+ * the third tool to need a repeated primitive should extract it.
+ *
+ * `phan-tich-thu-nhap-huu-tri` was expected to be the fifth and is not: it
+ * needs a per-source indexation rate that `retirement.ts` does not model, so
+ * it has its own engine and its own fields. Its divergence is the point of
+ * that page, not an oversight — see `lib/calc/retirement-income-sources.ts`.
  *
  * Two fields are optional, because two of the pages SOLVE for them rather
  * than asking: `tinh-huu-tri` solves the contribution, and `thu-nhap-huu-tri`
