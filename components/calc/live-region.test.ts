@@ -17,20 +17,17 @@
 //     loan-analysis), then 7 (auto-loan, interest-only, price-adjust)
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
+import { MULTI_LIVE_ALLOWLIST } from "./multi-live-allowlist.mjs";
 
 const COMPONENT_DIR = "components";
 
-/**
- * Pages allowed more than one live results region, with the reason.
- *
- * `rule-of-72` stacks two INDEPENDENT tools — rate→years and years→rate —
- * each with its own single input and its own two output rows. Typing in one
- * field changes only its own region, so each announcement is two rows. Merging
- * them into one region would announce four rows for a change that affected
- * two, which is worse. This is a real exception to the convention, not a
- * defect; anything added here needs its own reason on the same footing.
- */
-const MULTI_LIVE_ALLOWLIST = new Set(["rule-of-72-calculator.tsx"]);
+// Pages allowed more than one live results region, and why, live in
+// ./multi-live-allowlist.mjs — shared verbatim with
+// scripts/check-built-markup.mjs, which enforces the built-HTML side of the
+// same exception. Keyed here by component filename.
+const limitByFilename = new Map(
+  MULTI_LIVE_ALLOWLIST.map((e) => [e.filename, e.limit]),
+);
 
 /**
  * Ceiling on rows in a single live region — a RATCHET at the current maximum,
@@ -93,7 +90,7 @@ describe("the live-region conventions", () => {
       const live = resultGroups(
         readFileSync(`${COMPONENT_DIR}/${file}`, "utf8"),
       ).filter((g) => g.live);
-      const limit = MULTI_LIVE_ALLOWLIST.has(file) ? 2 : 1;
+      const limit = limitByFilename.get(file) ?? 1;
       expect(
         live.length,
         `${file} has ${live.length} live ResultGroups (limit ${limit})`,
@@ -103,13 +100,13 @@ describe("the live-region conventions", () => {
 
   it("keeps the allowlist honest — an entry that no longer needs it is removed", () => {
     // Prevents the allowlist becoming a place defects hide.
-    for (const file of MULTI_LIVE_ALLOWLIST) {
+    for (const { filename } of MULTI_LIVE_ALLOWLIST) {
       const live = resultGroups(
-        readFileSync(`${COMPONENT_DIR}/${file}`, "utf8"),
+        readFileSync(`${COMPONENT_DIR}/${filename}`, "utf8"),
       ).filter((g) => g.live);
       expect(
         live.length,
-        `${file} is allowlisted but now has ${live.length} live group(s) — drop it from MULTI_LIVE_ALLOWLIST`,
+        `${filename} is allowlisted but now has ${live.length} live group(s) — drop it from MULTI_LIVE_ALLOWLIST`,
       ).toBeGreaterThan(1);
     }
   });

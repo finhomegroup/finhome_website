@@ -4,20 +4,19 @@
 //
 // Run AFTER `next build`. Reads out/ and content/calculators/registry.ts.
 import { readFileSync, existsSync } from "node:fs";
+import { MULTI_LIVE_ALLOWLIST } from "../components/calc/multi-live-allowlist.mjs";
 
 const OUT = "out";
 const DISCLAIMER = "Công cụ này chỉ mang tính minh họa";
 const SITE_TITLE = "FinHome — Mua nhà an toàn, sống an yên";
 
-/**
- * Built-slug side of components/calc/live-region.test.ts's
- * MULTI_LIVE_ALLOWLIST. `quy-tac-72` is rule-of-72-calculator.tsx, which
- * stacks two independent tools — rate→years and years→rate — each with its
- * own live summary. That test file documents the full reasoning; this is the
- * same, already-decided exception, not a new one, so it must stay in sync
- * with that allowlist rather than grow independently.
- */
-const MULTI_LIVE_ALLOWLIST = new Set(["quy-tac-72"]);
+// Pages allowed more than one live results region, and why, live in
+// components/calc/multi-live-allowlist.mjs — shared verbatim with
+// components/calc/live-region.test.ts, which enforces the source side of the
+// same exception. Keyed here by route slug.
+const liveLimitBySlug = new Map(
+  MULTI_LIVE_ALLOWLIST.map((e) => [e.slug, e.limit]),
+);
 
 const problems = [];
 const fail = (slug, contract, detail) =>
@@ -76,7 +75,7 @@ for (const slug of live) {
   if (disc !== 1) fail(slug, "one disclaimer", `found ${disc}`);
 
   const liveRegions = count(markup, 'data-results-live="true"');
-  const liveLimit = MULTI_LIVE_ALLOWLIST.has(slug) ? 2 : 1;
+  const liveLimit = liveLimitBySlug.get(slug) ?? 1;
   if (liveRegions !== liveLimit)
     fail(
       slug,
