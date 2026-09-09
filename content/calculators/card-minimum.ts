@@ -4,7 +4,8 @@
 //
 // Figures quoted below are the tool's own output for 50 triệu at 30%/năm với
 // mức tối thiểu 5% và sàn 500.000 ₫, read off the module: 90 tháng (7,5 năm),
-// tổng lãi 43.091.470 ₫ tức 86,2% dư nợ, khoản trả đầu 2.563.261 ₫. Trả ĐÚNG
+// tổng lãi 43.091.470 ₫ tức 86,2% dư nợ, khoản trả đầu 2.563.261 ₫ — tức 5%
+// của dư nợ cuối kỳ đầu tiên, 51.265.229,61 ₫ (hiển thị 51.265.230 ₫). Trả ĐÚNG
 // con số 2.563.261 ₫ đó mỗi tháng nhưng CỐ ĐỊNH: chỉ 28 tháng và lãi
 // 19.799.257 ₫ — nhanh hơn hơn ba lần, lãi thấp hơn một nửa. Thêm 1 triệu mỗi
 // tháng trên mức tối thiểu: 31 tháng, lãi 17.800.490 ₫.
@@ -90,7 +91,7 @@ export const CARD_MINIMUM = {
     title: "Cách tính",
     body: [
       "Lãi mỗi tháng = dư nợ × ((1 + lãi suất năm ÷ 365)^(365 ÷ 12) − 1), vì lãi thẻ cộng theo ngày. Thẻ 30%/năm tương đương 2,5305% một tháng.",
-      "Mức tối thiểu = phần trăm × dư nợ CUỐI KỲ, tức dư nợ đã cộng lãi của tháng đó, và không thấp hơn mức sàn. Đây đúng là cách sao kê tính, nên mức tối thiểu tháng đầu của 50 triệu ở 30%/năm là 5% × 51.265.222 = 2.563.261 ₫, không phải 5% × 50 triệu.",
+      "Mức tối thiểu = phần trăm × dư nợ CUỐI KỲ, tức dư nợ đã cộng lãi của tháng đó, và không thấp hơn mức sàn. Đây đúng là cách sao kê tính, nên mức tối thiểu tháng đầu của 50 triệu ở 30%/năm là 5% × 51.265.229,61 = 2.563.261 ₫, không phải 5% × 50 triệu.",
       "Vì mức tối thiểu là một tỷ lệ của dư nợ, nó co lại cùng dư nợ. Phần trả vào gốc mỗi tháng do đó cũng co lại, và tốc độ giảm nợ chậm dần theo thời gian — đây là lý do toán học của việc trả tối thiểu mất nhiều năm.",
       "Chính MỨC SÀN mới dứt điểm được món nợ. Khi dư nợ đã nhỏ, 5% của nó thấp hơn mức sàn, nên khoản trả dừng co lại và phần trả vào gốc bắt đầu tăng trở lại. Nếu thẻ không có mức sàn và tỷ lệ tối thiểu thấp hơn lãi suất tháng, món nợ không bao giờ hết — công cụ trả về trạng thái không có kết quả trong trường hợp đó.",
       "Phần so sánh lấy đúng mức tối thiểu của tháng đầu và mô phỏng lại như một khoản trả cố định. Hai bên khởi đầu bằng cùng một số tiền, nên chênh lệch kết quả hoàn toàn đến từ việc một bên hạ mức trả theo dư nợ và bên kia thì không.",

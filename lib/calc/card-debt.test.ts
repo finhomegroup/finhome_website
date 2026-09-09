@@ -4,6 +4,7 @@ import {
   payMinimum,
   paymentForMonths,
 } from "@/lib/calc/card-debt";
+import { parseMoney } from "@/lib/calc/number";
 
 // 50 triệu on a card at 30%/năm — a realistic Vietnamese card rate.
 const BALANCE = 50_000_000;
@@ -36,11 +37,18 @@ function minimum(
 describe("payFixed — the schedule", () => {
   it("clears the balance to exactly zero", () => {
     const result = fixed(3_000_000);
-    expect(result.schedule[result.schedule.length - 1].balance).toBeCloseTo(
-      0,
-      6,
-    );
+    expect(result.schedule[result.schedule.length - 1].balance).toBe(0);
     expect(result.months).toBe(result.schedule.length);
+  });
+
+  it("never ends on a phantom month that renders as 0 ₫", () => {
+    // A residue below half a đồng is settled, so no extra row is appended and
+    // the last payment is always a real amount a statement could show.
+    for (const payment of [1_500_000, 2_000_000, 3_000_000, 5_000_000]) {
+      const result = fixed(payment);
+      expect(result.lastPayment).toBeGreaterThan(1);
+      expect(result.schedule.at(-1)!.balance).toBe(0);
+    }
   });
 
   it("keeps interest + principal === payment on every row", () => {
@@ -133,6 +141,10 @@ describe("payFixed — how much you pay changes everything", () => {
     expect(payFixed({ ...good, annualRatePercent: -1 })).toBeNull();
     expect(payFixed({ ...good, monthlyPayment: -1 })).toBeNull();
     expect(payFixed({ ...good, balance: Number.NaN })).toBeNull();
+    // A balance the settlement band already calls settled is not a debt, and
+    // must not produce an empty schedule.
+    expect(payFixed({ ...good, balance: 0.4 })).toBeNull();
+    expect(payFixed({ ...good, balance: 1 })!.months).toBe(1);
   });
 });
 
@@ -185,10 +197,38 @@ describe("payMinimum — the shrinking payment", () => {
   it("clears with a floor even when the percentage is too small", () => {
     const result = minimum({ minimumPercent: 2, minimumFloor: 2_000_000 });
     expect(result.months).toBeGreaterThan(0);
-    expect(result.schedule[result.schedule.length - 1].balance).toBeCloseTo(
-      0,
-      6,
-    );
+    expect(result.schedule[result.schedule.length - 1].balance).toBe(0);
+  });
+
+  it("stops the month the balance is settled, not a month later", () => {
+    // The same phantom-month defect as payFixed: with a high minimum the last
+    // month's payment is capped at the whole amount due, which clears the
+    // balance to float noise rather than 0, and an unbanded loop then reported
+    // one month too many with a final payment that rendered "0 ₫". Hand check
+    // for 93%: month 1 pays 93% of 51.265.229,61 and leaves 3.588.566,07;
+    // month 2 leaves 257.556; month 3's amount due of 264.073,48 is below the
+    // 500.000 ₫ floor, so the floor pays the lot and the card is clear.
+    for (const [percent, expected] of [
+      [37, 12],
+      [66, 6],
+      [93, 3],
+    ] as const) {
+      const result = minimum({ minimumPercent: percent });
+      expect(result.months).toBe(expected);
+      expect(result.lastPayment).toBeGreaterThan(1);
+      expect(result.schedule.at(-1)!.balance).toBe(0);
+    }
+  });
+
+  it("does not report a century of payments on a floorless card", () => {
+    // Without a floor the minimum shrinks geometrically and the balance never
+    // reaches exactly 0, so "months" is band-defined: it is the month the
+    // balance drops below half a đồng, i.e. below anything a statement can
+    // show. The unbanded loop instead chased float noise for 1108 months.
+    const result = minimum({ minimumPercent: 51, minimumFloor: 0 });
+    expect(result.months).toBe(27);
+    expect(result.months).toBeLessThan(60);
+    expect(result.schedule.at(-1)!.balance).toBe(0);
   });
 
   it("takes a very long time on a high rate with a 5% minimum", () => {
@@ -231,18 +271,53 @@ describe("payMinimum — the shrinking payment", () => {
     expect(payMinimum({ ...good, minimumFloor: -1 })).toBeNull();
     expect(payMinimum({ ...good, extraPerMonth: -1 })).toBeNull();
     expect(payMinimum({ ...good, balance: Number.NaN })).toBeNull();
+    expect(payMinimum({ ...good, balance: 0.4 })).toBeNull();
+    expect(payMinimum({ ...good, balance: 1 })!.months).toBe(1);
   });
 });
 
 describe("paymentForMonths", () => {
   it("round-trips against payFixed", () => {
-    for (const months of [6, 12, 24, 36]) {
+    // The exact annuity payment leaves float noise, not zero, at month n, so
+    // without a settlement band payFixed ran a phantom month and reported
+    // n + 1. 18 is the case the page itself offers; 240/300/360 are the
+    // realistic long terms. This list turns red on the unbanded loop
+    // ("expected 19 to be 18").
+    for (const months of [
+      1, 2, 3, 4, 6, 7, 10, 12, 18, 24, 25, 36, 48, 60, 120, 240, 300, 360,
+    ]) {
       const payment = paymentForMonths({
         balance: BALANCE,
         annualRatePercent: RATE,
         months,
       })!;
-      expect(fixed(payment).months).toBe(months);
+      const result = fixed(payment);
+      expect(result.months).toBe(months);
+      // The last month is a FULL payment, not a "0 ₫" phantom.
+      expect(result.lastPayment).toBeCloseTo(payment, 2);
+      // …and the schedule ends on exactly zero, by construction.
+      expect(result.schedule.at(-1)!.balance).toBe(0);
+    }
+  });
+
+  it("keeps the payoff identity on every round-tripped term", () => {
+    // Absorbing the residue into the final row is what keeps sum(payments)
+    // equal to totalPaid; dropping it instead drifts to ~7,5e-5 ₫.
+    for (const months of [7, 18, 25, 120, 360]) {
+      const payment = paymentForMonths({
+        balance: BALANCE,
+        annualRatePercent: RATE,
+        months,
+      })!;
+      const result = fixed(payment);
+      const paid = result.schedule.reduce((sum, row) => sum + row.payment, 0);
+      // Measured worst error across n = 1..400 is 4,7e-6 ₫; assert an order
+      // above that rather than an arbitrary decimal count.
+      expect(Math.abs(paid - result.totalPaid)).toBeLessThan(1e-4);
+      expect(result.schedule.at(-1)!.interest + result.schedule.at(-1)!.principal).toBeCloseTo(
+        result.lastPayment,
+        6,
+      );
     }
   });
 
@@ -277,5 +352,127 @@ describe("paymentForMonths", () => {
     expect(paymentForMonths({ ...good, months: 12.5 })).toBeNull();
     expect(paymentForMonths({ ...good, annualRatePercent: -1 })).toBeNull();
     expect(paymentForMonths({ ...good, balance: Number.NaN })).toBeNull();
+  });
+
+  it("rejects a settled balance on the same terms as payFixed", () => {
+    // The page's second mode solves the payment here and then simulates it
+    // with payFixed, so the two guards must agree: with only payFixed banding
+    // the balance, a sub-đồng dư nợ produced a quoted payment (0,039 ₫,
+    // rendered "0 ₫") for a schedule payFixed refused to build.
+    // parseMoney is what makes that input reachable from the form.
+    expect(parseMoney("0,4")).toBe(0.4);
+    for (const balance of [0.4, 0.5]) {
+      const solved = paymentForMonths({
+        balance,
+        annualRatePercent: RATE,
+        months: 12,
+      });
+      const simulated = payFixed({
+        balance,
+        annualRatePercent: RATE,
+        monthlyPayment: 1_000_000,
+      });
+      expect(solved).toBeNull();
+      expect(simulated).toBeNull();
+    }
+    // Just above the band both sides agree the other way: a real, if silly,
+    // debt with a real schedule.
+    const solved = paymentForMonths({
+      balance: 1,
+      annualRatePercent: RATE,
+      months: 12,
+    });
+    expect(solved).not.toBeNull();
+    expect(
+      payFixed({
+        balance: 1,
+        annualRatePercent: RATE,
+        monthlyPayment: solved!,
+      }),
+    ).not.toBeNull();
+  });
+});
+
+describe("the settlement band's measured envelope", () => {
+  // Helper: solve the exact annuity payment for `months`, then simulate it.
+  const roundTrip = (balance: number, rate: number, months: number) => {
+    const payment = paymentForMonths({
+      balance,
+      annualRatePercent: rate,
+      months,
+    })!;
+    const result = payFixed({
+      balance,
+      annualRatePercent: rate,
+      monthlyPayment: payment,
+    })!;
+    expect(result).not.toBeNull();
+    return { payment, result };
+  };
+
+  it("is exact at the worst cases the band comment names", () => {
+    // The residue the band absorbs is a share of the balance, so the worst
+    // case sits at the corner of each envelope, not at the page defaults:
+    // 0,384 ₫ at 5 tỷ / 50%/năm / 299 tháng (worst over the whole balance
+    // range at terms <= 300) and 0,496 ₫ at 100 triệu / 50%/năm / 398 tháng
+    // (worst for balances <= 100 triệu at terms <= 400). Both are under the
+    // 0,5 ₫ band, so both must land on the intended month. Asserting only the
+    // page's own 50 triệu / 30% cases, as the round-trip test above does,
+    // never reaches either.
+    for (const [balance, rate, months] of [
+      [5_000_000_000, 50, 299],
+      [5_000_000_000, 50, 300],
+      [100_000_000, 50, 398],
+      [100_000_000, 50, 400],
+      [50_000_000, 50, 400],
+    ] as const) {
+      const { payment, result } = roundTrip(balance, rate, months);
+      expect(result.months).toBe(months);
+      expect(result.schedule.at(-1)!.balance).toBe(0);
+      // The final row absorbs the residue, which inside this envelope the
+      // band caps at 0,5 ₫ — so the last payment is the full instalment to
+      // within a đồng, never a "0 ₫" phantom.
+      expect(Math.abs(result.lastPayment - payment)).toBeLessThan(1);
+    }
+  });
+
+  it("runs exactly one month long above the band's documented ceiling", () => {
+    // Pinned deliberately: this is the limitation `SETTLED_BALANCE_DONG`
+    // records, not desired behaviour. A fixed 0,5 ₫ band cannot absorb a
+    // residue that scales with the balance, so at 5 tỷ / 50%/năm the round
+    // trip starts reporting n + 1 from n = 316 (residue 0,571 ₫). If a future
+    // band change clears this region, THIS test is what tells you — update it
+    // and the comment together.
+    expect(roundTrip(5_000_000_000, 50, 315).result.months).toBe(315);
+    expect(roundTrip(5_000_000_000, 50, 316).result.months).toBe(317);
+    // Sporadic, not a cutoff: 317 is exact again.
+    expect(roundTrip(5_000_000_000, 50, 317).result.months).toBe(317);
+    // And the overshoot is never more than one month, even at the far corner
+    // of the swept range, where the phantom month renders as "19 ₫" in place
+    // of a 212.585.911 ₫ instalment.
+    const far = roundTrip(5_000_000_000, 50, 400);
+    expect(far.result.months).toBe(401);
+    expect(far.result.lastPayment).toBeLessThan(100);
+    expect(far.result.schedule[399].payment).toBeCloseTo(far.payment, 6);
+  });
+
+  it("holds everywhere below that ceiling in a swept sample", () => {
+    // A thinned sweep of the same grid the band comment quotes (the full grid
+    // is 122.400 combinations; this is every 7th rate and every 23rd term).
+    // Nothing in it may be off by a month.
+    let checked = 0;
+    for (const balance of [
+      100_000, 10_000_000, 50_000_000, 500_000_000, 5_000_000_000,
+    ]) {
+      for (let rate = 0; rate <= 50; rate += 7) {
+        for (let months = 1; months <= 300; months += 23) {
+          const { result } = roundTrip(balance, rate, months);
+          expect(result.months).toBe(months);
+          expect(result.schedule.at(-1)!.balance).toBe(0);
+          checked += 1;
+        }
+      }
+    }
+    expect(checked).toBe(5 * 8 * 14);
   });
 });

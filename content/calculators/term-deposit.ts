@@ -9,12 +9,16 @@
 //    5,5%/năm earns 2,75% of the principal, not (1 + 0,055/12)^6 − 1.
 //    Compounding only happens at rollover, if the interest is rolled in.
 // 2. Breaking a term deposit early does not give a reduced term rate; it
-//    gives the DEMAND rate on the whole period. On the defaults that is
-//    750.000 ₫ instead of 20.625.000 ₫ — a loss of 19.875.000 ₫.
+//    gives the DEMAND rate on the whole of the UNFINISHED term. On the
+//    defaults that is 750.000 ₫ instead of 20.625.000 ₫ — a loss of
+//    19.875.000 ₫. Terms that already matured and rolled over are settled
+//    money and keep their term interest, so breaking exactly on a maturity
+//    date loses nothing.
 //
 // Figures below are the tool's own output for 500 triệu, 5,5%/năm, 12 tháng:
 // lãi 27.500.000 ₫, cuối kỳ 527.500.000 ₫. Ba kỳ tái tục có nhập lãi vào gốc:
-// 587.120.687,50 ₫; rút lãi mỗi kỳ: 582.500.000 ₫.
+// 587.120.687,50 ₫; rút lãi mỗi kỳ: 582.500.000 ₫. Gốc ở kỳ cuối của ba kỳ
+// tái tục có nhập lãi: 556.512.500 ₫ (= 500.000.000 × 1,055²).
 //
 // Rate levels quoted in the FAQ are ranges, deliberately, and the copy says
 // they move — the site is a static export and cannot know today's board rate.
@@ -82,7 +86,7 @@ export const TERM_DEPOSIT = {
 
     breakLabel: "Rút sau bao nhiêu tháng",
     breakHelp:
-      "Để trống nếu bạn không cần xem phần này. Phải nhỏ hơn hoặc bằng tổng số tháng gửi.",
+      "Để trống nếu bạn không cần xem phần này. Phải nhỏ hơn hoặc bằng tổng số tháng gửi. Rút đúng ngày đến hạn của một kỳ thì không bị áp lãi không kỳ hạn.",
     breakInvalid:
       "Vui lòng nhập số tháng lớn hơn 0 và không vượt tổng số tháng gửi.",
     defaultBreak: "9",
@@ -115,7 +119,7 @@ export const TERM_DEPOSIT = {
   },
 
   earlyWithdrawalNotice:
-    "Điều đắt nhất của tiền gửi có kỳ hạn không nằm ở lãi suất mà ở điều khoản rút trước hạn: bạn không được nhận một phần lãi kỳ hạn, bạn được nhận lãi KHÔNG KỲ HẠN trên toàn bộ thời gian đã gửi — thường 0,1–0,2%/năm. Với 500 triệu gửi 12 tháng ở 5,5% mà rút ở tháng thứ 9, bạn nhận 750.000 ₫ thay vì 20.625.000 ₫, tức mất 19.875.000 ₫. Vì vậy hãy chia tiền thành nhiều sổ kỳ hạn khác nhau, đừng gửi toàn bộ vào một sổ dài hạn.",
+    "Điều đắt nhất của tiền gửi có kỳ hạn không nằm ở lãi suất mà ở điều khoản rút trước hạn: bạn không được nhận một phần lãi kỳ hạn, bạn được nhận lãi KHÔNG KỲ HẠN trên toàn bộ thời gian của kỳ hạn đang dở — thường 0,1–0,2%/năm. Những kỳ đã đến hạn và tái tục thì đã được trả lãi theo kỳ hạn, nên phần đó không mất. Với 500 triệu gửi 12 tháng ở 5,5% mà rút ở tháng thứ 9, bạn nhận 750.000 ₫ thay vì 20.625.000 ₫, tức mất 19.875.000 ₫. Vì vậy hãy chia tiền thành nhiều sổ kỳ hạn khác nhau, đừng gửi toàn bộ vào một sổ dài hạn.",
 
   formula: {
     title: "Cách tính",
@@ -124,7 +128,7 @@ export const TERM_DEPOSIT = {
       "Cách nhận lãi không đổi tổng lãi của một kỳ hạn, chỉ đổi thời điểm nhận. Lãi mỗi lần nhận = gốc × lãi suất năm × số tháng mỗi lần ÷ 12. Ngân hàng thường niêm yết lãi suất trả lãi hằng tháng thấp hơn lãi cuối kỳ một chút — đó là mức lãi suất khác, nên hãy nhập đúng mức của sản phẩm bạn chọn.",
       "Ghép lãi chỉ xảy ra ở thời điểm tái tục, và chỉ khi bạn nhập lãi vào gốc. Ba kỳ hạn 12 tháng liên tiếp có nhập lãi vào gốc cho 500.000.000 × 1,055³ = 587.120.687,50 ₫; rút lãi mỗi kỳ chỉ cho 582.500.000 ₫ — chênh 4.620.687,50 ₫.",
       "Lãi suất thực theo năm là mức lãi kép hằng năm tương đương với kết quả cuối cùng. Nó bằng đúng lãi suất niêm yết với một kỳ hạn 12 tháng, cao hơn khi bạn tái tục có nhập lãi, và THẤP HƠN khi bạn gửi một kỳ hạn dài hơn 12 tháng — vì lãi đơn trong kỳ hạn 24 tháng kém hơn ghép lãi hai lần 12 tháng.",
-      "Phần rút trước hạn tính lãi thực nhận = gốc × lãi suất không kỳ hạn × số tháng đã gửi ÷ 12, và đặt cạnh mức lãi mà kỳ hạn đáng ra mang lại trong cùng số tháng đó. Chênh lệch giữa hai con số là thiệt hại.",
+      "Phần rút trước hạn tính lãi thực nhận = lãi của các kỳ đã đến hạn (theo lãi suất kỳ hạn, có ghép lãi nếu bạn nhập lãi vào gốc) + gốc đang chạy ở kỳ dở × lãi suất không kỳ hạn × số tháng đã gửi trong kỳ đó ÷ 12, rồi đặt cạnh mức lãi mà kỳ hạn đáng ra mang lại trong cùng số tháng đó. Chênh lệch giữa hai con số là thiệt hại. Rút đúng ngày đến hạn của một kỳ thì không mất gì. Ví dụ ba kỳ 12 tháng có nhập lãi mà rút ở tháng thứ 30: nhận 57.069.013 ₫, thiệt hại 14.747.581 ₫ — chỉ là phần của kỳ thứ ba, không phải của cả 30 tháng.",
     ],
   },
 

@@ -23,9 +23,16 @@
  *
  * The early-withdrawal figures are the reason this module is worth more than
  * a multiplication. Break a Vietnamese term deposit early and you do not get
- * a reduced term rate — you get the DEMAND rate (lãi suất không kỳ hạn), on
- * the whole period, typically 0,1–0,2%/năm. That turns a 6%/năm deposit into
- * near-nothing, and it is the single most expensive surprise in the product.
+ * a reduced term rate — you get the DEMAND rate (lãi suất không kỳ hạn),
+ * typically 0,1–0,2%/năm, on the whole of the UNFINISHED term. That turns a
+ * 6%/năm deposit into near-nothing, and it is the single most expensive
+ * surprise in the product.
+ *
+ * A term that has already reached maturity is a different matter: it is
+ * settled money and keeps its term interest, even if the proceeds were rolled
+ * into the next term (SBV Thông tư 04/2022/TT-NHNN Art. 5). So breaking a
+ * three-cycle deposit at month 30 of 36 loses only the six months run inside
+ * the third term — and breaking it exactly on a maturity date loses nothing.
  */
 
 export type DepositPayout =
@@ -66,7 +73,11 @@ export type TermDepositResult = {
   totalInterest: number;
   /** `principal + totalInterest`. */
   totalValue: number;
-  /** Principal at work in the final term — grown only if compounding. */
+  /**
+   * Principal at work in the final term — grown only if compounding. This is
+   * the balance the last term OPENS with, so it excludes that term's own
+   * interest and is strictly below `totalValue` whenever interest is rolled in.
+   */
   finalPrincipal: number;
   /** Whether interest was actually rolled into the principal. */
   compounded: boolean;
@@ -78,10 +89,16 @@ export type TermDepositResult = {
   effectiveAnnualPercent: number;
   /**
    * Interest actually received if the deposit is broken after
-   * `breakAfterMonths`, at the demand rate. Null when no break was asked about.
+   * `breakAfterMonths`: the term interest of every cycle that already matured
+   * (compounded if it was rolled in), plus the demand rate on the months run
+   * inside the unfinished term. Null when no break was asked about.
    */
   earlyInterest: number | null;
-  /** Interest the term rate would have earned over the same months, pro rata. */
+  /**
+   * What the deposit would have earned had it run normally to that month: the
+   * same matured-cycle interest, plus the TERM rate on the months run inside
+   * the unfinished term. Equals `earlyInterest` on a maturity date.
+   */
   earlyForegoneInterest: number | null;
   /** `earlyForegoneInterest − earlyInterest`: the cost of breaking early. */
   earlyLoss: number | null;
@@ -131,8 +148,13 @@ export function computeTermDeposit(
   let balance = principal;
   let totalInterest = 0;
   let interestPerPayout = 0;
+  /** Balance at work at the START of each term. */
+  const termOpenings: number[] = [];
+  /** Cumulative interest once term j has matured. */
+  const interestThroughTerm: number[] = [];
 
   for (let cycle = 1; cycle <= cycles; cycle += 1) {
+    termOpenings.push(balance);
     // Simple interest, pro-rated by term length. This is the Vietnamese
     // convention and it is NOT (1 + r)^n.
     const cycleInterest = balance * rate * (termMonths / 12);
@@ -140,7 +162,11 @@ export function computeTermDeposit(
       interestPerPayout = balance * rate * (payoutMonths / 12);
     }
     totalInterest += cycleInterest;
-    if (compounded) balance += cycleInterest;
+    interestThroughTerm.push(totalInterest);
+    // Deliberately not on the last term: its own interest is not principal at
+    // work IN it, so rolling it in here would make `finalPrincipal` — the
+    // "Gốc ở kỳ cuối" row — identical to `totalValue`.
+    if (compounded && cycle < cycles) balance += cycleInterest;
   }
 
   const totalMonths = termMonths * cycles;
@@ -160,8 +186,22 @@ export function computeTermDeposit(
     if (breakAfterMonths > totalMonths) return null;
     const demand = demandRatePercent ?? 0;
     if (!Number.isFinite(demand) || demand < 0) return null;
-    earlyInterest = principal * (demand / 100) * (breakAfterMonths / 12);
-    earlyForegoneInterest = principal * rate * (breakAfterMonths / 12);
+    // A term that has already matured is settled money; only the unfinished
+    // term is broken, and only its elapsed months earn the demand rate.
+    const completedTerms = Math.floor(breakAfterMonths / termMonths);
+    const monthsIntoTerm = breakAfterMonths - completedTerms * termMonths;
+    const credited =
+      completedTerms === 0 ? 0 : interestThroughTerm[completedTerms - 1];
+    // No term is running when the break lands on the deposit's own last day.
+    const brokenOpening =
+      completedTerms < cycles ? termOpenings[completedTerms] : 0;
+    earlyInterest =
+      credited + brokenOpening * (demand / 100) * (monthsIntoTerm / 12);
+    earlyForegoneInterest =
+      credited + brokenOpening * rate * (monthsIntoTerm / 12);
+    // Exactly 0 on a maturity date: both broken-term addends are literally 0,
+    // so the subtraction cancels the shared `credited` bit-for-bit. No band
+    // constant is needed here, and inventing one would hide that.
     earlyLoss = earlyForegoneInterest - earlyInterest;
   }
 
@@ -171,7 +211,7 @@ export function computeTermDeposit(
     payoutCount: (termMonths / payoutMonths) * cycles,
     totalInterest,
     totalValue,
-    finalPrincipal: balance,
+    finalPrincipal: termOpenings[cycles - 1],
     compounded,
     effectiveAnnualPercent,
     earlyInterest,
