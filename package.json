@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:lint": "node scripts/check-lint-baseline.mjs",
     "test": "vitest run"
   },
   "dependencies": {
