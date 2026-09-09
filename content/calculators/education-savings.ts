@@ -17,7 +17,18 @@
 // 7%/năm: học phí năm đầu 172.714.000 ₫, năm cuối 217.569.898 ₫, tổng danh
 // nghĩa 778.268.627 ₫, nhưng số cần có vào ngày nhập học chỉ 700.601.379 ₫.
 // 200 triệu hiện có lớn thành 393.430.271 ₫, còn thiếu 307.171.108 ₫ → cần
-// góp 1.795.779 ₫/tháng. Phần do lãi đóng góp: 285.107.899 ₫.
+// góp 1.795.779 ₫/tháng. Phần do lãi đóng góp: 285.107.899 ₫, tức 40,69% mục
+// tiêu, và khoản dành cho năm học cuối được trả ở năm thứ 13 kể từ hôm nay.
+//
+// Hai trạng thái khác của "phần do lãi đóng góp" cũng là output của module,
+// giữ nguyên các ô mặc định còn lại: ở lợi nhuận −5%/năm nó là −280.396.228 ₫
+// (đúng bằng giá trị mà lợi nhuận âm làm mất và các khoản góp phải bù), còn
+// với 600 triệu đã có thì kế hoạch đã đủ mà nó vẫn dương, 100.601.379 ₫. Chỉ
+// khi số đã có hôm nay lớn hơn cả mục tiêu — ví dụ 3 tỷ — module mới chặn ô
+// này ở 0 ₫ thay vì trả về −2.299.398.621 ₫.
+//
+// Cũng từ module: rút số năm chờ từ 10 xuống 5, mọi ô khác giữ mặc định, đẩy
+// mức góp từ 1.795.779 ₫ lên 2.757.284 ₫/tháng.
 
 export const EDUCATION_SAVINGS = {
   slug: "/cong-cu/tiet-kiem-hoc-phi",
@@ -111,7 +122,7 @@ export const EDUCATION_SAVINGS = {
       "Số tiền cần có vào NGÀY NHẬP HỌC là các khoản học phí đó quy về ngày đó theo lợi nhuận đầu tư: năm đầu không chiết khấu, năm thứ tư chiết khấu ba năm. Tổng là 700.601.379 ₫, thấp hơn tổng danh nghĩa 778.268.627 ₫.",
       "Số tiền hiện có được nhân lên đến ngày nhập học: 200.000.000 × 1,07¹⁰ = 393.430.271 ₫. Phần còn thiếu là 307.171.108 ₫.",
       "Mức góp mỗi tháng là khoản niên kim đưa phần còn thiếu về 0 đúng vào ngày nhập học, với 120 tháng và lợi nhuận 7%/năm ghép theo tháng: 1.795.779 ₫. Khoản góp được tính vào cuối mỗi tháng, giống công cụ mục tiêu tiết kiệm.",
-      "Phần do lãi đóng góp là số cần có trừ đi mọi thứ bạn bỏ vào — cả tiền có sẵn và tổng các khoản góp. Với mặc định là 285.107.899 ₫, tức hơn 40% mục tiêu do lợi nhuận đầu tư tạo ra chứ không phải do bạn nộp.",
+      "Phần do lãi đóng góp là số cần có trừ đi mọi thứ bạn bỏ vào — cả tiền có sẵn và tổng các khoản góp. Với mặc định là 285.107.899 ₫, tức hơn 40% mục tiêu do lợi nhuận đầu tư tạo ra chứ không phải do bạn nộp. Phép trừ này giữ nguyên cả khi ra số âm: để lợi nhuận đầu tư −5%/năm và giữ các ô còn lại, ô này hiện −280.396.228 ₫, đúng bằng phần giá trị mà lợi nhuận âm làm mất đi và các khoản góp phải bù thêm. Ngoại lệ duy nhất là khi số tiền bạn đã có ngay hôm nay còn lớn hơn cả mục tiêu, nên không phải góp thêm đồng nào: lúc đó ô này dừng ở 0 ₫ thay vì thành số âm lớn, vì mục tiêu đã được gốc của bạn phủ hết và lợi nhuận không cần đóng góp gì. Còn nếu tiền có sẵn chỉ vượt mục tiêu sau khi sinh lãi thì ô này vẫn dương — có sẵn 600 triệu cho ra 100.601.379 ₫.",
       "Khi nhập học ngay, không có tháng nào để tích lũy nên công cụ để trống mức góp thay vì chia cho 0. Số cần có và phần còn thiếu vẫn được tính bình thường.",
     ],
   },
@@ -133,7 +144,7 @@ export const EDUCATION_SAVINGS = {
       },
       {
         q: "Vì sao phần do lãi lớn đến vậy?",
-        a: "Vì thời gian dài. Với 10 năm chờ cộng 4 năm học, số tiền của bạn có tới 14 năm để sinh lãi, và 285.107.899 ₫ trong mục tiêu 700.601.379 ₫ đến từ đó. Đây là lý do bắt đầu sớm quan trọng hơn góp nhiều: hãy thử giảm số năm chờ từ 10 xuống 5 và xem mức góp mỗi tháng tăng bao nhiêu.",
+        a: "Vì thời gian dài. Học phí trả vào đầu mỗi năm học, nên với 10 năm chờ và 4 năm học, khoản dành cho năm học cuối có tới 13 năm sinh lãi kể từ hôm nay — và 285.107.899 ₫ trong mục tiêu 700.601.379 ₫ đến từ đó. Đây là lý do bắt đầu sớm quan trọng hơn góp nhiều: hãy thử giảm số năm chờ từ 10 xuống 5 và xem mức góp mỗi tháng tăng bao nhiêu (1.795.779 ₫ lên 2.757.284 ₫).",
       },
       {
         q: "Kết quả có tính học bổng hay hỗ trợ không?",
