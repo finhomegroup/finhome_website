@@ -3,9 +3,13 @@
 // Original FinHome copy. The arithmetic is standard finance.
 //
 // Every figure quoted below is for the prefilled default (8%/năm, ghép lãi
-// hằng tháng) and is pinned by effective-rate.test.ts: hiệu dụng 8,2999…%,
-// ghép hằng ngày 8,3278%, và chiều nghịch 10% hiệu dụng là 9,569% danh nghĩa.
+// hằng tháng) and is pinned by effective-rate.test.ts: hiệu dụng 8,29995% —
+// trang hiển thị bốn chữ số thập phân, nên nó hiện 8,3000% — ghép hằng ngày
+// 8,3278%, và chiều nghịch 10% hiệu dụng là 9,569% danh nghĩa.
 // If the defaults move, re-read the module — do not adjust these by hand.
+// Quote the RENDERED value in user-facing copy. An elided form of the raw
+// figure used to sit here, and it invited a truncation (rather than a
+// rounding) into two prose strings that then contradicted the page.
 
 export const EFFECTIVE_RATE = {
   slug: "/cong-cu/lai-suat-thuc-te",
@@ -74,7 +78,7 @@ export const EFFECTIVE_RATE = {
   formula: {
     title: "Cách tính",
     body: [
-      "Từ danh nghĩa sang hiệu dụng: lãi hiệu dụng = (1 + lãi danh nghĩa ÷ số kỳ)^số kỳ − 1. Với 8%/năm ghép hằng tháng: (1 + 0,08 ÷ 12)^12 − 1 = 8,2999%.",
+      "Từ danh nghĩa sang hiệu dụng: lãi hiệu dụng = (1 + lãi danh nghĩa ÷ số kỳ)^số kỳ − 1. Với 8%/năm ghép hằng tháng: (1 + 0,08 ÷ 12)^12 − 1 = 8,3000% (chính xác là 8,29995%).",
       "Từ hiệu dụng sang danh nghĩa là phép nghịch: lãi danh nghĩa = số kỳ × ((1 + lãi hiệu dụng)^(1 ÷ số kỳ) − 1). Muốn thực nhận 10%/năm với kỳ ghép lãi hằng tháng, mức niêm yết cần là 9,569%/năm.",
       "Lãi suất mỗi kỳ = lãi danh nghĩa ÷ số kỳ. Đây là con số dùng trong mọi công thức trả góp — lãi 12%/năm ghép hằng tháng là 1% mỗi tháng, không phải 12% mỗi tháng.",
       "Phần tăng do ghép lãi là hiệu giữa hiệu dụng và danh nghĩa, tính theo điểm phần trăm. Nó bằng 0 khi ghép lãi một lần mỗi năm, và lớn dần theo cả tần suất ghép lãi lẫn độ lớn của lãi suất — với lãi suất cao, chênh lệch này rất đáng kể.",
@@ -94,7 +98,7 @@ export const EFFECTIVE_RATE = {
       },
       {
         q: "Vì sao “ghép lãi hằng ngày” lại không hơn nhiều “ghép lãi hằng tháng”?",
-        a: "Vì phần lợi từ ghép lãi tiến rất nhanh tới một giới hạn. Với 8%/năm, ghép hằng tháng cho 8,2999% còn ghép hằng ngày cho 8,3278% — chênh 0,03 điểm phần trăm, tức 30.000 ₫ trên mỗi 100 triệu. Ghép lãi liên tục, tức tần suất tiến tới vô cùng, chỉ đạt 8,3287%. Nên đây thường là một chi tiết quảng cáo hơn là một lợi thế thật.",
+        a: "Vì phần lợi từ ghép lãi tiến rất nhanh tới một giới hạn. Với 8%/năm, ghép hằng tháng cho 8,3000% còn ghép hằng ngày cho 8,3278% — chênh 0,03 điểm phần trăm, tức 30.000 ₫ trên mỗi 100 triệu. Ghép lãi liên tục, tức tần suất tiến tới vô cùng, chỉ đạt 8,3287%. Nên đây thường là một chi tiết quảng cáo hơn là một lợi thế thật.",
       },
       {
         q: "Với khoản vay thì nên xem con số nào?",

@@ -24,7 +24,8 @@ export const FUEL = {
     tripGroup: "Chuyến đi",
     distanceLabel: "Khoảng cách một chiều",
     distanceUnit: "km",
-    distanceHelp: "Chỉ nhập một chiều; chọn “khứ hồi” bên dưới nếu đi về.",
+    distanceHelp:
+      "Chỉ nhập một chiều; chọn “khứ hồi” bên dưới nếu đi về. Dùng dấu phẩy cho phần thập phân: 1.700 là một nghìn bảy trăm km.",
     distanceInvalid: "Vui lòng nhập khoảng cách lớn hơn 0.",
     defaultDistance: "120",
 

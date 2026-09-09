@@ -12,6 +12,7 @@ import {
   formatDecimal,
   formatMoney,
   parseDecimal,
+  parseMagnitude,
   parseMoney,
 } from "@/lib/calc/number";
 import { computeFuelCost, type ConsumptionUnit } from "@/lib/calc/fuel";
@@ -28,7 +29,11 @@ export function FuelCalculator() {
     trips: C.form.defaultTrips,
   });
 
-  const distance = parseDecimal(fields.values.distance);
+  // A distance runs from a few km to a few thousand, so it is a magnitude:
+  // parseDecimal read "1.700" as 1,7 and priced a Hà Nội–TP.HCM trip at
+  // 2.499 ₫. Consumption below stays on parseDecimal — lít/100 km is never
+  // grouped.
+  const distance = parseMagnitude(fields.values.distance);
   const consumption = parseDecimal(fields.values.consumption);
   const price = parseMoney(fields.values.price);
   const people = parseDecimal(fields.values.people);

@@ -10,6 +10,7 @@ import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import {
   formatMoney,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -51,7 +52,7 @@ export function UsHsaCalculator() {
   const state = parseDecimal(fields.values.state);
   const balance = parseMoney(fields.values.balance);
   const returnRate = parseDecimal(fields.values.return);
-  const years = parseMoney(fields.values.years);
+  const years = parseCount(fields.values.years);
 
   const ageInvalid = age === null || age < 0 || age > 120;
   const contributionInvalid = contribution === null || contribution < 0;

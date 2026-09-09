@@ -3,7 +3,7 @@
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import type { FieldBinding } from "@/components/calc/use-calc-fields";
-import { parseDecimal, parseMoney } from "@/lib/calc/number";
+import { parseCount, parseDecimal, parseMoney } from "@/lib/calc/number";
 import type { RetirementInput } from "@/lib/calc/retirement";
 
 /**
@@ -78,7 +78,10 @@ export function readRetirement(
   const numbers = {} as Record<RetirementFieldKey, number>;
 
   for (const key of AGE_KEYS) {
-    const value = parseMoney(values[key] ?? "");
+    // An age is a whole count, so `parseCount`: `parseMoney` read "3.5" as
+    // 35 and marked it valid, because it discards "." as grouping before the
+    // `Number.isInteger` guard below ever runs.
+    const value = parseCount(values[key] ?? "");
     numbers[key] = value ?? 0;
     invalid[key] =
       !skipped.has(key) &&

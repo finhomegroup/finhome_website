@@ -11,6 +11,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
   PLACEHOLDER,
@@ -29,7 +30,7 @@ export function BusinessForecastCalculator() {
   const variable = parseDecimal(fields.values.variable);
   const fixed = parseMoney(fields.values.fixed);
   const fixedGrowth = parseDecimal(fields.values.fixedGrowth);
-  const years = parseMoney(fields.values.years);
+  const years = parseCount(fields.values.years);
   const baseYear = parseMoney(fields.values.baseYear);
   const tax = parseDecimal(fields.values.tax);
 

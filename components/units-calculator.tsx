@@ -8,7 +8,7 @@ import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
 import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
-import { formatDecimal, parseDecimal } from "@/lib/calc/number";
+import { formatDecimal, parseMagnitude } from "@/lib/calc/number";
 import { convertUnit, UNITS, type UnitCategory } from "@/lib/calc/units";
 import { UNITS_CONTENT as C } from "@/content/calculators/units";
 
@@ -50,7 +50,10 @@ export function UnitsCalculator() {
     ? fields.values.toId
     : ids[1] ?? ids[0];
 
-  const value = parseDecimal(fields.values.value);
+  // A dimensionless magnitude: this field takes both 1,5 chỉ and 10.000 m²,
+  // so neither parseDecimal (reads "10.000" as 10) nor parseMoney (reads
+  // "1.5" as 15) is usable on its own.
+  const value = parseMagnitude(fields.values.value);
   const valueInvalid = value === null;
 
   const result = valueInvalid

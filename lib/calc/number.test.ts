@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   parseDecimal,
   parseMoney,
+  parseCount,
+  parseMagnitude,
   formatDecimal,
   formatMoney,
   formatPercent,
@@ -68,6 +70,101 @@ describe("parseMoney", () => {
   });
 });
 
+describe("parseCount", () => {
+  it("accepts a plain whole number, with or without surrounding space", () => {
+    expect(parseCount("30")).toBe(30);
+    expect(parseCount(" 30 ")).toBe(30);
+    expect(parseCount("0")).toBe(0);
+    expect(parseCount("91")).toBe(91);
+    expect(parseCount("2026")).toBe(2026);
+  });
+
+  it("rejects the two spellings the other parsers mis-read", () => {
+    // The whole reason this function exists. "3.0" is an ordinary
+    // spreadsheet spelling of 3 and used to become a 30-year forecast;
+    // "1.000" is a correctly grouped thousand and used to become 1.
+    expect(parseMoney("3.0")).toBe(30);
+    expect(parseDecimal("1.000")).toBe(1);
+    expect(parseCount("3.0")).toBeNull();
+    expect(parseCount("1.000")).toBeNull();
+    expect(parseCount("1.5")).toBeNull();
+    expect(parseCount("3,5")).toBeNull();
+  });
+
+  it("rejects a sign, a bare separator, exponent form and junk", () => {
+    expect(parseCount("-3")).toBeNull();
+    expect(parseCount("+3")).toBeNull();
+    expect(parseCount("")).toBeNull();
+    expect(parseCount("   ")).toBeNull();
+    expect(parseCount("3.")).toBeNull();
+    expect(parseCount("1e3")).toBeNull();
+    expect(parseCount("abc")).toBeNull();
+    expect(parseCount("12 3")).toBeNull();
+  });
+
+  it("rejects a magnitude that is not a safe integer", () => {
+    expect(parseCount("99999999999999999999")).toBeNull();
+  });
+});
+
+describe("parseMagnitude", () => {
+  it("reads a dot-triple group as thousands grouping", () => {
+    expect(parseMagnitude("10.000")).toBe(10_000);
+    expect(parseMagnitude("1.500")).toBe(1500);
+    expect(parseMagnitude("1.700")).toBe(1700);
+    expect(parseMagnitude("1.234.567")).toBe(1_234_567);
+    expect(parseMagnitude("-1.500")).toBe(-1500);
+  });
+
+  it("reads any other dot as a decimal point", () => {
+    expect(parseMagnitude("1.5")).toBe(1.5);
+    expect(parseMagnitude("0.5")).toBe(0.5);
+    expect(parseMagnitude("10.00")).toBe(10);
+    expect(parseMagnitude("1.5000")).toBe(1.5);
+    expect(parseMagnitude("120")).toBe(120);
+    expect(parseMagnitude("7")).toBe(7);
+  });
+
+  it("never reads a leading zero as a thousands group", () => {
+    // "0.500" is an English 0,5 written with trailing zeros — nobody spells
+    // five hundred that way, so the leading zero settles the grammar. Reading
+    // it as grouping made every such entry 1000x too large with no error
+    // shown: 0,5 lượng vàng became 500 lượng.
+    expect(parseMagnitude("0.500")).toBe(0.5);
+    expect(parseMagnitude("0.250")).toBe(0.25);
+    expect(parseMagnitude("0.500,5")).toBeNull();
+    expect(parseMagnitude("-0.500")).toBe(-0.5);
+    // A leading zero on a longer group is equally not grouping, so this is
+    // the decimal 1,000 — one — not one thousand.
+    expect(parseMagnitude("01.000")).toBe(1);
+    // …while the ordinary grouped readings are untouched.
+    expect(parseMagnitude("10.000")).toBe(10_000);
+    expect(parseMagnitude("100.000")).toBe(100_000);
+  });
+
+  it("keeps ',' as the decimal mark in either reading", () => {
+    expect(parseMagnitude("1,5")).toBe(1.5);
+    expect(parseMagnitude("10.000,5")).toBe(10_000.5);
+    expect(parseMagnitude("-1.500,25")).toBe(-1500.25);
+  });
+
+  it("rejects what both underlying parsers reject", () => {
+    expect(parseMagnitude("")).toBeNull();
+    expect(parseMagnitude("abc")).toBeNull();
+    expect(parseMagnitude("1e3")).toBeNull();
+    expect(parseMagnitude(".")).toBeNull();
+  });
+
+  it("is needed because neither sibling parser is usable here", () => {
+    // A magnitude field is used both far below 10 (1,5 chỉ of gold) and far
+    // above a thousand (10.000 m²), so both mis-readings are reachable:
+    // parseMoney turns 1,5 chỉ into 56,25 g, and parseDecimal turns 1 ha
+    // into 0,002778 mẫu — neither with an error shown.
+    expect(parseMoney("1.5")).toBe(15);
+    expect(parseDecimal("10.000")).toBe(10);
+  });
+});
+
 describe("formatDecimal", () => {
   it("defaults to two decimals with a comma mark", () => {
     expect(formatDecimal(12)).toBe("12,00");
@@ -78,6 +175,19 @@ describe("formatDecimal", () => {
   it("honours an explicit precision", () => {
     expect(formatDecimal(7.2725, 0)).toBe("7");
     expect(formatDecimal(7.2725, 4)).toBe("7,2725");
+  });
+
+  it("never renders negative zero from a float residue", () => {
+    // The residue this was found on: an annually-compounded gain is zero by
+    // construction but arrives as -4,16e-15 and rendered as "-0,0000 điểm %".
+    expect(formatDecimal(-4.163336342344337e-15, 4)).toBe("0,0000");
+    expect(formatDecimal(-0.4, 0)).toBe("0");
+    expect(formatPercent(-1e-14, 4)).toBe("0,0000%");
+    // A value that really is negative at the requested precision keeps its
+    // sign — the guard reads the ROUNDED value, not the raw one.
+    expect(formatDecimal(-0.6, 0)).toBe("-1");
+    expect(formatDecimal(-0.05, 1)).toBe("-0,1");
+    expect(formatDecimal(-0.3632, 4)).toBe("-0,3632");
   });
 
   it("renders the placeholder rather than non-finite or scientific output", () => {

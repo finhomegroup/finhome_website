@@ -5,6 +5,7 @@ import {
   type EffectiveRateInput,
 } from "@/lib/calc/effective-rate";
 import { periodsPerYear, toEffective } from "@/lib/calc/finance";
+import { formatDecimal } from "@/lib/calc/number";
 
 const BASE: EffectiveRateInput = {
   direction: "toEffective",
@@ -17,6 +18,17 @@ function rate(input: EffectiveRateInput) {
   expect(result).not.toBeNull();
   return result!;
 }
+
+/**
+ * The annually-compounded gain is zero by construction, but not bit-exactly:
+ * `toEffective` at one period a year computes (1 + r) ** 1 − 1, which is not
+ * bit-identical to r, so the difference is a signed float residue. Worst
+ * observed across 0,1–30,0% in both directions, headline and table: 1,42e-14
+ * points, against the 5e-5 resolution of the four-decimal display. Asserted
+ * as an absolute band rather than `toBeCloseTo(0, 12)` because that passes on
+ * a NEGATIVE residue, which is how "-0,0000 điểm %" shipped unnoticed.
+ */
+const ANNUAL_GAIN_RESIDUE_POINTS = 1e-13;
 
 describe("convertRate — nominal to effective", () => {
   it("matches the closed form", () => {
@@ -33,8 +45,28 @@ describe("convertRate — nominal to effective", () => {
   it("leaves an annually-compounded rate alone", () => {
     const result = rate({ ...BASE, compounding: "annually" });
     expect(result.effectivePercent).toBeCloseTo(8, 12);
-    expect(result.compoundingGainPoints).toBeCloseTo(0, 12);
+    expect(Math.abs(result.compoundingGainPoints)).toBeLessThan(
+      ANNUAL_GAIN_RESIDUE_POINTS,
+    );
     expect(result.periodicPercent).toBeCloseTo(8, 12);
+  });
+
+  it("never renders the annual gain with a spurious minus sign", () => {
+    // The residue above is signed, and it used to reach the page as
+    // "-0,0000 điểm %" for roughly half of all rates — 8,5 and 15 among them.
+    // This asserts the rendered string, because the magnitude band alone
+    // passes on a negative.
+    for (const ratePercent of [0.1, 0.5, 8.5, 9.3, 13, 15, 21.9, 30]) {
+      for (const direction of ["toEffective", "toNominal"] as const) {
+        const result = rate({ ...BASE, direction, compounding: "annually", ratePercent });
+        expect(formatDecimal(result.compoundingGainPoints, 4)).toBe("0,0000");
+      }
+      // …and the annually row of the table, at any selected frequency.
+      for (const compounding of COMPOUNDING_ORDER) {
+        const result = rate({ ...BASE, compounding, ratePercent });
+        expect(formatDecimal(result.table[0].extraPoints, 4)).toBe("0,0000");
+      }
+    }
   });
 
   it("states the per-period rate", () => {
@@ -121,7 +153,9 @@ describe("convertRate — the reference table", () => {
   it("increases monotonically and starts at the nominal rate", () => {
     const result = rate(BASE);
     expect(result.table[0].effectivePercent).toBeCloseTo(8, 12);
-    expect(result.table[0].extraPoints).toBeCloseTo(0, 12);
+    expect(Math.abs(result.table[0].extraPoints)).toBeLessThan(
+      ANNUAL_GAIN_RESIDUE_POINTS,
+    );
     for (let index = 1; index < result.table.length; index += 1) {
       expect(result.table[index].effectivePercent).toBeGreaterThan(
         result.table[index - 1].effectivePercent,

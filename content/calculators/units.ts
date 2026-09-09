@@ -41,7 +41,8 @@ export const UNITS_CONTENT = {
     toHelp: "Đơn vị bạn muốn đổi sang.",
 
     valueLabel: "Giá trị",
-    valueHelp: "Con số cần đổi. Nhận số thập phân và số âm.",
+    valueHelp:
+      "Con số cần đổi. Nhận số thập phân và số âm. Dùng dấu phẩy cho phần thập phân: 1,5 là một phẩy năm, còn 1.500 là một nghìn năm trăm.",
     valueInvalid: "Vui lòng nhập một số.",
     defaultValue: "1",
 
@@ -138,7 +139,7 @@ export const UNITS_CONTENT = {
       },
       {
         q: "Vì sao mẫu Trung Bộ là 4.999,5 m² mà không phải 5.000?",
-        a: "Vì nó là 10 sào Trung Bộ, và một sào Trung Bộ là 499,95 m² — bắt nguồn từ hệ đo cổ dựa trên thước, không phải từ hệ mét. Con số 5.000 m² là cách làm tròn thường gặp, và với một thửa vài mẫu thì phần làm tròn đó lên tới vài chục mét vuông. Công cụ giữ con số chính xác.",
+        a: "Vì nó là 10 sào Trung Bộ, và một sào Trung Bộ là 499,95 m² — bắt nguồn từ hệ đo cổ dựa trên thước, không phải từ hệ mét. Con số 5.000 m² là cách làm tròn thường gặp, và phần làm tròn đó là 0,5 m² mỗi mẫu — nhỏ, nhưng công cụ vẫn giữ con số chính xác. Sai số đáng lo là sai số giữa hai vùng: một mẫu Bắc Bộ chỉ 3.600 m², lệch 1.399,5 m² so với một mẫu Trung Bộ.",
       },
       {
         q: "Một cây vàng và một lượng vàng có khác nhau không?",

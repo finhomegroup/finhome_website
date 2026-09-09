@@ -10,6 +10,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -31,7 +32,7 @@ export function UsTbillCalculator() {
 
   const face = parseMoney(fields.values.face);
   const discount = parseDecimal(fields.values.discount);
-  const days = parseMoney(fields.values.days);
+  const days = parseCount(fields.values.days);
   const federal = parseDecimal(fields.values.federal);
   const state = parseDecimal(fields.values.state);
 
