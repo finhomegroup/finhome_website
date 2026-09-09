@@ -133,6 +133,24 @@ export function addMonths(
   return { year, month, day: Math.min(date.day, length) };
 }
 
+/** Saturday and Sunday, in the 0 = Monday numbering `dayOfWeek` returns. */
+const SATURDAY = 5;
+const SUNDAY = 6;
+
+/**
+ * Whether a raw day number falls on a weekend.
+ *
+ * Takes a day number rather than a weekday index because every caller in this
+ * module is already working in day-number space, and each one otherwise has
+ * to repeat the same normalisation: `%` in JavaScript keeps the sign of the
+ * dividend, so a day number that lands negative needs `((n % 7) + 7) % 7`
+ * before it can be compared against a weekday index.
+ */
+function isWeekendDayNumber(dayNumber: number): boolean {
+  const weekday = ((dayNumber % 7) + 7) % 7;
+  return weekday === SATURDAY || weekday === SUNDAY;
+}
+
 /** 0 = Monday … 6 = Sunday. Null for an invalid date. */
 export function dayOfWeek(date: CalendarDate): number | null {
   const dayNumber = toDayNumber(date);
@@ -144,7 +162,7 @@ export function dayOfWeek(date: CalendarDate): number | null {
 /** Saturday or Sunday. */
 export function isWeekend(date: CalendarDate): boolean {
   const weekday = dayOfWeek(date);
-  return weekday === 5 || weekday === 6;
+  return weekday === SATURDAY || weekday === SUNDAY;
 }
 
 export type DateDifference = {
@@ -216,12 +234,30 @@ export function computeDateDifference(input: {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  // Count weekends over the half-open interval [earlier, later).
+  // Count weekends over the half-open interval [earlier, later), in constant
+  // time: every whole week contributes exactly two weekend days, so only the
+  // `absoluteDays % 7` leftover has to be looked at, and the leftover can be
+  // taken from the front because the week is periodic.
+  //
+  // This used to be a day-by-day walk, and unlike its sibling
+  // `computeDateOffset` — which refuses a magnitude beyond 100.000 below,
+  // because "the weekday walk is a loop, and an unbounded one is a hang" —
+  // this path had no bound. `readDate` in the page accepts any integer year
+  // and the call sits in the render body with no debounce, so an 8-digit year
+  // typed into the free-text year box blocked the main thread for minutes
+  // (year 202666 is 73.282.255 days; 20266666 is 7.401.507.775, and the walk
+  // goes superlinear once the counter leaves V8's small-integer range).
+  //
+  // A bound is not the fix here: 1900→2200 is 109.573 days and the suite
+  // sweeps that whole span, so any sane bound would reject legitimate
+  // questions. The closed form removes the need for one and is exactly
+  // behaviour-preserving.
   const startNumber = Math.min(fromNumber, toNumber);
-  let weekendDays = 0;
-  for (let offset = 0; offset < absoluteDays; offset += 1) {
-    const weekday = ((startNumber + offset) % 7 + 7) % 7;
-    if (weekday === 5 || weekday === 6) weekendDays += 1;
+  const fullWeeks = Math.floor(absoluteDays / 7);
+  let weekendDays = fullWeeks * 2;
+  const leftoverDays = absoluteDays - fullWeeks * 7;
+  for (let offset = 0; offset < leftoverDays; offset += 1) {
+    if (isWeekendDayNumber(startNumber + offset)) weekendDays += 1;
   }
 
   return {
@@ -256,7 +292,10 @@ export type DateOffsetResult = {
  *
  * `days` may be negative. When `skipWeekends` is set, only weekdays are
  * counted — so "5 working days after Friday" is the following Friday, and the
- * result is never a weekend.
+ * result is never a weekend. A ZERO offset from a weekend rolls forward to
+ * the next working day, which is what keeps that last promise total: the
+ * weekday walk below does the normalising for every other offset, but a zero
+ * offset never enters it.
  *
  * Null when the date does not exist, when `days` is not an integer, or when
  * `skipWeekends` is asked for with a magnitude beyond a sane bound (the
@@ -283,9 +322,13 @@ export function computeDateOffset(input: {
     resultNumber = fromNumber;
     while (remaining > 0) {
       resultNumber += step;
-      const weekday = ((resultNumber % 7) + 7) % 7;
-      if (weekday !== 5 && weekday !== 6) remaining -= 1;
+      if (!isWeekendDayNumber(resultNumber)) remaining -= 1;
     }
+    // A zero offset never enters the walk above, so a weekend start would be
+    // handed straight back and break the "never a weekend" contract. Roll
+    // forward to the next working day — the Following convention. Only
+    // reachable at days === 0, because the walk always stops on a weekday.
+    while (isWeekendDayNumber(resultNumber)) resultNumber += 1;
   }
 
   const date = fromDayNumber(resultNumber);
@@ -295,7 +338,7 @@ export function computeDateOffset(input: {
   return {
     date,
     weekday,
-    weekend: weekday === 5 || weekday === 6,
+    weekend: isWeekendDayNumber(resultNumber),
     offsetDays: days,
   };
 }

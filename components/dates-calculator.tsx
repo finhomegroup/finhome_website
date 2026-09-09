@@ -18,8 +18,15 @@ import {
 } from "@/lib/calc/dates";
 import { DATES as C } from "@/content/calculators/dates";
 
-/** Parse a year/month/day trio out of the raw field strings. */
-function readDate(
+/**
+ * Parse a year/month/day trio out of the raw field strings.
+ *
+ * Exported for `dates-calculator.test.ts`: the per-field blame below is the
+ * whole point of the function and a future refactor would naturally re-couple
+ * it to the trio, so it needs a test, and a pure helper is the only thing this
+ * repo's runner can test out of a client component (no jsdom).
+ */
+export function readDate(
   year: string,
   month: string,
   day: string,
@@ -30,16 +37,32 @@ function readDate(
 
   const yearBad = y === null || !Number.isInteger(y);
   const monthBad = m === null || !Number.isInteger(m) || m < 1 || m > 12;
-  // The day is only judged once the year and month are known, because
-  // whether 29 exists depends on both.
-  const candidate =
-    !yearBad && !monthBad && dd !== null && Number.isInteger(dd)
-      ? { year: y, month: m, day: dd }
-      : null;
-  const dayBad = candidate === null || !isValidDate(candidate);
+  // The day's OWN validity splits in two, and only one half needs the trio.
+  //
+  // The number itself: a value that is not an integer in 1..31 exists in NO
+  // month at all, so blaming the day is truthful even while Năm or Tháng is
+  // blank. (31 is the narrowest day that does exist somewhere — measured
+  // valid in 7 of the 12 months; every day 1..28 is valid in all 12. So the
+  // 1..31 window is exactly the set worth keeping in the box.)
+  //
+  // The calendar: whether an integer in 1..31 exists depends on the month
+  // (31 tháng 4) and, for 29 February, on the year — so that half waits for
+  // a candidate. `dayBad` drives `invalid` on the DAY input, whose message
+  // reads "Ngày không tồn tại trong tháng đã chọn."; announcing that about a
+  // legitimate 1..31 day merely because Năm is mid-edit reddened two fields
+  // and gave a reason that was not true.
+  const dayNumberBad =
+    dd === null || !Number.isInteger(dd) || dd < 1 || dd > 31;
+  const trioUsable =
+    y !== null && !yearBad && m !== null && !monthBad && !dayNumberBad;
+  const candidate = trioUsable ? { year: y, month: m, day: dd } : null;
+  const dayBad =
+    dayNumberBad || (candidate !== null && !isValidDate(candidate));
 
   return {
-    date: dayBad ? null : candidate,
+    // The result still blanks whenever ANY of the trio is bad — only the
+    // per-field blame changed.
+    date: candidate !== null && !dayBad ? candidate : null,
     yearBad,
     monthBad,
     dayBad,

@@ -50,7 +50,7 @@ export const DATES = {
     offsetGroup: "Số ngày cộng thêm",
     offsetLabel: "Số ngày",
     offsetHelp:
-      "Nhập số âm để trừ. Ví dụ 90 là 90 ngày sau, −30 là 30 ngày trước.",
+      "Nhập số âm để trừ. Ví dụ 90 là 90 ngày sau, −30 là 30 ngày trước. Nhập số nguyên, không dùng dấu phân cách nghìn: 1000 chứ không phải 1.000.",
     offsetInvalid: "Vui lòng nhập một số nguyên.",
     defaultOffset: "90",
 
@@ -110,9 +110,9 @@ export const DATES = {
     body: [
       "Mọi phép tính đi qua một SỐ THỨ TỰ NGÀY — số ngày trôi qua kể từ một mốc cố định — bằng thuật toán Fliegel–Van Flandern. Hai ngày trở thành hai số nguyên, và mọi câu hỏi trở thành phép tính trên hai số đó. Thuật toán chính xác tuyệt đối trong số nguyên với mọi ngày dương lịch, nên không có sai số làm tròn.",
       "Số ngày là KHOẢNG CÁCH, nên cùng một ngày nhập hai lần cho 0 chứ không phải 1. Nếu bạn cần đếm cả hai đầu — ví dụ số ngày nghỉ phép — hãy cộng thêm 1.",
-      "Ngày làm việc đếm các ngày trong khoảng nửa mở, tức tính ngày bắt đầu và không tính ngày kết thúc. Đây là quy ước làm cho “thứ Hai đến thứ Sáu” đúng bằng năm ngày làm việc.",
+      "Ngày làm việc đếm các ngày trong khoảng nửa mở, tức tính ngày bắt đầu và không tính ngày kết thúc. Đây là quy ước làm cho tuần làm việc từ thứ Hai đến hết thứ Sáu đúng bằng năm ngày làm việc — nhưng vì ngày kết thúc không được tính, bạn phải nhập thứ Hai đến thứ Bảy mới ra năm; nhập thứ Hai đến thứ Sáu sẽ ra bốn.",
       "Phần “tương đương” tách khoảng cách thành năm, tháng và ngày bằng cách CỘNG TỪNG THÁNG TRỌN có kẹp ngày, chứ không trừ từng thành phần rồi mượn. Cộng tháng có kẹp là cách duy nhất không có ngoại lệ: 31 tháng 1 cộng một tháng là ngày cuối tháng 2, nên từ 31 tháng 1 đến 1 tháng 3 là 1 tháng 1 ngày ở cả năm nhuận và năm thường. Cách trừ rồi mượn cho ra số ngày âm trong năm thường.",
-      "Chế độ chỉ tính ngày làm việc đi từng ngày một và bỏ qua thứ Bảy, Chủ nhật, nên kết quả không bao giờ là cuối tuần. Vòng lặp này có chặn trên: yêu cầu vượt 100.000 ngày làm việc sẽ trả về không có kết quả thay vì treo.",
+      "Chế độ chỉ tính ngày làm việc đi từng ngày một và bỏ qua thứ Bảy, Chủ nhật, nên kết quả không bao giờ là cuối tuần. Nếu ngày bắt đầu là cuối tuần và số ngày bằng 0, kết quả được dời tới ngày làm việc kế tiếp — vì với số ngày bằng 0 thì không có bước đi nào để dời nó. Vòng lặp này có chặn trên: yêu cầu vượt 100.000 ngày làm việc sẽ trả về không có kết quả thay vì treo.",
       "Không có `Date` trong phần tính toán. Điều đó loại bỏ múi giờ khỏi một bài toán vốn không có múi giờ, và giữ cho trang tĩnh dựng ở thời điểm build khớp byte-với-byte với những gì trình duyệt dựng lại.",
     ],
   },

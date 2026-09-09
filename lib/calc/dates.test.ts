@@ -283,8 +283,12 @@ describe("computeDateDifference", () => {
     expect(result.remainderDays).toBe(2);
   });
 
-  it("makes Monday to Friday five working days", () => {
-    // The convention that justifies the half-open interval.
+  it("counts the Monday-to-Friday week as five working days, Monday to Saturday", () => {
+    // The convention that justifies the half-open interval, stated the way it
+    // is actually true: the SET counted is [Monday, Saturday), which is the
+    // five-day working week. Entering Monday as the start and Friday as the
+    // end gives 4, because the end date is excluded — both cases are pinned
+    // here so the "five working days" claim cannot be misread.
     const start = d(2026, 1, 1);
     const startWeekday = dayOfWeek(start)!;
     // Walk forward to the next Monday.
@@ -297,6 +301,60 @@ describe("computeDateDifference", () => {
     expect(result.absoluteDays).toBe(5);
     expect(result.workdays).toBe(5);
     expect(result.weekendDays).toBe(0);
+
+    // Monday to Friday, the way a user reads "thứ Hai đến thứ Sáu".
+    const friday = fromDayNumber(toDayNumber(monday)! + 4)!;
+    expect(dayOfWeek(friday)).toBe(4);
+    const toFriday = computeDateDifference({ from: monday, to: friday })!;
+    expect(toFriday.absoluteDays).toBe(4);
+    expect(toFriday.workdays).toBe(4);
+    expect(toFriday.weekendDays).toBe(0);
+  });
+
+  it("counts weekend days in constant time over a span of billions of days", () => {
+    // Regression: this used to be a day-by-day walk with no upper bound (the
+    // sibling computeDateOffset has one), so an 8-digit year typed into the
+    // page's free-text year box walked 7,4 billion iterations and blocked the
+    // main thread for over two minutes. With the walk in place this test does
+    // not fail on a wrong number — it fails on the timeout below.
+    //
+    // Reference, hand-derived, not read off the implementation:
+    //   n = 7.401.507.775 days between 1/1/2026 and 1/1/20266666
+    //   floor(n / 7) = 1.057.358.253 whole weeks (× 7 = 7.401.507.771)
+    //   leftover     = 4 days, starting on the start weekday
+    //   1/1/2026 is a Thursday (index 3), so the leftover runs
+    //   Thu, Fri, Sat, Sun -> 2 of the 4 are weekend days
+    //   weekendDays = 2 × 1.057.358.253 + 2 = 2.114.716.508
+    const result = computeDateDifference({
+      from: d(2026, 1, 1),
+      to: d(20266666, 1, 1),
+    })!;
+    expect(dayOfWeek(d(2026, 1, 1))).toBe(3);
+    expect(result.absoluteDays).toBe(7_401_507_775);
+    expect(Math.floor(result.absoluteDays / 7)).toBe(1_057_358_253);
+    expect(result.absoluteDays % 7).toBe(4);
+    expect(result.weekendDays).toBe(2_114_716_508);
+    expect(result.workdays).toBe(5_286_791_267);
+    expect(result.workdays + result.weekendDays).toBe(result.absoluteDays);
+  }, 2_000);
+
+  it("agrees with a day-by-day weekend count over every start weekday", () => {
+    // The closed form has to be exactly behaviour-preserving, so check it
+    // against the naive count it replaced — using only the module's OTHER
+    // exports, so this is not the implementation restating itself.
+    for (let base = 0; base < 7; base += 1) {
+      const from = fromDayNumber(toDayNumber(d(2026, 1, 1))! + base)!;
+      for (const span of [0, 1, 5, 6, 7, 8, 13, 14, 29, 100, 365]) {
+        const to = fromDayNumber(toDayNumber(from)! + span)!;
+        let naive = 0;
+        for (let offset = 0; offset < span; offset += 1) {
+          if (isWeekend(fromDayNumber(toDayNumber(from)! + offset)!)) naive += 1;
+        }
+        const result = computeDateDifference({ from, to })!;
+        expect(result.weekendDays).toBe(naive);
+        expect(result.workdays).toBe(span - naive);
+      }
+    }
   });
 
   it("keeps workdays plus weekend days equal to the total", () => {
@@ -376,6 +434,52 @@ describe("computeDateOffset", () => {
     for (let days = 1; days <= 60; days += 1) {
       const result = computeDateOffset({ from, days, skipWeekends: true })!;
       expect(result.weekend).toBe(false);
+    }
+  });
+
+  it("normalises a zero offset off a weekend", () => {
+    // The sweep above starts on a Thursday and never asks for zero, so this
+    // is the one path where the weekday walk cannot do the normalising — the
+    // walk only runs while there is a day left to count. A weekend start with
+    // a zero offset used to be handed straight back, breaking the docstring's
+    // and the page's "never a weekend" promise.
+    const saturday = d(2026, 1, 3);
+    const sunday = d(2026, 1, 4);
+    expect(dayOfWeek(saturday)).toBe(5);
+    expect(dayOfWeek(sunday)).toBe(6);
+
+    // Following convention: roll forward to Monday 5/1/2026.
+    for (const from of [saturday, sunday]) {
+      const result = computeDateOffset({ from, days: 0, skipWeekends: true })!;
+      expect(result.date).toEqual(d(2026, 1, 5));
+      expect(result.weekday).toBe(0);
+      expect(result.weekend).toBe(false);
+      expect(result.offsetDays).toBe(0);
+    }
+
+    // Without the weekday walk it is still the plain identity, weekend or not.
+    expect(computeDateOffset({ from: saturday, days: 0 })!.date).toEqual(
+      saturday,
+    );
+    expect(computeDateOffset({ from: saturday, days: 0 })!.weekend).toBe(true);
+
+    // A weekday start with a zero offset is untouched — the roll must not
+    // over-apply.
+    const thursday = d(2026, 1, 1);
+    expect(
+      computeDateOffset({ from: thursday, days: 0, skipWeekends: true })!.date,
+    ).toEqual(thursday);
+  });
+
+  it("never lands on a weekend for any offset from any start weekday", () => {
+    // The invariant the docstring promises, swept over both signs and zero.
+    for (let base = 0; base < 14; base += 1) {
+      const from = fromDayNumber(toDayNumber(d(2026, 1, 1))! + base)!;
+      for (let days = -30; days <= 30; days += 1) {
+        const result = computeDateOffset({ from, days, skipWeekends: true })!;
+        expect(result.weekend).toBe(false);
+        expect(isWeekend(result.date)).toBe(false);
+      }
     }
   });
 
