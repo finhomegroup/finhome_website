@@ -24,7 +24,6 @@
 import { describe, expect, it } from "vitest";
 import { calculatorMetadata } from "@/components/calc/calculator-page";
 import { generateMetadata } from "@/app/cong-cu/[slug]/page";
-import { metadata as rootMetadata } from "@/app/layout";
 import {
   calculatorPath,
   liveCalculators,
@@ -33,89 +32,7 @@ import {
 import { CALCULATOR_PLACEHOLDER as C } from "@/content/calculators/placeholder";
 import { SITE } from "@/content/site";
 
-/**
- * Every `openGraph` key the root layout (app/layout.tsx) sets. Because Next
- * replaces the object rather than merging it, a route-level `openGraph` that
- * omits any of these ships a page whose card is WORSE than one with no
- * `openGraph` at all. `title`, `description` and `url` are per-page; the rest
- * must be restated verbatim.
- */
-const ROOT_OG_KEYS = [
-  "type",
-  "siteName",
-  "locale",
-  "url",
-  "title",
-  "description",
-  "images",
-] as const;
-
-/**
- * Every `twitter` key the root layout sets. Same replace-not-merge rule as
- * `openGraph`, plus a second trap: Next only back-fills `twitter` from
- * `openGraph` for fields `twitter` does not already have, and the root's
- * inherited `twitter` has title, description and images — so a route with
- * `openGraph` and no `twitter` gets the HOMEPAGE's card, not a back-filled
- * one. `title` and `description` are per-page; `card` and `images` must be
- * restated verbatim.
- */
-const ROOT_TWITTER_KEYS = ["card", "title", "description", "images"] as const;
-
-/** Read off app/layout.tsx rather than hardcoded, so the two lists cannot drift. */
-function rootKeys(which: "openGraph" | "twitter"): string[] {
-  return Object.keys(
-    (rootMetadata[which] ?? {}) as Record<string, unknown>,
-  ).sort();
-}
-
-describe("the hardcoded root key lists still match app/layout.tsx", () => {
-  // If the root layout gains an og/twitter field, the helper must restate it
-  // too; this fails the day that happens instead of shipping a degraded card.
-  it("openGraph", () => {
-    expect(rootKeys("openGraph")).toEqual([...ROOT_OG_KEYS].sort());
-  });
-  it("twitter", () => {
-    expect(rootKeys("twitter")).toEqual([...ROOT_TWITTER_KEYS].sort());
-  });
-});
-
 describe("calculatorMetadata", () => {
-  it("restates every openGraph field the root layout sets, so the share image survives the replace", () => {
-    const meta = calculatorMetadata({
-      slug: "quy-tac-72",
-      metaTitle: "Quy tắc 72",
-      metaDescription: "Bao lâu để tiền tăng gấp đôi.",
-    });
-    const og = meta.openGraph as Record<string, unknown>;
-    for (const key of ROOT_OG_KEYS) {
-      expect(og, `openGraph.${key} is missing`).toHaveProperty(key);
-    }
-    expect(og.siteName).toBe(SITE.name);
-    expect(og.locale).toBe(SITE.locale);
-    expect(og.images).toEqual([
-      { url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name },
-    ]);
-  });
-
-  it("restates every twitter field too, so the X card is the page's and not the homepage's", () => {
-    const meta = calculatorMetadata({
-      slug: "quy-tac-72",
-      metaTitle: "Quy tắc 72",
-      metaDescription: "Bao lâu để tiền tăng gấp đôi.",
-    });
-    const tw = meta.twitter as Record<string, unknown>;
-    for (const key of ROOT_TWITTER_KEYS) {
-      expect(tw, `twitter.${key} is missing`).toHaveProperty(key);
-    }
-    expect(tw.card).toBe("summary_large_image");
-    // `images` is a bare URL list in Twitter's shape, not og's object list.
-    expect(tw.images).toEqual([SITE.ogImage]);
-    // The defect this catches: twitter:title equal to the root layout's title
-    // while og:title was per-page.
-    expect(tw.title).not.toBe(SITE.title);
-    expect(tw.description).not.toBe(SITE.description);
-  });
-
   it("keeps twitter:title / twitter:description in step with og:title / og:description", () => {
     const meta = calculatorMetadata({
       slug: "quy-tac-72",
@@ -153,15 +70,12 @@ describe("calculatorMetadata", () => {
         metaDescription: calc.summary,
       });
       const og = meta.openGraph as Record<string, unknown>;
+      const tw = meta.twitter as Record<string, unknown>;
       const own = `${calculatorPath(calc.slug)}/`;
       expect(meta.alternates?.canonical, calc.slug).toBe(own);
       expect(og.url, calc.slug).toBe(own);
-      expect(og.images, calc.slug).toBeDefined();
-      const tw = meta.twitter as Record<string, unknown>;
-      expect(tw, calc.slug).toBeDefined();
       expect(tw.title, calc.slug).toBe(og.title);
       expect(tw.title, calc.slug).not.toBe(SITE.title);
-      expect(tw.images, calc.slug).toEqual([SITE.ogImage]);
     }
   });
 });

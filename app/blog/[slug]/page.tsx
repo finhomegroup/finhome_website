@@ -18,7 +18,7 @@ import {
   FH_POINTER,
 } from "@/lib/interaction-styles";
 import { POSTS, getPost } from "@/content/posts";
-import { canonicalPath, absUrl, articleSchema } from "@/lib/seo";
+import { canonicalPath, absUrl, articleSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 
 export function generateStaticParams() {
@@ -35,25 +35,14 @@ export async function generateMetadata({
   if (!post) return {};
   const url = canonicalPath(`/blog/${post.slug}`);
   const cover = absUrl(img(post.cover));
-  return {
+  return pageMetadata({
+    path: url,
     title: post.title,
     description: post.excerpt,
-    alternates: { canonical: url },
-    openGraph: {
-      type: "article",
-      url,
-      title: `${post.title} — FinHome`,
-      description: post.excerpt,
-      ...(post.date ? { publishedTime: post.date } : {}),
-      images: [{ url: cover, alt: post.title }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${post.title} — FinHome`,
-      description: post.excerpt,
-      images: [cover],
-    },
-  };
+    ogType: "article",
+    image: { url: cover, alt: post.title },
+    ...(post.date ? { publishedTime: post.date } : {}),
+  });
 }
 
 export default async function Page({

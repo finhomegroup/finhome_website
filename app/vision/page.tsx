@@ -12,7 +12,7 @@ import {
 import { BRAND_IDENTITY } from "@/content/brand-identity";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
-import { canonicalPath } from "@/lib/seo";
+import { canonicalPath, pageMetadata } from "@/lib/seo";
 import {
   IconVerifiedBadge,
   IconShieldFilled,
@@ -34,17 +34,11 @@ const VALUE_ICONS = [
 
 const PRINCIPLE_ICONS = [IconTrendingUp, IconTarget, IconRocket];
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: canonicalPath("/vision"),
   title: "Tầm nhìn & Sứ mệnh",
   description: BRAND_IDENTITY.northStar,
-  alternates: { canonical: canonicalPath("/vision") },
-  openGraph: {
-    type: "website",
-    url: canonicalPath("/vision"),
-    title: "Tầm nhìn & Sứ mệnh — FinHome",
-    description: BRAND_IDENTITY.northStar,
-  },
-};
+});
 
 function BackLink() {
   return (

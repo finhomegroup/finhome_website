@@ -8,20 +8,14 @@ import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import { POSTS } from "@/content/posts";
 import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
-import { canonicalPath } from "@/lib/seo";
+import { canonicalPath, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: canonicalPath("/blog"),
   title: "Tin tức bất động sản",
   description: "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
-  alternates: { canonical: canonicalPath("/blog") },
-  openGraph: {
-    type: "website",
-    url: canonicalPath("/blog"),
-    title: "Tin tức bất động sản — FinHome",
-    description: "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
-  },
-};
+});
 
 export default function BlogPage() {
   const pageCount = Math.max(1, Math.ceil(POSTS.length / BLOG_PAGE_SIZE));

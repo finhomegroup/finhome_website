@@ -8,8 +8,7 @@ import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { getCalculator } from "@/content/calculators/registry";
 import { calculatorPath } from "@/content/calculators/registry";
-import { SITE } from "@/content/site";
-import { canonicalPath, calculatorSchema, faqSchema } from "@/lib/seo";
+import { canonicalPath, calculatorSchema, faqSchema, pageMetadata } from "@/lib/seo";
 
 /**
  * The page shell every calculator route renders inside.
@@ -210,40 +209,21 @@ export function CalculatorPage({
  *   beside `twitter:title` "FinHome — Mua nhà an toàn, sống an yên".
  *   Because a route-level `twitter` also replaces the root's wholesale,
  *   `card` and `images` are restated here too.
+ *
+ * The completeness rule itself now lives once, in `pageMetadata` (`lib/seo.ts`);
+ * this function only knows how to turn a slug into a canonical path.
  */
 export function calculatorMetadata(input: {
   slug: string;
   metaTitle: string;
   metaDescription: string;
 }): Metadata {
-  // `trailingSlash: true` is on, so the canonical must carry the slash or it
-  // advertises a URL that redirects.
-  const path = canonicalPath(calculatorPath(input.slug));
-  return {
+  // The openGraph/twitter completeness rule is `pageMetadata`'s, not this
+  // function's — see its docstring. This one only knows how to turn a slug
+  // into a canonical path.
+  return pageMetadata({
+    path: canonicalPath(calculatorPath(input.slug)),
     title: input.metaTitle,
     description: input.metaDescription,
-    alternates: { canonical: path },
-    openGraph: {
-      type: "website",
-      url: path,
-      // Re-stated, not inherited — see the note above. Values match
-      // app/layout.tsx, which is the reference for the site's card.
-      siteName: SITE.name,
-      locale: SITE.locale,
-      title: `${input.metaTitle} — ${SITE.name}`,
-      description: input.metaDescription,
-      images: [
-        { url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name },
-      ],
-    },
-    twitter: {
-      // Same values as `openGraph` above, in Twitter's shape (`images` is a
-      // bare URL list here). `card` is re-stated for the same reason
-      // `siteName` is: a route-level `twitter` replaces the root layout's.
-      card: "summary_large_image",
-      title: `${input.metaTitle} — ${SITE.name}`,
-      description: input.metaDescription,
-      images: [SITE.ogImage],
-    },
-  };
+  });
 }

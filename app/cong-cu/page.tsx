@@ -5,7 +5,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { CALCULATOR_HUB as C } from "@/content/calculators/hub";
-import { SITE } from "@/content/site";
 import {
   CALCULATORS,
   CATEGORY_LABELS,
@@ -15,26 +14,13 @@ import {
 } from "@/content/calculators/registry";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
-import { canonicalPath } from "@/lib/seo";
+import { canonicalPath, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: canonicalPath(C.slug),
   title: C.metaTitle,
   description: C.metaDescription,
-  alternates: { canonical: canonicalPath(C.slug) },
-  // Stated in full, not partially: Next REPLACES `openGraph` wholesale rather
-  // than merging it field by field, so setting any key here stops the root
-  // layout's from being inherited — including the share image. Values match
-  // app/layout.tsx, which is the reference for the site's card.
-  openGraph: {
-    type: "website",
-    siteName: SITE.name,
-    locale: SITE.locale,
-    url: canonicalPath(C.slug),
-    title: `${C.metaTitle} — ${SITE.name}`,
-    description: C.metaDescription,
-    images: [{ url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name }],
-  },
-};
+});
 
 export default function CalculatorHubPage() {
   // Only categories that hold at least one tool are rendered, so the page
