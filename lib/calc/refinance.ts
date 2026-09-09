@@ -9,9 +9,14 @@
  *
  * Two figures do the work, and they can disagree:
  *
- * - `breakEvenMonths` — how long the monthly saving takes to repay the
- *   closing costs. Short is good, and it is the figure to use if you might
- *   sell or repay early.
+ * - `breakEvenMonths` — the first month at which the payments avoided have
+ *   covered the closing costs. Solved month by month, not as
+ *   `closingCosts ÷ monthlySaving`, because the saving is NOT a constant when
+ *   the two terms differ: once the shorter loan is repaid the saving jumps to
+ *   the whole of the other loan's instalment. The division assumed a constant
+ *   saving forever and returned figures past the end of the loan — 704 months
+ *   on a loan that is fully repaid at month 180. Short is good, and it is the
+ *   figure to use if you might sell or repay early.
  * - `lifetimeSaving` — total interest avoided, less the costs, over the whole
  *   of both loans. This one can be NEGATIVE while the monthly payment falls,
  *   which is the trap: refinancing 18 remaining years into a fresh 20-year
@@ -58,16 +63,76 @@ export type RefinanceResult = {
   /** Fees, echoed back. */
   closingCosts: number;
   /**
-   * Months for the monthly saving to repay the closing costs. Null when the
-   * monthly payment does not fall, so there is nothing to break even on.
-   * Rounded UP: month 8,2 means you are only ahead from month 9.
+   * First completed month at which the payments avoided have covered the
+   * closing costs, solved month by month. Rounded UP to that completed month:
+   * if the costs are covered part-way through month 9 the answer is 9, because
+   * you are only ahead once the month has been paid.
+   *
+   * Null in TWO situations, which the page has to tell apart: the monthly
+   * instalment does not fall, so there is nothing to break even on; or it does
+   * fall but the payments avoided never cover the costs over the whole of
+   * either loan.
    */
   breakEvenMonths: number | null;
   /** True when the new term runs past the old one. */
   termExtended: boolean;
+  /** True when the new term ends BEFORE the old one would have. */
+  termShortened: boolean;
   /** How many months longer, or shorter, the new loan runs. */
   termChangeMonths: number;
 };
+
+/**
+ * Half a đồng. The running total below adds up to 360 float instalments, and
+ * that accumulation drifts from the exact product by up to 1,1e-5 ₫ (measured
+ * over rates 8,5–10,9% and terms 120–360), so testing it against a bare `0`
+ * could push the answer a month either way on a knife-edge case. Half a đồng
+ * is far above that error and far below the smallest unit anyone quotes, so it
+ * cannot move the reported month. Named, per docs §4, because this is a
+ * threshold comparison against a computed float.
+ */
+const BREAK_EVEN_BAND_DONG = 0.5;
+
+/**
+ * First month at which the payments avoided have covered the closing costs.
+ *
+ * Month by month, because the saving is NOT constant when the two terms
+ * differ. From month `newTermMonths + 1` the new loan is gone and the WHOLE
+ * old instalment counts as saving; from month `remainingMonths + 1` the old
+ * loan is gone and the new instalment counts AGAINST you, so the running total
+ * can peak and then fall (the 300-month trap peaks at +811.825.093 ₫ in month
+ * 216 and ends at −202.761.032 ₫). That is why the answer is the FIRST
+ * crossing and not the last.
+ *
+ * Level instalments are used rather than the two amortisation schedules:
+ * `computeLoan`'s rows are constant to within 4e-5 ₫ — only the final row is
+ * nudged to zero the balance — which is inside the band above.
+ *
+ * Null when the monthly instalment does not fall (nothing to break even on),
+ * and null when the payments avoided never cover the costs at all.
+ */
+function breakEvenMonth(
+  currentPayment: number,
+  remainingMonths: number,
+  newPayment: number,
+  newTermMonths: number,
+  closingCosts: number,
+): number | null {
+  if (!(currentPayment - newPayment > 0)) return null;
+
+  let cumulative = -closingCosts;
+  // Zero fees are covered before the first month, not during it.
+  if (cumulative >= -BREAK_EVEN_BAND_DONG) return 0;
+
+  const horizon = Math.max(remainingMonths, newTermMonths);
+  for (let month = 1; month <= horizon; month += 1) {
+    cumulative +=
+      (month <= remainingMonths ? currentPayment : 0) -
+      (month <= newTermMonths ? newPayment : 0);
+    if (cumulative >= -BREAK_EVEN_BAND_DONG) return month;
+  }
+  return null;
+}
 
 /**
  * Compare a current loan against a refinancing offer.
@@ -119,10 +184,15 @@ export function compareRefinance(
     interestSaving,
     lifetimeSaving: interestSaving - closingCosts,
     closingCosts,
-    // Rounded up, because you are not ahead until the month completes.
-    breakEvenMonths:
-      monthlySaving > 0 ? Math.ceil(closingCosts / monthlySaving) : null,
+    breakEvenMonths: breakEvenMonth(
+      current.monthlyPrincipalInterest,
+      remainingMonths,
+      next.monthlyPrincipalInterest,
+      newTermMonths,
+      closingCosts,
+    ),
     termExtended: newTermMonths > remainingMonths,
+    termShortened: newTermMonths < remainingMonths,
     termChangeMonths: newTermMonths - remainingMonths,
   };
 }

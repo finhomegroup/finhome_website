@@ -8,7 +8,28 @@
 // tiết kiệm lãi 517.078.691 ₫, sau phí 487.078.691 ₫, hoàn phí sau 13 tháng.
 // Kéo kỳ hạn lên 300 tháng: trả hằng tháng còn 12.078.406 ₫ (giảm 3.897.338 ₫)
 // nhưng tổng lãi TĂNG 172.761.032 ₫, tức lỗ 202.761.032 ₫ sau phí — trong khi
-// điểm hoàn phí lại chỉ có 8 tháng. Re-read the module if the defaults move.
+// điểm hoàn phí lại chỉ có 8 tháng.
+//
+// The shortened-term case quoted in FAQ item 4 of 5 — `faq.items[3]`,
+// "Chuyển đổi mà giữ nguyên khoản trả hằng tháng thì sao?" — is also the
+// module's own output: 9,75%/năm over 180 tháng with 60 triệu of fees gives
+// giảm mỗi tháng 85.305 ₫, điểm hoàn phí 183 tháng, tiết kiệm thực
+// 530.481.652 ₫. That break-even is solved month by month, not by chi phí ÷
+// giảm mỗi tháng, which used to report 704 tháng there. (The last FAQ answer,
+// `faq.items[4]`, is the loan-insurance one and quotes no figures.)
+//
+// FAQ item 1, `faq.items[0]`, quotes two more break-evens off the same
+// defaults at 8,5%/năm with the default 30 triệu phí: kỳ hạn mới 180 tháng →
+// 25 tháng, and shortening until the instalment barely falls → 157 tháng at
+// kỳ hạn 155 (giảm 1.694 ₫/tháng), peaking at 159 tháng at kỳ hạn 158 (giảm
+// 168.435 ₫/tháng). Swept over every new term 1–216 at 8,5%/30 triệu, those
+// 157–159 tháng ARE the far end: 159 is the latest break-even that exists at
+// all, and every term below 155 has none, because there the instalment rises
+// instead of falling. That line used to claim 181 tháng, which the module does
+// not produce at 8,5% — 181 is what 9,7%/năm over 180 tháng with 30 triệu phí
+// gives.
+//
+// Re-read the module if the defaults move.
 
 export const REFINANCE = {
   slug: "/cong-cu/tai-cap-von",
@@ -79,8 +100,12 @@ export const REFINANCE = {
 
     noBreakEvenNotice:
       "Khoản trả hằng tháng không giảm, nên không có điểm hoàn phí. Điều đó không có nghĩa là phương án tệ: rút ngắn kỳ hạn làm mỗi tháng nặng hơn nhưng tổng lãi giảm. Hãy xem dòng tiết kiệm thực sau phí để quyết định.",
+    neverRecoveredNotice:
+      "Khoản trả hằng tháng có giảm, nhưng phần tiết kiệm cộng dồn không bao giờ bù đủ chi phí chuyển đổi trong suốt cả hai khoản vay, nên không có điểm hoàn phí. Hãy xem dòng tiết kiệm thực sau phí — nó đang âm.",
     extendedNotice:
       "Kỳ hạn mới dài hơn số tháng còn lại của khoản vay hiện tại. Hãy đọc dòng tiết kiệm thực sau phí trước khi mừng vì khoản trả hằng tháng giảm.",
+    shortenedNotice:
+      "Kỳ hạn mới ngắn hơn số tháng còn lại, nên khoản trả hằng tháng giảm ít hơn so với khi giữ nguyên kỳ hạn — càng rút ngắn nhiều thì càng giảm ít và điểm hoàn phí càng muộn; rút ngắn đủ nhiều thì khoản trả còn TĂNG và không có điểm hoàn phí nào để đọc. Bù lại, từ tháng khoản vay mới trả xong, bạn không còn phải trả gì trong khi khoản vay cũ thì vẫn còn chạy, nên phần tiết kiệm cộng dồn nhảy vọt từ đó. Vì vậy ở đây con số nên đọc là tiết kiệm thực sau phí.",
   },
 
   trapNotice:
@@ -91,8 +116,8 @@ export const REFINANCE = {
     body: [
       "Khoản vay hiện tại được tính như một khoản vay mới bằng đúng dư nợ còn lại, trong đúng số tháng còn lại — vì từ hôm nay trở đi nó chính là như vậy. Cả hai bên đều dùng công thức niên kim: A = P × r ÷ (1 − (1 + r)^(−n)).",
       "Giảm mỗi tháng = khoản trả hiện tại − khoản trả mới. Tiết kiệm lãi trước phí = lãi còn phải trả nếu giữ nguyên − lãi phải trả nếu chuyển. Tiết kiệm thực sau phí là con số thứ hai trừ chi phí chuyển đổi.",
-      "Điểm hoàn phí = chi phí chuyển đổi ÷ giảm mỗi tháng, làm tròn lên. Làm tròn lên vì bạn chỉ thực sự có lãi khi tháng đó đã trả xong: 8,2 tháng nghĩa là từ tháng thứ 9.",
-      "Khi khoản trả hằng tháng không giảm, công cụ để trống điểm hoàn phí thay vì ghi 0 hay một số âm — không có gì để hoàn khi không có khoản tiết kiệm hằng tháng nào.",
+      "Điểm hoàn phí được tính lần lượt theo từng tháng: cộng dồn phần khoản trả tiết kiệm được, rồi lấy tháng đầu tiên mà phần cộng dồn đó bù đủ chi phí chuyển đổi. Công cụ không dùng phép chia chi phí ÷ giảm mỗi tháng, vì mức tiết kiệm không phải một con số cố định: khi kỳ hạn mới NGẮN hơn số tháng còn lại thì từ lúc khoản vay mới trả xong, phần tiết kiệm nhảy lên bằng TOÀN BỘ khoản trả cũ. Phép chia đơn giản từng cho ra 704 tháng trên một khoản vay chỉ dài 180 tháng. Con số báo ra là tháng đã trả xong, vì bạn chỉ thực sự có lãi khi tháng đó đã hoàn tất.",
+      "Công cụ để trống điểm hoàn phí trong hai trường hợp, thay vì ghi 0 hay một số âm. Một là khoản trả hằng tháng không giảm — không có gì để hoàn khi không có khoản tiết kiệm hằng tháng nào. Hai là khoản trả có giảm nhưng phần tiết kiệm cộng dồn không bao giờ bù đủ chi phí chuyển đổi trong suốt cả hai khoản vay.",
       "Cả hai bên đều giả định lãi suất không đổi. Với khoản vay mua nhà tại Việt Nam, đây là giả định mạnh nhất trong toàn bộ phép tính: hãy nhập mức lãi SAU ưu đãi ở cả hai bên, vì so mức ưu đãi mới với mức thả nổi cũ luôn cho kết quả đẹp một cách sai lệch.",
     ],
   },
@@ -102,7 +127,7 @@ export const REFINANCE = {
     items: [
       {
         q: "Nên tin điểm hoàn phí hay tiết kiệm thực sau phí?",
-        a: "Tùy bạn định giữ khoản vay bao lâu. Nếu có khả năng bán nhà hoặc tất toán trong vài năm tới, điểm hoàn phí là con số quyết định — chuyển đổi rồi trả hết trước khi hoàn được phí là lỗ. Nếu bạn sẽ trả đến hết kỳ hạn, tiết kiệm thực sau phí mới là con số đúng. Khi hai con số mâu thuẫn, gần như luôn là vì kỳ hạn mới dài hơn kỳ hạn còn lại.",
+        a: "Tùy bạn định giữ khoản vay bao lâu. Nếu có khả năng bán nhà hoặc tất toán trong vài năm tới, điểm hoàn phí là con số quyết định — chuyển đổi rồi trả hết trước khi hoàn được phí là lỗ. Nếu bạn sẽ trả đến hết kỳ hạn, tiết kiệm thực sau phí mới là con số đúng. Hai con số có thể mâu thuẫn theo cả hai chiều, nên đừng chỉ nhìn một chiều: kỳ hạn mới DÀI hơn số tháng còn lại thì điểm hoàn phí rất ngắn mà tiết kiệm thực lại âm. Kỳ hạn mới NGẮN hơn thì tiết kiệm thực rất lớn, còn điểm hoàn phí tùy bạn rút ngắn bao nhiêu: với dư nợ mặc định chuyển sang 8,5%, rút từ 216 xuống 180 tháng vẫn hoàn phí sau 25 tháng, nhưng rút tới mức khoản trả hằng tháng gần như không giảm — kỳ hạn mới quanh 155–158 tháng — thì điểm hoàn phí bị đẩy ra 157–159 tháng, và rút ngắn hơn nữa thì khoản trả tăng lên nên không còn điểm hoàn phí nào.",
       },
       {
         q: "Phí trả nợ trước hạn tính thế nào?",
@@ -114,7 +139,7 @@ export const REFINANCE = {
       },
       {
         q: "Chuyển đổi mà giữ nguyên khoản trả hằng tháng thì sao?",
-        a: "Đây thường là phương án tốt nhất và công cụ hỗ trợ được: hãy giảm kỳ hạn mới xuống cho tới khi khoản trả hằng tháng mới xấp xỉ khoản trả hiện tại. Bạn không nhẹ hơn mỗi tháng, nhưng rút ngắn kỳ hạn và tiết kiệm lãi nhiều nhất. Nhập kỳ hạn 180 tháng vào ví dụ mặc định để thấy hiệu ứng.",
+        a: "Đây thường là phương án tốt nhất và công cụ hỗ trợ được: hãy giảm kỳ hạn mới xuống cho tới khi khoản trả hằng tháng mới xấp xỉ khoản trả hiện tại. Bạn không nhẹ hơn mỗi tháng, nhưng rút ngắn kỳ hạn và tiết kiệm lãi nhiều nhất. Nhập kỳ hạn 180 tháng vào ví dụ mặc định để thấy hiệu ứng. Đổi lại, mức giảm hằng tháng gần như bằng 0, nên điểm hoàn phí sẽ rất muộn — đó là bình thường chứ không phải dấu hiệu xấu, và trong trường hợp này con số phải đọc là tiết kiệm thực sau phí. Ví dụ với dư nợ mặc định, chuyển sang 9,75%/năm trong 180 tháng và chịu 60 triệu phí: mỗi tháng chỉ nhẹ đi 85.305 ₫ nên điểm hoàn phí là 183 tháng, nhưng tiết kiệm thực sau phí vẫn là 530.481.652 ₫.",
       },
       {
         q: "Công cụ có tính phí bảo hiểm khoản vay không?",

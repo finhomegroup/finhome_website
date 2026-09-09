@@ -171,15 +171,35 @@ export function RefinanceCalculator() {
         />
       </ResultGroup>
 
-      {result !== null && result.breakEvenMonths === null ? (
+      {/* Break-even can be blank for two different reasons, and the copy for
+          one is wrong for the other: either the instalment never fell, or it
+          fell and the saving never covered the costs. Both notices, and the
+          two term notices, stay OUTSIDE the live group above. */}
+      {result !== null &&
+      result.breakEvenMonths === null &&
+      result.monthlySaving <= 0 ? (
         <p className="mt-4 text-sm leading-relaxed text-ink-3">
           {C.form.noBreakEvenNotice}
+        </p>
+      ) : null}
+
+      {result !== null &&
+      result.breakEvenMonths === null &&
+      result.monthlySaving > 0 ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.neverRecoveredNotice}
         </p>
       ) : null}
 
       {result?.termExtended ? (
         <p className="mt-4 text-sm leading-relaxed text-ink-3">
           {C.form.extendedNotice}
+        </p>
+      ) : null}
+
+      {result?.termShortened && result.breakEvenMonths !== null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.shortenedNotice}
         </p>
       ) : null}
     </CalculatorCard>
