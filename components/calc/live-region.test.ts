@@ -85,7 +85,12 @@ describe("the live-region conventions", () => {
     }
   });
 
-  it("gives each calculator one live ResultGroup, or an allowlisted reason", () => {
+  it("gives each calculator exactly one live ResultGroup, or its allowlisted count", () => {
+    // toBe, not toBeLessThanOrEqual: scripts/check-built-markup.mjs enforces
+    // the built-HTML side of this same rule with `!== liveLimit` — a page
+    // that dropped its live region entirely (0 found) would pass a
+    // LessThanOrEqual check here and only fail after a full build. Matching
+    // exactly catches that at the source-text stage instead.
     for (const file of calculatorComponents()) {
       const live = resultGroups(
         readFileSync(`${COMPONENT_DIR}/${file}`, "utf8"),
@@ -93,8 +98,8 @@ describe("the live-region conventions", () => {
       const limit = limitByFilename.get(file) ?? 1;
       expect(
         live.length,
-        `${file} has ${live.length} live ResultGroups (limit ${limit})`,
-      ).toBeLessThanOrEqual(limit);
+        `${file} has ${live.length} live ResultGroups (expected exactly ${limit})`,
+      ).toBe(limit);
     }
   });
 
