@@ -114,6 +114,40 @@ describe("projectRetirement — inflation", () => {
     );
   });
 
+  it("deflates a start-of-year FLOW by one year less than an end-of-year balance", () => {
+    // The two deflators are the point. Both flows move before the year's
+    // return is credited, so a withdrawal shares its year's balance figure
+    // but not its deflator — and on a funded plan that makes `realWithdrawal`
+    // the level spend that was asked for, in EVERY year. Deflating it with
+    // the balance deflator instead would report 53.658,54 for a 55.000 spend,
+    // a 2,5% understatement that no single-year spot check reveals.
+    const result = projectRetirement(BASE)!;
+    for (const row of result.years.filter((r) => !r.accumulating)) {
+      if (row.withdrawal === 0) continue;
+      expect(row.realWithdrawal).toBeCloseTo(80_000 - 25_000, 6);
+      // Explicitly NOT the balance deflator: the two differ by 1,025x.
+      const wrong = row.withdrawal / Math.pow(1.025, row.age - 35 + 1);
+      expect(row.realWithdrawal / wrong).toBeCloseTo(1.025, 10);
+    }
+  });
+
+  it("reports the contribution in today's money on the same convention", () => {
+    // A contribution growing 2%/năm against 2,5% inflation is SHRINKING in
+    // real terms, which is the fact the nominal column hides.
+    const result = projectRetirement(BASE)!;
+    const accumulating = result.years.filter((r) => r.accumulating);
+    expect(accumulating[0].realContribution).toBeCloseTo(20_000, 6);
+    expect(accumulating[29].realContribution).toBeCloseTo(
+      20_000 * Math.pow(1.02 / 1.025, 29),
+      6,
+    );
+    expect(accumulating[29].realContribution).toBeLessThan(20_000);
+    // And a retirement year contributes nothing in either measure.
+    for (const row of result.years.filter((r) => !r.accumulating)) {
+      expect(row.realContribution).toBe(0);
+    }
+  });
+
   it("leaves real and nominal identical at zero inflation", () => {
     const result = projectRetirement({ ...BASE, inflationPercent: 0 })!;
     expect(result.realBalanceAtRetirement).toBeCloseTo(

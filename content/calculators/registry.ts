@@ -466,7 +466,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Thu nhập hưu trí",
     summary: "Mức rút hằng tháng mà khoản tích lũy có thể duy trì, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {

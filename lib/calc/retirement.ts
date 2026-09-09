@@ -73,6 +73,20 @@ export type RetirementYear = {
   contribution: number;
   /** Taken out this year, nominal. Zero before retirement. */
   withdrawal: number;
+  /**
+   * The same two flows in TODAY's money.
+   *
+   * These exist here rather than in the pages because they need a DIFFERENT
+   * deflator from the balances above, and getting that wrong is invisible:
+   * both flows move at the START of a year and both balances are end-of-year
+   * figures, so dividing a withdrawal by the balance deflator understates it
+   * by exactly one year of inflation. On a funded plan `realWithdrawal` is
+   * the level spend that was asked for, in every year — which is the
+   * identity retirement.test.ts asserts, and the reason a page must not
+   * compute this itself.
+   */
+  realContribution: number;
+  realWithdrawal: number;
   /** Investment return credited this year, nominal. */
   investmentReturn: number;
 };
@@ -176,9 +190,13 @@ export function projectRetirement(
 
   for (let age = currentAge; age < endAge; age += 1) {
     const elapsed = age - currentAge;
-    // One deflator, used for every real figure, so the page cannot apply a
-    // second one by accident.
+    // Two deflators, both computed here so no page can apply one of its own.
+    // `deflator` is end-of-year, for the balance; `flowDeflator` is
+    // start-of-year, for the contribution and the withdrawal, which both move
+    // before the year's return is credited. They differ by one year of
+    // inflation, and using the wrong one is a silent 2,5%-a-year error.
     const deflator = Math.pow(1 + inflation, elapsed + 1);
+    const flowDeflator = Math.pow(1 + inflation, elapsed);
     const accumulating = age < retirementAge;
 
     let contribution = 0;
@@ -226,6 +244,8 @@ export function projectRetirement(
       realBalance: balance / deflator,
       contribution,
       withdrawal,
+      realContribution: contribution / flowDeflator,
+      realWithdrawal: withdrawal / flowDeflator,
       investmentReturn,
     });
 
