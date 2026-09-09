@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/reveal";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
+import { calculatorMetadata } from "@/components/calc/calculator-page";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import {
@@ -41,10 +42,23 @@ export async function generateMetadata({
   const { slug } = await params;
   const calc = getCalculator(slug);
   if (!calc) return {};
+  // Same helper the live routes use, so a placeholder gets its OWN canonical,
+  // og:url, og:title and share image instead of inheriting the root layout's
+  // — which are the HOMEPAGE's. `title` is unchanged: the helper passes
+  // `metaTitle` straight through and the root template appends "— FinHome".
+  const meta = calculatorMetadata({
+    slug,
+    metaTitle: `${calc.title} — ${C.metaTitleSuffix}`,
+    metaDescription: calc.summary,
+  });
   return {
-    title: `${calc.title} — ${C.metaTitleSuffix}`,
-    description: calc.summary,
-    // Deliberately excluded from search. See the docstring above.
+    ...meta,
+    // Deliberately excluded from search. See the docstring above. The
+    // canonical the helper sets is self-referential ON PURPOSE and does not
+    // contradict this: pointing a noindex page at the homepage was the bug,
+    // because it declared the homepage to be THIS page's canonical URL.
+    // These slugs are still absent from app/sitemap.ts, which maps
+    // `liveCalculators()` only — a noindex page must not be submitted.
     robots: { index: false, follow: true },
   };
 }

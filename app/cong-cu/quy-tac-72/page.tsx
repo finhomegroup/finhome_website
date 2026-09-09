@@ -8,20 +8,18 @@ import { JsonLd } from "@/components/json-ld";
 import { RuleOf72Calculator } from "@/components/rule-of-72-calculator";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { RULE_OF_72 as C } from "@/content/calculators/rule-of-72";
-import { canonicalPath, calculatorSchema, faqSchema } from "@/lib/seo";
+import { calculatorMetadata } from "@/components/calc/calculator-page";
+import { calculatorSchema, faqSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  // The root layout's "%s — FinHome" template appends the brand.
-  title: C.metaTitle,
-  description: C.metaDescription,
-  alternates: { canonical: canonicalPath(C.slug) },
-  openGraph: {
-    type: "website",
-    url: canonicalPath(C.slug),
-    title: `${C.metaTitle} — FinHome`,
-    description: C.metaDescription,
-  },
-};
+// Built by the shared helper rather than by hand: Next REPLACES openGraph
+// wholesale, so a hand-written block silently dropped the share image,
+// og:site_name and og:locale that app/layout.tsx supplies. The root layout's
+// "%s — FinHome" template still appends the brand to `title`.
+export const metadata: Metadata = calculatorMetadata({
+  slug: "quy-tac-72",
+  metaTitle: C.metaTitle,
+  metaDescription: C.metaDescription,
+});
 
 function Prose({ title, body }: { title: string; body: readonly string[] }) {
   return (

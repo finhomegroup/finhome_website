@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { getCalculator } from "@/content/calculators/registry";
 import { calculatorPath } from "@/content/calculators/registry";
+import { SITE } from "@/content/site";
 import { canonicalPath, calculatorSchema, faqSchema } from "@/lib/seo";
 
 /**
@@ -182,6 +183,33 @@ export function CalculatorPage({
  *
  * Next requires `metadata` to be a static module export, so this cannot live
  * in the shell component — but the shape can still be written once.
+ *
+ * The `openGraph` AND `twitter` objects below are both deliberately COMPLETE
+ * rather than the two or three per-page fields they look like they need, and
+ * both must exist. The two failure modes are different sides of the same
+ * behaviour:
+ *
+ * - **`openGraph` is REPLACED, not merged.** The moment a route sets any
+ *   `openGraph` key it stops inheriting all of the root layout's — including
+ *   the share image. See `node_modules/next/dist/docs/01-app/03-api-reference/
+ *   04-functions/generate-metadata.md` ("Inheriting fields"): "All `openGraph`
+ *   fields from `app/layout.js` are inherited ... because `app/about/page.js`
+ *   doesn't set `openGraph` metadata." Without `images`/`siteName`/`locale`
+ *   repeated here, every calculator page shipped a card with no picture.
+ *   `title` alone is the documented exception: it IS replaced, not merged.
+ * - **`twitter` must be set, not left to be back-filled from `openGraph`.**
+ *   Next does copy `title`/`description`/`images` from `openGraph` into
+ *   `twitter` (`postProcessMetadata` in
+ *   `node_modules/next/dist/lib/metadata/resolve-metadata.js`), but ONLY for
+ *   the fields `twitter` does not already have — and it runs once, on the
+ *   fully accumulated metadata. `app/layout.tsx` sets a complete `twitter`
+ *   object, so that inherited object already has all three and the back-fill
+ *   is suppressed. A route that sets `openGraph` and no `twitter` therefore
+ *   ships a per-page `og:title` next to the HOMEPAGE's `twitter:title`:
+ *   out/cong-cu/quy-tac-72/index.html shipped `og:title` "Quy tắc 72 — …"
+ *   beside `twitter:title` "FinHome — Mua nhà an toàn, sống an yên".
+ *   Because a route-level `twitter` also replaces the root's wholesale,
+ *   `card` and `images` are restated here too.
  */
 export function calculatorMetadata(input: {
   slug: string;
@@ -198,8 +226,24 @@ export function calculatorMetadata(input: {
     openGraph: {
       type: "website",
       url: path,
-      title: `${input.metaTitle} — FinHome`,
+      // Re-stated, not inherited — see the note above. Values match
+      // app/layout.tsx, which is the reference for the site's card.
+      siteName: SITE.name,
+      locale: SITE.locale,
+      title: `${input.metaTitle} — ${SITE.name}`,
       description: input.metaDescription,
+      images: [
+        { url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name },
+      ],
+    },
+    twitter: {
+      // Same values as `openGraph` above, in Twitter's shape (`images` is a
+      // bare URL list here). `card` is re-stated for the same reason
+      // `siteName` is: a route-level `twitter` replaces the root layout's.
+      card: "summary_large_image",
+      title: `${input.metaTitle} — ${SITE.name}`,
+      description: input.metaDescription,
+      images: [SITE.ogImage],
     },
   };
 }

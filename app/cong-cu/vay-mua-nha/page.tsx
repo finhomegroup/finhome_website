@@ -8,19 +8,17 @@ import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { LoanCalculator } from "@/components/loan-calculator";
 import { LOAN as C } from "@/content/calculators/loan";
-import { canonicalPath, calculatorSchema, faqSchema } from "@/lib/seo";
+import { calculatorMetadata } from "@/components/calc/calculator-page";
+import { calculatorSchema, faqSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: C.metaTitle,
-  description: C.metaDescription,
-  alternates: { canonical: canonicalPath(C.slug) },
-  openGraph: {
-    type: "website",
-    url: canonicalPath(C.slug),
-    title: `${C.metaTitle} — FinHome`,
-    description: C.metaDescription,
-  },
-};
+// Built by the shared helper rather than by hand: Next REPLACES openGraph
+// wholesale, so a hand-written block silently dropped the share image,
+// og:site_name and og:locale that app/layout.tsx supplies.
+export const metadata: Metadata = calculatorMetadata({
+  slug: "vay-mua-nha",
+  metaTitle: C.metaTitle,
+  metaDescription: C.metaDescription,
+});
 
 function Prose({ title, body }: { title: string; body: readonly string[] }) {
   return (
