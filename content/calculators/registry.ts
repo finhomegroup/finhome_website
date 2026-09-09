@@ -434,7 +434,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Góp quỹ 401(k)",
     summary: "Mức đóng góp và phần đối ứng của công ty, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
