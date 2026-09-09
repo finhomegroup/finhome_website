@@ -442,7 +442,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Đóng tối đa quỹ 401(k)",
     summary: "Cách chia đều để đạt mức đóng tối đa trong năm, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
