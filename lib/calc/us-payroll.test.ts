@@ -172,3 +172,121 @@ describe("computeUsPayroll", () => {
     expect(high.effectiveRatePercent!).toBeLessThan(7.65);
   });
 });
+
+describe("marginalRatePercent at the boundaries", () => {
+  // marginalRatePercent answers a NEXT-dollar question, so exactly ON a
+  // boundary it must report the RIGHT-hand derivative of the statutory
+  // schedule. At wages equal to the wage base the Social Security maximum
+  // is already paid, so the next dollar costs 1,45% (or 2,9% self-employed);
+  // at wages equal to the surtax threshold the next dollar is the first one
+  // "in excess of" it and carries the extra 0,9%. Both boundary values are
+  // printed on the page as result rows, so typing them is expected use.
+
+  it("charges no more Social Security on the dollar after the wage base", () => {
+    const base = PAYROLL_YEARS[2026].socialSecurityWageBase; // 184.500
+    expect(
+      computeUsPayroll({ ...BASE, wages: base - 1 })!.marginalRatePercent,
+    ).toBeCloseTo(7.65, 8);
+    // 6,2 + 1,45 -> 1,45: the last dollar cost 7,65%, the next costs 1,45%.
+    expect(
+      computeUsPayroll({ ...BASE, wages: base })!.marginalRatePercent,
+    ).toBeCloseTo(1.45, 8);
+    expect(
+      computeUsPayroll({ ...BASE, wages: base + 1 })!.marginalRatePercent,
+    ).toBeCloseTo(1.45, 8);
+  });
+
+  it("charges the surtax on the dollar after the threshold", () => {
+    const threshold = 200_000; // single
+    expect(
+      computeUsPayroll({ ...BASE, wages: threshold - 1 })!.marginalRatePercent,
+    ).toBeCloseTo(1.45, 8);
+    const at = computeUsPayroll({ ...BASE, wages: threshold })!;
+    expect(at.marginalRatePercent).toBeCloseTo(2.35, 8);
+    // The flag and the rate are deliberately DIFFERENT questions: no surtax
+    // is owed on these wages (nothing is in excess of the threshold yet),
+    // but the next dollar earned does carry it.
+    expect(at.aboveSurtaxThreshold).toBe(false);
+    expect(at.additionalMedicareTax).toBe(0);
+    expect(
+      computeUsPayroll({ ...BASE, wages: threshold + 1 })!.marginalRatePercent,
+    ).toBeCloseTo(2.35, 8);
+  });
+
+  it("doubles both boundary rates for the self-employed", () => {
+    const base = PAYROLL_YEARS[2026].socialSecurityWageBase;
+    expect(
+      computeUsPayroll({ ...BASE, wages: base, selfEmployed: true })!
+        .marginalRatePercent,
+    ).toBeCloseTo(2.9, 8);
+    // 2 x 1,45 + 0,9 — the surtax is never doubled.
+    expect(
+      computeUsPayroll({ ...BASE, wages: 200_000, selfEmployed: true })!
+        .marginalRatePercent,
+    ).toBeCloseTo(3.8, 8);
+  });
+
+  it("uses each filing status's own threshold at the boundary", () => {
+    expect(
+      computeUsPayroll({ ...BASE, wages: 250_000, filingStatus: "married" })!
+        .marginalRatePercent,
+    ).toBeCloseTo(2.35, 8);
+    expect(
+      computeUsPayroll({ ...BASE, wages: 200_000, filingStatus: "head" })!
+        .marginalRatePercent,
+    ).toBeCloseTo(2.35, 8);
+    // 125.000 sits BELOW the wage base, so Social Security still applies and
+    // the surtax stacks on top of the full rate: 6,2 + 1,45 + 0,9.
+    expect(
+      computeUsPayroll({
+        ...BASE,
+        wages: 125_000,
+        filingStatus: "marriedSeparate",
+      })!.marginalRatePercent,
+    ).toBeCloseTo(8.55, 8);
+  });
+
+  it("applies the same rule to the earlier year's own wage base", () => {
+    const base2025 = PAYROLL_YEARS[2025].socialSecurityWageBase; // 176.100
+    expect(
+      computeUsPayroll({ ...BASE, wages: base2025 - 1, year: 2025 })!
+        .marginalRatePercent,
+    ).toBeCloseTo(7.65, 8);
+    expect(
+      computeUsPayroll({ ...BASE, wages: base2025, year: 2025 })!
+        .marginalRatePercent,
+    ).toBeCloseTo(1.45, 8);
+    expect(
+      computeUsPayroll({ ...BASE, wages: 200_000, year: 2025 })!
+        .marginalRatePercent,
+    ).toBeCloseTo(2.35, 8);
+  });
+
+  it("equals the forward difference of the tax bill over the next dollar", () => {
+    // The definition, checked against the module's own money figures rather
+    // than against the marginal-rate formula: the cost of one more dollar of
+    // wages. Residue is float only (worst ~7e-11 on a ~1e2 subtraction), so
+    // 6 decimal places is generous but not loose.
+    const wages = [
+      50_000, 100_000, 176_099, 176_100, 184_499, 184_500, 184_501, 199_999,
+      200_000, 200_001, 250_000, 400_000,
+    ];
+    for (const year of [2025, 2026]) {
+      for (const selfEmployed of [false, true]) {
+        for (const w of wages) {
+          const here = computeUsPayroll({ ...BASE, wages: w, year, selfEmployed })!;
+          const next = computeUsPayroll({
+            ...BASE,
+            wages: w + 1,
+            year,
+            selfEmployed,
+          })!;
+          expect(here.marginalRatePercent).toBeCloseTo(
+            (next.employeeTotal - here.employeeTotal) * 100,
+            6,
+          );
+        }
+      }
+    }
+  });
+});

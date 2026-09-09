@@ -29,9 +29,16 @@
  * - the bond-equivalent yield, the semiannually-compounded rate whose
  *   half-year growth matches the bill's actual growth
  *
- * For bills of 182 days or less the bond-equivalent yield IS the Treasury's
- * coupon equivalent. For longer bills it differs slightly, and the page says
- * so rather than labelling our figure with the Treasury's name.
+ * For bills of 182 days or less the Treasury's coupon equivalent is its
+ * published "investment rate", which is SIMPLE actual/365 — 31 CFR 356
+ * App B §I.B: i = [(100 − P)/P] × (y/r), stated there to involve no
+ * compounding. That is `investmentYieldPercent`, NOT the bond-equivalent
+ * yield: the two never coincide at any accepted integer term (5,2009% vs
+ * 5,2011% at 182 days; equality would need exactly 182,5 days, which this
+ * module rejects as non-integer). Above 182 days the Treasury switches to a
+ * semiannually-compounded quadratic; `bondEquivalentYieldPercent` is the
+ * same idea derived from first principles, so the page reports it without
+ * borrowing the Treasury's name.
  */
 
 /** Days used to annualise a discount quote. A convention, not a calendar. */
@@ -67,9 +74,16 @@ export type TbillResult = {
   discountAmount: number;
   /** Return over the holding period, not annualised. */
   periodReturnPercent: number | null;
-  /** (F − P)/P × 365/t. The honest simple annual rate. */
+  /**
+   * (F − P)/P × 365/t. The honest simple annual rate — and for bills of 182
+   * days or less it IS the Treasury's published investment rate / coupon
+   * equivalent on a 365-day year (31 CFR 356 App B §I.B).
+   */
   investmentYieldPercent: number | null;
-  /** Semiannually compounded. Equals the Treasury coupon equivalent to 182 days. */
+  /**
+   * Semiannually compounded, derived from the bill's own growth. NOT the
+   * Treasury coupon equivalent at any term — see the module docstring.
+   */
   bondEquivalentYieldPercent: number | null;
   /** Annually compounded — what an APY on a deposit means. */
   effectiveAnnualYieldPercent: number | null;
@@ -133,6 +147,13 @@ export function computeUsTbill(input: TbillInput): TbillResult | null {
 
   // The semiannually compounded rate whose half-year growth matches the
   // bill's. Derived, not transcribed: solve (1 + i/2)^(t/182,5) = F/P.
+  //
+  // All three annualisations below are nominal rates j(m) = m × (G^(1/m) − 1)
+  // for the SAME growth G, at m = 365/t, 2 and 1 compoundings a year. j is
+  // DECREASING in m for G > 1, so the simple figure sits below this one only
+  // while 365/t > 2, i.e. t < 182,5 days; from t = 183 the order reverses,
+  // and simple exceeds the annual figure from t = 366. Do not re-introduce
+  // the claim that the three are always ascending.
   const bondEquivalentYieldPercent =
     (Math.pow(growth, HALF_YEAR / daysToMaturity) - 1) * 2 * 100;
 

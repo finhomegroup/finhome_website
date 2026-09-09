@@ -102,6 +102,20 @@ describe("computeUsInflation — CPI mode", () => {
     expect(result.yearsToHalvePower).toBe(null);
   });
 
+  it("halves purchasing power at the rate the two CPI readings imply", () => {
+    // Hand-derived, not read off the implementation: the two readings imply
+    // g = 320/172,2, so an annual rate of g^(1/25) − 1 = 0,0250963172, and
+    // ln 2 / ln(1,0250963172) = 27,9646 years. The content file's provenance
+    // block quotes the figure the page renders at 2 dp, 27,96.
+    const result = computeUsInflation(CPI)!;
+    expect(result.yearsToHalvePower).toBeCloseTo(27.96462, 5);
+    // Cross-check against the definition rather than the formula: at that
+    // horizon purchasing power must be exactly one half.
+    const halved =
+      1 / Math.pow(1 + result.annualRatePercent! / 100, result.yearsToHalvePower!);
+    expect(halved).toBeCloseTo(0.5, 12);
+  });
+
   it("rejects a CPI reading of zero or below", () => {
     // The index has no zero point, so a 0 means the reader mistyped. A
     // ratio computed from it would look entirely plausible.

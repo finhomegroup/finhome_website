@@ -45,17 +45,69 @@ describe("computeUsTbill", () => {
     expect(result.investmentYieldPercent!).toBeGreaterThan(dayBasisOnly);
   });
 
-  it("orders the three yields as compounding frequency demands", () => {
-    const result = computeUsTbill(BASE)!;
-    // Simple < semiannual < annual, because more frequent reinvestment of
-    // the same period return produces a higher stated annual rate.
-    expect(result.investmentYieldPercent!).toBeLessThan(
-      result.bondEquivalentYieldPercent!,
+  it("orders the three yields by compounding frequency, and only below 182,5 days", () => {
+    // All three are NOMINAL rates for the same annual growth G, at m = 365/t,
+    // 2 and 1 compoundings a year: j(m) = m × (G^(1/m) − 1), which DECREASES
+    // as m rises. So simple < semiannual holds only while 365/t > 2.
+    const short = computeUsTbill(BASE)!; // 91 days
+    expect(short.investmentYieldPercent!).toBeLessThan(
+      short.bondEquivalentYieldPercent!,
     );
-    expect(result.bondEquivalentYieldPercent!).toBeLessThan(
-      result.effectiveAnnualYieldPercent!,
+    expect(short.bondEquivalentYieldPercent!).toBeLessThan(
+      short.effectiveAnnualYieldPercent!,
     );
-    expect(result.effectiveAnnualYieldPercent).toBeCloseTo(5.2341341, 5);
+    expect(short.effectiveAnnualYieldPercent).toBeCloseTo(5.2341341, 5);
+
+    // 364 days is the 52-week bill daysHelp advertises, so this is a shipped
+    // case, not an edge one. Past 182,5 days the first inequality flips.
+    const long = computeUsTbill({ ...BASE, daysToMaturity: 364 })!;
+    expect(long.investmentYieldPercent).toBeCloseTo(5.3393798, 6);
+    expect(long.bondEquivalentYieldPercent).toBeCloseTo(5.2703228, 6);
+    expect(long.effectiveAnnualYieldPercent).toBeCloseTo(5.3397636, 6);
+    expect(long.bondEquivalentYieldPercent!).toBeLessThan(
+      long.investmentYieldPercent!,
+    );
+    // Semiannual < annual survives at every term.
+    expect(long.bondEquivalentYieldPercent!).toBeLessThan(
+      long.effectiveAnnualYieldPercent!,
+    );
+
+    // The boundary: at exactly 365 days simple and annual coincide, and past
+    // it the simple figure overtakes the annual one too.
+    const year = computeUsTbill({ ...BASE, daysToMaturity: 365 })!;
+    expect(year.investmentYieldPercent).toBeCloseTo(
+      year.effectiveAnnualYieldPercent!,
+      10,
+    );
+    const leap = computeUsTbill({ ...BASE, daysToMaturity: 366 })!;
+    expect(leap.investmentYieldPercent!).toBeGreaterThan(
+      leap.effectiveAnnualYieldPercent!,
+    );
+  });
+
+  it("reproduces the Treasury investment rate for a short bill", () => {
+    // 31 CFR 356 App B §I.B, term of half a year or less:
+    //   i = [(100 − P)/P] × (y/r) — SIMPLE actual/365, no compounding.
+    // Algebraically identical to investmentYieldPercent, so only float
+    // residue separates them (worst observed 1,3e-13, at 13 days).
+    for (const daysToMaturity of [13, 28, 56, 91, 182]) {
+      const result = computeUsTbill({ ...BASE, daysToMaturity })!;
+      const pricePer100 = result.price / 100;
+      const cfr =
+        ((100 - pricePer100) / pricePer100) * (365 / daysToMaturity) * 100;
+      expect(result.investmentYieldPercent).toBeCloseTo(cfr, 10);
+      // The bond-equivalent yield is a DIFFERENT quantity and must never be
+      // mistaken for the Treasury's figure — it compounds inside the stub.
+      expect(result.bondEquivalentYieldPercent!).toBeGreaterThan(cfr);
+    }
+    // Auction cross-check against a published result: a 4-week bill at a
+    // 5,270% discount has a published investment rate of 5,37%.
+    const fourWeek = computeUsTbill({
+      ...BASE,
+      discountRatePercent: 5.27,
+      daysToMaturity: 28,
+    })!;
+    expect(fourWeek.investmentYieldPercent).toBeCloseTo(5.3652, 4);
   });
 
   it("round-trips the bond-equivalent yield back to the bill's growth", () => {

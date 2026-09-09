@@ -7,8 +7,9 @@
 // CPI mode defaults (1.000 USD, CPI 172,2 -> 320, 25 năm):
 //   Tương đương 1.858,30 USD; lạm phát tích lũy 85,83%
 //   Bình quân 2,5096%/năm; sức mua còn 0,5381; mất 46,19%
-//   Thời gian sức mua giảm một nửa: 27,97 năm
-// Rate mode (1.000 USD, 3%/năm, 25 năm): 2.093,78 USD, halving 23,4498 năm
+//   Thời gian sức mua giảm một nửa: 27,96 năm (raw 27,9646)
+// Rate mode (1.000 USD, 3%/năm, 25 năm): 2.093,78 USD,
+//   halving 23,45 năm (raw 23,4498)
 //
 // The CPI series is an INPUT, not shipped data. See the module docstring:
 // a mistyped CPI reading is undetectable by the reader, because not knowing

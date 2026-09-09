@@ -156,10 +156,20 @@ export function computeUsPayroll(input: PayrollInput): PayrollResult | null {
   const aboveWageBase = wages > params.socialSecurityWageBase;
   const aboveSurtaxThreshold = wages > threshold;
 
+  // The NEXT dollar, not the last one. At wages exactly equal to the wage
+  // base the Social Security maximum is already paid, so the next dollar
+  // costs no Social Security tax; at wages exactly equal to the threshold
+  // the next dollar is the first one "in excess of" it and does carry the
+  // surtax. Both need >=. The flags above keep their own strict meaning
+  // ("wages EXCEED the base / the threshold"), which is correct for the
+  // notices and for the surtax wage computation, and must not be reused for
+  // this next-dollar question.
   const marginalRatePercent =
-    (aboveWageBase ? 0 : params.socialSecurityRate * half) +
+    (wages >= params.socialSecurityWageBase
+      ? 0
+      : params.socialSecurityRate * half) +
     params.medicareRate * half +
-    (aboveSurtaxThreshold ? params.additionalMedicareRate : 0);
+    (wages >= threshold ? params.additionalMedicareRate : 0);
 
   const uncappedSocialSecurity =
     wages * (params.socialSecurityRate / 100) * half;
