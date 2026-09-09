@@ -15,7 +15,6 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
-  parseDecimal,
   parseMoney,
   PLACEHOLDER,
 } from "@/lib/calc/number";
@@ -55,6 +54,40 @@ const ROWS: RowSpec[] = [
   { group: "valuation", name: "priceToBook", value: (s) => s.priceToBook, format: "plain" },
 ];
 
+/**
+ * Read the two optional share fields.
+ *
+ * Both are MONEY-grammar fields and both go through `parseMoney`. The price
+ * carries `unit="₫"` and a prefilled "20.000": `parseDecimal` reads that as 20
+ * and puts P/E and P/B out by a factor of 1000, and reads a two-group
+ * "1.000.000" as null, which blanks all twenty ratios. See docs §4 — the two
+ * grammars are two functions on purpose.
+ *
+ * Extracted and exported so the parser CHOICE itself is unit-testable: the
+ * defect was invisible to `lib/calc/financials.test.ts`, which passes
+ * `sharePrice` as a number and never crosses a parse step.
+ *
+ * Empty means "skip the valuation block", which is not the same as a bad
+ * entry — hence the raw-vs-parsed split in the invalid flags.
+ */
+export function readShareFields(values: { shares: string; price: string }): {
+  shares: number | null;
+  price: number | null;
+  sharesInvalid: boolean;
+  priceInvalid: boolean;
+} {
+  const sharesRaw = values.shares.trim();
+  const priceRaw = values.price.trim();
+  const shares = sharesRaw === "" ? null : parseMoney(sharesRaw);
+  const price = priceRaw === "" ? null : parseMoney(priceRaw);
+  return {
+    shares,
+    price,
+    sharesInvalid: sharesRaw !== "" && (shares === null || shares < 0),
+    priceInvalid: priceRaw !== "" && (price === null || price < 0),
+  };
+}
+
 export function FinancialRatiosCalculator() {
   const fields = useCalcFields({
     ...C.form.defaults,
@@ -64,14 +97,10 @@ export function FinancialRatiosCalculator() {
 
   const statement = readStatement(fields.values);
 
-  // Both share inputs are optional: empty means "skip the valuation block",
-  // which is different from a bad entry.
-  const sharesRaw = fields.values.shares.trim();
-  const priceRaw = fields.values.price.trim();
-  const shares = sharesRaw === "" ? null : parseMoney(sharesRaw);
-  const price = priceRaw === "" ? null : parseDecimal(priceRaw);
-  const sharesInvalid = sharesRaw !== "" && (shares === null || shares < 0);
-  const priceInvalid = priceRaw !== "" && (price === null || price < 0);
+  const { shares, price, sharesInvalid, priceInvalid } = readShareFields({
+    shares: fields.values.shares,
+    price: fields.values.price,
+  });
 
   const result =
     statement.input === null || sharesInvalid || priceInvalid

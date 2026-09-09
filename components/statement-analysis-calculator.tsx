@@ -15,7 +15,11 @@ import {
   formatPercent,
   PLACEHOLDER,
 } from "@/lib/calc/number";
-import { computeAnalysis, type DuPont } from "@/lib/calc/financials";
+import {
+  computeAnalysis,
+  type AnalysisResult,
+  type DuPont,
+} from "@/lib/calc/financials";
 import { STATEMENT_ANALYSIS as C } from "@/content/calculators/statement-analysis";
 
 const D = C.form.duPontTable;
@@ -60,56 +64,7 @@ export function StatementAnalysisCalculator() {
       ? null
       : computeAnalysis({ current: current.input, prior: prior.input });
 
-  // The DuPont table: three drivers plus the product, which exists to be
-  // checked against the ROE row above it.
-  const duPontRows = result
-    ? ([
-        [
-          D.drivers.netMargin,
-          plainPercent(pct(result.currentDuPont.netMargin)),
-          plainPercent(pct(result.priorDuPont.netMargin)),
-          signedPercent(
-            diff(
-              pct(result.currentDuPont.netMargin),
-              pct(result.priorDuPont.netMargin),
-            ),
-          ),
-        ],
-        [
-          D.drivers.assetTurnover,
-          times(result.currentDuPont.assetTurnover),
-          times(result.priorDuPont.assetTurnover),
-          signedTimes(
-            diff(
-              result.currentDuPont.assetTurnover,
-              result.priorDuPont.assetTurnover,
-            ),
-          ),
-        ],
-        [
-          D.drivers.equityMultiplier,
-          times(result.currentDuPont.equityMultiplier),
-          times(result.priorDuPont.equityMultiplier),
-          signedTimes(
-            diff(
-              result.currentDuPont.equityMultiplier,
-              result.priorDuPont.equityMultiplier,
-            ),
-          ),
-        ],
-        [
-          D.drivers.product,
-          plainPercent(result.currentDuPont.returnOnEquityPercent),
-          plainPercent(result.priorDuPont.returnOnEquityPercent),
-          signedPercent(
-            diff(
-              result.currentDuPont.returnOnEquityPercent,
-              result.priorDuPont.returnOnEquityPercent,
-            ),
-          ),
-        ],
-      ] as string[][])
-    : [];
+  const duPontTableRows = result ? duPontRows(result) : [];
 
   const lineRows = result
     ? result.lines.map((line) => [
@@ -169,7 +124,7 @@ export function StatementAnalysisCalculator() {
         />
       </ResultGroup>
 
-      {duPontRows.length > 0 ? (
+      {duPontTableRows.length > 0 ? (
         <>
           <p className="mt-8 text-sm leading-relaxed text-ink-3">
             {C.form.duPontIntro}
@@ -183,7 +138,7 @@ export function StatementAnalysisCalculator() {
               { label: D.priorColumn, numeric: true },
               { label: D.changeColumn, numeric: true },
             ]}
-            rows={duPontRows}
+            rows={duPontTableRows}
           />
         </>
       ) : null}
@@ -252,4 +207,83 @@ function signedDecimal(value: number): string {
 
 function signedTimes(value: number | null): string {
   return value === null ? PLACEHOLDER : signedDecimal(value);
+}
+
+/**
+ * The change between two PERCENTS is percentage POINTS, not a percent.
+ *
+ * 7,11% → 9,60% is +2,49 điểm %, and the relative change is +35%. Printing
+ * "+2,49%" for it collides with the sibling `Tăng trưởng` column, which really
+ * does hold relative growth, and understates the move. The headline ROE row
+ * already says "điểm %"; the DuPont table now agrees with it.
+ *
+ * Exported so the UNIT on a points delta is unit-testable — the wrong suffix
+ * renders a perfectly correct number as a different quantity, and nothing in
+ * `lib/calc/` can see a formatting choice.
+ */
+export function signedPoints(value: number | null): string {
+  return value === null
+    ? PLACEHOLDER
+    : `${signedDecimal(value)} ${C.form.pointsUnit}`;
+}
+
+/**
+ * The DuPont table body: three drivers plus the product, which exists to be
+ * checked against the ROE row above it.
+ *
+ * Pure and exported so the change column's UNITS are unit-testable. Two
+ * quantities are mixed in one column on purpose: rows 0 and 3 hold percents, so
+ * their change is percentage POINTS (`signedPoints`), while rows 1 and 2 hold
+ * unitless multiples, whose change is a plain number (`signedTimes`). Reaching
+ * for `signedPercent` on the percent rows — as this table once did — prints the
+ * points figure as if it were the relative growth the sibling table's `Tăng
+ * trưởng` column holds, understating the ROE move by a factor of about 7,7.
+ */
+export function duPontRows(result: AnalysisResult): string[][] {
+  return [
+    [
+      D.drivers.netMargin,
+      plainPercent(pct(result.currentDuPont.netMargin)),
+      plainPercent(pct(result.priorDuPont.netMargin)),
+      signedPoints(
+        diff(
+          pct(result.currentDuPont.netMargin),
+          pct(result.priorDuPont.netMargin),
+        ),
+      ),
+    ],
+    [
+      D.drivers.assetTurnover,
+      times(result.currentDuPont.assetTurnover),
+      times(result.priorDuPont.assetTurnover),
+      signedTimes(
+        diff(
+          result.currentDuPont.assetTurnover,
+          result.priorDuPont.assetTurnover,
+        ),
+      ),
+    ],
+    [
+      D.drivers.equityMultiplier,
+      times(result.currentDuPont.equityMultiplier),
+      times(result.priorDuPont.equityMultiplier),
+      signedTimes(
+        diff(
+          result.currentDuPont.equityMultiplier,
+          result.priorDuPont.equityMultiplier,
+        ),
+      ),
+    ],
+    [
+      D.drivers.product,
+      plainPercent(result.currentDuPont.returnOnEquityPercent),
+      plainPercent(result.priorDuPont.returnOnEquityPercent),
+      signedPoints(
+        diff(
+          result.currentDuPont.returnOnEquityPercent,
+          result.priorDuPont.returnOnEquityPercent,
+        ),
+      ),
+    ],
+  ];
 }
