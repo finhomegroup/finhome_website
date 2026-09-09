@@ -31,9 +31,23 @@ try {
   }
 }
 
+// pnpm can prepend its own diagnostics to stdout ahead of eslint's own
+// output — e.g. "WARN Unsupported engine" when the invoking Node doesn't
+// satisfy package.json's `engines`, which is exactly what running this
+// script AS `pnpm check:lint` (rather than bare `node`) can trigger on a
+// machine mid-transition to a new Node line. eslint's `--format json` is
+// always exactly one top-level JSON array, so slice from the first `[` to
+// the last `]` rather than assuming the whole stream is clean JSON.
+const jsonStart = raw.indexOf("[");
+const jsonEnd = raw.lastIndexOf("]");
+if (jsonStart === -1 || jsonEnd === -1 || jsonEnd < jsonStart) {
+  console.error("eslint produced no parseable JSON output:\n", raw.slice(0, 500));
+  process.exit(1);
+}
+
 const cwd = process.cwd();
 const found = [];
-for (const file of JSON.parse(raw)) {
+for (const file of JSON.parse(raw.slice(jsonStart, jsonEnd + 1))) {
   const rel = file.filePath.startsWith(cwd)
     ? file.filePath.slice(cwd.length + 1)
     : file.filePath;

@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "vitest run && next build && node scripts/check-built-markup.mjs",
+  "buildCommand": "pnpm gate",
   "outputDirectory": "out"
 }
