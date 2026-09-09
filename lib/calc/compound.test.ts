@@ -102,10 +102,61 @@ describe("computeCompound — bookkeeping", () => {
     expect(compound(BASE).periods).toBe(120);
     expect(compound({ ...BASE, compounding: "annually" }).periods).toBe(10);
     expect(compound({ ...BASE, compounding: "quarterly" }).periods).toBe(40);
-    // A saver cannot be paid a fraction of an interest run.
+    // A saver cannot be paid a fraction of an interest run, so a partial
+    // period is dropped, not rounded up: 2,5 năm compounded annually is two
+    // completed years of interest, not three. `Math.round` used to credit the
+    // third, overstating the balance by 6,7 triệu on this deposit.
     expect(
       compound({ ...BASE, years: 2.5, compounding: "annually" }).periods,
-    ).toBe(3);
+    ).toBe(2);
+    expect(
+      compound({ ...BASE, years: 2.5, compounding: "annually" }).futureValue,
+    ).toBeCloseTo(PRINCIPAL * 1.06 ** 2, 2);
+    // Above the halfway mark too, where rounding used to go up.
+    expect(
+      compound({ ...BASE, years: 2.6, compounding: "annually" }).periods,
+    ).toBe(2);
+    // 2,4 × 2 = 4,8 periods: four completed half-years, not five.
+    expect(
+      compound({ ...BASE, years: 2.4, compounding: "semiannually" }).periods,
+    ).toBe(4);
+    expect(
+      compound({ ...BASE, years: 2.4, compounding: "semiannually" })
+        .futureValue,
+    ).toBeCloseTo(PRINCIPAL * 1.03 ** 4, 2);
+    // The page default is a whole number of periods either way.
+    expect(compound({ ...BASE, years: 2.5 }).periods).toBe(30);
+  });
+
+  it("does not let float error eat a whole period", () => {
+    // `years * perYear` is a float product, so an exact integer can land just
+    // below one — 1,4 × 365 is 510.99999999999994 — and a bare Math.floor
+    // drops a completed compounding run. These are all exact integers
+    // mathematically, so none of them may lose a period.
+    // The trap, stated: both products are exactly 511 and 1022 in arithmetic,
+    // but land below in float64.
+    expect(1.4 * 365).toBeLessThan(511);
+    expect(2.8 * 365).toBeLessThan(1022);
+    expect(compound({ ...BASE, years: 1.4, compounding: "daily" }).periods).toBe(
+      511,
+    );
+    expect(compound({ ...BASE, years: 2.8, compounding: "daily" }).periods).toBe(
+      1022,
+    );
+    // …and a genuine fraction is still floored, never snapped up. 2,3 × 365 is
+    // 839,5 and 0,7 × 12 is 8,4 — real partial periods, which pay nothing.
+    expect(compound({ ...BASE, years: 2.3, compounding: "daily" }).periods).toBe(
+      839,
+    );
+    expect(
+      compound({ ...BASE, years: 0.7, compounding: "monthly" }).periods,
+    ).toBe(8);
+    expect(
+      compound({ ...BASE, years: 2.9, compounding: "monthly" }).periods,
+    ).toBe(34);
+    expect(
+      compound({ ...BASE, years: 1.5, compounding: "annually" }).periods,
+    ).toBe(1);
   });
 });
 
@@ -147,6 +198,22 @@ describe("computeCompound — rejected inputs", () => {
     expect(
       computeCompound({ ...BASE, contributionPerPeriod: -1 }),
     ).toBeNull();
+  });
+
+  it("rejects a term shorter than one compounding period", () => {
+    // Half a year compounded annually completes no interest run at all, so
+    // there is no balance to report — not a full year's interest.
+    // `form.emptyNotice` is the copy the page shows for this.
+    expect(
+      computeCompound({ ...BASE, years: 0.5, compounding: "annually" }),
+    ).toBeNull();
+    expect(
+      computeCompound({ ...BASE, years: 0.4, compounding: "semiannually" }),
+    ).toBeNull();
+    // …but one whole period is enough.
+    expect(
+      computeCompound({ ...BASE, years: 1, compounding: "annually" }),
+    ).not.toBeNull();
   });
 
   it("rejects nothing-in-nothing-out", () => {

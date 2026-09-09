@@ -30,7 +30,8 @@ export const COMPOUND = {
 
     yearsLabel: "Số năm gửi",
     yearsUnit: "năm",
-    yearsHelp: "Thời gian bạn để tiền tiếp tục sinh lãi.",
+    yearsHelp:
+      "Thời gian bạn để tiền tiếp tục sinh lãi. Chỉ những kỳ ghép lãi đã hoàn thành mới được tính lãi.",
     yearsInvalid: "Vui lòng nhập số năm lớn hơn 0.",
     defaultYears: "10",
 
@@ -62,7 +63,7 @@ export const COMPOUND = {
     periodsUnit: "kỳ",
 
     emptyNotice:
-      "Nhập số tiền ban đầu hoặc khoản gửi thêm lớn hơn 0 để xem kết quả.",
+      "Nhập số tiền ban đầu hoặc khoản gửi thêm lớn hơn 0, và số năm ít nhất bằng một kỳ ghép lãi, để xem kết quả.",
   },
 
   table: {
@@ -78,7 +79,7 @@ export const COMPOUND = {
   formula: {
     title: "Công thức tính",
     body: [
-      "Với một khoản gửi duy nhất: Số tiền cuối kỳ = P × (1 + r/m)^(m×t), trong đó P là số tiền ban đầu, r là lãi suất năm, m là số kỳ ghép lãi trong một năm và t là số năm.",
+      "Với một khoản gửi duy nhất: Số tiền cuối kỳ = P × (1 + r/m)^(m×t), trong đó P là số tiền ban đầu, r là lãi suất năm, m là số kỳ ghép lãi trong một năm và t là số năm. Trong đó m×t được lấy TRÒN XUỐNG số kỳ đã hoàn thành — gửi 2,5 năm ghép lãi hằng năm chỉ được tính 2 kỳ. Dòng Số kỳ ghép lãi cho biết con số thực sự được dùng.",
       "Nếu bạn gửi thêm một khoản đều đặn mỗi kỳ, phần đó được tính theo công thức niên kim: Số tiền cuối kỳ = A × ((1 + i)^n − 1) ÷ i, với A là khoản gửi mỗi kỳ, i là lãi suất mỗi kỳ và n là tổng số kỳ. Công cụ cộng hai phần này lại.",
       "Lãi suất thực tế mỗi năm cao hơn lãi suất danh nghĩa khi ghép lãi nhiều lần trong năm: (1 + r/m)^m − 1. Ví dụ 6%/năm ghép lãi hằng tháng cho lãi suất thực tế khoảng 6,17%/năm.",
     ],

@@ -7,7 +7,25 @@
  * modes run through one `priceAt` function. Price from yield is a closed
  * form; yield from price has none and is solved with bisection, which returns
  * null rather than a guess when no yield in the searched range produces the
- * given price.
+ * given price. That range runs from 1000%/năm down to the yield whose discount
+ * factor is `MAX_DISCOUNT_FACTOR`, and a price outside it comes back null at
+ * EITHER end:
+ *
+ * - above what the bond is worth at the LOWER bound — a price higher than
+ *   anything the bond's cash flows can justify. This is the end
+ *   `MAX_DISCOUNT_FACTOR` moves (past 41 kỳ; below that the Math.max clamp
+ *   holds it at −0,999999 per period), and it is far out of reach either way:
+ *   1,04e68 ₫ on the default bond, which sits at the clamp.
+ * - strictly below what the bond is worth at the fixed 1000%/năm UPPER bound,
+ *   which is only 800.001,64 ₫ on the default 100 triệu / 8%/năm / 2 lần/năm /
+ *   5 năm bond and 800,00 ₫ on the same bond at a 100.000 ₫ face. That end is
+ *   reachable by a fat-fingered price or a face/price unit mix-up, and it is
+ *   the more likely of the two in a real session. At exactly the bound the
+ *   yield solves to 1000%/năm; a hair under it is null.
+ *
+ * `form.unsolvableNotice` in content/calculators/bond.ts hedges with "thường
+ * là do giá quá cao", which covers the first case only — the too-LOW price
+ * lands on the same notice.
  *
  * Conventions, all of which change the answer:
  *
@@ -61,7 +79,10 @@ export type BondResult = {
   effectiveYieldPercent: number | null;
   /** Coupon per year divided by price — the running yield. */
   currentYieldPercent: number | null;
-  /** Whether the bond trades above, below or at par. */
+  /**
+   * Whether the bond trades above, below, or within `PAR_BAND_DONG` /
+   * `PAR_BAND_FRACTION_OF_FACE` of par.
+   */
   quote: "premium" | "discount" | "par";
   /** Macaulay duration, in YEARS. Null when the yield is unknown. */
   macaulayDurationYears: number | null;
@@ -75,6 +96,73 @@ export type BondResult = {
   /** Coupons plus face value, undiscounted. */
   totalCashFlows: number;
 };
+
+/**
+ * Largest discount factor (1 + rate)^periods the yield search may reach.
+ *
+ * The bracket's lower bound exists only to sit below the root: price rises
+ * without bound as the yield falls toward −100% per period. But the bound is
+ * also EVALUATED, and `faceValue / (1 + rate) ** periods` overflows. The old
+ * bound of −0,999999 × paymentsPerYear puts the PER-PERIOD rate at exactly
+ * −0,999999, so the factor is (1e-6)^periods: on the default 100 triệu face
+ * that is 1,03e308 at 50 periods and Infinity at 51, and `bisect` returns null
+ * at its finiteness guard (solve.ts:40). Every bond past 25 năm bán niên — and
+ * 13 năm hằng quý — therefore reported no yield at all.
+ *
+ * So the bound is derived from the factor instead of being fixed: the lowest
+ * rate whose factor is 1e250. That leaves 58 orders of magnitude under
+ * Number.MAX_VALUE (1,8e308) for the face value, which `formatMoney` will not
+ * render above 1e18 anyway, so `priceAt` at the bound is always finite. The
+ * derived bound is never LOWER than the old one (see the Math.max clamp at the
+ * call site), so the searched interval is a strict subset and no root that used
+ * to be found can fall outside it — this only recovers the ones that
+ * overflowed. This is §8 defect 1 of docs/calculator-suite-status.md
+ * (solveRate's bracket overflowing at 289 periods) recurring at 51.
+ */
+const MAX_DISCOUNT_FACTOR = 1e250;
+
+/**
+ * How far from face value still counts as "bằng mệnh giá".
+ *
+ * A band, not an equality test, and sized from what the page RENDERS rather
+ * than from the float. `price` reaches faceValue through two independent
+ * divisions — the coupon via faceValue × (couponRatePercent/100) /
+ * paymentsPerYear, the discount via (yieldPercent/100) / paymentsPerYear — so a
+ * bond that is at par BY CONSTRUCTION (yield = coupon) can land on
+ * 99999999.99999999, and the bare `===` fallthrough made "par" unreachable
+ * there.
+ *
+ * How often it happened is grid-dependent, so the grid is written down and
+ * locked by a test rather than quoted as a bare percentage. Over the grid in
+ * bond.test.ts's "par is reachable across the whole offered grid" — faces
+ * 100.000 / 1 triệu / 10 triệu / 100 triệu ₫ × the three payment frequencies
+ * the form offers (1, 2, 4) × coupon 0,25%…20,00% in 0,25 steps × 1…9 năm,
+ * 8.640 combinations, yield set equal to coupon in each — 949 (11,0%) come out
+ * with price ≠ faceValue on Node 25.2.1 / V8 14.1, and every one of those 949
+ * rendered the face value back exactly in the money row and "100,000%" in the
+ * percent-of-face row, directly above a "Thấp hơn mệnh giá" verdict. The engine
+ * is named because `**` is implementation-approximated, so the test asserts the
+ * tally only to a band and asserts exactly the thing that matters: all 8.640
+ * now read "par".
+ *
+ * Same rule as ddm.ts's FAIR_BAND_PERCENT (docs/calculator-suite-status.md §8),
+ * but the band here has to be display precision, not ddm's half a percent —
+ * 99,7% of face is a real discount for a bond.
+ *
+ * The price row rounds to whole đồng, so half a đồng is the finest visible
+ * difference; the percent-of-face row shows 3 decimals, so 0,0005% of face is
+ * the finest visible difference there. The band is the tighter of the two,
+ * which makes "par" exactly "both rows read par". The measured float residue is
+ * at most 4,0e-16 of face — 0,125 ₫, or 2,8e-16 of face, on a 450 nghìn tỷ
+ * face — so it stays under the 0,5 ₫ cap, and "par" stays reachable, for every
+ * face up to 1,2e15 ₫. Not for EVERY renderable face: `formatMoney` goes to
+ * 1e18, and from about 1,25e15 ₫ up the 0,5 ₫ cap is tighter than the residue
+ * and "par" starts slipping again (2 of 72.000 swept combinations at 1,25e15,
+ * 69 at 1,5e15). That is ~2,8× Vietnam's GDP and far outside any bond, but it
+ * is the real ceiling on this band.
+ */
+const PAR_BAND_DONG = 0.5;
+const PAR_BAND_FRACTION_OF_FACE = 0.000_005;
 
 /** Present value of a bond's cash flows at a given annual yield. */
 function priceAt(
@@ -100,8 +188,12 @@ function priceAt(
  * nor a price, or any non-finite number.
  *
  * In `fromPrice` mode the yield-dependent fields — yield, duration, the
- * sensitivity estimate — are individually null when bisection finds no root.
- * The price and coupon figures remain valid.
+ * sensitivity estimate — are individually null when bisection finds no root,
+ * which means the price falls outside the bracket at one end or the other:
+ * above the bond's value at the lowest searched yield (the one whose discount
+ * factor is `MAX_DISCOUNT_FACTOR`), or below its value at the fixed 1000%/năm
+ * ceiling. See the module docstring for both bounds and why the low-price end
+ * is the one a user actually hits. The price and coupon figures remain valid.
  */
 export function computeBond(input: BondInput): BondResult | null {
   const {
@@ -146,13 +238,23 @@ export function computeBond(input: BondInput): BondResult | null {
     if (!Number.isFinite(marketPrice) || marketPrice <= 0) return null;
     price = marketPrice;
     // Price falls monotonically in yield, so a single root exists whenever it
-    // is bracketed. Lower bound just above the collapse point of the period
-    // rate; upper bound 1000%/năm, past any traded bond.
+    // is bracketed. Upper bound 1000%/năm, past any traded bond; lower bound
+    // the rate whose discount factor is MAX_DISCOUNT_FACTOR, which keeps the
+    // evaluated endpoint finite at any period count.
+    //
+    // The Math.max clamp is load-bearing: at 41 periods or fewer the derived
+    // bound is at or below −1 per period, where growth is 0 and `priceAt`
+    // divides by zero. Clamping keeps today's exact behaviour for short bonds;
+    // the derived bound takes over from 42 periods, nine before the overflow.
+    const lowestRatePerPeriod = Math.max(
+      -0.999_999,
+      MAX_DISCOUNT_FACTOR ** (-1 / periods) - 1,
+    );
     const solved = bisect(
       (y) =>
         priceAt(faceValue, couponPerPeriod, periods, y, paymentsPerYear) -
         price,
-      -0.999_999 * paymentsPerYear,
+      lowestRatePerPeriod * paymentsPerYear,
       10,
     );
     annualYield = solved === null ? null : solved * 100;
@@ -161,8 +263,18 @@ export function computeBond(input: BondInput): BondResult | null {
     return null;
   }
 
+  // Strict `<`, not `<=`, so the band's edge cannot round the percent-of-face
+  // row to 100,001% at a 100.000 ₫ face.
+  const parBand = Math.min(
+    PAR_BAND_DONG,
+    faceValue * PAR_BAND_FRACTION_OF_FACE,
+  );
   const quote =
-    price > faceValue ? "premium" : price < faceValue ? "discount" : "par";
+    Math.abs(price - faceValue) < parBand
+      ? "par"
+      : price > faceValue
+        ? "premium"
+        : "discount";
 
   // Duration is only defined once a yield is known.
   let macaulayDurationYears: number | null = null;
