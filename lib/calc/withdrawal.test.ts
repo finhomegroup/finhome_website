@@ -155,8 +155,9 @@ describe("computeWithdrawal — the plain-language flags", () => {
   it("does NOT flag the default plan, which still runs out", () => {
     // Worth pinning, because it is the page's argument: the month-one
     // comparison is not the test of sustainability. 30 triệu is inside the
-    // first month's 32.171.706 ₫ of return, so nothing is being drawn from
-    // principal yet — and the portfolio depletes anyway, because the
+    // first month's 32.170.151 ₫ of return — 5.000.000.000 × (1,08^(1/12) − 1)
+    // = 32.170.150,55, the module's monthly convention — so nothing is being
+    // drawn from principal yet, and the portfolio depletes anyway, because the
     // withdrawal rises 4% a year while the return does not.
     const result = draw(BASE);
     expect(result.drawingDownPrincipal).toBe(false);

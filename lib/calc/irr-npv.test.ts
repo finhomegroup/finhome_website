@@ -135,6 +135,57 @@ describe("computeIrrNpv — IRR", () => {
     expect(result.modifiedIrrPercent).not.toBeNull();
   });
 
+  it("declines when a series really does have several IRRs", () => {
+    // NPV(v) = −1.000·(1 − v)(1 − 3v)(1 − 2v) with v = 1/(1+r). Note the
+    // leading minus: the module sums −1.000 + 6.000v − 11.000v² + 6.000v³,
+    // which is 1.000(v − 1)(2v − 1)(3v − 1); dropping the sign gives +NPV's
+    // mirror image, right at the roots but wrong everywhere else. NPV is
+    // exactly zero at r = 0%, 100% and 200%, so naming one of them would be
+    // false. The two-sign-change series above cannot test this — it has no
+    // real IRR at all (discriminant 3.000² − 4·2.500·1.000 = −1.000.000), so
+    // an unguarded solver returns null there too and the signChanges guard is
+    // invisible.
+    const flows = [-1_000, 6_000, -11_000, 6_000];
+    const factorised = (rate: number) => {
+      const v = 1 / (1 + rate);
+      return -1_000 * (1 - v) * (1 - 3 * v) * (1 - 2 * v);
+    };
+    const result = project({ flows, discountRatePercent: 10 });
+    expect(result.signChanges).toBe(3);
+    expect(result.irrPercent).toBeNull();
+    // The three roots, checked against the factorisation, not the module.
+    // An absolute band rather than toBeCloseTo(0, n): the flows are ~1e4, so
+    // an exact root still leaves float dust at ~6e-14.
+    const NPV_ZERO_BAND = 1e-9;
+    for (const rate of [0, 1, 2]) {
+      expect(Math.abs(netPresentValue(flows, rate))).toBeLessThan(
+        NPV_ZERO_BAND,
+      );
+    }
+    // Off the roots too, or the sign of the factorisation above goes
+    // unchecked: an overall sign cannot move a root, so the three assertions
+    // above pass against ±NPV alike. Relative, not absolute: the two routes
+    // are the same cubic in real arithmetic and differ only by float
+    // rounding, which scales with |NPV| (3.500 at r = −1/3, 93,75 at r = 3).
+    // Measured worst across these four rates is 9,5e-15, at r = 10%.
+    const FACTORISATION_REL_BAND = 1e-12;
+    for (const rate of [-1 / 3, 0.1, 1 / 3, 3]) {
+      const expected = factorised(rate);
+      expect(Math.abs(netPresentValue(flows, rate) - expected)).toBeLessThan(
+        FACTORISATION_REL_BAND * Math.abs(expected),
+      );
+    }
+    // Spelled out at one point, so the sign is pinned by a literal and not
+    // only by an expression that could be mis-transcribed twice over:
+    // at r = 3, v = 1/4 and −1.000·(3/4)(1/4)(1/2) = −93,75.
+    expect(netPresentValue(flows, 3)).toBeCloseTo(-93.75, 10);
+    // The rest of the result is still valid, against hand references:
+    // NPV@10% = −1000 + 6000/1,1 − 11000/1,21 + 6000/1,331, and
+    // MIRR = (13.260 ÷ 10.090,909090909091)^(1/3) − 1.
+    expect(result.npv).toBeCloseTo(-128.474_830_954_171, 9);
+    expect(result.modifiedIrrPercent!).toBeCloseTo(9.531_174_211_744_764, 9);
+  });
+
   it("declines when every flow has the same sign", () => {
     const allPositive = project({
       flows: [100, 100, 100],

@@ -14,7 +14,10 @@
  *    427.000 ₫ three ways gives 142.333,33 ₫, which nobody can hand over.
  *    Rounding each share up to the nearest note leaves the extra with the
  *    venue as part of the tip, which is what happens in practice; rounding
- *    the total instead would leave the shares unpayable again.
+ *    the total instead would leave the shares unpayable again. `roundTo` is
+ *    the note denomination; 0 is not "no rounding at all" but the smallest
+ *    possible step, 1 ₫, because the đồng has no subunit and a fractional
+ *    share is no more payable by transfer than in cash.
  *
  * The service charge and the tip are both percentages of the pre-tax food
  * bill, not of each other, and tax applies to the food plus service charge —
@@ -33,8 +36,9 @@ export type TipInput = {
   /** How many people split it. */
   people?: number;
   /**
-   * Round each person's share UP to a multiple of this, in đồng. 0 disables.
-   * 10.000 is the smallest note most people carry.
+   * Round each person's share UP to a multiple of this, in đồng. 0 means the
+   * smallest step, 1 ₫ — never a fractional share. 10.000 is the smallest
+   * note most people carry.
    */
   roundTo?: number;
 };
@@ -54,7 +58,11 @@ export type TipResult = {
   perPersonRounded: number;
   /** `perPersonRounded × people` — what the table pays in total. */
   totalPaid: number;
-  /** Rounding surplus, which ends up with the venue. Zero when not rounding. */
+  /**
+   * Rounding surplus, which ends up with the venue. Zero when each share
+   * already lands on the step; under `people` đồng on the 1 ₫ step, because
+   * each share rounds up by less than one đồng.
+   */
   roundingExtra: number;
   /** Everything above the bill, as a percent of the bill. */
   effectiveExtraPercent: number;
@@ -97,8 +105,13 @@ export function splitBill(input: TipInput): TipResult | null {
   const total = bill + service + tax + tip;
   const perPerson = total / people;
 
-  const perPersonRounded =
-    roundTo > 0 ? Math.ceil(perPerson / roundTo) * roundTo : perPerson;
+  // The đồng has no subunit, so even "no rounding" has to land on a whole
+  // đồng: the two live rows render at 0 dp, and a fractional share makes the
+  // share and the table total disagree on screen (142.333 × 3 = 426.999 on a
+  // 427.000 bill). 1 ₫ is the smallest possible step, and the surplus it
+  // leaves is reported through `roundingExtra` like any other.
+  const step = roundTo > 0 ? roundTo : 1;
+  const perPersonRounded = Math.ceil(perPerson / step) * step;
   const totalPaid = perPersonRounded * people;
 
   return {

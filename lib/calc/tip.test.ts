@@ -64,13 +64,19 @@ describe("splitBill — splitting", () => {
     expect(result.perPerson).toBeCloseTo(result.total, 6);
   });
 
-  it("does not round when not asked to", () => {
-    // 427.000 three ways is 142.333,33… and stays that way.
+  it("still lands on a whole đồng when not rounding to a note", () => {
+    // 427.000 three ways is 142.333,33…, which nobody can pay in cash or by
+    // transfer, so the share goes up to the đồng and the 2 ₫ surplus is
+    // reported like any other rounding surplus.
     const result = split({ bill: 427_000, people: 3 });
     expect(result.perPerson).toBeCloseTo(142_333.333_33, 4);
-    expect(result.perPersonRounded).toBeCloseTo(result.perPerson, 6);
-    expect(result.roundingExtra).toBe(0);
-    expect(result.totalPaid).toBeCloseTo(result.total, 6);
+    expect(result.perPersonRounded).toBe(142_334);
+    expect(result.roundingExtra).toBe(2);
+    expect(result.totalPaid).toBe(427_002);
+    // The point of the row pair: the share times the head count is exactly
+    // what the table hands over. Without it the live region shows
+    // 142.333 ₫ × 3 against a 427.000 ₫ total.
+    expect(result.perPersonRounded * 3).toBe(result.totalPaid);
   });
 });
 

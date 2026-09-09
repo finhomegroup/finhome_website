@@ -36,13 +36,14 @@ export const RAISE = {
     percentLabel: "Mức tăng",
     percentUnit: "%",
     percentHelp: "Ví dụ 15. Nhập số âm nếu muốn tính mức giảm.",
-    percentInvalid: "Vui lòng nhập một số.",
+    percentInvalid: "Vui lòng nhập một số, và mức giảm không quá 100%.",
     defaultPercent: "15",
 
     amountLabel: "Số tiền tăng",
     amountUnit: "₫/tháng",
     amountHelp: "Số tiền tăng thêm mỗi tháng. Nhập số âm nếu là mức giảm.",
-    amountInvalid: "Vui lòng nhập một số.",
+    amountInvalid:
+      "Vui lòng nhập một số, và mức giảm không vượt quá lương hiện tại.",
     defaultAmount: "3.000.000",
 
     targetLabel: "Lương mong muốn",
@@ -99,7 +100,7 @@ export const RAISE = {
       },
       {
         q: "Công cụ có tính được mức giảm lương không?",
-        a: "Có. Nhập số âm ở mức tăng hoặc ở số tiền, hoặc nhập một mức lương mong muốn thấp hơn lương hiện tại. Kết quả khi đó là số âm ở mọi dòng, và dòng chênh lệch cả năm cho thấy quy mô thật của việc bị giảm lương.",
+        a: "Có. Nhập số âm ở mức tăng hoặc ở số tiền, hoặc nhập một mức lương mong muốn thấp hơn lương hiện tại. Kết quả khi đó là số âm ở mọi dòng, và dòng chênh lệch cả năm cho thấy quy mô thật của việc bị giảm lương. Mức giảm dừng lại ở lương mới 0 ₫, tức −100%: lương gộp không thể là số âm, nên con số thấp hơn mức đó bị từ chối thay vì cho ra một kết quả vô nghĩa.",
       },
     ],
   },

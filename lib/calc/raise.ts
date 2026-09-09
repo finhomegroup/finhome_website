@@ -60,7 +60,8 @@ export type RaiseResult = {
  * Null when the inputs cannot describe one: current pay of zero or less
  * (there is no percentage rise from nothing), a non-positive number of pay
  * periods, or any non-finite number. A negative `value` is allowed — a pay
- * cut is a real thing to want to compute — but a `target` below zero is not.
+ * cut is a real thing to want to compute — but pay after the rise below zero
+ * is not, on any of the three modes.
  */
 export function computeRaise(input: RaiseInput): RaiseResult | null {
   const { mode, current, value, perYear = 12 } = input;
@@ -79,10 +80,15 @@ export function computeRaise(input: RaiseInput): RaiseResult | null {
       next = current + value;
       break;
     case "target":
-      if (value < 0) return null;
       next = value;
       break;
   }
+
+  // Pay after the rise cannot be below zero on any mode: losing the whole
+  // salary is the floor, −100%. Rejected rather than guessed, and checked
+  // here rather than per branch so `amount` and `percent` cannot render an
+  // impossible salary that `target` refuses. `next === 0` stays legal.
+  if (next < 0) return null;
 
   const increase = next - current;
 

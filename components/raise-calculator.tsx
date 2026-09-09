@@ -78,14 +78,18 @@ export function RaiseCalculator() {
   const perYear = parseDecimal(fields.values.perYear);
 
   const currentInvalid = current === null || current <= 0;
-  // A negative rise is legitimate; a negative TARGET salary is not.
-  const valueInvalid = value === null || (mode === "target" && value < 0);
   const perYearInvalid = perYear === null || perYear <= 0;
+  const parsed = !currentInvalid && !perYearInvalid && value !== null;
 
-  const result =
-    currentInvalid || valueInvalid || perYearInvalid
-      ? null
-      : computeRaise({ mode, current, value, perYear });
+  const result = parsed
+    ? computeRaise({ mode, current, value, perYear })
+    : null;
+
+  // A negative rise is legitimate; pay below zero is not. The module owns that
+  // rule for all three modes, so the field is flagged from its verdict rather
+  // than re-deriving it here — otherwise a cut past zero would blank the rows
+  // with no message. Order matters: `result` is computed above.
+  const valueInvalid = value === null || (parsed && result === null);
 
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;

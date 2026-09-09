@@ -56,7 +56,7 @@ export const TIP = {
 
     roundLabel: "Làm tròn phần mỗi người lên",
     roundHelp:
-      "Làm tròn lên mệnh giá dễ trả. Chọn “không làm tròn” nếu bạn chuyển khoản.",
+      "Làm tròn lên mệnh giá dễ trả. Chọn “không làm tròn” nếu bạn chuyển khoản; phần mỗi người vẫn được làm tròn lên đồng nguyên, vì đồng không có đơn vị nhỏ hơn.",
     roundNone: "Không làm tròn",
     round1k: "1.000 ₫",
     round5k: "5.000 ₫",

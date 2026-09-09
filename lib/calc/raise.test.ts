@@ -151,4 +151,34 @@ describe("computeRaise — rejected inputs", () => {
       ).toBeNull();
     }
   });
+
+  it("rejects pay below zero on every mode, not just on a target", () => {
+    // A cut is legitimate; owing the employer money is not. `amount` and
+    // `percent` used to render "Lương mới −10.000.000 ₫" for exactly the
+    // state `target` already refused.
+    expect(
+      computeRaise({ mode: "amount", current: CURRENT, value: -30_000_000 }),
+    ).toBeNull();
+    expect(
+      computeRaise({ mode: "percent", current: CURRENT, value: -150 }),
+    ).toBeNull();
+  });
+
+  it("allows the −100% floor on every mode", () => {
+    // Losing the whole salary is representable and is the arithmetic floor of
+    // (next − current) ÷ current at next = 0; below it there is nothing to
+    // describe. All three ways in must agree on that boundary.
+    for (const input of [
+      { mode: "amount", current: CURRENT, value: -CURRENT },
+      { mode: "percent", current: CURRENT, value: -100 },
+      { mode: "target", current: CURRENT, value: 0 },
+    ] as const) {
+      const result = raise(input);
+      expect(result.next).toBe(0);
+      expect(result.increase).toBe(-CURRENT);
+      expect(result.increasePercent).toBe(-100);
+      expect(result.increasePerYear).toBe(-240_000_000);
+      expect(result.nextPerYear).toBe(0);
+    }
+  });
 });
