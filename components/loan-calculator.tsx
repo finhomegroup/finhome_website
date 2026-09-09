@@ -29,7 +29,9 @@ import { LOAN as C } from "@/content/calculators/loan";
  *
  * The yearly schedule sits OUTSIDE the results live region: a 20-year loan is
  * 20 rows and a 30-year one is 30, and announcing them on every keystroke
- * would make the page unusable with a screen reader.
+ * would make the page unusable with a screen reader. The extra-payment group is
+ * a secondary view of the same result, so it is not live either — the summary
+ * group is the page's single results region.
  */
 export function LoanCalculator() {
   const fields = useCalcFields({
@@ -253,7 +255,7 @@ export function LoanCalculator() {
       </ResultGroup>
 
       {result?.interestSaving != null ? (
-        <ResultGroup title={C.form.extraResultTitle} className="mt-6">
+        <ResultGroup title={C.form.extraResultTitle} className="mt-6" live={false}>
           <ResultRow
             label={C.form.interestSavingLabel}
             value={money(result.interestSaving)}

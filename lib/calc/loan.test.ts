@@ -72,6 +72,9 @@ describe("computeLoan — invariants", () => {
   });
 
   it("reports every figure as a positive number", () => {
+    // The `propertyPrice` here is load-bearing: it is what keeps PMI actually
+    // charged (61 months), and `monthlyPmi` is 0 whenever `pmiMonths` is 0. Drop
+    // the price and this test's `toBeGreaterThan(0)` on monthlyPmi turns red.
     const result = loan({
       ...BASE,
       propertyTaxPerYear: 12_000_000,
@@ -139,13 +142,35 @@ describe("computeLoan — PMI", () => {
   });
 
   it("charges nothing when the buyer already has 20% equity", () => {
-    // Borrowing 2 tỷ against a 3 tỷ property is already under the threshold.
-    expect(loan({ ...withPmi, propertyPrice: 3_000_000_000 }).pmiMonths).toBe(1);
+    // Borrowing 2 tỷ against a 3 tỷ property is already under the threshold —
+    // and the opening principal is not a row of the schedule, so testing only
+    // post-payment balances used to bill a month here.
+    const equity = loan({ ...withPmi, propertyPrice: 3_000_000_000 });
+    expect(equity.pmiMonths).toBe(0);
+    expect(equity.monthlyPmi).toBe(0);
+    // No PMI charged means the lifetime cost is the bare loan's, to the đồng.
+    expect(equity.totalPayment).toBeCloseTo(loan(BASE).totalPayment, 6);
+  });
+
+  it("treats exactly 80% LTV as already cleared", () => {
+    // 2 tỷ borrowed against 2,5 tỷ is the boundary: threshold === principal.
+    // 80% LTV is the point PMI stops, so a buyer starting there never owes it.
+    expect(loan({ ...withPmi, propertyPrice: 2_500_000_000 }).pmiMonths).toBe(0);
   });
 
   it("charges nothing when no property price is given to test against", () => {
     const noPrice = loan({ ...BASE, pmiPercent: 0.5, pmiMode: "until80" });
     expect(noPrice.pmiMonths).toBe(0);
+    // The monthly rows must not bill PMI the lifetime total does not contain.
+    expect(noPrice.monthlyPmi).toBe(0);
+    expect(noPrice.monthlyPayment).toBeCloseTo(noPrice.monthlyPrincipalInterest, 6);
+    expect(noPrice.annualPayment).toBeCloseTo(noPrice.monthlyPayment * 12, 6);
+    // With no PMI and no escrow, every month is the same: the invariant that
+    // was off by 199.999.999,99 ₫ when monthlyPmi ignored pmiMonths.
+    expect(noPrice.monthlyPayment * noPrice.months).toBeCloseTo(
+      noPrice.totalPayment,
+      2,
+    );
   });
 
   it("charges nothing when the PMI rate is zero", () => {

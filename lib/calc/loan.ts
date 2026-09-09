@@ -89,6 +89,7 @@ function total(schedule: ScheduleRow[], key: "interest" | "payment"): number {
  * tool's radio button describes.
  */
 function pmiMonthsFor(
+  principal: number,
   schedule: ScheduleRow[],
   mode: PmiMode,
   propertyPrice: number | undefined,
@@ -96,6 +97,12 @@ function pmiMonthsFor(
   if (mode === "life") return schedule.length;
   if (!propertyPrice || propertyPrice <= 0) return 0;
   const threshold = propertyPrice * 0.8;
+  // `amortize` (finance.ts) pushes CLOSING balances, so the opening principal
+  // is never a row of the schedule. Without this test `findIndex` matches row 0
+  // — already one payment in — and a buyer who is at or below 80% LTV on day
+  // one is charged the month the docstring above promises they never owe.
+  // `<=` because 80% LTV exactly counts as cleared, matching the row test below.
+  if (principal <= threshold) return 0;
   const cleared = schedule.findIndex((row) => row.balance <= threshold);
   return cleared === -1 ? schedule.length : cleared + 1;
 }
@@ -152,10 +159,17 @@ export function computeLoan(input: LoanInput): LoanResult | null {
 
   const monthlyEscrow =
     (propertyTaxPerYear + insurancePerYear + otherFeePerYear) / 12;
-  const monthlyPmi = (pmiPercent / 100) * amount / 12;
-  const pmiMonths = monthlyPmi > 0
-    ? pmiMonthsFor(schedule, pmiMode, propertyPrice)
+  const pmiPerMonth = (pmiPercent / 100) * amount / 12;
+  const pmiMonths = pmiPerMonth > 0
+    ? pmiMonthsFor(amount, schedule, pmiMode, propertyPrice)
     : 0;
+  // "0 when not applicable", per the field doc on `monthlyPmi` above: if PMI is
+  // charged for no months it is not part of the monthly bill either. Zeroing the
+  // field rather than only excluding it from `monthlyPayment` keeps the rendered
+  // "Trong đó PMI" row from contradicting "Tổng trả hằng tháng" — and
+  // `totalPayment` below already multiplies by `pmiMonths`, so the monthly and
+  // the lifetime figure must not disagree.
+  const monthlyPmi = pmiMonths > 0 ? pmiPerMonth : 0;
 
   const totalPrincipalInterest = total(schedule, "payment");
   const totalInterest = total(schedule, "interest");
