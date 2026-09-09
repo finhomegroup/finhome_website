@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-nguyen-tac-thi-truong-dinh-gia-dat-gia-nha-ha-nhiet",
+    title: "Bỏ nguyên tắc thị trường khi định giá đất: Giá nhà có hạ nhiệt?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Đề xuất bỏ nguyên tắc thị trường trong định giá đất có thể rút ngắn thủ tục, nhưng giá đất giảm chưa chắc kéo giá nhà giảm theo.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-nguyen-tac-thi-truong-dinh-gia-dat-gia-nha-ha-nhiet.jpg",
+    date: "2026-09-09",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/bo-nguyen-tac-thi-truong-khi-dinh-gia-dat-gia-nha-co-ha-nhiet-20260907094305452.htm",
+        "accessed": "2026-09-09"
+      },
+  },
+  {
     slug: "nhieu-ngan-hang-ha-lai-suat-cho-vay-mua-nha",
     title: "Nhiều ngân hàng hạ lãi suất cho vay mua nhà sau thời gian neo cao",
     category: "Tài chính",
