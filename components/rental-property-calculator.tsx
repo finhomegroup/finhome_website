@@ -255,9 +255,6 @@ export function RentalPropertyCalculator() {
           label={C.form.taxLabel}
           value={money(result?.rentalTaxPerYear)}
         />
-        <p className="mt-3 text-xs leading-relaxed text-ink-3">
-          {C.taxVintageNotice}
-        </p>
         <ResultRow
           label={C.form.taxableLabel}
           value={
@@ -285,6 +282,13 @@ export function RentalPropertyCalculator() {
           label={C.form.cashInvestedLabel}
           value={money(result?.cashInvested)}
         />
+        {/* Standing context, not a result row — kept after the last row so it
+            does not split the row list (ResultRow's border-t would otherwise
+            land right under this paragraph). Still inside the live={false}
+            group: this must not be re-announced on every keystroke. */}
+        <p className="mt-3 text-xs leading-relaxed text-ink-3">
+          {C.taxVintageNotice}
+        </p>
       </ResultGroup>
     </CalculatorCard>
   );
