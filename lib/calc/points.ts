@@ -20,8 +20,9 @@
  *   that answers the actual question.
  *
  * `rateReductionPoints` is in PERCENTAGE POINTS of rate, not percent of the
- * rate: 0,25 takes 8,5% to 8,25%. Those are different numbers and confusing
- * them is a factor-of-thirty error.
+ * rate: 0,25 takes 8,5% to 8,25%. Those are different numbers: confusing them
+ * scales the reduction by 100 ÷ rate, which at this page's 8,5% default is a
+ * factor of about twelve.
  */
 
 import { amortize, pmt, type ScheduleRow } from "@/lib/calc/finance";

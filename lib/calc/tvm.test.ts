@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { solveTvm, type TvmInput } from "@/lib/calc/tvm";
 import { pmt } from "@/lib/calc/finance";
+import {
+  formatDecimal,
+  formatMoney,
+  parseDecimal,
+  parseMoney,
+} from "@/lib/calc/number";
+import { TVM } from "@/content/calculators/tvm";
 
 // A 2 tỷ loan at 8,5%/năm over 240 months, in the module's own convention:
 // the borrower receives the principal (positive) and pays instalments.
@@ -258,5 +265,118 @@ describe("solveTvm — rejected inputs", () => {
     expect(
       solveTvm({ ...LOAN, ratePercentPerPeriod: Number.NaN }),
     ).toBeNull();
+  });
+});
+
+describe("solveTvm — the page's shipped defaults", () => {
+  // content/calculators/tvm.ts quotes −17.356.465 ₫/kỳ and −2.165.551.520 ₫
+  // net interest for its own defaults, and sets defaultPayment to the same
+  // instalment. Those figures come from 8,5 ÷ 12; the four-decimal 0,7083 the
+  // rate help used to teach lands 506,33 ₫/kỳ and 121.519 ₫ away, which is why
+  // defaultRate now carries ten decimals. This pins the content default
+  // against the module so the two cannot drift apart again.
+  const rate = parseDecimal(TVM.form.defaultRate);
+
+  it("parses the default rate as 8,5 ÷ 12 to the đồng", () => {
+    expect(rate).not.toBeNull();
+    // Ten decimals of 0,708333… — within 5e-11 of the exact eighth.
+    expect(Math.abs(rate! - 8.5 / 12)).toBeLessThan(5e-11);
+  });
+
+  it("reproduces the page's quoted instalment and net interest", () => {
+    const result = tvm({
+      solveFor: "payment",
+      presentValue: parseMoney(TVM.form.defaultPresent)!,
+      futureValue: parseMoney(TVM.form.defaultFuture)!,
+      periods: parseDecimal(TVM.form.defaultPeriods)!,
+      ratePercentPerPeriod: rate!,
+    });
+    expect(Math.round(result.payment)).toBe(-17_356_465);
+    expect(Math.round(result.netInterest)).toBe(-2_165_551_520);
+    // defaultPayment is the same instalment, so the payment mode and the
+    // "solve for rate" mode describe one loan.
+    expect(Math.round(result.payment)).toBe(
+      parseMoney(TVM.form.defaultPayment),
+    );
+  });
+
+  it("restates the default rate as the 8,5%/năm the copy teaches", () => {
+    // At the old 0,7083 this row rendered 8,4996%, contradicting rateHelp.
+    const result = tvm({
+      solveFor: "payment",
+      presentValue: 2_000_000_000,
+      futureValue: 0,
+      periods: 240,
+      ratePercentPerPeriod: rate!,
+    });
+    expect(result.annualRateIfMonthlyPercent).toBeCloseTo(8.5, 8);
+  });
+});
+
+describe("solveTvm — the rounding loss rateHelp quotes", () => {
+  // rateHelp tells the reader that truncating 8,5 ÷ 12 to 0,7083 costs
+  // "506,33 ₫ mỗi kỳ và 121.519 ₫ lãi ròng trên 240 kỳ". Those two are one
+  // multiplication apart, so a reader can check them: 240 × 506,33 = 121.519.
+  // The copy used to say 507 ₫/kỳ — the difference of the two instalments
+  // AFTER each is rounded to the đồng (17.356.465 − 17.355.958) — and 240 ×
+  // 507 = 121.680, which is 161 ₫ off the net-interest figure in the same
+  // sentence. This pins both figures so neither can drift from the module.
+  const FULL_RATE = parseDecimal(TVM.form.defaultRate)!;
+  const ROUNDED_RATE = 0.7083;
+
+  /**
+   * The per-period loss is a difference of two instalments near 1,74e7, where
+   * one double ulp is ~3,7e-9 ₫. Re-deriving it through the textbook annuity
+   * form instead of `pmt`'s growth-factor form therefore disagrees in the last
+   * 1–2 ulp (measured: 3,7e-9 ₫). 1e-6 ₫ is five orders of magnitude below the
+   * 0,01 ₫ the copy quotes, so it separates a real regression from float noise.
+   */
+  const ULP_BAND_DONG = 1e-6;
+
+  function instalment(ratePercent: number) {
+    return tvm({
+      solveFor: "payment",
+      presentValue: 2_000_000_000,
+      futureValue: 0,
+      periods: 240,
+      ratePercentPerPeriod: ratePercent,
+    });
+  }
+
+  it("loses 506,33 ₫ per period, matching the closed form and the copy", () => {
+    const loss =
+      instalment(ROUNDED_RATE).payment - instalment(FULL_RATE).payment;
+    // Textbook annuity payment A = P·r / (1 − (1 + r)^−n), a different float
+    // route to the same quantity than `pmt`'s (1 + r)^n form.
+    const closedForm = (ratePercent: number) => {
+      const r = ratePercent / 100;
+      return (2_000_000_000 * r) / (1 - (1 + r) ** -240);
+    };
+    expect(
+      Math.abs(loss - (closedForm(FULL_RATE) - closedForm(ROUNDED_RATE))),
+    ).toBeLessThan(ULP_BAND_DONG);
+    expect(formatDecimal(loss, 2)).toBe("506,33");
+    expect(TVM.form.rateHelp).toContain("506,33 ₫ mỗi kỳ");
+  });
+
+  it("loses 121.519 ₫ of net interest, which is 240 × the per-period loss", () => {
+    const loss =
+      instalment(ROUNDED_RATE).netInterest - instalment(FULL_RATE).netInterest;
+    expect(formatMoney(loss)).toBe("121.519");
+    expect(TVM.form.rateHelp).toContain("121.519 ₫ lãi ròng trên 240 kỳ");
+    // The multiplication the sentence invites has to close: 240 periods of the
+    // per-period loss is the net-interest loss, to the đồng after rounding.
+    const perPeriod =
+      instalment(ROUNDED_RATE).payment - instalment(FULL_RATE).payment;
+    expect(Math.abs(loss - 240 * perPeriod)).toBeLessThan(ULP_BAND_DONG);
+    expect(formatMoney(240 * 506.33)).toBe("121.519");
+    // And the figure the copy must NOT quote: 507 is the gap between the two
+    // instalments as RENDERED, and 240 × 507 misses 121.519 by 161 ₫.
+    expect(
+      Math.round(instalment(ROUNDED_RATE).payment) -
+        Math.round(instalment(FULL_RATE).payment),
+    ).toBe(507);
+    expect(formatMoney(240 * 507)).toBe("121.680");
+    expect(TVM.form.rateHelp).not.toContain("507");
   });
 });

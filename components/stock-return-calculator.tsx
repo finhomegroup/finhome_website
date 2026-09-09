@@ -237,6 +237,12 @@ export function StockReturnCalculator() {
           {C.form.noBreakEvenNotice}
         </p>
       ) : null}
+
+      {result?.alreadyBreakEven ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.alreadyBreakEvenNotice}
+        </p>
+      ) : null}
     </CalculatorCard>
   );
 }

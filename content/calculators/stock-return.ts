@@ -5,8 +5,10 @@
 // A generic gain/loss calculator gets this wrong in one important way, and
 // the page is built around it: personal income tax on transferring
 // securities is 0,1% of the SALE VALUE, not of the profit. It is charged on a
-// losing trade too. So a 20% price fall is a 20,32% loss, and the tool shows
-// both numbers.
+// losing trade too. So a 20% price fall on a share paying no dividend is a
+// 20,320% loss, and the tool shows both numbers. With the shipped 1.500 ₫/cp
+// dividend the same 20% fall is only a 15,577% loss — the dividend outruns
+// the friction — so any copy quoting 20,320% must say "không có cổ tức".
 //
 // Figures quoted are for the defaults (10.000 cp, mua 30.000 ₫, bán 36.000 ₫,
 // cổ tức 1.500 ₫/cp, phí 0,15% mỗi chiều, thuế cổ tức 5%, thuế chuyển nhượng
@@ -15,6 +17,11 @@
 // 990.000 ₫, thuế 1.110.000 ₫; giá hòa vốn 28.692 ₫. Nếu bán ở 24.000 ₫ và
 // không có cổ tức: lỗ 61.050.000 ₫, tức −20,320%, mà vẫn nộp 240.000 ₫ thuế
 // chuyển nhượng; giá hòa vốn khi đó là 30.120 ₫.
+//
+// Giá hòa vốn được chặn ở 0 ₫ khi cổ tức thực nhận đã vượt tổng tiền bỏ ra
+// (cổ tức mỗi cp trên 1,0542 × giá mua với các tỷ lệ mặc định): 10.000 cp mua
+// 10.000 ₫, bán 15.000 ₫, cổ tức 12.000 ₫/cp cho ra −1.388 ₫ trước khi chặn,
+// và ở giá bán 0 ₫ giao dịch vẫn lãi 13.850.000 ₫.
 
 export const STOCK_RETURN = {
   slug: "/cong-cu/loi-nhuan-co-phieu",
@@ -104,13 +111,15 @@ export const STOCK_RETURN = {
     totalTaxesLabel: "Tổng thuế",
 
     taxedOnLossNotice:
-      "Giao dịch này lỗ, và bạn vẫn phải nộp thuế chuyển nhượng vì thuế tính trên giá trị bán chứ không tính trên lợi nhuận. Đây là lý do mức lỗ thực lớn hơn mức giảm giá: giá giảm 20% nhưng bạn lỗ 20,32%.",
+      "Giao dịch này lỗ, và bạn vẫn phải nộp thuế chuyển nhượng vì thuế tính trên giá trị bán chứ không tính trên lợi nhuận. Đây là lý do khoản lỗ thực luôn sâu hơn khoản lỗ trước phí và thuế — hãy so hai dòng “Lợi nhuận sau phí và thuế” và “Lợi nhuận nếu không có phí và thuế” ở trên.",
     noBreakEvenNotice:
       "Tổng phí và thuế bên bán đã bằng hoặc vượt 100% giá trị bán, nên không có mức giá nào giúp hòa vốn. Hãy kiểm tra lại các tỷ lệ đã nhập.",
+    alreadyBreakEvenNotice:
+      "Cổ tức bạn đã nhận đã vượt toàn bộ số tiền bỏ ra, nên giao dịch này không thể lỗ: dù giá cổ phiếu về 0 bạn vẫn hòa vốn. Con số 0 ₫ ở dòng “Giá bán để hòa vốn” là mức giá thấp nhất, không phải mức giá cần đạt.",
   },
 
   taxOnLossNotice:
-    "Điểm mà một công cụ tính lãi lỗ thông thường bỏ qua: thuế chuyển nhượng chứng khoán ở Việt Nam là 0,1% GIÁ TRỊ BÁN, không phải 0,1% lợi nhuận. Nó được thu ngay khi bạn bán, kể cả khi bán lỗ. Với ví dụ mặc định đổi giá bán thành 24.000 ₫: giá giảm 20% nhưng bạn lỗ 20,32%, và trong khoản lỗ đó có 240.000 ₫ tiền thuế trên một giao dịch không có đồng lãi nào. Cùng lý do, giá hòa vốn của bạn không phải giá mua: với phí 0,15% mỗi chiều và thuế 0,1%, cổ phiếu mua ở 30.000 ₫ phải lên 30.120 ₫ mới về vốn.",
+    "Điểm mà một công cụ tính lãi lỗ thông thường bỏ qua: thuế chuyển nhượng chứng khoán ở Việt Nam là 0,1% GIÁ TRỊ BÁN, không phải 0,1% lợi nhuận. Nó được thu ngay khi bạn bán, kể cả khi bán lỗ. Với ví dụ mặc định đổi giá bán thành 24.000 ₫ VÀ đặt ô cổ tức về 0: giá giảm 20% nhưng bạn lỗ 20,320%, và trong khoản lỗ đó có 240.000 ₫ tiền thuế trên một giao dịch không có đồng lãi nào. Cùng lý do, giá hòa vốn của bạn không phải giá mua: với phí 0,15% mỗi chiều và thuế 0,1%, cổ phiếu mua ở 30.000 ₫ và không có cổ tức phải lên 30.120 ₫ mới về vốn.",
 
   formula: {
     title: "Cách tính",

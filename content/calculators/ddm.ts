@@ -72,7 +72,7 @@ export const DDM = {
     verdictUnder: "Giá thấp hơn giá trị mô hình",
     verdictOver: "Giá cao hơn giá trị mô hình",
     verdictFair: "Giá xấp xỉ giá trị mô hình",
-    premiumLabel: "Giá cao hơn giá trị mô hình",
+    premiumLabel: "Chênh lệch so với giá trị mô hình",
 
     impliedTitle: "Giá thị trường đang ngụ ý điều gì",
     impliedGrowthLabel: "Tăng trưởng ngụ ý, nếu giữ lợi nhuận yêu cầu",

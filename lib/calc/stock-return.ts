@@ -20,8 +20,23 @@
  *
  * `breakEvenPricePerShare` is the figure this arithmetic is really for: the
  * price the shares must reach for the trade to come out level once every fee
- * and tax is counted. It is above the purchase price even before any profit,
- * and it has a closed form, so it is exact rather than searched.
+ * and tax is counted. It has a closed form —
+ * `(totalCost − netDividends) ÷ (shares × (1 − feeRate − transferRate))` — so
+ * it is exact rather than searched. Whether it lands above or below the
+ * PURCHASE price depends entirely on the dividends, and both sides happen:
+ *
+ * - With no dividends it is never below the purchase price, and strictly above
+ *   it whenever the commission or the transfer tax is non-zero: a 30.000 ₫
+ *   share on the Vietnamese defaults must reach 30.120,30 ₫. Only with both of
+ *   those at zero does it equal the purchase price (the dividend tax rate does
+ *   not enter here — there are no dividends to tax).
+ * - Cash dividends already banked cut what the sale still has to recover, so
+ *   they pull it DOWN — below the purchase price once `netDividends` passes
+ *   `grossCost × (2 × feeRate + transferRate)`, i.e. 126,32 ₫/share of gross
+ *   dividend at the defaults. At the page's own shipped default of 1.500 ₫/cp
+ *   it is 28.691,73 ₫, well under the 30.000 ₫ buy; the page has an FAQ item
+ *   for that ("Vì sao giá hòa vốn lại thấp hơn giá mua?").
+ * - Beyond that again it is clamped to 0 — see `alreadyBreakEven`.
  */
 
 export type StockReturnInput = {
@@ -93,9 +108,18 @@ export type StockReturnResult = {
   /**
    * Sale price per share at which the trade breaks even after every fee and
    * tax, dividends included. Null when the deductions reach 100% of the sale,
-   * where no finite price clears the costs.
+   * where no finite price clears the costs. Zero when the dividends already
+   * cover the whole position — see `alreadyBreakEven`.
    */
   breakEvenPricePerShare: number | null;
+
+  /**
+   * True when the dividends already received exceed the whole cost of the
+   * position, so the trade is level even if the shares go to zero. The
+   * closed form's root is then negative — not a price — and
+   * `breakEvenPricePerShare` is 0: the lowest price that still breaks even.
+   */
+  alreadyBreakEven: boolean;
 };
 
 /**
@@ -170,10 +194,20 @@ export function computeStockReturn(
   // Solve netProfit = 0 for the sale price. Every deduction on the sale side
   // scales with it, so this is one division rather than a search.
   const saleRetention = 1 - feeRate - transferRate;
-  const breakEvenPricePerShare =
+  const breakEvenRoot =
     saleRetention > 0
       ? (totalCost - netDividends) / (shares * saleRetention)
       : null;
+  // The root goes negative once net dividends exceed the total cost, i.e. once
+  // dividendPerShare > buyPricePerShare × (1 + feeRate)/(1 − divTaxRate)
+  // — 1,0542 × the buy price at the Vietnamese defaults. A negative
+  // đồng-per-share price is not a price, and it is outside this module's own
+  // input domain (feeding it back in as sellPricePerShare returns null), so
+  // clamp to the lowest price that DOES break even: zero. `< 0` needs no
+  // tolerance band because 0 is a valid in-domain answer either way — at
+  // exactly 0 both branches return the same number.
+  const alreadyBreakEven = breakEvenRoot !== null && breakEvenRoot < 0;
+  const breakEvenPricePerShare = alreadyBreakEven ? 0 : breakEvenRoot;
 
   return {
     grossCost,
@@ -195,5 +229,6 @@ export function computeStockReturn(
     annualisedPercent,
     taxedOnALoss: netProfit < 0 && transferTax > 0,
     breakEvenPricePerShare,
+    alreadyBreakEven,
   };
 }

@@ -133,7 +133,7 @@ export const AFFORDABILITY = {
       },
       {
         q: "Lãi suất thả nổi ảnh hưởng thế nào tới con số này?",
-        a: "Rất nhiều, và đây là rủi ro lớn nhất không nằm trong kết quả. Công cụ giả định lãi suất không đổi cả kỳ hạn. Nếu bạn nhập mức ưu đãi 7% rồi lãi thả nổi lên 11%, khoản trả hằng tháng tăng khoảng một phần tư và có thể vượt ngân sách. Cách dùng an toàn: nhập mức lãi cao hơn mức hiện tại 2–3 điểm phần trăm, và lấy mức giá thấp hơn trong hai lần chạy.",
+        a: "Rất nhiều, và đây là rủi ro lớn nhất không nằm trong kết quả. Công cụ giả định lãi suất không đổi cả kỳ hạn. Nếu bạn nhập mức ưu đãi 7% rồi lãi thả nổi lên 11%, khoản trả hằng tháng tăng khoảng một phần ba và có thể vượt ngân sách. Cách dùng an toàn: nhập mức lãi cao hơn mức hiện tại 2–3 điểm phần trăm, và lấy mức giá thấp hơn trong hai lần chạy.",
       },
     ],
   },

@@ -95,7 +95,7 @@ export const POINTS = {
       "Điểm hoàn phí kiểu đơn giản = phí ÷ mức giảm hằng tháng, làm tròn lên. Công cụ vẫn hiển thị vì đây là con số mọi nơi đều dùng, nhưng nó bỏ qua dư nợ, nên nó luôn muộn hơn thực tế.",
       "Vị thế thực tại thời điểm tất toán so hai tổng: bên không trả phí là tổng các khoản đã trả cộng dư nợ còn lại; bên trả phí là tổng đã trả cộng dư nợ còn lại cộng phí trả trước. Hiệu số dương nghĩa là trả phí có lợi. Với mặc định, tại tháng 60 bên trả phí bỏ ra 2.799.061.004 ₫ so với 2.803.931.542 ₫ — lợi 4.870.538 ₫.",
       "Tiết kiệm cả kỳ hạn sau phí là tổng lãi tiết kiệm được trong toàn bộ kỳ hạn trừ phí, tức 55.636.389 ₫ với mặc định. Con số này chỉ đúng nếu bạn giữ khoản vay đến hết kỳ hạn — điều mà phần lớn người vay mua nhà không làm.",
-      "Mức giảm được nhập theo ĐIỂM phần trăm. Nhập 0,25 để 8,5% thành 8,25%. Nếu hiểu là “giảm 0,25% của lãi suất” thì con số chỉ là 0,02 điểm, tức nhỏ hơn khoảng ba mươi lần — công cụ từ chối mức giảm làm lãi suất xuống dưới 0 nhưng không thể đoán được bạn có nhầm đơn vị hay không.",
+      "Mức giảm được nhập theo ĐIỂM phần trăm. Nhập 0,25 để 8,5% thành 8,25%. Nếu hiểu là “giảm 0,25% của lãi suất” thì con số chỉ là 0,02 điểm, tức nhỏ hơn khoảng mười hai lần — tỷ lệ này bằng 100 chia cho lãi suất, nên ở mức 8,5%/năm nó là gần 12 lần — công cụ từ chối mức giảm làm lãi suất xuống dưới 0 nhưng không thể đoán được bạn có nhầm đơn vị hay không.",
     ],
   },
 

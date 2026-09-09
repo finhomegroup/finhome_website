@@ -115,6 +115,32 @@ describe("computeStockReturn — transfer tax on a loss", () => {
     expect(result.returnPercent).toBeLessThan(-20);
   });
 
+  it("is shallower than the price fall once dividends cover the friction", () => {
+    // The notice this flag renders must NOT claim the real loss always
+    // exceeds the price fall: at the shipped 1.500 ₫/cp dividend it never
+    // does, because the 14.250.000 ₫ net dividend outruns the friction.
+    const result = trade({ ...BASE, sellPricePerShare: 24_000 });
+    expect(result.taxedOnALoss).toBe(true);
+    expect(result.returnPercent).toBeCloseTo(-15.5766350, 6);
+    // The price fell 20%; the loss after friction is only 15,577%.
+    expect(result.grossReturnPercent).toBeCloseTo(-15, 8);
+    expect(result.returnPercent).toBeGreaterThan(-20);
+    // What IS true of every losing trade, and what the notice now says: the
+    // loss after friction is deeper than the loss before it.
+    expect(result.returnPercent).toBeLessThan(result.grossReturnPercent);
+  });
+
+  it("always loses ground to friction, at every losing price", () => {
+    // The notice fires on any netProfit < 0, so its claim has to hold across
+    // the whole losing range rather than at one example.
+    for (const sellPricePerShare of [28_000, 24_000, 20_000, 10_000, 1_000]) {
+      const result = trade({ ...BASE, sellPricePerShare });
+      expect(result.netProfit).toBeLessThan(0);
+      expect(result.returnPercent).toBeLessThan(result.grossReturnPercent);
+      expect(result.dragPoints).toBeGreaterThan(0);
+    }
+  });
+
   it("does not flag a profitable trade", () => {
     expect(trade(BASE).taxedOnALoss).toBe(false);
   });
@@ -152,6 +178,131 @@ describe("computeStockReturn — the break-even price", () => {
   it("falls below the purchase price once dividends cover the friction", () => {
     const result = trade({ ...BASE, dividendPerShare: 4_000 });
     expect(result.breakEvenPricePerShare!).toBeLessThan(30_000);
+  });
+
+  it("matches the closed form the docstring states, at every rate, with no dividends", () => {
+    // Pins the module docstring's zero-dividend contract, which used to claim
+    // the break-even is above the purchase price unconditionally. Swept
+    // instead of sampled because the docstring states it for the whole
+    // zero-dividend range, and the zero-commission/zero-transfer-tax corner
+    // is the one point where it is EQUAL to the buy price rather than above
+    // it. BASE keeps dividendTaxPercent at 5 throughout, which is what makes
+    // that corner equality hold: with no dividends the dividend tax rate
+    // cannot move the break-even at all.
+    for (const brokerageFeePercent of [0, 0.1, 0.15, 0.35, 1, 5]) {
+      for (const transferTaxPercent of [0, 0.1, 0.5, 2]) {
+        const result = trade({
+          ...BASE,
+          dividendPerShare: 0,
+          brokerageFeePercent,
+          transferTaxPercent,
+        });
+        const feeRate = brokerageFeePercent / 100;
+        const closedForm =
+          (30_000 * (1 + feeRate)) / (1 - feeRate - transferTaxPercent / 100);
+        // Four multiplications and one division, no solved rate anywhere, so
+        // the only error is IEEE-754 rounding: the largest gap over this
+        // sweep is 3,6e-12 ₫ on a ~30.000 ₫ figure. 1e-6 ₫ is loose for that
+        // and still far tighter than anything the page displays.
+        expect(result.breakEvenPricePerShare!).toBeCloseTo(closedForm, 6);
+        if (brokerageFeePercent === 0 && transferTaxPercent === 0) {
+          expect(result.breakEvenPricePerShare!).toBeCloseTo(30_000, 6);
+        } else {
+          expect(result.breakEvenPricePerShare!).toBeGreaterThan(30_000);
+        }
+      }
+    }
+  });
+
+  it("crosses the purchase price when net dividends pass the round-trip friction", () => {
+    // The other half of the docstring's contract: break-even < buy price
+    // exactly when netDividends > grossCost × (2 × feeRate + transferRate).
+    // At the defaults that is 300.000.000 × 0,004 = 1.200.000 ₫ net, i.e.
+    // 126,3158 ₫/share gross once the 5% dividend tax is added back.
+    const crossover = (300_000_000 * (2 * 0.0015 + 0.001)) / (1 - 0.05) / 10_000;
+    expect(crossover).toBeCloseTo(126.3158, 4);
+    expect(
+      trade({ ...BASE, dividendPerShare: crossover - 1 })
+        .breakEvenPricePerShare!,
+    ).toBeGreaterThan(30_000);
+    // Same rounding-only argument as above: 1e-6 ₫ on a ~30.000 ₫ figure.
+    expect(
+      trade({ ...BASE, dividendPerShare: crossover }).breakEvenPricePerShare!,
+    ).toBeCloseTo(30_000, 6);
+    expect(
+      trade({ ...BASE, dividendPerShare: crossover + 1 })
+        .breakEvenPricePerShare!,
+    ).toBeLessThan(30_000);
+  });
+
+  it("never reports a negative price when dividends already cover the cost", () => {
+    // 1.000 ₫/năm for 12 years on a 10.000 ₫ par share — ordinary for a
+    // Vietnamese issuer declaring 10–30% of par. The closed form's root here
+    // is −1.388,47, which is not a price.
+    const result = trade({
+      ...BASE,
+      buyPricePerShare: 10_000,
+      sellPricePerShare: 15_000,
+      dividendPerShare: 12_000,
+      years: 12,
+    });
+    expect(result.breakEvenPricePerShare).toBe(0);
+    expect(result.alreadyBreakEven).toBe(true);
+    // The clamp is honest: at a sale price of zero the trade is still ahead,
+    // by net dividends 114.000.000 − total cost 100.150.000.
+    const atZero = trade({
+      ...BASE,
+      buyPricePerShare: 10_000,
+      sellPricePerShare: 0,
+      dividendPerShare: 12_000,
+      years: 12,
+    });
+    expect(atZero.netProfit).toBeCloseTo(13_850_000, 6);
+    expect(atZero.netProfit).toBeGreaterThan(0);
+  });
+
+  it("crosses into the clamp at (1 + fee)/(1 − dividend tax) × the buy price", () => {
+    const threshold = (10_000 * (1 + 0.0015)) / (1 - 0.05); // 10.542,10…
+    const below = trade({
+      ...BASE,
+      buyPricePerShare: 10_000,
+      sellPricePerShare: 15_000,
+      dividendPerShare: Math.floor(threshold) - 1,
+    });
+    expect(below.alreadyBreakEven).toBe(false);
+    expect(below.breakEvenPricePerShare!).toBeGreaterThan(0);
+    const above = trade({
+      ...BASE,
+      buyPricePerShare: 10_000,
+      sellPricePerShare: 15_000,
+      dividendPerShare: Math.ceil(threshold) + 1,
+    });
+    expect(above.alreadyBreakEven).toBe(true);
+    expect(above.breakEvenPricePerShare).toBe(0);
+  });
+
+  it("distinguishes the clamp from the no-solution case", () => {
+    // Two different states with two different explanations on the page: a
+    // sale fully consumed by friction has NO break-even price (null), while
+    // dividends covering the cost break even at 0.
+    const consumed = trade({
+      ...BASE,
+      brokerageFeePercent: 99.9,
+      transferTaxPercent: 0.1,
+    });
+    expect(consumed.breakEvenPricePerShare).toBeNull();
+    expect(consumed.alreadyBreakEven).toBe(false);
+  });
+
+  it("leaves an ordinary trade's break-even unclamped", () => {
+    // The clamp must not touch the default state: 28.692 ₫ with dividends,
+    // 30.120 ₫ without.
+    const withDividend = trade(BASE);
+    expect(withDividend.alreadyBreakEven).toBe(false);
+    expect(withDividend.breakEvenPricePerShare!).toBeCloseTo(28_691.73, 2);
+    const without = trade({ ...BASE, dividendPerShare: 0 });
+    expect(without.alreadyBreakEven).toBe(false);
+    expect(without.breakEvenPricePerShare!).toBeCloseTo(30_120.30, 2);
   });
 
   it("rises with the commission", () => {

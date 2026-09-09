@@ -9,9 +9,17 @@
 // wrong is the single most common way to misuse a TVM calculator.
 //
 // Figures quoted are the module's own output. Loan case (nhận 2 tỷ, 240 kỳ,
-// 0,7083%/kỳ): khoản trả −17.356.465 ₫/kỳ, lãi ròng −2.165.551.520 ₫.
+// 0,7083333333%/kỳ — tức 8,5 ÷ 12, và defaultRate giữ đủ mười chữ số thập
+// phân vì làm tròn thành 0,7083 lệch 506,33 ₫/kỳ): khoản trả −17.356.465 ₫/kỳ,
+// lãi ròng −2.165.551.520 ₫.
 // Savings case (góp −1.000.000 ₫/kỳ, 12 kỳ, 1%/kỳ): cuối kỳ +12.682.503 ₫,
 // lãi ròng +682.503 ₫. Lump sum doubling over 120 kỳ: 0,5792941%/kỳ.
+//
+// Hai con số trong rateHelp cách nhau đúng một phép nhân, nên người đọc kiểm
+// tra được: khoản trả lệch 506,32834681 ₫/kỳ, và 240 × số đó = 121.518,80 →
+// 121.519 ₫ lãi ròng. Đừng viết 507 ₫/kỳ: 507 là hiệu của hai khoản trả ĐÃ
+// làm tròn về đồng (17.356.465 − 17.355.958), và 240 × 507 = 121.680, lệch
+// 161 ₫ so với con số lãi ròng trong cùng câu.
 
 export const TVM = {
   slug: "/cong-cu/gia-tri-tien-te-theo-thoi-gian",
@@ -66,9 +74,9 @@ export const TVM = {
     rateLabel: "Lãi suất mỗi kỳ",
     rateUnit: "%/kỳ",
     rateHelp:
-      "MỖI KỲ, không phải mỗi năm. Lãi 8,5%/năm tính theo tháng là 8,5 ÷ 12 = 0,7083.",
+      "MỖI KỲ, không phải mỗi năm. Lãi 8,5%/năm tính theo tháng là 8,5 ÷ 12 = 0,7083333333 — làm tròn thành 0,7083 làm khoản trả lệch 506,33 ₫ mỗi kỳ và 121.519 ₫ lãi ròng trên 240 kỳ, nên ở đây chúng tôi giữ đủ chữ số.",
     rateInvalid: "Vui lòng nhập một số lớn hơn −100.",
-    defaultRate: "0,7083",
+    defaultRate: "0,7083333333",
 
     timingLegend: "Khoản trả vào lúc nào trong kỳ?",
     timingHelp:
@@ -103,8 +111,8 @@ export const TVM = {
     body: [
       "Phương trình nối năm đại lượng: giá trị hiện tại × (1 + r)^n + khoản trả × ((1 + r)^n − 1) ÷ r + giá trị tương lai = 0, với r là lãi suất mỗi kỳ và n là số kỳ. Bốn trong năm đại lượng xác định đại lượng thứ năm.",
       "Bốn đại lượng đầu có công thức đóng. Riêng LÃI SUẤT thì không — nó được giải bằng phương pháp chia đôi khoảng, và công cụ trả về “không có đáp án” thay vì một con số đoán nếu dòng tiền không kẹp được nghiệm.",
-      "Lãi ròng = giá trị hiện tại + khoản trả × số kỳ + giá trị tương lai. Theo quy ước dấu, số DƯƠNG là lãi bạn NHẬN được và số ÂM là lãi bạn TRẢ. Với khoản vay 2 tỷ ở 0,7083%/kỳ trong 240 kỳ: khoản trả −17.356.465 ₫ và lãi ròng −2.165.551.520 ₫. Với kế hoạch góp −1.000.000 ₫ mỗi kỳ ở 1%/kỳ trong 12 kỳ: cuối kỳ +12.682.503 ₫ và lãi ròng +682.503 ₫.",
-      "Lãi suất phải cùng đơn vị kỳ với số kỳ. Lỗi phổ biến thứ hai sau lỗi dấu: nhập số kỳ theo tháng nhưng lãi suất theo năm. Lãi 8,5%/năm tính theo tháng là 0,7083%/kỳ.",
+      "Lãi ròng = giá trị hiện tại + khoản trả × số kỳ + giá trị tương lai. Theo quy ước dấu, số DƯƠNG là lãi bạn NHẬN được và số ÂM là lãi bạn TRẢ. Với khoản vay 2 tỷ ở 0,7083333333%/kỳ trong 240 kỳ: khoản trả −17.356.465 ₫ và lãi ròng −2.165.551.520 ₫. Với kế hoạch góp −1.000.000 ₫ mỗi kỳ ở 1%/kỳ trong 12 kỳ: cuối kỳ +12.682.503 ₫ và lãi ròng +682.503 ₫.",
+      "Lãi suất phải cùng đơn vị kỳ với số kỳ. Lỗi phổ biến thứ hai sau lỗi dấu: nhập số kỳ theo tháng nhưng lãi suất theo năm. Lãi 8,5%/năm tính theo tháng là 0,7083333333%/kỳ; làm tròn còn 0,7083 là một lỗi riêng, nhỏ nhưng không bằng 0.",
       "Số kỳ KHÔNG được làm tròn khi nó là đại lượng cần tìm. 47,3 kỳ là 47,3 kỳ — làm tròn xuống sẽ nói rằng mục tiêu đạt được sớm hơn thực tế.",
       "Chọn trả đầu kỳ làm mỗi khoản trả sinh lãi thêm một kỳ, nên khoản trả cần thiết nhỏ hơn và giá trị tương lai lớn hơn so với trả cuối kỳ.",
     ],
