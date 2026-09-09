@@ -32,7 +32,17 @@ export function ResultGroup({
   return (
     <div className={cn("rounded-2xl bg-bg-soft p-5", className)}>
       <h2 className="font-display text-base font-medium text-ink">{title}</h2>
-      <div className="mt-2" aria-live={live ? "polite" : undefined}>
+      <div
+        className="mt-2"
+        aria-live={live ? "polite" : undefined}
+        // A stable hook for scripts/check-built-markup.mjs. The count of
+        // `aria-live="polite"` in a page is not the thing the convention is
+        // about — NumberField gives every help paragraph one — so counting
+        // those cannot distinguish a legitimate page from a broken one. This
+        // attribute marks exactly the live RESULTS region, and there must be
+        // one per page.
+        data-results-live={live ? "true" : undefined}
+      >
         {children}
       </div>
     </div>

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:lint": "node scripts/check-lint-baseline.mjs",
+    "check:markup": "node scripts/check-built-markup.mjs",
     "test": "vitest run"
   },
   "dependencies": {
