@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "he-thong-bat-dong-san-3500-giao-dich-cap-nhat",
+    title: "Hệ thống thông tin bất động sản ghi nhận gần 3.500 giao dịch sau hơn 1 tháng triển khai",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Hơn 1 tháng sau khi vận hành, hệ thống thông tin bất động sản quốc gia đã ghi nhận 3.482 giao dịch, 120 dự án công khai thông tin và gần 3.100 môi giới được cấp mã định danh.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/he-thong-bat-dong-san-3500-giao-dich-cap-nhat.jpg",
+    date: "2026-09-10",
+    source: {
+        "name": "vneconomy.vn",
+        "url": "https://vneconomy.vn/gan-3500-giao-dich-bat-dong-san-da-duoc-cap-nhat-tren-he-thong.htm",
+        "accessed": "2026-09-10"
+      },
+  },
+  {
     slug: "phat-cho-thue-nha-o-xa-hoi-sai-doi-tuong-160-trieu",
     title: "Bán, cho thuê nhà ở xã hội sai đối tượng bị phạt tới 160 triệu đồng",
     category: "Chính sách",
