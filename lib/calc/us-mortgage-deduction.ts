@@ -40,6 +40,7 @@ export const ACQUISITION_CAP_CURRENT = 750_000;
 export const ACQUISITION_CAP_GRANDFATHERED = 1_000_000;
 
 export type DebtVintage = "current" | "grandfathered";
+export type MortgageFilingStatus = "jointOrOther" | "marriedSeparate";
 
 export type MortgageDeductionInput = {
   /** Outstanding mortgage balance, in USD. */
@@ -48,6 +49,8 @@ export type MortgageDeductionInput = {
   annualInterest: number;
   /** Which acquisition-debt cap applies. */
   vintage: DebtVintage;
+  /** Married-filing-separately filers receive half of either debt cap. */
+  filingStatus: MortgageFilingStatus;
   /** Every other itemised deduction added up, in USD. */
   otherItemized: number;
   /** The standard deduction for this filer and year, in USD. */
@@ -116,6 +119,7 @@ export function computeUsMortgageDeduction(
     loanBalance,
     annualInterest,
     vintage,
+    filingStatus,
     otherItemized,
     standardDeduction,
     marginalRatePercent,
@@ -127,10 +131,11 @@ export function computeUsMortgageDeduction(
   if (loanBalance === 0 && annualInterest > 0) return null;
 
   const rate = marginalRatePercent / 100;
-  const cap =
+  const fullCap =
     vintage === "grandfathered"
       ? ACQUISITION_CAP_GRANDFATHERED
       : ACQUISITION_CAP_CURRENT;
+  const cap = filingStatus === "marriedSeparate" ? fullCap / 2 : fullCap;
 
   // Interest on the portion of the balance above the cap is not deductible.
   // A zero balance means zero interest (enforced above), so the share is 1

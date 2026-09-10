@@ -73,8 +73,11 @@ export const PAYROLL_YEARS: Record<number, PayrollYearParams> = {
 
 export const PAYROLL_YEAR_ORDER = [2026, 2025] as const;
 
+/** Schedule SE line 4a: the regular-method share of net profit exposed to SE tax. */
+export const SELF_EMPLOYMENT_NET_EARNINGS_FACTOR = 0.9235;
+
 export type PayrollInput = {
-  /** Gross annual wages, in USD. */
+  /** Employee FICA wages, or net self-employment profit, in USD. */
   wages: number;
   filingStatus: FilingStatus;
   year: number;
@@ -87,6 +90,8 @@ export type PayrollInput = {
 
 export type PayrollResult = {
   params: PayrollYearParams;
+  /** Wages, or 92,35% of net self-employment profit under the regular method. */
+  taxBase: number;
   /** Wages actually subject to Social Security tax — capped at the base. */
   socialSecurityWages: number;
   socialSecurityTax: number;
@@ -132,14 +137,22 @@ export function computeUsPayroll(input: PayrollInput): PayrollResult | null {
   if (params === undefined) return null;
 
   const half = selfEmployed ? 2 : 1;
+  // Schedule SE does not levy 15,3% on the whole Schedule C profit. Under
+  // the regular method, line 4a first multiplies it by 92,35%.
+  const taxBase = selfEmployed
+    ? wages * SELF_EMPLOYMENT_NET_EARNINGS_FACTOR
+    : wages;
 
-  const socialSecurityWages = Math.min(wages, params.socialSecurityWageBase);
+  const socialSecurityWages = Math.min(
+    taxBase,
+    params.socialSecurityWageBase,
+  );
   const socialSecurityTax =
     socialSecurityWages * (params.socialSecurityRate / 100) * half;
-  const medicareTax = wages * (params.medicareRate / 100) * half;
+  const medicareTax = taxBase * (params.medicareRate / 100) * half;
 
   const threshold = params.additionalMedicareThreshold[filingStatus];
-  const additionalMedicareWages = Math.max(0, wages - threshold);
+  const additionalMedicareWages = Math.max(0, taxBase - threshold);
   // The surtax is on the worker alone: an employer never matches it, and a
   // self-employed person does not pay it twice either.
   const additionalMedicareTax =
@@ -151,10 +164,10 @@ export function computeUsPayroll(input: PayrollInput): PayrollResult | null {
   const employerTotal = selfEmployed
     ? 0
     : socialSecurityWages * (params.socialSecurityRate / 100) +
-      wages * (params.medicareRate / 100);
+      taxBase * (params.medicareRate / 100);
 
-  const aboveWageBase = wages > params.socialSecurityWageBase;
-  const aboveSurtaxThreshold = wages > threshold;
+  const aboveWageBase = taxBase > params.socialSecurityWageBase;
+  const aboveSurtaxThreshold = taxBase > threshold;
 
   // The NEXT dollar, not the last one. At wages exactly equal to the wage
   // base the Social Security maximum is already paid, so the next dollar
@@ -165,17 +178,19 @@ export function computeUsPayroll(input: PayrollInput): PayrollResult | null {
   // notices and for the surtax wage computation, and must not be reused for
   // this next-dollar question.
   const marginalRatePercent =
-    (wages >= params.socialSecurityWageBase
+    ((taxBase >= params.socialSecurityWageBase
       ? 0
       : params.socialSecurityRate * half) +
     params.medicareRate * half +
-    (wages >= threshold ? params.additionalMedicareRate : 0);
+    (taxBase >= threshold ? params.additionalMedicareRate : 0)) *
+    (selfEmployed ? SELF_EMPLOYMENT_NET_EARNINGS_FACTOR : 1);
 
   const uncappedSocialSecurity =
-    wages * (params.socialSecurityRate / 100) * half;
+    taxBase * (params.socialSecurityRate / 100) * half;
 
   return {
     params,
+    taxBase,
     socialSecurityWages,
     socialSecurityTax,
     medicareTax,

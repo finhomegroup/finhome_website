@@ -3,8 +3,9 @@
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 Last updated: 2026-09-10
-Branch: `feat/rule-of-72-calculator` — **not merged, not pushed.**
-Everything below is committed; nothing is in the working tree.
+Branch: `main` — calculator suite integrated.
+Check `git status` before assuming the working tree is clean; audit remediation may be
+present but not committed yet.
 
 ---
 
@@ -17,7 +18,7 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 | Working calculators | **75** |
 | Listed with a placeholder page | 0 |
 | Total routes built | 75 |
-| Tests | 1852, across 94 suites |
+| Tests | 1859, across 96 suites |
 
 **The suite is complete.** All 75 planned tools are built; 20 of them are flagged
 `usRules`. The counts above are derived from `content/calculators/registry.ts`
@@ -273,20 +274,7 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** `feat/rule-of-72-calculator` is unmerged and unpushed, and now ~148
-  commits (`git log --oneline main..HEAD | wc -l` for the current number). One commit per
-  calculator, each self-contained — the registry flip ships with its page, so no commit
-  leaves `registry.test.ts` red. The audit fixes follow the same rule: one commit per fix
-  batch, each with its own test pins moved. The owner has been asked repeatedly and has not
-  chosen a merge strategy; nothing has been pushed as a result. **The suite being complete
-  removes the last reason to keep waiting.**
 - **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers all 75 live pages, several of which render a wide results table (`phan-tich-thu-nhap-huu-tri` has seven columns and two tables, `toi-da-401k` renders 26 rows, `phan-tich-bao-cao-tai-chinh` is the widest) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye. The retirement tier also adds the longest input forms in the suite: `phan-tich-thu-nhap-huu-tri` and `phan-bo-tai-san` both render 11 fields across four groups. There is **no browser automation in this environment**, so nothing about focus order, colour contrast, touch-target size or that horizontal scroll has ever been observed; every accessibility claim in this document is inferred from JSX and built markup. Do not report a visual item as verified.
-- **Two vendored figures could not be transcribed and are absent rather than guessed.**
-  `us-social-security.ts` has PIA bend points for eligibility years 2024 and 2025 only, and
-  the page works around it by treating the selection as a FORMULA year and reading results
-  in today's money — which is defensible and documented, but a 2026 row should be added
-  when its published figures are to hand. `EARNINGS_TEST` holds 2025 exempt amounts only;
-  they are page inputs with the year in the label, so a reader can correct them.
 - **The rental-tax model needs a tax professional's sign-off.** `bat-dong-san-cho-thue` now
   implements 5% VAT on all revenue plus 5% PIT on the excess above a 500 triệu threshold,
   per Luật 149/2025/QH15 (GTGT, 01/01/2026) and Luật Thuế TNCN 109/2025/QH15 (01/07/2026).
@@ -301,6 +289,10 @@ There is **no browser automation** in this environment. Every check above is a t
 - ~~`ResultGroup` has no `aria-live` opt-out.~~ It takes `live?: boolean` now.
 
 **Closed since the 2026-09-09 post-audit remediation:**
+
+- ~~The 2026 Social Security figures were absent.~~ The 2026 PIA bend points, taxable
+  maximum and retirement earnings-test exempt amounts are now transcribed in
+  `us-social-security.ts`; the pages default to 2026 and their prose is pinned by tests.
 
 - ~~No automated check on the accessibility markup.~~ `scripts/check-built-markup.mjs`
   (`pnpm check:markup`) now asserts, on the built export: one disclaimer, one `<h1>`, both

@@ -45,6 +45,7 @@ export function Us401kCalculator() {
   const age = parseCount(v.age);
   const years = parseCount(v.years);
   const salary = parseMoney(v.salary);
+  const priorYearWages = parseMoney(v.priorYearWages);
   const deferral = parseDecimal(v.deferral);
   const matchPercent = parseDecimal(v.matchPercent);
   const matchLimit = parseDecimal(v.matchLimit);
@@ -56,6 +57,7 @@ export function Us401kCalculator() {
     age: age === null || age > 120,
     years: years === null || years > 70,
     salary: salary === null || salary < 0,
+    priorYearWages: priorYearWages === null || priorYearWages < 0,
     deferral: deferral === null || deferral < 0 || deferral > 100,
     matchPercent:
       matchPercent === null || matchPercent < 0 || matchPercent > 200,
@@ -73,6 +75,7 @@ export function Us401kCalculator() {
         year: Number(v.year),
         age: age!,
         annualSalary: salary!,
+        priorYearWages: priorYearWages!,
         deferralPercent: deferral!,
         employerMatchPercent: matchPercent!,
         employerMatchLimitPercent: matchLimit!,
@@ -135,6 +138,14 @@ export function Us401kCalculator() {
           help={F.salaryHelp}
           error={F.moneyInvalid}
           invalid={invalid.salary}
+        />
+        <NumberField
+          {...fields.bind("priorYearWages")}
+          label={F.priorYearWagesLabel}
+          unit={F.priorYearWagesUnit}
+          help={F.priorYearWagesHelp}
+          error={F.moneyInvalid}
+          invalid={invalid.priorYearWages}
         />
         <NumberField
           {...fields.bind("deferral")}

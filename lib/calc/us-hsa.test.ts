@@ -5,11 +5,15 @@ const BASE: HsaInput = {
   year: 2026,
   coverage: "family",
   age: 40,
+  eligibleMonths: 12,
+  useLastMonthRule: false,
   contribution: 6_750,
   employerContribution: 2_000,
   federalRatePercent: 24,
   stateRatePercent: 5,
   viaPayroll: true,
+  annualWagesBeforeHsa: 100_000,
+  filingStatus: "single",
   currentBalance: 10_000,
   returnPercent: 7,
   years: 20,
@@ -53,6 +57,32 @@ describe("computeUsHsa — limits", () => {
     expect(older.totalLimit).toBe(9_750);
     // The extra room appears as room, not as a bigger contribution.
     expect(older.remainingRoom).toBe(1_000);
+  });
+
+  it("prorates the limit by eligible months", () => {
+    const result = computeUsHsa({
+      ...BASE,
+      age: 55,
+      eligibleMonths: 6,
+      contribution: 0,
+      employerContribution: 0,
+    })!;
+    expect(result.eligibilityFactor).toBe(0.5);
+    expect(result.fullYearBaseLimit).toBe(8_750);
+    expect(result.baseLimit).toBe(4_375);
+    expect(result.catchUpAvailable).toBe(500);
+    expect(result.totalLimit).toBe(4_875);
+  });
+
+  it("allows the full limit under the last-month rule", () => {
+    const result = computeUsHsa({
+      ...BASE,
+      eligibleMonths: 1,
+      useLastMonthRule: true,
+    })!;
+    expect(result.eligibilityFactor).toBe(1);
+    expect(result.lastMonthRuleApplied).toBe(true);
+    expect(result.totalLimit).toBe(8_750);
   });
 
   it("uses the self-only limit for self-only coverage", () => {
@@ -108,6 +138,29 @@ describe("computeUsHsa — the FICA advantage", () => {
     expect(cheque.netCostOfContribution).toBeGreaterThan(
       payroll.netCostOfContribution,
     );
+  });
+
+  it("does not pretend Social Security tax is saved above its wage base", () => {
+    const result = computeUsHsa({
+      ...BASE,
+      annualWagesBeforeHsa: 195_000,
+      stateRatePercent: 0,
+    })!;
+    // Both before and after wages remain above the 184.500 base, so only
+    // Medicare 1,45% is avoided.
+    expect(result.wagesAfterHsa).toBe(188_250);
+    expect(result.ficaSaved).toBeCloseTo(6_750 * 0.0145, 6);
+  });
+
+  it("prices only the Additional Medicare wages actually crossed", () => {
+    const result = computeUsHsa({
+      ...BASE,
+      annualWagesBeforeHsa: 205_000,
+      stateRatePercent: 0,
+    })!;
+    // The contribution crosses 5.000 of the 200.000 threshold, not all
+    // 6.750, so the saving is Medicare on 6.750 plus 0,9% on 5.000.
+    expect(result.ficaSaved).toBeCloseTo(6_750 * 0.0145 + 5_000 * 0.009, 6);
   });
 
   it("makes FICA worth more than income tax at low brackets", () => {
@@ -239,6 +292,13 @@ describe("computeUsHsa — validation", () => {
     expect(computeUsHsa({ ...BASE, currentBalance: -1 })).toBe(null);
     expect(computeUsHsa({ ...BASE, age: -1 })).toBe(null);
     expect(computeUsHsa({ ...BASE, age: 121 })).toBe(null);
+    expect(computeUsHsa({ ...BASE, eligibleMonths: -1 })).toBe(null);
+    expect(computeUsHsa({ ...BASE, eligibleMonths: 13 })).toBe(null);
+    expect(computeUsHsa({ ...BASE, eligibleMonths: 1.5 })).toBe(null);
+    expect(
+      computeUsHsa({ ...BASE, eligibleMonths: 0, useLastMonthRule: true }),
+    ).toBe(null);
+    expect(computeUsHsa({ ...BASE, annualWagesBeforeHsa: -1 })).toBe(null);
     expect(computeUsHsa({ ...BASE, years: -1 })).toBe(null);
     expect(computeUsHsa({ ...BASE, years: 71 })).toBe(null);
     expect(computeUsHsa({ ...BASE, years: 10.5 })).toBe(null);

@@ -16,6 +16,7 @@ import {
 import {
   computeUsMortgageDeduction,
   type DebtVintage,
+  type MortgageFilingStatus,
 } from "@/lib/calc/us-mortgage-deduction";
 import { US_MORTGAGE_DEDUCTION as C } from "@/content/calculators/us-mortgage-deduction";
 
@@ -24,6 +25,14 @@ const F = C.form;
 const VINTAGE_OPTIONS: readonly { value: DebtVintage; label: string }[] = [
   { value: "current", label: F.vintageOptions.current },
   { value: "grandfathered", label: F.vintageOptions.grandfathered },
+];
+
+const FILING_STATUS_OPTIONS: readonly {
+  value: MortgageFilingStatus;
+  label: string;
+}[] = [
+  { value: "jointOrOther", label: F.filingStatusOptions.jointOrOther },
+  { value: "marriedSeparate", label: F.filingStatusOptions.marriedSeparate },
 ];
 
 function usd(value: number): string {
@@ -64,6 +73,7 @@ export function UsMortgageDeductionCalculator() {
         loanBalance: balance,
         annualInterest: interest,
         vintage: fields.values.vintage as DebtVintage,
+        filingStatus: fields.values.filingStatus as MortgageFilingStatus,
         otherItemized,
         standardDeduction: standard,
         marginalRatePercent: rate,
@@ -93,6 +103,12 @@ export function UsMortgageDeductionCalculator() {
           label={F.vintageLabel}
           help={F.vintageHelp}
           options={VINTAGE_OPTIONS}
+        />
+        <SelectField
+          {...fields.bind("filingStatus")}
+          label={F.filingStatusLabel}
+          help={F.filingStatusHelp}
+          options={FILING_STATUS_OPTIONS}
         />
       </FieldGroup>
 

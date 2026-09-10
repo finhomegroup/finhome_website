@@ -7,21 +7,21 @@
 // by formula year. Do not restate one as a literal here.
 //
 // Figures quoted are the module's output, verified by running it on this
-// page's own defaults (sinh 1965; công thức năm 2025; thu nhập bình quân
+// page's own defaults (sinh 1965; công thức năm 2026; thu nhập bình quân
 // 78.000 USD/năm theo giá hôm nay; 35 năm làm việc; nhận ở tuổi 67):
-//   AIME 6.500,00 USD/tháng; PIA 2.791,00 USD; tỷ lệ thay thế 42,94%
-//   Ba mức: 1.226,00 x 90% = 1.103,40; 5.274,00 x 32% = 1.687,68;
+//   AIME 6.500,00 USD/tháng; PIA 2.825,80 USD; tỷ lệ thay thế 43,47%
+//   Ba mức: 1.286,00 x 90% = 1.157,40; 5.214,00 x 32% = 1.668,48;
 //     0,00 x 15% = 0,00 — đồng tiếp theo được tính ở mức 32%
 //   Tuổi hưởng đủ 67 tuổi 0 tháng
-//   Lịch nhận: 62 -> 70,00% = 1.953/tháng; 67 -> 100,00% = 2.791;
-//     70 -> 124,00% = 3.460. Khoảng cách 62 và 70 là 1.507 USD/tháng,
+//   Lịch nhận: 62 -> 70,00% = 1.978/tháng; 67 -> 100,00% = 2.825;
+//     70 -> 124,00% = 3.503. Khoảng cách 62 và 70 là 1.525 USD/tháng,
 //     tức 1,77 lần
-//   Chỉ làm 25 năm: AIME 4.642,86; PIA 2.196,70 — thấp hơn 594,30 USD,
-//     tức 21,3%, dù thu nhập từng năm không đổi
-//   Thu nhập 400.000/năm: bị chặn ở 176.100 (trần thu nhập chịu thuế
-//     năm 2025); AIME 14.675,00; PIA 4.168,80; tỷ lệ thay thế 28,41%
-//     — thu nhập gấp 5,13 lần mà trợ cấp chỉ gấp 1,49 lần
-//   Thu nhập 30.000/năm: AIME 2.500,00; PIA 1.511,00; thay thế 60,44%
+//   Chỉ làm 25 năm: AIME 4.642,86; PIA 2.231,50 — thấp hơn 594,30 USD,
+//     tức 21,0%, dù thu nhập từng năm không đổi
+//   Thu nhập 400.000/năm: bị chặn ở 184.500 (trần thu nhập chịu thuế
+//     năm 2026); AIME 15.375,00; PIA 4.369,40; tỷ lệ thay thế 28,42%
+//     — thu nhập gấp 5,13 lần mà trợ cấp chỉ gấp 1,55 lần
+//   Thu nhập 30.000/năm: AIME 2.500,00; PIA 1.545,80; thay thế 61,83%
 
 export const US_SOCIAL_SECURITY_ESTIMATE = {
   slug: "/cong-cu/uoc-tinh-an-sinh-xa-hoi",
@@ -63,7 +63,7 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
     claimAgeInvalid: "Vui lòng nhập một tuổi nguyên từ 62 đến 70.",
 
     defaults: {
-      formulaYear: "2025",
+      formulaYear: "2026",
       earnings: "78.000",
       yearsWorked: "35",
       birthYear: "1965",
@@ -110,7 +110,7 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
     cappedNotice:
       "Thu nhập bạn nhập vượt trần thu nhập chịu thuế an sinh xã hội, nên phần vượt không được tính vào trợ cấp — cũng đúng như nó không phải nộp thuế an sinh xã hội. Đây là lý do trợ cấp an sinh xã hội chiếm tỷ trọng rất nhỏ trong kế hoạch hưu trí của người thu nhập cao.",
     zeroYearsNotice:
-      "Bạn có ít hơn 35 năm thu nhập, nên phép bình quân của SSA điền các năm còn thiếu bằng 0. Với các giá trị mặc định, làm 25 năm thay vì 35 làm trợ cấp cơ bản giảm 594,30 USD một tháng — 21,3% — dù mức thu nhập từng năm không đổi. Nếu bạn còn đang làm việc, mỗi năm thêm vào sẽ thay một số 0 bằng một năm thật, và đó là cách tăng trợ cấp hiệu quả nhất với người có ít năm làm việc.",
+      "Bạn có ít hơn 35 năm thu nhập, nên phép bình quân của SSA điền các năm còn thiếu bằng 0. Với các giá trị mặc định, làm 25 năm thay vì 35 làm trợ cấp cơ bản giảm 594,30 USD một tháng — 21,0% — dù mức thu nhập từng năm không đổi. Nếu bạn còn đang làm việc, mỗi năm thêm vào sẽ thay một số 0 bằng một năm thật, và đó là cách tăng trợ cấp hiệu quả nhất với người có ít năm làm việc.",
     estimateNotice:
       "Đây là một ƯỚC TÍNH, không phải con số SSA sẽ trả. Phép tính thật điều chỉnh thu nhập của từng năm theo mức tiền lương của năm bạn tròn 60 tuổi rồi lấy 35 năm cao nhất, việc đó cần toàn bộ lịch sử thu nhập mà công cụ này không có. Bản ước tính chính thức nằm trong tài khoản my Social Security của bạn, và nếu đã có con số đó thì hãy dùng nó cho hai trang phân tích an sinh xã hội còn lại trong bộ công cụ.",
     invalidNotice:
@@ -118,7 +118,7 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
   },
 
   regressiveNotice:
-    "Với các giá trị mặc định, thu nhập bình quân 78.000 USD một năm cho mức trợ cấp cơ bản 2.791,00 USD một tháng — tỷ lệ thay thế 42,94%. Nhưng công thức không tuyến tính: người có thu nhập 30.000 USD được thay thế 60,44% thu nhập, còn người có thu nhập 400.000 USD chỉ được 28,41%, vì thu nhập của họ bị cắt ở trần 176.100 USD rồi phần trên cùng chỉ được tính 15%. Thu nhập gấp 5,13 lần, trợ cấp chỉ gấp 1,49 lần. Đó không phải một khiếm khuyết của công thức mà là thiết kế của nó — và hệ quả thực tế là người thu nhập càng cao càng phải tự lo phần lớn hơn cho tuổi nghỉ hưu.",
+    "Với các giá trị mặc định, thu nhập bình quân 78.000 USD một năm cho mức trợ cấp cơ bản 2.825,80 USD một tháng — tỷ lệ thay thế 43,47%. Nhưng công thức không tuyến tính: người có thu nhập 30.000 USD được thay thế 61,83% thu nhập, còn người có thu nhập 400.000 USD chỉ được 28,42%, vì thu nhập của họ bị cắt ở trần 184.500 USD rồi phần trên cùng chỉ được tính 15%. Thu nhập gấp 5,13 lần, trợ cấp chỉ gấp 1,55 lần. Đó không phải một khiếm khuyết của công thức mà là thiết kế của nó — và hệ quả thực tế là người thu nhập càng cao càng phải tự lo phần lớn hơn cho tuổi nghỉ hưu.",
 
   formula: {
     title: "Cách tính",
@@ -142,11 +142,11 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
       },
       {
         q: "Thiếu vài năm làm việc thì mất bao nhiêu?",
-        a: "Nhiều hơn tỷ lệ số năm bị thiếu, và đây là con số đáng chạy thử. Với các giá trị mặc định, 25 năm thay vì 35 làm trợ cấp cơ bản giảm từ 2.791,00 xuống 2.196,70 USD một tháng, tức 21,3%. Lý do nó không phải 28,6% — tương ứng 10 trên 35 năm — là vì công thức lũy thoái: phần AIME bị mất nằm ở tầng 32%, không phải tầng 90%. Điều đó cũng có nghĩa là với người có ít năm làm việc, mỗi năm thêm vào thay một số 0 bằng một năm thật và tác động rất lớn.",
+        a: "Nhiều hơn tỷ lệ số năm bị thiếu, và đây là con số đáng chạy thử. Với các giá trị mặc định, 25 năm thay vì 35 làm trợ cấp cơ bản giảm từ 2.825,80 xuống 2.231,50 USD một tháng, tức 21,0%. Lý do nó không phải 28,6% — tương ứng 10 trên 35 năm — là vì công thức lũy thoái: phần AIME bị mất nằm ở tầng 32%, không phải tầng 90%. Điều đó cũng có nghĩa là với người có ít năm làm việc, mỗi năm thêm vào thay một số 0 bằng một năm thật và tác động rất lớn.",
       },
       {
         q: "Chờ đến 70 tuổi có đáng không?",
-        a: "Về mặt số học mỗi tháng chờ thêm sau tuổi hưởng đủ được cộng 2/3 của 1%, tức 8% một năm, và không có tài sản nào khác trả lãi thực 8% được bảo đảm bởi một chính phủ và điều chỉnh theo lạm phát. Với các giá trị mặc định, chờ từ 62 đến 70 nâng khoản nhận từ 1.953 lên 3.460 USD một tháng — 1,77 lần. Nhưng bạn nhận ít năm hơn, nên câu hỏi thật là điểm hòa vốn nằm ở đâu và bạn có sống qua nó không. Trang phân tích an sinh xã hội trong bộ công cụ này tính đúng phần đó, kèm cả lãi suất chiết khấu.",
+        a: "Về mặt số học mỗi tháng chờ thêm sau tuổi hưởng đủ được cộng 2/3 của 1%, tức 8% một năm, và không có tài sản nào khác trả lãi thực 8% được bảo đảm bởi một chính phủ và điều chỉnh theo lạm phát. Với các giá trị mặc định, chờ từ 62 đến 70 nâng khoản nhận từ 1.978 lên 3.503 USD một tháng — 1,77 lần. Nhưng bạn nhận ít năm hơn, nên câu hỏi thật là điểm hòa vốn nằm ở đâu và bạn có sống qua nó không. Trang phân tích an sinh xã hội trong bộ công cụ này tính đúng phần đó, kèm cả lãi suất chiết khấu.",
       },
       {
         q: "Trợ cấp có bị đánh thuế không?",

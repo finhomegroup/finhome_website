@@ -57,6 +57,8 @@ export type Us401kInput = {
   age: number;
   /** Gross annual salary, in USD. */
   annualSalary: number;
+  /** Prior-year FICA wages from this plan sponsor, for the Roth catch-up test. */
+  priorYearWages: number;
   /** The employee's own deferral, as a percent of plan compensation. */
   deferralPercent: number;
   /** Cents matched per dollar deferred, as a percent: 100 is dollar for dollar. */
@@ -162,6 +164,7 @@ export function computeUs401k(input: Us401kInput): Us401kResult | null {
     year,
     age,
     annualSalary,
+    priorYearWages,
     deferralPercent,
     employerMatchPercent,
     employerMatchLimitPercent,
@@ -176,6 +179,7 @@ export function computeUs401k(input: Us401kInput): Us401kResult | null {
 
   if (!Number.isFinite(age) || age < 0 || age > 120) return null;
   if (!Number.isFinite(annualSalary) || annualSalary < 0) return null;
+  if (!Number.isFinite(priorYearWages) || priorYearWages < 0) return null;
   if (!Number.isFinite(years) || !Number.isInteger(years)) return null;
   if (years < 0 || years > 70) return null;
   for (const percent of [
@@ -226,7 +230,7 @@ export function computeUs401k(input: Us401kInput): Us401kResult | null {
   const excessAdditions = Math.max(0, additionsForLimit - params.annualAdditions);
 
   const catchUpForcedRoth =
-    catchUpUsed > 0 && catchUpMustBeRoth(params, annualSalary);
+    catchUpUsed > 0 && catchUpMustBeRoth(params, priorYearWages);
   const deductibleDeferral = catchUpForcedRoth ? deferral - catchUpUsed : deferral;
   const incomeTaxSaved = deductibleDeferral * (marginalRatePercent / 100);
 

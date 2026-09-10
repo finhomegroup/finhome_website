@@ -7,12 +7,11 @@
  * account gives up one of the three.
  *
  * There is a fourth advantage that is routinely left out and that this
- * module makes explicit: contributions made through payroll deduction also
- * escape FICA — 7,65% for the employee, and the employer's 7,65% too. An IRA
- * or a 401(k) deferral does NOT escape FICA. For a worker below the Social
- * Security wage base, that alone is worth more than the income-tax
- * deduction at the lower brackets, and it is the single largest reason a
- * payroll HSA beats writing a cheque to the same account in April.
+ * module makes explicit: contributions made through a section 125 cafeteria
+ * plan also escape FICA. That is 7,65% for an employee below both relevant
+ * thresholds, but less after the Social Security wage base and potentially
+ * different around the Additional Medicare threshold. An IRA or a 401(k)
+ * deferral does NOT escape FICA.
  *
  * ## After 65
  *
@@ -27,6 +26,12 @@
  * one dated table, per docs/calculator-suite-status.md §8. An unknown year
  * returns null rather than borrowing another year's limit.
  */
+
+import {
+  PAYROLL_YEARS,
+  type FilingStatus,
+  type PayrollYearParams,
+} from "@/lib/calc/us-payroll";
 
 export type HsaCoverage = "selfOnly" | "family";
 
@@ -64,14 +69,15 @@ export const EARLY_WITHDRAWAL_PENALTY_PERCENT = 20;
 /** Age at which the penalty stops applying. */
 export const PENALTY_FREE_AGE = 65;
 
-/** Combined employee FICA rate a payroll contribution avoids. */
-export const EMPLOYEE_FICA_PERCENT = 7.65;
-
 export type HsaInput = {
   year: number;
   coverage: HsaCoverage;
-  /** Current age, which decides the catch-up allowance. */
+  /** Age at the end of the tax year, which decides the catch-up allowance. */
   age: number;
+  /** Months during which the holder was HSA-eligible on the first day. */
+  eligibleMonths: number;
+  /** Treat the holder as eligible all year under the December last-month rule. */
+  useLastMonthRule: boolean;
   /** What the account holder plans to put in this year, in USD. */
   contribution: number;
   /** Employer's contribution, in USD. Counts against the SAME limit. */
@@ -80,8 +86,11 @@ export type HsaInput = {
   federalRatePercent: number;
   /** State income tax rate, in percent. Some states do not follow the federal treatment. */
   stateRatePercent: number;
-  /** True when contributions go in by payroll deduction, which also avoids FICA. */
+  /** True only for a section 125 cafeteria-plan salary reduction. */
   viaPayroll: boolean;
+  /** Annual FICA wages before the HSA salary reduction. */
+  annualWagesBeforeHsa: number;
+  filingStatus: FilingStatus;
   /** Starting balance, in USD. */
   currentBalance: number;
   /** Expected annual return, in percent. */
@@ -92,7 +101,12 @@ export type HsaInput = {
 
 export type HsaResult = {
   params: HsaYearParams;
-  /** The limit for this coverage type, before catch-up. */
+  /** Published full-year limit for this coverage type, before catch-up. */
+  fullYearBaseLimit: number;
+  /** Fraction of the annual limit available after monthly eligibility. */
+  eligibilityFactor: number;
+  lastMonthRuleApplied: boolean;
+  /** Actual base limit after monthly eligibility or the last-month rule. */
   baseLimit: number;
   /** Catch-up allowance actually available at this age. */
   catchUpAvailable: number;
@@ -108,6 +122,8 @@ export type HsaResult = {
   incomeTaxSaved: number;
   /** FICA avoided — payroll contributions only. */
   ficaSaved: number;
+  /** FICA wages remaining after a qualifying payroll contribution. */
+  wagesAfterHsa: number;
   /** Both, added up. This is the first of the three advantages. */
   firstYearTaxSaved: number;
   /** Effective cost of the employee's contribution after all tax saved. */
@@ -134,6 +150,21 @@ export type HsaResult = {
   penaltyApplies: boolean;
 };
 
+function employeeFica(
+  wages: number,
+  params: PayrollYearParams,
+  filingStatus: FilingStatus,
+): number {
+  const socialSecurity =
+    Math.min(wages, params.socialSecurityWageBase) *
+    (params.socialSecurityRate / 100);
+  const medicare = wages * (params.medicareRate / 100);
+  const additionalMedicare =
+    Math.max(0, wages - params.additionalMedicareThreshold[filingStatus]) *
+    (params.additionalMedicareRate / 100);
+  return socialSecurity + medicare + additionalMedicare;
+}
+
 /**
  * Project the account.
  *
@@ -146,11 +177,15 @@ export function computeUsHsa(input: HsaInput): HsaResult | null {
     year,
     coverage,
     age,
+    eligibleMonths,
+    useLastMonthRule,
     contribution,
     employerContribution,
     federalRatePercent,
     stateRatePercent,
     viaPayroll,
+    annualWagesBeforeHsa,
+    filingStatus,
     currentBalance,
     returnPercent,
     years,
@@ -162,15 +197,31 @@ export function computeUsHsa(input: HsaInput): HsaResult | null {
   if (contribution < 0 || employerContribution < 0) return null;
   if (currentBalance < 0) return null;
   if (!Number.isFinite(age) || age < 0 || age > 120) return null;
+  if (
+    !Number.isFinite(eligibleMonths) ||
+    !Number.isInteger(eligibleMonths) ||
+    eligibleMonths < 0 ||
+    eligibleMonths > 12
+  ) {
+    return null;
+  }
+  if (useLastMonthRule && eligibleMonths === 0) return null;
+  if (!Number.isFinite(annualWagesBeforeHsa) || annualWagesBeforeHsa < 0) {
+    return null;
+  }
   if (!Number.isFinite(years) || years < 0 || years > 70) return null;
   if (!Number.isInteger(years)) return null;
   if (federalRatePercent < 0 || federalRatePercent > 100) return null;
   if (stateRatePercent < 0 || stateRatePercent > 100) return null;
   if (returnPercent < -100 || returnPercent > 100) return null;
 
-  const baseLimit =
+  const fullYearBaseLimit =
     coverage === "family" ? params.familyLimit : params.selfOnlyLimit;
-  const catchUpAvailable = age >= params.catchUpAge ? params.catchUpLimit : 0;
+  const lastMonthRuleApplied = useLastMonthRule && eligibleMonths < 12;
+  const eligibilityFactor = useLastMonthRule ? 1 : eligibleMonths / 12;
+  const baseLimit = fullYearBaseLimit * eligibilityFactor;
+  const catchUpAvailable =
+    age >= params.catchUpAge ? params.catchUpLimit * eligibilityFactor : 0;
   const totalLimit = baseLimit + catchUpAvailable;
 
   // The employer's money counts against the SAME limit, not a separate one.
@@ -187,10 +238,19 @@ export function computeUsHsa(input: HsaInput): HsaResult | null {
   // gets no deduction, so crediting the full amount would overstate it.
   const deductible = Math.min(contribution, Math.max(0, totalLimit - employerContribution));
   const incomeTaxSaved = deductible * (federalRate + stateRate);
-  // FICA is avoided only through payroll. Writing a cheque to the same
-  // account gets the income-tax deduction and nothing else.
+  // Only a section 125 cafeteria-plan salary reduction escapes employment
+  // taxes. Price the saving as the difference between the two actual FICA
+  // bills so the Social Security cap and Additional Medicare threshold are
+  // respected rather than applying a blanket 7,65%.
+  const payrollContribution = viaPayroll
+    ? Math.min(deductible, annualWagesBeforeHsa)
+    : 0;
+  const wagesAfterHsa = annualWagesBeforeHsa - payrollContribution;
+  const payrollParams = PAYROLL_YEARS[year];
+  if (payrollParams === undefined) return null;
   const ficaSaved = viaPayroll
-    ? deductible * (EMPLOYEE_FICA_PERCENT / 100)
+    ? employeeFica(annualWagesBeforeHsa, payrollParams, filingStatus) -
+      employeeFica(wagesAfterHsa, payrollParams, filingStatus)
     : 0;
   const firstYearTaxSaved = incomeTaxSaved + ficaSaved;
 
@@ -220,6 +280,9 @@ export function computeUsHsa(input: HsaInput): HsaResult | null {
 
   return {
     params,
+    fullYearBaseLimit,
+    eligibilityFactor,
+    lastMonthRuleApplied,
     baseLimit,
     catchUpAvailable,
     totalLimit,
@@ -228,6 +291,7 @@ export function computeUsHsa(input: HsaInput): HsaResult | null {
     remainingRoom,
     incomeTaxSaved,
     ficaSaved,
+    wagesAfterHsa,
     firstYearTaxSaved,
     netCostOfContribution: contribution - firstYearTaxSaved,
     projectedBalance,

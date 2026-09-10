@@ -9,6 +9,7 @@ const BASE: MortgageDeductionInput = {
   loanBalance: 400_000,
   annualInterest: 24_000,
   vintage: "current",
+  filingStatus: "jointOrOther",
   otherItemized: 8_000,
   standardDeduction: 30_000,
   marginalRatePercent: 24,
@@ -123,6 +124,28 @@ describe("computeUsMortgageDeduction", () => {
     expect(older.deductibleShare).toBe(1);
     expect(older.disallowedInterest).toBe(0);
     expect(older.taxSaving).toBeCloseTo(50_000 * 0.24, 6);
+  });
+
+  it("halves both acquisition-debt caps for married filing separately", () => {
+    const current = computeUsMortgageDeduction({
+      ...BASE,
+      loanBalance: 750_000,
+      annualInterest: 45_000,
+      otherItemized: 40_000,
+      filingStatus: "marriedSeparate",
+    })!;
+    expect(current.cap).toBe(375_000);
+    expect(current.deductibleInterest).toBeCloseTo(22_500, 6);
+
+    const older = computeUsMortgageDeduction({
+      ...BASE,
+      loanBalance: 1_000_000,
+      annualInterest: 50_000,
+      vintage: "grandfathered",
+      filingStatus: "marriedSeparate",
+    })!;
+    expect(older.cap).toBe(500_000);
+    expect(older.deductibleInterest).toBeCloseTo(25_000, 6);
   });
 
   it("does not prorate a balance inside the cap", () => {

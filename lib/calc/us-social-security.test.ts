@@ -67,6 +67,11 @@ describe("the vendored bend points", () => {
       secondBendPoint: 7_391,
       taxableMaximum: 176_100,
     });
+    expect(BEND_POINTS[2026]).toMatchObject({
+      firstBendPoint: 1_286,
+      secondBendPoint: 7_749,
+      taxableMaximum: 184_500,
+    });
   });
 
   it("agrees with us-payroll.ts on the taxable maximum, where both have a year", () => {
@@ -281,7 +286,7 @@ describe("aimeFromEarnings", () => {
     expect(aimeFromEarnings(78_000, -1, 2025)).toBe(null);
     expect(aimeFromEarnings(78_000, 30.5, 2025)).toBe(null);
     expect(aimeFromEarnings(78_000, 71, 2025)).toBe(null);
-    expect(aimeFromEarnings(78_000, 35, 2026)).toBe(null);
+    expect(aimeFromEarnings(78_000, 35, 2027)).toBe(null);
   });
 
   it("gives zero for a career of no years", () => {
@@ -364,7 +369,7 @@ describe("piaFromAime", () => {
 
   it("refuses an eligibility year the table does not cover", () => {
     expect(piaFromAime(8_000, 2023)).toBe(null);
-    expect(piaFromAime(8_000, 2026)).toBe(null);
+    expect(piaFromAime(8_000, 2027)).toBe(null);
   });
 
   it("rejects a negative AIME and handles zero", () => {
@@ -789,8 +794,11 @@ describe("earningsTestWithholding", () => {
 
   it("withholds one dollar for every two above the exempt amount", () => {
     const r = earningsTestWithholding(BASE)!;
-    expect(r.excessEarnings).toBe(40_000 - 23_400);
-    expect(r.withheld).toBeCloseTo((40_000 - 23_400) / 2, 6);
+    expect(r.excessEarnings).toBe(40_000 - EARNINGS_TEST.underFraAnnual);
+    expect(r.withheld).toBeCloseTo(
+      (40_000 - EARNINGS_TEST.underFraAnnual) / 2,
+      6,
+    );
     expect(r.paid).toBeCloseTo(24_000 - r.withheld, 6);
     expect(r.exempt).toBe(false);
   });
@@ -802,8 +810,11 @@ describe("earningsTestWithholding", () => {
       withholdingRatio: EARNINGS_TEST.fraYearWithholdingRatio,
       annualEarnings: 80_000,
     })!;
-    expect(r.excessEarnings).toBe(80_000 - 62_160);
-    expect(r.withheld).toBeCloseTo((80_000 - 62_160) / 3, 6);
+    expect(r.excessEarnings).toBe(80_000 - EARNINGS_TEST.fraYearAnnual);
+    expect(r.withheld).toBeCloseTo(
+      (80_000 - EARNINGS_TEST.fraYearAnnual) / 3,
+      6,
+    );
   });
 
   it("withholds nothing at or above full retirement age", () => {

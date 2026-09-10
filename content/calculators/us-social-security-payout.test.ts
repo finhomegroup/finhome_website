@@ -63,8 +63,8 @@ describe("chi-tra-an-sinh-xa-hoi at its shipped defaults", () => {
       spouseBirthYear: 1965,
       spouseClaimAge: 67,
       earnings: 0,
-      exemptUnderFra: 23_400,
-      exemptFraYear: 62_160,
+      exemptUnderFra: 24_480,
+      exemptFraYear: 65_160,
     });
   });
 
@@ -151,14 +151,14 @@ describe("chi-tra-an-sinh-xa-hoi at its shipped defaults", () => {
       atOrAboveFra: false,
     })!;
     expect(usd(early.workerMonthly * 12)).toBe("23.520");
-    expect(usd(test.excessEarnings)).toBe("16.600");
-    expect(usd(test.withheld)).toBe("8.300");
-    expect(usd(test.paid)).toBe("15.220");
-    expect(usd(test.paid / 12)).toBe("1.268");
+    expect(usd(test.excessEarnings)).toBe("15.520");
+    expect(usd(test.withheld)).toBe("7.760");
+    expect(usd(test.paid)).toBe("15.760");
+    expect(usd(test.paid / 12)).toBe("1.313");
     const haircut = (test.withheld / (early.workerMonthly * 12)) * 100;
-    expect(formatPercent(haircut, 1)).toBe("35,3%");
+    expect(formatPercent(haircut, 1)).toBe("33,0%");
     const a = C.faq.items[3].a;
-    for (const figure of ["23.520", "15.220", "35,3%"]) {
+    for (const figure of ["23.520", "15.760", "33,0%"]) {
       expect(a, `FAQ 4 is missing ${figure}`).toContain(figure);
     }
   });

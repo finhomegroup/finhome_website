@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeUsPayroll,
   PAYROLL_YEARS,
+  SELF_EMPLOYMENT_NET_EARNINGS_FACTOR,
   type PayrollInput,
 } from "@/lib/calc/us-payroll";
 
@@ -97,41 +98,37 @@ describe("computeUsPayroll", () => {
     );
   });
 
-  it("charges the self-employed both halves but not a double surtax", () => {
-    const employed = computeUsPayroll({ ...BASE, wages: 250_000 })!;
-    const own = computeUsPayroll({
-      ...BASE,
-      wages: 250_000,
-      selfEmployed: true,
-    })!;
-    expect(own.socialSecurityTax).toBeCloseTo(employed.socialSecurityTax * 2, 6);
-    expect(own.medicareTax).toBeCloseTo(employed.medicareTax * 2, 6);
-    // The surtax is identical: it is not doubled.
-    expect(own.additionalMedicareTax).toBeCloseTo(
-      employed.additionalMedicareTax,
-      6,
-    );
-    // No separate employer bill: the same person already paid both halves,
-    // so adding one would charge three halves.
-    expect(own.employerTotal).toBe(0);
-    expect(own.combinedTotal).toBeCloseTo(own.employeeTotal, 6);
-    expect(own.combinedTotal).toBeCloseTo(employed.combinedTotal, 6);
-  });
-
-  it("doubles the self-employed marginal rate below the base", () => {
+  it("uses 92,35% of net profit and charges both halves to the self-employed", () => {
     const own = computeUsPayroll({
       ...BASE,
       wages: 100_000,
       selfEmployed: true,
     })!;
-    expect(own.marginalRatePercent).toBeCloseTo(15.3, 8);
+    expect(own.taxBase).toBeCloseTo(92_350, 6);
+    expect(own.socialSecurityTax).toBeCloseTo(92_350 * 0.124, 6);
+    expect(own.medicareTax).toBeCloseTo(92_350 * 0.029, 6);
+    expect(own.employeeTotal).toBeCloseTo(
+      100_000 * SELF_EMPLOYMENT_NET_EARNINGS_FACTOR * 0.153,
+      6,
+    );
+    expect(own.employerTotal).toBe(0);
+    expect(own.combinedTotal).toBeCloseTo(own.employeeTotal, 6);
+  });
+
+  it("reports the marginal rate per next dollar of self-employment profit", () => {
+    const own = computeUsPayroll({
+      ...BASE,
+      wages: 100_000,
+      selfEmployed: true,
+    })!;
+    expect(own.marginalRatePercent).toBeCloseTo(15.3 * 0.9235, 8);
     const high = computeUsPayroll({
       ...BASE,
       wages: 300_000,
       selfEmployed: true,
     })!;
-    // Past the base: 2 x 1,45 + 0,9.
-    expect(high.marginalRatePercent).toBeCloseTo(3.8, 8);
+    // Past both thresholds: (2 x 1,45 + 0,9) on 92,35% of the next dollar.
+    expect(high.marginalRatePercent).toBeCloseTo(3.8 * 0.9235, 8);
   });
 
   it("uses the year's own wage base", () => {
@@ -213,17 +210,18 @@ describe("marginalRatePercent at the boundaries", () => {
     ).toBeCloseTo(2.35, 8);
   });
 
-  it("doubles both boundary rates for the self-employed", () => {
+  it("places self-employed boundaries after the 92,35% adjustment", () => {
     const base = PAYROLL_YEARS[2026].socialSecurityWageBase;
+    const profitAtBase = base / SELF_EMPLOYMENT_NET_EARNINGS_FACTOR;
     expect(
-      computeUsPayroll({ ...BASE, wages: base, selfEmployed: true })!
+      computeUsPayroll({ ...BASE, wages: profitAtBase, selfEmployed: true })!
         .marginalRatePercent,
-    ).toBeCloseTo(2.9, 8);
-    // 2 x 1,45 + 0,9 — the surtax is never doubled.
+    ).toBeCloseTo(2.9 * SELF_EMPLOYMENT_NET_EARNINGS_FACTOR, 8);
+    const profitAtSurtax = 200_000 / SELF_EMPLOYMENT_NET_EARNINGS_FACTOR;
     expect(
-      computeUsPayroll({ ...BASE, wages: 200_000, selfEmployed: true })!
+      computeUsPayroll({ ...BASE, wages: profitAtSurtax, selfEmployed: true })!
         .marginalRatePercent,
-    ).toBeCloseTo(3.8, 8);
+    ).toBeCloseTo(3.8 * SELF_EMPLOYMENT_NET_EARNINGS_FACTOR, 8);
   });
 
   it("uses each filing status's own threshold at the boundary", () => {

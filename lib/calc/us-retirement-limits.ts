@@ -138,10 +138,10 @@ export function iraCatchUpAllowance(
  * True when this year's rules force catch-up contributions into Roth for
  * someone earning this much.
  *
- * The test is on the PRIOR year's wages from the employer sponsoring the
- * plan. The pages hand it the salary they already asked for and say so —
- * asking for last year's FICA wages separately would buy a precision the
- * rest of the answer does not have.
+ * The test is on the PRIOR year's FICA wages from the employer sponsoring
+ * the plan. Callers must ask for that figure separately: current salary or
+ * income from another employer can put the reader on the wrong side of the
+ * threshold.
  */
 export function catchUpMustBeRoth(
   params: RetirementLimitYear,

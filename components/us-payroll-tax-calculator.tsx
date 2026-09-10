@@ -41,6 +41,7 @@ function usd(value: number): string {
 
 export function UsPayrollTaxCalculator() {
   const fields = useCalcFields(F.defaults);
+  const selfEmployed = fields.values.employment === "selfEmployed";
 
   const wages = parseMoney(fields.values.wages);
   const wagesInvalid = wages === null || wages < 0;
@@ -51,19 +52,17 @@ export function UsPayrollTaxCalculator() {
         wages,
         filingStatus: fields.values.status as FilingStatus,
         year: Number(fields.values.year),
-        selfEmployed: fields.values.employment === "selfEmployed",
+        selfEmployed,
       });
-
-  const selfEmployed = fields.values.employment === "selfEmployed";
 
   return (
     <CalculatorCard>
       <FieldGroup title={F.wageGroup}>
         <NumberField
           {...fields.bind("wages")}
-          label={F.wagesLabel}
+          label={selfEmployed ? F.selfEmploymentIncomeLabel : F.wagesLabel}
           unit={F.wagesUnit}
-          help={F.wagesHelp}
+          help={selfEmployed ? F.selfEmploymentIncomeHelp : F.wagesHelp}
           error={F.wagesInvalid}
           invalid={wagesInvalid}
         />
@@ -87,7 +86,10 @@ export function UsPayrollTaxCalculator() {
         />
       </FieldGroup>
 
-      <ResultGroup title={F.resultTitle} className="mt-8">
+      <ResultGroup
+        title={selfEmployed ? F.selfEmployedResultTitle : F.resultTitle}
+        className="mt-8"
+      >
         <ResultRow
           label={F.employeeTotalLabel}
           value={result === null ? null : usd(result.employeeTotal)}
@@ -111,6 +113,10 @@ export function UsPayrollTaxCalculator() {
       </ResultGroup>
 
       <ResultGroup title={F.breakdownTitle} className="mt-4" live={false}>
+        <ResultRow
+          label={F.taxBaseLabel}
+          value={result === null ? null : usd(result.taxBase)}
+        />
         <ResultRow
           label={F.socialSecurityWagesLabel}
           value={result === null ? null : usd(result.socialSecurityWages)}

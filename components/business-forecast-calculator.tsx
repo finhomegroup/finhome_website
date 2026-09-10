@@ -31,7 +31,7 @@ export function BusinessForecastCalculator() {
   const fixed = parseMoney(fields.values.fixed);
   const fixedGrowth = parseDecimal(fields.values.fixedGrowth);
   const years = parseCount(fields.values.years);
-  const baseYear = parseMoney(fields.values.baseYear);
+  const baseYear = parseCount(fields.values.baseYear);
   const tax = parseDecimal(fields.values.tax);
 
   const revenueInvalid = revenue === null || revenue < 0;

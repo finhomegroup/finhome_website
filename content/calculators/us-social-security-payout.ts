@@ -24,10 +24,10 @@
 //     hơn 1.400, nên hộ gia đình nhận thêm 0 — tám năm chờ đổi lấy 0
 //   Nếu vợ/chồng nhận ở 62: trợ cấp theo vợ/chồng còn 910, hộ 3.710
 //   Phép thử thu nhập, nhận ở 62 với 40.000 USD tiền lương: trợ cấp cả năm
-//     23.520, vượt mức miễn trừ 16.600, bị giữ 8.300, thực nhận 15.220
-//     = 1.268 USD/tháng, tức mất 35,3%
-//   Mức miễn trừ năm 2025: 23.400 USD/năm dưới tuổi hưởng đủ và
-//     62.160 USD/năm trong năm đạt tuổi hưởng đủ
+//     23.520, vượt mức miễn trừ 15.520, bị giữ 7.760, thực nhận 15.760
+//     = 1.313 USD/tháng, tức mất 33,0%
+//   Mức miễn trừ năm 2026: 24.480 USD/năm dưới tuổi hưởng đủ và
+//     65.160 USD/năm trong năm đạt tuổi hưởng đủ
 
 export const US_SOCIAL_SECURITY_PAYOUT = {
   slug: "/cong-cu/chi-tra-an-sinh-xa-hoi",
@@ -72,11 +72,11 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
     exemptUnderFraLabel: "Mức miễn trừ dưới tuổi hưởng đủ",
     exemptUnderFraUnit: "USD/năm",
     exemptUnderFraHelp:
-      "Mức của năm 2025. Con số này được điều chỉnh hằng năm, nên hãy tra lại mức của năm bạn quan tâm rồi sửa ô này.",
+      "Mức của năm 2026. Con số này được điều chỉnh hằng năm, nên hãy tra lại mức của năm bạn quan tâm rồi sửa ô này.",
     exemptFraYearLabel: "Mức miễn trừ trong năm đạt tuổi hưởng đủ",
     exemptFraYearUnit: "USD/năm",
     exemptFraYearHelp:
-      "Mức của năm 2025, cao hơn nhiều và chỉ áp cho đúng năm bạn đạt tuổi hưởng đủ. Từ tháng đạt tuổi đó trở đi phép thử không còn áp dụng.",
+      "Mức của năm 2026, cao hơn nhiều và chỉ áp cho đúng năm bạn đạt tuổi hưởng đủ. Từ tháng đạt tuổi đó trở đi phép thử không còn áp dụng.",
 
     moneyInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     yearInvalid: "Vui lòng nhập một năm sinh từ 1900 đến 2100.",
@@ -90,8 +90,8 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
       spouseBirthYear: "1965",
       spouseClaimAge: "67",
       earnings: "0",
-      exemptUnderFra: "23.400",
-      exemptFraYear: "62.160",
+      exemptUnderFra: "24.480",
+      exemptFraYear: "65.160",
     },
 
     resultTitle: "Hộ gia đình nhận",
@@ -132,7 +132,7 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
     },
 
     exemptNotice:
-      "Hai mức miễn trừ ở trên là mức của năm 2025 và được điều chỉnh hằng năm. Chúng là ô nhập được, nên nếu bạn đang tính cho một năm khác thì hãy tra mức của năm đó và sửa lại — công cụ không tự biết năm nào.",
+      "Hai mức miễn trừ ở trên là mức của năm 2026 và được điều chỉnh hằng năm. Chúng là ô nhập được, nên nếu bạn đang tính cho một năm khác thì hãy tra mức của năm đó và sửa lại — công cụ không tự biết năm nào.",
     withheldNotice:
       "Một phần trợ cấp của bạn bị giữ lại vì tiền lương vượt mức miễn trừ. Phần bị giữ này KHÔNG mất hẳn: từ tuổi hưởng đủ, SSA tính lại khoản trợ cấp theo hướng tăng để hoàn lại số tháng đã bị giữ. Nhưng dòng tiền của những năm này thì đúng như con số ở trên, và với nhiều người đó mới là điều quan trọng.",
     spousalTopUpNotice:
@@ -176,7 +176,7 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
       },
       {
         q: "Tiền bị giữ lại vì còn làm việc có mất luôn không?",
-        a: "Không. Từ tuổi hưởng đủ, SSA tính lại khoản trợ cấp của bạn theo hướng tăng để bù cho số tháng đã bị giữ, nên xét cả đời thì phần lớn hoặc toàn bộ được trả lại. Nhưng có hai điều đáng lưu ý. Thứ nhất là dòng tiền: với các giá trị mặc định, nhận ở tuổi 62 với 40.000 USD tiền lương làm khoản trợ cấp cả năm rơi từ 23.520 xuống 15.220 USD — mất 35,3% trong đúng những năm bạn cần nó. Thứ hai, chỉ TIỀN LƯƠNG bị tính; khoản rút tài khoản hưu trí, lương hưu, cổ tức và tiền cho thuê đều không bị tính vào phép thử này.",
+        a: "Không. Từ tuổi hưởng đủ, SSA tính lại khoản trợ cấp của bạn theo hướng tăng để bù cho số tháng đã bị giữ, nên xét cả đời thì phần lớn hoặc toàn bộ được trả lại. Nhưng có hai điều đáng lưu ý. Thứ nhất là dòng tiền: với các giá trị mặc định, nhận ở tuổi 62 với 40.000 USD tiền lương làm khoản trợ cấp cả năm rơi từ 23.520 xuống 15.760 USD — mất 33,0% trong đúng những năm bạn cần nó. Thứ hai, chỉ TIỀN LƯƠNG bị tính; khoản rút tài khoản hưu trí, lương hưu, cổ tức và tiền cho thuê đều không bị tính vào phép thử này.",
       },
       {
         q: "Vì sao trang này bắt tôi tự nhập mức trợ cấp cơ bản?",

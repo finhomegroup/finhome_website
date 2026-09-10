@@ -48,6 +48,10 @@ export const US_401K = {
     salaryLabel: "Lương cả năm",
     salaryUnit: "USD",
     salaryHelp: "Lương gộp trước thuế.",
+    priorYearWagesLabel: "Lương FICA năm trước tại công ty này",
+    priorYearWagesUnit: "USD",
+    priorYearWagesHelp:
+      "Dùng riêng cho quy tắc Roth catch-up từ 2026. Đây phải là lương năm trước từ đúng công ty tài trợ kế hoạch, không phải lương năm nay hay tổng thu nhập mọi nơi.",
     deferralLabel: "Bạn góp",
     deferralUnit: "% lương",
     deferralHelp:
@@ -89,6 +93,7 @@ export const US_401K = {
       year: "2026",
       age: "35",
       salary: "90.000",
+      priorYearWages: "90.000",
       deferral: "3",
       matchPercent: "100",
       matchLimit: "6",
@@ -162,7 +167,7 @@ export const US_401K = {
       "Trần 415(c) chặn TỔNG phân bổ: tiền bạn góp cộng đối ứng cộng khoản công ty góp thêm, tính riêng cho mỗi kế hoạch. Nhưng phần bù tuổi nằm NGOÀI trần này, nên công cụ trừ phần bù ra trước khi so — nếu không, người trên 50 tuổi góp gần mức tối đa sẽ bị báo vượt trần trong khi họ không vượt.",
       "Trần 401(a)(17) làm phần lương vượt ngưỡng trở nên vô hình với kế hoạch. Ngưỡng đó là 360.000 USD cho năm 2026, nên một chính sách “đối ứng 100% cho 6% lương” dừng ở 6% của NGƯỠNG chứ không phải 6% của lương bạn: ở mức lương 500.000 USD, phần đối ứng tối đa là 21.600 USD chứ không phải 30.000 USD. Trần này cũng áp cho tỷ lệ góp của bạn, không chỉ cho phần đối ứng.",
       "Trần thứ tư không có trong luật: ngưỡng của chính chính sách đối ứng. Với phần lớn người lao động, đó lại là trần chặn thực sự — và là trần duy nhất bạn có thể thay đổi kết quả chỉ bằng cách điền một con số khác vào hệ thống nhân sự.",
-      "Phần thuế hoãn được tính trên số tiền THỰC SỰ được trừ thuế. Từ 2026, người có tiền lương năm trước tại công ty đó vượt một ngưỡng nhất định buộc phải đóng phần bù tuổi dưới dạng Roth, nên phần đó vẫn vào tài khoản nhưng không được trừ thuế. Công cụ áp đúng quy định này thay vì trừ toàn bộ khoản góp, vì nhóm chịu ảnh hưởng — lớn tuổi hơn và thu nhập cao hơn — chính là nhóm dùng phần bù tuổi.",
+      "Phần thuế hoãn được tính trên số tiền thực sự được trừ thuế. Từ 2026, người có lương FICA năm trước tại chính công ty tài trợ kế hoạch vượt ngưỡng phải đóng phần bù tuổi dưới dạng Roth. Công cụ hỏi riêng con số năm trước để không nhầm nó với lương năm nay hoặc thu nhập từ công ty khác.",
       "Phép dự phóng đưa toàn bộ khoản góp của một năm vào đầu năm đó và cho nó hưởng đủ một năm lợi suất, giống mọi trang khác trong bộ công cụ. Nó giữ mức góp phần trăm không đổi và không tăng lương theo thời gian, nên hãy đọc nó như một phép so sánh giữa hai lựa chọn hơn là một dự báo.",
     ],
   },

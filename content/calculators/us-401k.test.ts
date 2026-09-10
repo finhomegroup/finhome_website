@@ -21,6 +21,7 @@ function shippedInput(): Us401kInput {
     year: Number(D.year),
     age: parseCount(D.age)!,
     annualSalary: parseMoney(D.salary)!,
+    priorYearWages: parseMoney(D.priorYearWages)!,
     deferralPercent: parseDecimal(D.deferral)!,
     employerMatchPercent: parseDecimal(D.matchPercent)!,
     employerMatchLimitPercent: parseDecimal(D.matchLimit)!,
@@ -58,6 +59,7 @@ describe("gop-401k at its shipped defaults", () => {
       year: 2026,
       age: 35,
       annualSalary: 90_000,
+      priorYearWages: 90_000,
       deferralPercent: 3,
       employerMatchPercent: 100,
       employerMatchLimitPercent: 6,
@@ -192,6 +194,7 @@ describe("gop-401k at its shipped defaults", () => {
     const r = run({
       age: 55,
       annualSalary: 200_000,
+      priorYearWages: 200_000,
       deferralPercent: 100,
       marginalRatePercent: 32,
     });
@@ -221,6 +224,7 @@ describe("gop-401k — provenance header", () => {
     const roth = run({
       age: 55,
       annualSalary: 200_000,
+      priorYearWages: 200_000,
       deferralPercent: 100,
       marginalRatePercent: 32,
     });

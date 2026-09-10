@@ -8,6 +8,7 @@ const BASE: Us401kInput = {
   year: 2026,
   age: 35,
   annualSalary: 90_000,
+  priorYearWages: 90_000,
   deferralPercent: 3,
   employerMatchPercent: 100,
   employerMatchLimitPercent: 6,
@@ -202,6 +203,7 @@ describe("computeUs401k — the tax saving", () => {
     const r = run({
       age: 55,
       annualSalary: 200_000,
+      priorYearWages: 200_000,
       deferralPercent: 100,
     });
     expect(r.catchUpUsed).toBe(P.catchUp50);
@@ -213,7 +215,12 @@ describe("computeUs401k — the tax saving", () => {
   });
 
   it("leaves the deduction whole below the wage threshold and in 2025", () => {
-    const below = run({ age: 55, annualSalary: 120_000, deferralPercent: 100 });
+    const below = run({
+      age: 55,
+      annualSalary: 200_000,
+      priorYearWages: 120_000,
+      deferralPercent: 100,
+    });
     expect(below.catchUpForcedRoth).toBe(false);
     expect(below.deductibleDeferral).toBe(below.deferral);
 
@@ -222,6 +229,7 @@ describe("computeUs401k — the tax saving", () => {
       year: 2025,
       age: 55,
       annualSalary: 400_000,
+      priorYearWages: 400_000,
       deferralPercent: 100,
     });
     expect(earlier.catchUpForcedRoth).toBe(false);
@@ -277,6 +285,7 @@ describe("computeUs401k — rejections and edges", () => {
 
   it("rejects impossible inputs", () => {
     expect(computeUs401k({ ...BASE, annualSalary: -1 })).toBe(null);
+    expect(computeUs401k({ ...BASE, priorYearWages: -1 })).toBe(null);
     expect(computeUs401k({ ...BASE, age: 121 })).toBe(null);
     expect(computeUs401k({ ...BASE, deferralPercent: 101 })).toBe(null);
     expect(computeUs401k({ ...BASE, deferralPercent: -1 })).toBe(null);

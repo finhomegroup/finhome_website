@@ -29,6 +29,9 @@ export const US_PAYROLL_TAX = {
     wagesLabel: "Tổng lương cả năm",
     wagesUnit: "USD",
     wagesHelp: "Tiền lương chịu thuế FICA trong năm, trước mọi khoản trừ.",
+    selfEmploymentIncomeLabel: "Lợi nhuận ròng từ tự làm chủ",
+    selfEmploymentIncomeHelp:
+      "Lợi nhuận ròng trên Schedule C, sau chi phí kinh doanh. Theo phương pháp thông thường, Schedule SE lấy 92,35% số này làm cơ sở tính thuế.",
     wagesInvalid: "Vui lòng nhập một số từ 0 trở lên.",
 
     statusLabel: "Tình trạng khai thuế",
@@ -53,16 +56,18 @@ export const US_PAYROLL_TAX = {
     },
 
     resultTitle: "Người lao động phải trả",
+    selfEmployedResultTitle: "Người tự làm chủ phải trả",
     employeeTotalLabel: "Tổng thuế FICA",
     effectiveRateLabel: "Thuế suất thực tế",
     marginalRateLabel: "Thuế suất trên đồng lương kế tiếp",
 
     breakdownTitle: "Bóc tách ba loại thuế",
+    taxBaseLabel: "Cơ sở tính thuế FICA/SECA",
     socialSecurityLabel: "Social Security (6,2%)",
-    socialSecurityWagesLabel: "Lương chịu thuế Social Security",
+    socialSecurityWagesLabel: "Thu nhập chịu thuế Social Security",
     medicareLabel: "Medicare (1,45%)",
     additionalLabel: "Phụ thu Medicare (0,9%)",
-    additionalWagesLabel: "Lương vượt ngưỡng phụ thu",
+    additionalWagesLabel: "Thu nhập vượt ngưỡng phụ thu",
     employerLabel: "Phần người sử dụng lao động trả",
     combinedLabel: "Tổng cả hai bên",
     wageBaseLabel: "Trần lương Social Security năm này",
@@ -79,7 +84,7 @@ export const US_PAYROLL_TAX = {
     aboveBaseNotice:
       "Lương đã vượt trần Social Security, nên mỗi đồng lương tiếp theo chỉ còn chịu Medicare. Đó là lý do thuế suất thực tế của người thu nhập cao thấp hơn của người thu nhập trung bình, dù số tiền thuế tuyệt đối lớn hơn.",
     selfEmployedNotice:
-      "Người tự làm chủ trả cả hai nửa (tổng 15,3% dưới trần), nhưng được khấu trừ một nửa số thuế đó khi tính thu nhập chịu thuế thu nhập liên bang. Công cụ này KHÔNG tính khoản khấu trừ đó, nên chi phí thực tế sau thuế thấp hơn con số ở đây. Phần phụ thu 0,9% thì không nhân đôi.",
+      "Theo phương pháp thông thường của Schedule SE, công cụ lấy 92,35% lợi nhuận ròng làm cơ sở rồi áp cả hai nửa Social Security và Medicare. Bạn còn được khấu trừ một nửa thuế SE khi tính thu nhập liên bang; công cụ KHÔNG tính tác động của khoản khấu trừ đó. Phần phụ thu 0,9% không nhân đôi.",
     invalidNotice: "Vui lòng kiểm tra lại số lương đã nhập.",
   },
 
@@ -90,9 +95,9 @@ export const US_PAYROLL_TAX = {
     title: "Cách tính",
     body: [
       "Social Security lấy 6,2% trên phần lương tính đến trần của năm. Vượt trần thì không thu thêm, nên thuế suất biên của loại thuế này rơi về 0 và phần lương phía trên trần hoàn toàn không chịu Social Security.",
-      "Medicare lấy 1,45% trên toàn bộ lương, không có trần. Đây là loại thuế duy nhất trong ba loại áp lên mọi đồng lương.",
+      "Với người làm thuê, Medicare lấy 1,45% trên toàn bộ lương và không có trần. Với người tự làm chủ, tỷ lệ tương ứng áp lên cơ sở 92,35% lợi nhuận ròng theo phương pháp thông thường.",
       "Phụ thu Medicare 0,9% áp lên phần lương vượt ngưỡng: 200.000 USD với người độc thân và chủ hộ, 250.000 USD với vợ chồng khai chung, và 125.000 USD với vợ chồng khai riêng. Các ngưỡng này được ấn định từ năm 2013 và không điều chỉnh theo lạm phát.",
-      "Người sử dụng lao động trả thêm 6,2% và 1,45% đối ứng, nhưng KHÔNG đối ứng phần phụ thu 0,9% — đó là khoản của riêng người lao động. Người tự làm chủ trả cả hai nửa của hai loại đầu, cũng vẫn chỉ trả phụ thu một lần.",
+      "Người sử dụng lao động trả thêm 6,2% và 1,45% đối ứng, nhưng KHÔNG đối ứng phần phụ thu 0,9% — đó là khoản của riêng người lao động. Với người tự làm chủ, phương pháp thông thường trước hết lấy 92,35% lợi nhuận ròng làm cơ sở, rồi áp cả hai nửa của hai loại đầu và chỉ áp phụ thu một lần.",
       "Thuế suất thực tế là tổng thuế chia tổng lương; thuế suất biên là thuế trên đồng lương kế tiếp. Dưới mọi ngưỡng, hai con số trùng nhau vì thuế phẳng. Vượt trần thì thuế suất thực tế nằm giữa hai chế độ và giảm dần khi lương tăng.",
       "Công cụ chỉ tính FICA. Thuế thu nhập liên bang, thuế bang và các khoản trừ khác không nằm trong đây — nên con số này không phải toàn bộ số thuế bị trừ khỏi phiếu lương.",
     ],
@@ -111,7 +116,7 @@ export const US_PAYROLL_TAX = {
       },
       {
         q: "Người tự làm chủ có thật sự chịu gấp đôi không?",
-        a: "Về mặt thuế FICA thì có: 15,3% dưới trần thay vì 7,65%. Nhưng họ được khấu trừ một nửa số thuế đó khi tính thu nhập chịu thuế thu nhập liên bang, nên chi phí sau thuế thấp hơn con số ở đây. Công cụ không tính khoản khấu trừ đó vì nó phụ thuộc vào thuế suất thu nhập biên của từng người. Với người làm thuê, phần chủ trả về mặt kinh tế cũng thường được xem là một phần chi phí tuyển dụng, nên khoảng cách thực chất nhỏ hơn con số 7,65% so 15,3%.",
+        a: "Họ chịu cả phần người lao động lẫn phần chủ lao động, nhưng không lấy 15,3% nhân thẳng toàn bộ lợi nhuận. Schedule SE thường lấy 92,35% lợi nhuận ròng làm cơ sở trước, nên 100.000 USD lợi nhuận tạo khoảng 14.129,55 USD thuế SE khi còn dưới trần. Họ còn được khấu trừ một nửa số thuế đó khi tính thu nhập liên bang; công cụ không tính tác động sau thuế của khoản khấu trừ này.",
       },
       {
         q: "Tiền thưởng và thu nhập từ đầu tư có chịu FICA không?",

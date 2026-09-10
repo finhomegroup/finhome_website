@@ -48,6 +48,14 @@ export const US_MORTGAGE_DEDUCTION = {
       grandfathered: "Từ 15/12/2017 trở về trước — trần 1.000.000 USD",
     },
 
+    filingStatusLabel: "Tình trạng khai thuế",
+    filingStatusHelp:
+      "Vợ chồng khai riêng chỉ được một nửa trần nợ gốc: 375.000 hoặc 500.000 USD.",
+    filingStatusOptions: {
+      jointOrOther: "Khai chung, độc thân hoặc chủ hộ",
+      marriedSeparate: "Vợ chồng khai riêng",
+    },
+
     taxGroup: "Tình hình thuế",
     otherItemizedLabel: "Tổng các khoản khấu trừ liệt kê khác",
     otherItemizedUnit: "USD",
@@ -70,6 +78,7 @@ export const US_MORTGAGE_DEDUCTION = {
       balance: "400.000",
       interest: "24.000",
       vintage: "current",
+      filingStatus: "jointOrOther",
       otherItemized: "8.000",
       standard: "30.000",
       rate: "24",
@@ -116,7 +125,7 @@ export const US_MORTGAGE_DEDUCTION = {
       "Khấu trừ lãi vay là một khoản khấu trừ LIỆT KÊ. Bạn chỉ liệt kê khi tổng các khoản liệt kê vượt khấu trừ chuẩn, và khi liệt kê thì bạn từ bỏ khấu trừ chuẩn. Vì vậy giá trị thật của lãi vay là phần khấu trừ TĂNG THÊM so với việc không có nó, chứ không phải bản thân số lãi vay.",
       "Công thức đúng: tiết kiệm = thuế suất biên × [ max(tổng liệt kê có lãi vay, khấu trừ chuẩn) − max(tổng liệt kê không có lãi vay, khấu trừ chuẩn) ]. Biểu thức này tự cho ra 0 khi cả hai vế đều dưới khấu trừ chuẩn, cho ra phần thiếu khi lãi vay là thứ đưa bạn vượt ngưỡng, và chỉ cho ra toàn bộ thuế suất × lãi vay khi các khoản khác đã tự vượt ngưỡng.",
       "Cách tính sai — lãi vay nhân thuế suất biên — đúng ở trường hợp cuối cùng và sai nghiêm trọng ở hai trường hợp đầu. Công cụ hiển thị cả hai con số cạnh nhau để bạn thấy khoảng cách với chính tình huống của mình.",
-      "Trần nợ gốc: 750.000 USD với nợ phát sinh sau 15/12/2017, và 1.000.000 USD với nợ từ trước mốc đó. Đây là con số ấn định trong luật, không điều chỉnh theo lạm phát. Nếu dư nợ vượt trần, lãi vay chỉ được khấu trừ theo tỷ lệ trần chia dư nợ — phần lãi vay còn lại không được khấu trừ.",
+      "Trần nợ gốc: 750.000 USD với nợ phát sinh sau 15/12/2017, và 1.000.000 USD với nợ từ trước mốc đó. Vợ chồng khai riêng dùng đúng một nửa: 375.000 và 500.000 USD. Đây là các con số ấn định trong luật, không điều chỉnh theo lạm phát. Nếu dư nợ vượt trần, lãi vay chỉ được khấu trừ theo tỷ lệ trần chia dư nợ — phần lãi vay còn lại không được khấu trừ.",
       "Khấu trừ chuẩn là một ô NHẬP chứ không phải số kèm sẵn, vì nó được điều chỉnh theo lạm phát mỗi năm và nó in ngay trên tờ khai của bạn. Một bảng kèm sẵn bị cũ sẽ âm thầm quyết định câu trả lời là “bằng 0” hay “vài nghìn đô” — mức sai lệch lớn nhất mà một con số cũ có thể gây ra trong công cụ này.",
       "Lãi suất thực sau thuế bằng lãi vay còn lại chia dư nợ. Với người không được lợi gì từ khấu trừ, con số này đúng bằng lãi suất trên hợp đồng — và công cụ nói thẳng như vậy thay vì hạ nó xuống một cách vô căn cứ.",
     ],
@@ -139,7 +148,7 @@ export const US_MORTGAGE_DEDUCTION = {
       },
       {
         q: "Dư nợ vượt 750.000 USD thì mất hết khấu trừ à?",
-        a: "Không, chỉ mất phần tương ứng. Lãi vay được khấu trừ theo tỷ lệ trần chia dư nợ. Ví dụ dư nợ 1.000.000 USD với trần 750.000 USD thì 75% lãi vay được khấu trừ, 25% không. Nếu khoản nợ phát sinh từ 15/12/2017 trở về trước, trần là 1.000.000 USD và toàn bộ được khấu trừ. Trần áp theo thời điểm PHÁT SINH NỢ, không theo năm thuế — nên một khoản vay cũ vẫn giữ trần cũ.",
+        a: "Không, chỉ mất phần tương ứng. Lãi vay được khấu trừ theo tỷ lệ trần chia dư nợ. Ví dụ dư nợ 1.000.000 USD với trần 750.000 USD thì 75% lãi vay được khấu trừ, 25% không. Nếu vợ chồng khai riêng, các trần tương ứng chỉ còn 375.000 và 500.000 USD. Trần áp theo thời điểm phát sinh nợ và tình trạng khai thuế.",
       },
       {
         q: "Vì sao công cụ bắt tôi tự nhập khấu trừ chuẩn?",

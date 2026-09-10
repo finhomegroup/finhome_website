@@ -1,4 +1,4 @@
-// Site-wide content: navigation, contact, footer. Verbatim copy from the Framer mirror.
+// Site-wide content: navigation, contact and footer.
 
 export type NavChild = {
   label: string;
@@ -17,6 +17,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tính năng", href: "#tinhnang" },
   { label: "Nền tảng", href: "#nentang" },
   { label: "Trải nghiệm", href: "#trainghiem" },
+  { label: "Công cụ", href: "/cong-cu/" },
   { label: "Hỗ trợ", href: "#hotro" },
   // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
   { label: "Tin tức", href: "#tintuc" },

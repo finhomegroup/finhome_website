@@ -67,7 +67,7 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
   it("parses every default with the parser its field kind needs", () => {
     const { input } = estimate();
     expect(input).toEqual({
-      formulaYear: 2025,
+      formulaYear: 2026,
       earnings: 78_000,
       yearsWorked: 35,
       birthYear: 1965,
@@ -90,20 +90,20 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
   it("quotes the AIME, the PIA and the replacement rate", () => {
     const r = estimate();
     expect(usdCents(r.aime.aime)).toBe("6.500,00");
-    expect(usdCents(r.pia.pia)).toBe("2.791,00");
-    expect(formatPercent(r.pia.replacementRatePercent!, 2)).toBe("42,94%");
-    expect(C.regressiveNotice).toContain("2.791,00");
-    expect(C.regressiveNotice).toContain("42,94%");
+    expect(usdCents(r.pia.pia)).toBe("2.825,80");
+    expect(formatPercent(r.pia.replacementRatePercent!, 2)).toBe("43,47%");
+    expect(C.regressiveNotice).toContain("2.825,80");
+    expect(C.regressiveNotice).toContain("43,47%");
   });
 
   it("quotes each tier of the formula from the module's bend points", () => {
     const r = estimate();
-    const p = BEND_POINTS[2025];
-    expect(usdCents(r.pia.firstTierAime)).toBe("1.226,00");
+    const p = BEND_POINTS[2026];
+    expect(usdCents(r.pia.firstTierAime)).toBe("1.286,00");
     expect(r.pia.firstTierAime).toBe(p.firstBendPoint);
-    expect(usdCents(r.pia.firstTierPia)).toBe("1.103,40");
-    expect(usdCents(r.pia.secondTierAime)).toBe("5.274,00");
-    expect(usdCents(r.pia.secondTierPia)).toBe("1.687,68");
+    expect(usdCents(r.pia.firstTierPia)).toBe("1.157,40");
+    expect(usdCents(r.pia.secondTierAime)).toBe("5.214,00");
+    expect(usdCents(r.pia.secondTierPia)).toBe("1.668,48");
     expect(r.pia.thirdTierAime).toBe(0);
     expect(r.pia.marginalRatePercent).toBe(32);
   });
@@ -113,16 +113,16 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(r.schedule).toHaveLength(9);
     const at = (age: number) =>
       r.schedule.find((option) => option.age === age)!;
-    expect(usd(at(62).monthlyBenefit)).toBe("1.953");
-    expect(usd(at(67).monthlyBenefit)).toBe("2.791");
-    expect(usd(at(70).monthlyBenefit)).toBe("3.460");
-    expect(usd(at(70).monthlyBenefit - at(62).monthlyBenefit)).toBe("1.507");
+    expect(usd(at(62).monthlyBenefit)).toBe("1.978");
+    expect(usd(at(67).monthlyBenefit)).toBe("2.825");
+    expect(usd(at(70).monthlyBenefit)).toBe("3.503");
+    expect(usd(at(70).monthlyBenefit - at(62).monthlyBenefit)).toBe("1.525");
     expect(formatMoney(at(70).monthlyBenefit / at(62).monthlyBenefit, 2)).toBe(
       "1,77",
     );
     expect(C.form.table.intro).toContain("1,77");
-    expect(C.faq.items[2].a).toContain("1.953");
-    expect(C.faq.items[2].a).toContain("3.460");
+    expect(C.faq.items[2].a).toContain("1.978");
+    expect(C.faq.items[2].a).toContain("3.503");
     expect(C.faq.items[2].a).toContain("1,77");
   });
 
@@ -131,30 +131,30 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     const short = estimate({ yearsWorked: 25 });
     expect(short.aime.zeroYears).toBe(10);
     expect(usdCents(short.aime.aime)).toBe("4.642,86");
-    expect(usdCents(short.pia.pia)).toBe("2.196,70");
+    expect(usdCents(short.pia.pia)).toBe("2.231,50");
     expect(usdCents(full.pia.pia - short.pia.pia)).toBe("594,30");
     const lost = (1 - short.pia.pia / full.pia.pia) * 100;
-    expect(formatPercent(lost, 1)).toBe("21,3%");
+    expect(formatPercent(lost, 1)).toBe("21,0%");
     // Less than the 10-in-35 share, because the lost AIME sits in the 32%
     // tier rather than the 90% one. This is the FAQ's actual claim.
     expect(lost).toBeLessThan((10 / 35) * 100);
     expect(C.form.zeroYearsNotice).toContain("594,30");
-    expect(C.form.zeroYearsNotice).toContain("21,3%");
+    expect(C.form.zeroYearsNotice).toContain("21,0%");
     const a = C.faq.items[1].a;
-    for (const figure of ["2.791,00", "2.196,70", "21,3%", "28,6%"]) {
+    for (const figure of ["2.825,80", "2.231,50", "21,0%", "28,6%"]) {
       expect(a, `FAQ 2 is missing ${figure}`).toContain(figure);
     }
   });
 
   it("quotes the high earner, capped at the taxable maximum", () => {
     const high = estimate({ earnings: 400_000 });
-    const p = BEND_POINTS[2025];
+    const p = BEND_POINTS[2026];
     expect(high.aime.cappedByTaxableMaximum).toBe(true);
-    expect(usd(high.aime.cappedEarnings)).toBe("176.100");
+    expect(usd(high.aime.cappedEarnings)).toBe("184.500");
     expect(high.aime.cappedEarnings).toBe(p.taxableMaximum);
-    expect(usdCents(high.aime.aime)).toBe("14.675,00");
-    expect(usdCents(high.pia.pia)).toBe("4.168,80");
-    expect(formatPercent(high.pia.replacementRatePercent!, 2)).toBe("28,41%");
+    expect(usdCents(high.aime.aime)).toBe("15.375,00");
+    expect(usdCents(high.pia.pia)).toBe("4.369,40");
+    expect(formatPercent(high.pia.replacementRatePercent!, 2)).toBe("28,42%");
     expect(high.pia.marginalRatePercent).toBe(15);
   });
 
@@ -162,11 +162,11 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     const low = estimate({ earnings: 30_000 });
     const mid = estimate();
     const high = estimate({ earnings: 400_000 });
-    expect(usdCents(low.pia.pia)).toBe("1.511,00");
-    expect(formatPercent(low.pia.replacementRatePercent!, 2)).toBe("60,44%");
+    expect(usdCents(low.pia.pia)).toBe("1.545,80");
+    expect(formatPercent(low.pia.replacementRatePercent!, 2)).toBe("61,83%");
     // The two ratios the notice puts side by side.
     expect(formatMoney(400_000 / 78_000, 2)).toBe("5,13");
-    expect(formatMoney(high.pia.pia / mid.pia.pia, 2)).toBe("1,49");
+    expect(formatMoney(high.pia.pia / mid.pia.pia, 2)).toBe("1,55");
     // Replacement falls monotonically as earnings rise, which is the claim.
     expect(low.pia.replacementRatePercent!).toBeGreaterThan(
       mid.pia.replacementRatePercent!,
@@ -174,7 +174,7 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(mid.pia.replacementRatePercent!).toBeGreaterThan(
       high.pia.replacementRatePercent!,
     );
-    for (const figure of ["60,44%", "28,41%", "176.100", "5,13", "1,49"]) {
+    for (const figure of ["61,83%", "28,42%", "184.500", "5,13", "1,55"]) {
       expect(C.regressiveNotice, `notice is missing ${figure}`).toContain(
         figure,
       );

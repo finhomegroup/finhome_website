@@ -60,9 +60,8 @@ export type BendPointYear = {
 /**
  * PIA bend points by eligibility year, as published by the SSA.
  *
- * Two years only, and deliberately so — see the module docstring. Adding a
- * year means transcribing that year's two published figures, not
- * interpolating them.
+ * Only published years are included. Adding a year means transcribing that
+ * year's two figures, not interpolating them.
  */
 export const BEND_POINTS: Record<number, BendPointYear> = {
   2024: {
@@ -77,15 +76,21 @@ export const BEND_POINTS: Record<number, BendPointYear> = {
     secondBendPoint: 7_391,
     taxableMaximum: 176_100,
   },
+  2026: {
+    year: 2026,
+    firstBendPoint: 1_286,
+    secondBendPoint: 7_749,
+    taxableMaximum: 184_500,
+  },
 };
 
-export const BEND_POINT_YEAR_ORDER = [2025, 2024] as const;
+export const BEND_POINT_YEAR_ORDER = [2026, 2025, 2024] as const;
 
 /** The three PIA replacement rates. Fixed in statute, never indexed. */
 export const PIA_RATES = { first: 90, second: 32, third: 15 } as const;
 
 /**
- * Retirement earnings test exempt amounts for 2025, in USD a year.
+ * Retirement earnings test exempt amounts for 2026, in USD a year.
  *
  * Indexed annually. Prefilled as this page's defaults WITH the year stated
  * in the copy and bound to these constants by a test, which is the pattern
@@ -94,11 +99,11 @@ export const PIA_RATES = { first: 90, second: 32, third: 15 } as const;
  * is a one-line default change.
  */
 export const EARNINGS_TEST = {
-  year: 2025,
+  year: 2026,
   /** Below full retirement age: 1 USD withheld per 2 USD above this. */
-  underFraAnnual: 23_400,
+  underFraAnnual: 24_480,
   /** In the year full retirement age is reached: 1 USD per 3 USD above this. */
-  fraYearAnnual: 62_160,
+  fraYearAnnual: 65_160,
   underFraWithholdingRatio: 2,
   fraYearWithholdingRatio: 3,
 } as const;
