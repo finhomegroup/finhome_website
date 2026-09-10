@@ -501,6 +501,144 @@ export function splitAgeMonths(months: number): { years: number; months: number 
   return { years: Math.floor(months / 12), months: months % 12 };
 }
 
+export type ClaimingAnalysisOption = ClaimingOption & {
+  /** Monthly payments received between this claiming age and the end age. */
+  monthsReceived: number;
+  /** Everything received, not discounted. */
+  nominalTotal: number;
+  /**
+   * The same stream discounted to age 62 — the earliest claiming age, used
+   * as the common reference so the nine figures are comparable to each
+   * other rather than each to its own start date.
+   */
+  presentValue: number;
+  /**
+   * Age, in months, at which this option's running total overtakes claiming
+   * at 62. Null for age 62 itself, and null when it never overtakes.
+   *
+   * Computed on the NOMINAL totals, which is how the break-even question is
+   * always posed — "how long must I live for waiting to pay off". The
+   * discount rate belongs to `presentValue`, and mixing the two would
+   * answer a question nobody asked.
+   */
+  breakEvenMonthsVsEarliest: number | null;
+};
+
+export type ClaimingAnalysis = {
+  options: ClaimingAnalysisOption[];
+  endAge: number;
+  discountRatePercent: number;
+  /** Highest nominal total. Always the latest age that is still received. */
+  bestByNominal: ClaimingAnalysisOption;
+  /** Highest present value, which can be a different age entirely. */
+  bestByPresentValue: ClaimingAnalysisOption;
+  earliest: ClaimingAnalysisOption;
+};
+
+/** Present value of `months` level payments starting `offsetMonths` from now. */
+function discountedStream(
+  monthly: number,
+  months: number,
+  offsetMonths: number,
+  monthlyRate: number,
+): number {
+  if (months <= 0) return 0;
+  if (monthlyRate === 0) return monthly * months;
+  const v = 1 / (1 + monthlyRate);
+  // Ordinary annuity: the first payment lands one month after the offset.
+  const annuity = (1 - Math.pow(v, months)) / monthlyRate;
+  return monthly * annuity * Math.pow(v, offsetMonths);
+}
+
+/**
+ * Compare every claiming age on lifetime totals.
+ *
+ * Two answers, deliberately not reconciled into one. The nominal total
+ * always favours waiting, for anyone who lives long enough; the present
+ * value can favour claiming early, because money received at 62 can be
+ * spent or invested for eight years before the alternative starts. Which
+ * matters depends on whether the reader has other assets to draw on, and
+ * the page says so rather than picking for them.
+ *
+ * Null on a negative PIA, an end age at or below the earliest claiming age,
+ * an end age above 120, or a discount rate outside 0–100%.
+ */
+export function claimingAnalysis(input: {
+  pia: number;
+  fraMonths: number;
+  /** Age the analysis runs to. A life expectancy, not a guarantee. */
+  endAge: number;
+  /** Annual discount rate, in percent. Zero compares raw totals. */
+  discountRatePercent: number;
+}): ClaimingAnalysis | null {
+  const { pia, fraMonths, endAge, discountRatePercent } = input;
+
+  if (!Number.isFinite(endAge) || !Number.isInteger(endAge)) return null;
+  if (endAge <= EARLIEST_CLAIM_AGE || endAge > 120) return null;
+  if (
+    !Number.isFinite(discountRatePercent) ||
+    discountRatePercent < 0 ||
+    discountRatePercent > 100
+  ) {
+    return null;
+  }
+
+  const schedule = claimingSchedule(pia, fraMonths);
+  if (schedule === null) return null;
+
+  const monthlyRate = discountRatePercent / 100 / 12;
+  const earliestMonthly = schedule[0].monthlyBenefit;
+
+  const options: ClaimingAnalysisOption[] = schedule.map((option) => {
+    // A claiming age past the end age receives nothing, which is a real
+    // answer rather than an error: someone who does not expect to reach 70
+    // should see a zero there.
+    const monthsReceived = Math.max(0, (endAge - option.age) * 12);
+    const offsetMonths = (option.age - EARLIEST_CLAIM_AGE) * 12;
+
+    let breakEvenMonthsVsEarliest: number | null = null;
+    if (option.age > EARLIEST_CLAIM_AGE && option.monthlyBenefit > earliestMonthly) {
+      // Cumulative totals are equal when
+      //   earliest x (m - 62x12) = later x (m - age x 12),
+      // which rearranges to the expression below. The guard above keeps the
+      // denominator away from zero; a zero PIA makes every option equal and
+      // there is no crossing to report.
+      const crossing =
+        (option.monthlyBenefit * option.months -
+          earliestMonthly * EARLIEST_CLAIM_AGE * 12) /
+        (option.monthlyBenefit - earliestMonthly);
+      breakEvenMonthsVsEarliest = crossing <= 120 * 12 ? crossing : null;
+    }
+
+    return {
+      ...option,
+      monthsReceived,
+      nominalTotal: option.monthlyBenefit * monthsReceived,
+      presentValue: discountedStream(
+        option.monthlyBenefit,
+        monthsReceived,
+        offsetMonths,
+        monthlyRate,
+      ),
+      breakEvenMonthsVsEarliest,
+    };
+  });
+
+  const best = (key: "nominalTotal" | "presentValue") =>
+    options.reduce((winner, option) =>
+      option[key] > winner[key] ? option : winner,
+    );
+
+  return {
+    options,
+    endAge,
+    discountRatePercent,
+    bestByNominal: best("nominalTotal"),
+    bestByPresentValue: best("presentValue"),
+    earliest: options[0],
+  };
+}
+
 export type HouseholdBenefit = {
   /** What the worker is paid, after their own claiming adjustment. */
   workerMonthly: number;

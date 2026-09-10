@@ -6,6 +6,7 @@ import {
   BEND_POINT_YEAR_ORDER,
   BEND_POINTS,
   benefitFactorPercent,
+  claimingAnalysis,
   claimingSchedule,
   EARLIEST_CLAIM_AGE,
   EARNINGS_TEST,
@@ -474,6 +475,191 @@ describe("claimingSchedule", () => {
     expect(claimingSchedule(-1, 804)).toBe(null);
     const zero = claimingSchedule(0, 804)!;
     for (const option of zero) expect(option.monthlyBenefit).toBe(0);
+  });
+});
+
+describe("claimingAnalysis", () => {
+  const FRA = fullRetirementAgeMonths(1963);
+  const BASE = { pia: 2_800, fraMonths: FRA, endAge: 85, discountRatePercent: 0 };
+  const analyse = (over: Partial<typeof BASE> = {}) => {
+    const result = claimingAnalysis({ ...BASE, ...over });
+    if (!result) throw new Error("claimingAnalysis returned null");
+    return result;
+  };
+  const at = (result: ReturnType<typeof analyse>, age: number) =>
+    result.options.find((option) => option.age === age)!;
+
+  it("counts the months each option is actually received for", () => {
+    const r = analyse();
+    expect(at(r, 62).monthsReceived).toBe((85 - 62) * 12);
+    expect(at(r, 70).monthsReceived).toBe((85 - 70) * 12);
+    expect(at(r, 62).nominalTotal).toBe(1_960 * 276);
+  });
+
+  it("pays nothing at all for an option past the end age", () => {
+    // A real answer for someone who does not expect to reach 70, not an
+    // error and not a blank.
+    const r = analyse({ endAge: 68 });
+    expect(at(r, 70).monthsReceived).toBe(0);
+    expect(at(r, 70).nominalTotal).toBe(0);
+    expect(at(r, 70).presentValue).toBe(0);
+    expect(at(r, 68).monthsReceived).toBe(0);
+    expect(at(r, 67).monthsReceived).toBe(12);
+  });
+
+  it("puts the break-even of 70 against 62 at about 80 and a half", () => {
+    // The classic figure. 1.960 a month from 62 against 3.472 from 70.
+    const r = analyse();
+    const months = at(r, 70).breakEvenMonthsVsEarliest!;
+    expect(months / 12).toBeGreaterThan(80);
+    expect(months / 12).toBeLessThan(81);
+    // Checked against the two running totals rather than against the
+    // formula that produced it.
+    const early = 1_960 * (months - 62 * 12);
+    const late = 3_472 * (months - 70 * 12);
+    expect(early).toBeCloseTo(late, 6);
+  });
+
+  it("reports no break-even for the earliest age itself", () => {
+    expect(analyse().earliest.breakEvenMonthsVsEarliest).toBe(null);
+    expect(analyse().earliest.age).toBe(62);
+  });
+
+  it("does NOT move the break-even later with every year waited", () => {
+    // Counter-intuitive and real: the break-even against 62 peaks at 78,00
+    // for a claim at 64, DIPS to 77,62 at 65, and only then climbs to 80,37
+    // at 70. The cause is the two-tier early reduction. Waiting from 62 to
+    // 64 buys 5 percentage points a year, because those months are charged
+    // at 5/12 of 1%; from 64 to 67 it buys 6,67 a year at 5/9; and past 67
+    // it buys 8 a year in delayed credits. The reward for waiting
+    // ACCELERATES, so the years just after 62 are the poorest value and
+    // ages 63 and 64 carry a relatively distant break-even.
+    //
+    // The first version of this test asserted a monotone rise and failed at
+    // 65 — pinning the real shape instead is what makes the page's table
+    // honest.
+    const r = analyse();
+    const breakEvens = [63, 64, 65, 66, 67, 68, 69, 70].map(
+      (age) => at(r, age).breakEvenMonthsVsEarliest!,
+    );
+    expect(breakEvens.map((months) => (months / 12).toFixed(2))).toEqual([
+      "77.00",
+      "78.00",
+      "77.62",
+      "78.01",
+      "78.67",
+      "79.05",
+      "79.65",
+      "80.37",
+    ]);
+    // The dip, stated as the relation rather than as two literals.
+    expect(at(r, 65).breakEvenMonthsVsEarliest!).toBeLessThan(
+      at(r, 64).breakEvenMonthsVsEarliest!,
+    );
+    // And from 65 up it does rise every year.
+    for (let age = 66; age <= 70; age += 1) {
+      expect(
+        at(r, age).breakEvenMonthsVsEarliest!,
+        `age ${age}`,
+      ).toBeGreaterThan(at(r, age - 1).breakEvenMonthsVsEarliest!);
+    }
+  });
+
+  it("can put the best option in the MIDDLE of the range", () => {
+    // Neither "claim as early as possible" nor "wait as long as possible".
+    // Two different inputs produce an interior optimum, both because the
+    // reduction tiers make the reward for waiting uneven.
+    //
+    // A short life on raw totals: 65 beats both 62 and 70.
+    const short = analyse({ endAge: 78 });
+    expect(short.bestByNominal.age).toBe(65);
+    expect(at(short, 65).nominalTotal).toBeGreaterThan(
+      at(short, 62).nominalTotal,
+    );
+    expect(at(short, 65).nominalTotal).toBeGreaterThan(
+      at(short, 70).nominalTotal,
+    );
+    // A normal life at a moderate discount rate: 68, not 70.
+    const discounted = analyse({ endAge: 85, discountRatePercent: 3 });
+    expect(discounted.bestByPresentValue.age).toBe(68);
+    expect(discounted.bestByNominal.age).toBe(70);
+  });
+
+  it("does not depend on the end age, because a crossing is a crossing", () => {
+    // The break-even is a property of the two payment streams, not of how
+    // long the analysis happens to run. If it moved with the end age, the
+    // figure would be meaningless.
+    const short = analyse({ endAge: 75 });
+    const long = analyse({ endAge: 100 });
+    expect(at(short, 70).breakEvenMonthsVsEarliest).toBeCloseTo(
+      at(long, 70).breakEvenMonthsVsEarliest!,
+      10,
+    );
+  });
+
+  it("has no break-even to report when every option pays the same", () => {
+    const r = analyse({ pia: 0 });
+    for (const option of r.options) {
+      expect(option.breakEvenMonthsVsEarliest).toBe(null);
+      expect(option.nominalTotal).toBe(0);
+    }
+  });
+
+  it("makes waiting win on nominal totals for a long life", () => {
+    const r = analyse({ endAge: 95 });
+    expect(r.bestByNominal.age).toBe(70);
+    // And lose for a short one.
+    const short = analyse({ endAge: 75 });
+    expect(short.bestByNominal.age).toBe(62);
+  });
+
+  it("lets a discount rate reverse the answer", () => {
+    // The point of reporting both. At a high enough discount rate, money at
+    // 62 beats more money at 70 even for a long life.
+    const patient = analyse({ endAge: 95, discountRatePercent: 0 });
+    expect(patient.bestByPresentValue.age).toBe(70);
+    const impatient = analyse({ endAge: 95, discountRatePercent: 8 });
+    expect(impatient.bestByPresentValue.age).toBe(62);
+    // The nominal winner is unmoved by the rate, which is why they are two
+    // separate answers.
+    expect(impatient.bestByNominal.age).toBe(70);
+  });
+
+  it("equals the nominal total at a zero discount rate", () => {
+    const r = analyse({ discountRatePercent: 0 });
+    for (const option of r.options) {
+      expect(option.presentValue).toBeCloseTo(option.nominalTotal, 6);
+    }
+  });
+
+  it("discounts every option to the same reference age", () => {
+    // Age 62 for all nine, so the figures are comparable to each other. A
+    // per-option reference would make the later ages look better than they
+    // are by exactly the years they were not paid.
+    const r = analyse({ discountRatePercent: 6 });
+    const monthlyRate = 0.06 / 12;
+    const option = at(r, 70);
+    const v = 1 / (1 + monthlyRate);
+    const annuity = (1 - Math.pow(v, option.monthsReceived)) / monthlyRate;
+    expect(option.presentValue).toBeCloseTo(
+      option.monthlyBenefit * annuity * Math.pow(v, (70 - 62) * 12),
+      6,
+    );
+    // Every present value is below its nominal total once a rate applies.
+    for (const each of r.options) {
+      if (each.nominalTotal > 0) {
+        expect(each.presentValue).toBeLessThan(each.nominalTotal);
+      }
+    }
+  });
+
+  it("rejects what it cannot analyse", () => {
+    expect(claimingAnalysis({ ...BASE, endAge: 62 })).toBe(null);
+    expect(claimingAnalysis({ ...BASE, endAge: 121 })).toBe(null);
+    expect(claimingAnalysis({ ...BASE, endAge: 85.5 })).toBe(null);
+    expect(claimingAnalysis({ ...BASE, pia: -1 })).toBe(null);
+    expect(claimingAnalysis({ ...BASE, discountRatePercent: -1 })).toBe(null);
+    expect(claimingAnalysis({ ...BASE, discountRatePercent: 101 })).toBe(null);
   });
 });
 

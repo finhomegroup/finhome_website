@@ -498,7 +498,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân tích an sinh xã hội",
     summary: "Ảnh hưởng của tuổi bắt đầu nhận tới tổng trợ cấp, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
