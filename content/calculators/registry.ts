@@ -490,7 +490,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Ước tính an sinh xã hội",
     summary: "Ước tính khoản trợ cấp an sinh xã hội Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
