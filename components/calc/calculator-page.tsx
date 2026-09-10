@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Container } from "@/components/ui/container";
-import { Reveal } from "@/components/reveal";
 import { Accordion } from "@/components/ui/accordion";
 import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
+import { CalculatorHeading } from "@/components/calc/calculator-heading";
 import { getCalculator } from "@/content/calculators/registry";
 import { calculatorPath } from "@/content/calculators/registry";
 import { canonicalPath, calculatorSchema, faqSchema, pageMetadata } from "@/lib/seo";
@@ -95,14 +95,7 @@ export function CalculatorPage({
       <SiteHeader />
       <main className="flex-1 py-16 md:py-24">
         <Container>
-          <Reveal className="mx-auto max-w-3xl text-center">
-            <h1 className="font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
-              {title}
-            </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-2">
-              {lede}
-            </p>
-          </Reveal>
+          <CalculatorHeading title={title} lede={lede} />
 
           {/* Both notices sit ABOVE the calculator. A user should learn that a
               tool models United States law, or that it assumes a fixed rate,

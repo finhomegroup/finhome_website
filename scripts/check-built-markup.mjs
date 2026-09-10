@@ -105,6 +105,20 @@ for (const slug of live) {
   const h1 = count(markup, "<h1");
   if (h1 !== 1) fail(slug, "one <h1>", `found ${h1}`);
 
+  const backLinks = count(markup, 'data-calculator-back="true"');
+  if (backLinks !== 1)
+    fail(slug, "one calculator back link", `found ${backLinks}`);
+  else if (
+    !/<a(?=[^>]*data-calculator-back="true")(?=[^>]*href="\/cong-cu\/")[^>]*>/.test(
+      markup,
+    )
+  )
+    fail(slug, "calculator back link", "does not point to /cong-cu/");
+
+  const titleLabels = count(markup, 'data-calculator-title="true"');
+  if (titleLabels !== 1)
+    fail(slug, "one calculator title label", `found ${titleLabels}`);
+
   const disc = count(markup, DISCLAIMER);
   if (disc !== 1) fail(slug, "one disclaimer", `found ${disc}`);
 

@@ -7,6 +7,9 @@ export const CALCULATOR_HUB = {
   metaDescription:
     "Bộ công cụ tính toán tài chính miễn phí của FinHome: lãi kép, thời gian nhân đôi tiền, khoản vay và nhiều công cụ khác, bằng tiếng Việt.",
   plannedBadge: "Đang phát triển",
+  detailNavigationLabel: "Điều hướng công cụ",
+  backLabel: "Quay lại",
+  backAriaLabel: "Quay lại danh sách tất cả công cụ",
 
   // {live} and {total} are substituted at render time from the registry,
   // so the count cannot drift from what the page actually lists.
