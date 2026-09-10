@@ -500,3 +500,95 @@ export function claimingSchedule(
 export function splitAgeMonths(months: number): { years: number; months: number } {
   return { years: Math.floor(months / 12), months: months % 12 };
 }
+
+export type HouseholdBenefit = {
+  /** What the worker is paid, after their own claiming adjustment. */
+  workerMonthly: number;
+  /** The spouse's benefit on their OWN record, at their claiming age. */
+  spouseOwnMonthly: number;
+  /**
+   * The spousal benefit: up to half the worker's PIA, adjusted for the
+   * SPOUSE's claiming age. Computed from the worker's PIA and NOT from the
+   * worker's reduced or increased benefit — which is the rule most people
+   * get wrong, and the reason a worker claiming early does not cut this.
+   */
+  spousalMonthly: number;
+  /** What the spouse actually receives: the greater of the two. */
+  spouseReceivesMonthly: number;
+  /** True when the spousal top-up is what they are actually paid. */
+  spouseOnSpousalBenefit: boolean;
+  householdMonthly: number;
+  householdAnnual: number;
+  /**
+   * What a survivor would receive: the greater of the two ACTUAL benefits.
+   * Unlike the spousal benefit this one does follow the worker's claiming
+   * decision, which is why claiming early has an effect that outlives the
+   * worker.
+   *
+   * Simplified: a survivor claiming before their own full retirement age is
+   * reduced on a schedule this module does not carry, and survivor benefits
+   * can start as early as 60. Every figure here is the at-or-after-FRA case.
+   */
+  survivorMonthly: number;
+};
+
+/**
+ * What a couple is actually paid.
+ *
+ * Two asymmetries decide most of the answer, and both are counter-intuitive:
+ *
+ * - A spousal benefit is half the worker's PIA, adjusted only for the
+ *   SPOUSE's claiming age. The worker claiming at 62 cuts their own benefit
+ *   by 30% and does not touch the spousal one.
+ * - A spousal benefit earns NO delayed retirement credit. A spouse waiting
+ *   past full retirement age gains nothing on that record, while their own
+ *   record would gain 8% a year.
+ *
+ * Null on a negative PIA or a claiming age outside 62–70 for either person.
+ */
+export function householdBenefit(input: {
+  /** The worker's primary insurance amount, in USD a month. */
+  pia: number;
+  workerFraMonths: number;
+  workerClaimMonths: number;
+  /** The spouse's own PIA. Zero when they have no record of their own. */
+  spousePia: number;
+  spouseFraMonths: number;
+  spouseClaimMonths: number;
+}): HouseholdBenefit | null {
+  const {
+    pia,
+    workerFraMonths,
+    workerClaimMonths,
+    spousePia,
+    spouseFraMonths,
+    spouseClaimMonths,
+  } = input;
+
+  if (!Number.isFinite(pia) || pia < 0) return null;
+  if (!Number.isFinite(spousePia) || spousePia < 0) return null;
+
+  const workerFactor = benefitFactorPercent(workerFraMonths, workerClaimMonths);
+  const spouseOwnFactor = benefitFactorPercent(spouseFraMonths, spouseClaimMonths);
+  const spousalFactor = spousalFactorPercent(spouseFraMonths, spouseClaimMonths);
+  if (workerFactor === null || spouseOwnFactor === null || spousalFactor === null) {
+    return null;
+  }
+
+  const workerMonthly = roundDownToDollar(pia * (workerFactor / 100));
+  const spouseOwnMonthly = roundDownToDollar(spousePia * (spouseOwnFactor / 100));
+  const spousalMonthly = roundDownToDollar(pia * (spousalFactor / 100));
+
+  const spouseReceivesMonthly = Math.max(spouseOwnMonthly, spousalMonthly);
+
+  return {
+    workerMonthly,
+    spouseOwnMonthly,
+    spousalMonthly,
+    spouseReceivesMonthly,
+    spouseOnSpousalBenefit: spousalMonthly > spouseOwnMonthly,
+    householdMonthly: workerMonthly + spouseReceivesMonthly,
+    householdAnnual: (workerMonthly + spouseReceivesMonthly) * 12,
+    survivorMonthly: Math.max(workerMonthly, spouseOwnMonthly),
+  };
+}

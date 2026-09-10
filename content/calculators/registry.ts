@@ -504,9 +504,10 @@ export const CALCULATORS: CalculatorEntry[] = [
   {
     slug: "chi-tra-an-sinh-xa-hoi",
     title: "Chi trả an sinh xã hội",
-    summary: "Lịch chi trả trợ cấp an sinh xã hội Hoa Kỳ.",
+    summary:
+      "Số tiền hộ gia đình thực nhận mỗi tháng theo tuổi bắt đầu nhận, gồm trợ cấp vợ/chồng.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {

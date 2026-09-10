@@ -11,6 +11,7 @@ import {
   EARNINGS_TEST,
   earningsTestWithholding,
   fullRetirementAgeMonths,
+  householdBenefit,
   LATEST_CLAIM_AGE,
   piaFromAime,
   roundDownToDime,
@@ -395,6 +396,19 @@ describe("the statutory roundings", () => {
     expect(roundDownToDollar(0.99)).toBe(0);
   });
 
+  it("does not lose a dollar to a float residue", () => {
+    // 70% of 2.800 is 1.960, and `2_800 * 0.7` evaluates to
+    // 1959,9999999999998. A bare Math.floor turns a whole dollar of
+    // somebody's monthly benefit into a rounding artefact — which is
+    // exactly what the epsilon exists to prevent, and what the first draft
+    // of householdBenefit's test asserted by mistake.
+    expect(2_800 * 0.7).toBeLessThan(1_960);
+    expect(Math.floor(2_800 * 0.7)).toBe(1_959);
+    expect(roundDownToDollar(2_800 * 0.7)).toBe(1_960);
+    // And it still rounds a genuine fraction down.
+    expect(roundDownToDollar(1_959.5)).toBe(1_959);
+  });
+
   it("applies both roundings in the schedule, always downward", () => {
     const fra = fullRetirementAgeMonths(1960);
     const schedule = claimingSchedule(2_500.55, fra)!;
@@ -460,6 +474,121 @@ describe("claimingSchedule", () => {
     expect(claimingSchedule(-1, 804)).toBe(null);
     const zero = claimingSchedule(0, 804)!;
     for (const option of zero) expect(option.monthlyBenefit).toBe(0);
+  });
+});
+
+describe("householdBenefit", () => {
+  const FRA_1963 = fullRetirementAgeMonths(1963);
+  const FRA_1965 = fullRetirementAgeMonths(1965);
+  const BASE = {
+    pia: 2_800,
+    workerFraMonths: FRA_1963,
+    workerClaimMonths: 67 * 12,
+    spousePia: 900,
+    spouseFraMonths: FRA_1965,
+    spouseClaimMonths: 67 * 12,
+  };
+  const house = (over: Partial<typeof BASE> = {}) => {
+    const result = householdBenefit({ ...BASE, ...over });
+    if (!result) throw new Error("householdBenefit returned null");
+    return result;
+  };
+
+  it("pays the spouse the greater of their own benefit and the top-up", () => {
+    const r = house();
+    expect(r.workerMonthly).toBe(2_800);
+    expect(r.spouseOwnMonthly).toBe(900);
+    expect(r.spousalMonthly).toBe(1_400);
+    expect(r.spouseReceivesMonthly).toBe(1_400);
+    expect(r.spouseOnSpousalBenefit).toBe(true);
+    expect(r.householdMonthly).toBe(4_200);
+    expect(r.householdAnnual).toBe(50_400);
+  });
+
+  it("pays the spouse on their OWN record when it is larger", () => {
+    const r = house({ spousePia: 2_000 });
+    expect(r.spouseOwnMonthly).toBe(2_000);
+    expect(r.spousalMonthly).toBe(1_400);
+    expect(r.spouseReceivesMonthly).toBe(2_000);
+    expect(r.spouseOnSpousalBenefit).toBe(false);
+  });
+
+  it("does NOT cut the spousal benefit when the worker claims early", () => {
+    // The rule most people get wrong. The spousal benefit is half the
+    // worker's PIA, not half the worker's reduced benefit.
+    const late = house();
+    const early = house({ workerClaimMonths: 62 * 12 });
+    // 1.960, not 1.959: see "does not lose a dollar to a float residue"
+    // below — `2_800 * 0.7` is 1959,9999999999998 and a bare Math.floor on
+    // it is the wrong reference, not the module.
+    expect(early.workerMonthly).toBe(roundDownToDollar(2_800 * 0.7));
+    expect(early.workerMonthly).toBe(1_960);
+    expect(early.workerMonthly).toBeLessThan(late.workerMonthly);
+    expect(early.spousalMonthly).toBe(late.spousalMonthly);
+    expect(early.spouseReceivesMonthly).toBe(late.spouseReceivesMonthly);
+  });
+
+  it("DOES cut the survivor benefit when the worker claims early", () => {
+    // The asymmetry: the survivor benefit follows the actual benefit, so
+    // this is the part of an early claim that outlives the worker.
+    const late = house();
+    const early = house({ workerClaimMonths: 62 * 12 });
+    expect(late.survivorMonthly).toBe(2_800);
+    expect(early.survivorMonthly).toBe(roundDownToDollar(2_800 * 0.7));
+    expect(early.survivorMonthly).toBeLessThan(late.survivorMonthly);
+  });
+
+  it("gains the spouse nothing by waiting past full retirement age", () => {
+    const atFra = house();
+    const at70 = house({ spouseClaimMonths: 70 * 12 });
+    expect(at70.spousalMonthly).toBe(atFra.spousalMonthly);
+    // Their own record does grow, but on these figures it is still below
+    // the top-up, so the household is unchanged and the wait was wasted.
+    expect(at70.spouseOwnMonthly).toBeGreaterThan(atFra.spouseOwnMonthly);
+    expect(at70.spouseReceivesMonthly).toBe(atFra.spouseReceivesMonthly);
+    expect(at70.householdMonthly).toBe(atFra.householdMonthly);
+  });
+
+  it("reduces the spousal benefit when the SPOUSE claims early", () => {
+    const r = house({ spouseClaimMonths: 62 * 12 });
+    // 32,5% of the worker's PIA at 62 against a full retirement age of 67.
+    expect(r.spousalMonthly).toBe(Math.floor(2_800 * 0.325));
+    expect(r.spousalMonthly).toBeLessThan(1_400);
+  });
+
+  it("handles a spouse with no record of their own", () => {
+    const r = house({ spousePia: 0 });
+    expect(r.spouseOwnMonthly).toBe(0);
+    expect(r.spouseReceivesMonthly).toBe(1_400);
+    expect(r.spouseOnSpousalBenefit).toBe(true);
+    expect(r.survivorMonthly).toBe(2_800);
+  });
+
+  it("adds up to the household total, always", () => {
+    for (const workerClaimMonths of [62 * 12, 65 * 12, 67 * 12, 70 * 12]) {
+      for (const spouseClaimMonths of [62 * 12, 67 * 12, 70 * 12]) {
+        for (const spousePia of [0, 900, 2_000, 3_000]) {
+          const r = house({ workerClaimMonths, spouseClaimMonths, spousePia });
+          expect(r.householdMonthly).toBe(
+            r.workerMonthly + r.spouseReceivesMonthly,
+          );
+          expect(r.householdAnnual).toBe(r.householdMonthly * 12);
+          expect(r.spouseReceivesMonthly).toBe(
+            Math.max(r.spouseOwnMonthly, r.spousalMonthly),
+          );
+          expect(r.survivorMonthly).toBe(
+            Math.max(r.workerMonthly, r.spouseOwnMonthly),
+          );
+        }
+      }
+    }
+  });
+
+  it("rejects a claim outside 62 to 70 for either person", () => {
+    expect(householdBenefit({ ...BASE, workerClaimMonths: 61 * 12 })).toBe(null);
+    expect(householdBenefit({ ...BASE, spouseClaimMonths: 71 * 12 })).toBe(null);
+    expect(householdBenefit({ ...BASE, pia: -1 })).toBe(null);
+    expect(householdBenefit({ ...BASE, spousePia: -1 })).toBe(null);
   });
 });
 
