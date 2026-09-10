@@ -48,6 +48,35 @@ describe("calculator registry", () => {
     }
   });
 
+  it("keeps the placeholder route in step with whether anything is planned", () => {
+    // The suite is complete, so `app/cong-cu/[slug]` was deleted: under
+    // `output: "export"` a dynamic route whose `generateStaticParams()`
+    // returns an empty array is rejected outright, so an unused placeholder
+    // route does not merely sit there — it breaks the build.
+    //
+    // The consequence is that a `planned` entry added today would 404 with
+    // nothing to say so. This test converts that into a red test naming the
+    // fix, in both directions: `git revert` of the commit that removed the
+    // route restores the page, its content file and its metadata tests.
+    const route = path.join(repoRoot, "app", "cong-cu", "[slug]", "page.tsx");
+    const planned = plannedCalculators();
+    if (planned.length > 0) {
+      expect(
+        existsSync(route),
+        `${planned.length} planned entry/entries (${planned
+          .map((calc) => calc.slug)
+          .join(", ")}) but app/cong-cu/[slug]/page.tsx is gone — restore it, ` +
+          "or those slugs will 404",
+      ).toBe(true);
+    } else {
+      expect(
+        existsSync(route),
+        "nothing is planned, so app/cong-cu/[slug]/page.tsx must not exist — " +
+          'an empty generateStaticParams() fails `next build` under output: "export"',
+      ).toBe(false);
+    }
+  });
+
   it("splits cleanly into live and planned with nothing left over", () => {
     expect(liveCalculators().length + plannedCalculators().length).toBe(
       CALCULATORS.length,

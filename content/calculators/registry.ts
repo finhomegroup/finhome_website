@@ -523,7 +523,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Tính niên kim",
     summary: "Dòng tiền nhận được từ một hợp đồng niên kim, theo quy định Hoa Kỳ.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
 

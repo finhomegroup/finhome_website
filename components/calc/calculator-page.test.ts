@@ -5,13 +5,17 @@
 // not merged field by field, while `alternates.canonical` is simply inherited
 // when a route sets none.
 //
-//  1. `calculatorMetadata` used to set only type/url/title/description, so all
-//     62 live calculator pages shipped a share card with no image, no
+//  1. `calculatorMetadata` used to set only type/url/title/description, so
+//     every live calculator page shipped a share card with no image, no
 //     og:site_name and no og:locale — the root layout's values were dropped the
 //     moment the helper's own `openGraph` object existed.
-//  2. The 13 planned placeholder routes set NO canonical and NO openGraph, so
+//  2. The planned placeholder routes set NO canonical and NO openGraph, so
 //     each one inherited the root layout's and declared the HOMEPAGE to be its
-//     own canonical URL and og:url, next to a `noindex` directive.
+//     own canonical URL and og:url, next to a `noindex` directive. That route
+//     is gone now that every registered slug is built — an empty
+//     `generateStaticParams()` is what `output: "export"` rejects — so its
+//     half of this file went with it. `registry.test.ts` fails loudly if a
+//     `planned` entry is ever added again without restoring the route.
 //  3. `calculatorMetadata` set `openGraph` but no `twitter`, so every page it
 //     drives shipped a per-page `og:title` beside the HOMEPAGE's
 //     `twitter:title`. Next's openGraph -> twitter back-fill does not save
@@ -23,13 +27,7 @@
 // in the suite's node environment with no jsdom.
 import { describe, expect, it } from "vitest";
 import { calculatorMetadata } from "@/components/calc/calculator-page";
-import { generateMetadata } from "@/app/cong-cu/[slug]/page";
-import {
-  calculatorPath,
-  liveCalculators,
-  plannedCalculators,
-} from "@/content/calculators/registry";
-import { CALCULATOR_PLACEHOLDER as C } from "@/content/calculators/placeholder";
+import { calculatorPath, liveCalculators } from "@/content/calculators/registry";
 import { SITE } from "@/content/site";
 
 describe("calculatorMetadata", () => {
@@ -77,55 +75,5 @@ describe("calculatorMetadata", () => {
       expect(tw.title, calc.slug).toBe(og.title);
       expect(tw.title, calc.slug).not.toBe(SITE.title);
     }
-  });
-});
-
-describe("generateMetadata for the planned placeholder route", () => {
-  it("gives every planned slug its OWN canonical and og:url, never the homepage", async () => {
-    const planned = plannedCalculators();
-    // Guard that the net covers something, without pinning the suite's size:
-    // an exact count fails the deploy gate the day a calculator ships, which
-    // is a false alarm about an unrelated change.
-    expect(planned.length).toBeGreaterThan(0);
-    for (const calc of planned) {
-      const meta = await generateMetadata({
-        params: Promise.resolve({ slug: calc.slug }),
-      });
-      const og = meta.openGraph as Record<string, unknown>;
-      const own = `${calculatorPath(calc.slug)}/`;
-      expect(meta.alternates?.canonical, calc.slug).toBe(own);
-      expect(meta.alternates?.canonical, calc.slug).not.toBe("/");
-      expect(og.url, calc.slug).toBe(own);
-      expect(og.title, calc.slug).toBe(
-        `${calc.title} — ${C.metaTitleSuffix} — ${SITE.name}`,
-      );
-      expect(og.description, calc.slug).toBe(calc.summary);
-      expect(og.images, calc.slug).toEqual([
-        { url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name },
-      ]);
-      // The 13 placeholders go through the same helper, so their X card must
-      // agree with their og tags rather than inheriting the homepage's.
-      const tw = meta.twitter as Record<string, unknown>;
-      expect(tw, calc.slug).toBeDefined();
-      expect(tw.card, calc.slug).toBe("summary_large_image");
-      expect(tw.title, calc.slug).toBe(og.title);
-      expect(tw.description, calc.slug).toBe(calc.summary);
-      expect(tw.images, calc.slug).toEqual([SITE.ogImage]);
-      expect(tw.title, calc.slug).not.toBe(SITE.title);
-      // A self-referential canonical does NOT make these pages indexable, and
-      // they stay out of app/sitemap.ts, which maps liveCalculators() only.
-      expect(meta.robots, calc.slug).toEqual({ index: false, follow: true });
-      // <title> is unchanged by the switch to the shared helper: the root
-      // layout's "%s — FinHome" template still appends the site name.
-      expect(meta.title, calc.slug).toBe(
-        `${calc.title} — ${C.metaTitleSuffix}`,
-      );
-    }
-  });
-
-  it("returns an empty object for an unregistered slug rather than inventing a canonical", async () => {
-    await expect(
-      generateMetadata({ params: Promise.resolve({ slug: "khong-ton-tai" }) }),
-    ).resolves.toEqual({});
   });
 });
