@@ -515,7 +515,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     title: "Phân bổ tài sản",
     summary: "Tỷ lệ phân bổ giữa các nhóm tài sản theo mức chấp nhận rủi ro.",
     category: "huu-tri",
-    status: "planned",
+    status: "live",
     usRules: true,
   },
   {
