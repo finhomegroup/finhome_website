@@ -2,7 +2,7 @@
 
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
-Last updated: 2026-09-09
+Last updated: 2026-09-10
 Branch: `feat/rule-of-72-calculator` — **not merged, not pushed.**
 Everything below is committed; nothing is in the working tree.
 
@@ -14,15 +14,24 @@ A suite of financial calculators at `/cong-cu/`, modelled on the tool set at `fn
 
 | | Count |
 |---|---|
-| Working calculators | **62** |
-| Listed with a placeholder page | 13 |
+| Working calculators | **75** |
+| Listed with a placeholder page | 0 |
 | Total routes built | 75 |
-| Tests | 1393, across 70 suites |
+| Tests | 1852, across 94 suites |
 
-The 13 remaining placeholders are the United States retirement tier, all flagged `usRules`.
-The counts above are derived from `content/calculators/registry.ts` (`liveCalculators()` /
-`plannedCalculators()`) — re-derive them rather than trusting this table, which has been
-stale before.
+**The suite is complete.** All 75 planned tools are built; 20 of them are flagged
+`usRules`. The counts above are derived from `content/calculators/registry.ts`
+(`liveCalculators()` / `plannedCalculators()`) — re-derive them rather than trusting this
+table, which has been stale before.
+
+**`app/cong-cu/[slug]/` no longer exists.** It served the `planned` placeholders, and with
+nothing planned its `generateStaticParams()` returns an empty array — which `output:
+"export"` rejects outright, so an unused placeholder route does not sit harmlessly, it
+fails `next build`. If you add a `planned` entry to the registry, restore that route and
+its content file (`git log --diff-filter=D -- 'app/cong-cu/[slug]'` finds the commit);
+`registry.test.ts` asserts the route's presence against whether anything is planned, in
+BOTH directions, so either mistake is a red test with a message naming the fix rather than
+a silent 404 or a broken build.
 
 **Working:**
 
@@ -90,6 +99,19 @@ stale before.
 | `/cong-cu/lam-phat-hoa-ky/` | Purchasing power on the US CPI series |
 | `/cong-cu/tin-phieu-kho-bac-hoa-ky/` | US T-bill — discount yield and investment yield kept apart |
 | `/cong-cu/thue-luong-hoa-ky/` | US payroll tax and paycheck deductions |
+| `/cong-cu/tinh-huu-tri/` | Solves the contribution a retirement plan needs (US law) |
+| `/cong-cu/thu-nhap-huu-tri/` | Solves the sustainable draw an accumulation supports (US law) |
+| `/cong-cu/phan-tich-tiet-kiem-huu-tri/` | Capital reached vs capital needed; prices three fixes (US law) |
+| `/cong-cu/phan-tich-thu-nhap-huu-tri/` | Income sources with their OWN indexation rates (US law) |
+| `/cong-cu/gop-401k/` | 401(k) deferral, the match, and the four ceilings (US law) |
+| `/cong-cu/toi-da-401k/` | Per-paycheck deferral to the limit; the front-loading trap (US law) |
+| `/cong-cu/ira-truyen-thong-hay-roth/` | Traditional vs Roth from EQUAL after-tax cost (US law) |
+| `/cong-cu/rut-toi-thieu-bat-buoc/` | RMD on the Uniform Lifetime Table (US law) |
+| `/cong-cu/uoc-tinh-an-sinh-xa-hoi/` | AIME → PIA → benefit by claiming age (US law) |
+| `/cong-cu/chi-tra-an-sinh-xa-hoi/` | Household benefit, spousal and survivor (US law) |
+| `/cong-cu/phan-tich-an-sinh-xa-hoi/` | Claiming break-even, on totals AND present value (US law) |
+| `/cong-cu/phan-bo-tai-san/` | Target mix, drift, rebalancing trades, real portfolio σ |
+| `/cong-cu/nien-kim/` | Period-certain annuity; inverts an insurer's quote (US law) |
 
 **Deliberately omitted, not forgotten:** a currency converter and a commodities/futures tool. Both need live market data. The site is `output: "export"` with no server, so the only options were an API key in the client bundle or rates that go stale between deploys — neither acceptable for a page giving Vietnamese consumers financial figures. Target is therefore 75, not 77.
 
@@ -162,6 +184,16 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `units.ts` | `convertUnit`, `UNITS` — one factor per unit, no pairwise table |
 | `normal.ts` | `normalCdf`, `normalPdf`, `inverseNormalCdf` |
 | `black-scholes.ts` | `computeBlackScholes` — European call/put plus greeks |
+| `retirement.ts` | also `requiredRealBalanceAtRetirement` — the EXACT inverse of `sustainableSpending`, from one shared annuity factor |
+| `retirement-income-sources.ts` | `projectIncomeSources` — one indexation rate PER SOURCE |
+| `us-retirement-limits.ts` | The dated 401(k)/IRA ceilings, `catchUpTier`, `catchUpMustBeRoth` |
+| `us-401k.ts` | `computeUs401k` — four ceilings, each on what the statute binds |
+| `us-401k-max.ts` | `computeUs401kMax` — per-paycheck deferral; per-period vs true-up match |
+| `us-ira.ts` | `computeUsIra` — traditional vs Roth on equal after-tax cost |
+| `us-rmd.ts` | `computeRmd`, `UNIFORM_LIFETIME`, `rmdStartAge` |
+| `us-social-security.ts` | `piaFromAime` (dated bend points), `benefitFactorPercent`, `spousalFactorPercent`, `householdBenefit`, `claimingAnalysis`, `earningsTestWithholding` |
+| `asset-allocation.ts` | `analyseAllocation`, `mixStatistics` — the full covariance sum, not an average of σ |
+| `annuity.ts` | `computeAnnuity` — period certain, exclusion ratio, and the quote inverted |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `CalculatorDisclaimer`, `useCalcFields`.
 
@@ -241,13 +273,20 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Needs a human:**
 
-- **The branch.** `feat/rule-of-72-calculator` is unmerged and unpushed, and well past a
-  hundred commits (`git log --oneline main..HEAD | wc -l` for the current number). One commit
-  per calculator, each self-contained — the registry flip ships with its page, so no commit
+- **The branch.** `feat/rule-of-72-calculator` is unmerged and unpushed, and now ~148
+  commits (`git log --oneline main..HEAD | wc -l` for the current number). One commit per
+  calculator, each self-contained — the registry flip ships with its page, so no commit
   leaves `registry.test.ts` red. The audit fixes follow the same rule: one commit per fix
   batch, each with its own test pins moved. The owner has been asked repeatedly and has not
-  chosen a merge strategy; nothing has been pushed as a result.
-- **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers all 62 live pages, several of which render a wide results table (`so-sanh-khoan-vay` has four columns, `lai-suat-thuc-te` eight rows, `phan-tich-bao-cao-tai-chinh` the widest) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye. There is **no browser automation in this environment**, so nothing about focus order, colour contrast, touch-target size or that horizontal scroll has ever been observed; every accessibility claim in this document is inferred from JSX and built markup. Do not report a visual item as verified.
+  chosen a merge strategy; nothing has been pushed as a result. **The suite being complete
+  removes the last reason to keep waiting.**
+- **Visual layout.** The `/cong-cu/` hub's multi-column index and the calculator pages have never been seen rendered. Worth a look at `pnpm dev`. This now covers all 75 live pages, several of which render a wide results table (`phan-tich-thu-nhap-huu-tri` has seven columns and two tables, `toi-da-401k` renders 26 rows, `phan-tich-bao-cao-tai-chinh` is the widest) — `ResultTable` scrolls horizontally on narrow screens, which is untested by eye. The retirement tier also adds the longest input forms in the suite: `phan-tich-thu-nhap-huu-tri` and `phan-bo-tai-san` both render 11 fields across four groups. There is **no browser automation in this environment**, so nothing about focus order, colour contrast, touch-target size or that horizontal scroll has ever been observed; every accessibility claim in this document is inferred from JSX and built markup. Do not report a visual item as verified.
+- **Two vendored figures could not be transcribed and are absent rather than guessed.**
+  `us-social-security.ts` has PIA bend points for eligibility years 2024 and 2025 only, and
+  the page works around it by treating the selection as a FORMULA year and reading results
+  in today's money — which is defensible and documented, but a 2026 row should be added
+  when its published figures are to hand. `EARNINGS_TEST` holds 2025 exempt amounts only;
+  they are page inputs with the year in the label, so a reader can correct them.
 - **The rental-tax model needs a tax professional's sign-off.** `bat-dong-san-cho-thue` now
   implements 5% VAT on all revenue plus 5% PIT on the excess above a 500 triệu threshold,
   per Luật 149/2025/QH15 (GTGT, 01/01/2026) and Luật Thuế TNCN 109/2025/QH15 (01/07/2026).
@@ -295,8 +334,15 @@ There is **no browser automation** in this environment. Every check above is a t
 
 **Still open:**
 
-- **Almost no component-level coverage, and this is where the worst bugs live.** There is no
-  jsdom and the vitest glob is `{lib,content,components}/**/*.test.ts` (`.ts`, not `.tsx`), so
+- **Almost no component-level coverage — but the substitute is now applied everywhere it
+  can be.** Every one of the 13 retirement-tier pages ships a
+  `content/calculators/<name>.test.ts` that parses the page's OWN default strings with the
+  same parsers the component uses, runs the module, formats with the same formatters, pins
+  the result, and binds every figure quoted in the prose to the module's output plus a
+  provenance-header check. That pattern caught nothing on these pages, which is the point:
+  it is cheap enough to write first. **Follow it for any new calculator.** The gap it does
+  not close is the rendering itself: there is no jsdom and the vitest glob is
+  `{lib,content,components}/**/*.test.ts` (`.ts`, not `.tsx`), so
   a test under `components/` can exercise pure exported helpers but cannot render React.
   That gap is not academic: an audit of the whole suite found that **three of its five
   worst defects were invisible to a green 1242-test run**, because they lived in a component
@@ -307,6 +353,11 @@ There is **no browser automation** in this environment. Every check above is a t
   content file's own default strings with the same parser the component uses, call the
   module, format with the same formatter, and pin the result.
   See `components/calc/calculator-page.test.ts` for the pure-helper pattern that does work.
+- **Nine of the 13 new pages render four or five ResultGroups.** Exactly one is live on
+  each, so the convention holds and `live-region.test.ts` passes — but a page with a live
+  group plus four non-live ones plus two tables is a long page, and whether that reads well
+  has not been seen. It is the same unobserved-visual concern as the wide tables above, one
+  level up.
 - **The widest live regions have not been shrunk, and that is a real unresolved concern.**
   `loan-calculator.tsx` announces a 9-row live region on every keystroke, then `biweekly` and
   `loan-analysis` at 8, and `auto-loan`, `interest-only` and `price-adjust` at 7 — which, by
@@ -326,7 +377,12 @@ There is **no browser automation** in this environment. Every check above is a t
 
 ## 7. What to build next
 
-Ordered by value per unit of effort. Each is independently mergeable.
+**Nothing, in this suite.** All 75 tools are live. What remains is the open items in §6 —
+the merge decision, a visual pass, and the rental-tax sign-off — plus anything a future
+audit turns up. The rest of this section is kept as the record of how the tiers were
+ordered and what each needed.
+
+Ordered by value per unit of effort. Each was independently mergeable.
 
 **Done** — the three tiers that used to head this list are built: the two fast tiers (`vay-mua-xe`, `so-sanh-khoan-vay`, `phan-tich-khoan-vay` and all nine simple-math tools) and the whole medium tier (`tai-cap-von`, `kha-nang-mua-nha`, `diem-chiet-khau`, `muc-tieu-tiet-kiem`, `tien-gui-co-ky-han`, `thue-mua-xe`, `thue-hay-mua`, `bat-dong-san-cho-thue`, and both credit-card tools).
 
@@ -342,21 +398,28 @@ the rule it was warned about: **no `Date` in `lib/calc/`**, because prerendered 
 hydrate byte-identically — the reference date arrives from the client as a plain
 `{year, month, day}` and `dates.ts` stays pure. Do not regress that.
 
-**Only the United States retirement tier is left — 13 slugs**, all `planned`, all `usRules`,
-all served by the shared placeholder route: `tinh-huu-tri`, `gop-401k`, `toi-da-401k`,
-`phan-tich-tiet-kiem-huu-tri`, `phan-tich-thu-nhap-huu-tri`, `thu-nhap-huu-tri`,
-`ira-truyen-thong-hay-roth`, `rut-toi-thieu-bat-buoc`, `uoc-tinh-an-sinh-xa-hoi`,
-`phan-tich-an-sinh-xa-hoi`, `chi-tra-an-sinh-xa-hoi`, `phan-bo-tai-san`, `nien-kim`.
+**The United States retirement tier — done**, all 13. They came last for a reason: lowest
+value to Vietnamese users, and most needed a **vendored dataset**. Four things learned
+building them, all of which generalise:
 
-These are last for a reason: they are the lowest value to Vietnamese users, and most need a
-**vendored dataset** — contribution and catch-up limits, RMD divisor tables, the Social
-Security bend points and the PIA formula. Every hard-coded constant is a transcription risk,
-which §8 names as a defect class of its own. Before writing one of these, read the
-`us-*.ts` modules already built: they establish the pattern of listing each constant with
-the tax year it represents and asserting the table is internally consistent (brackets
-contiguous, ascending, no gap or overlap at a boundary, top bracket unbounded, marginal rate
-monotonic) and of probing income exactly ON each boundary. `CalculatorPage` renders the
-`us-rules` notice from the registry flag automatically — no per-page wiring.
+- **Vendor as little as the tool can get away with, and say which pages need it.** Only
+  ONE of the three Social Security pages needs the annually indexed bend points; the other
+  two take the PIA as an input, because the reader's own statement prints it. A page that
+  takes a figure as input cannot go stale. `us-social-security.ts`'s docstring splits its
+  own two halves by exactly this risk.
+- **Two modules transcribing the same published figure should check each other.** The
+  Social Security taxable maximum is in both `us-social-security.ts` and `us-payroll.ts`,
+  and a test asserts they agree for every year both cover. That is the cheapest guard
+  available against a transcription slip, and it is free wherever tables overlap.
+- **Assert the table's SHAPE, not just spot values.** `us-rmd.ts`'s divisor table is 49
+  rows. The test checks contiguous ages, every divisor positive, strictly falling with age
+  and therefore a strictly rising required percentage — which catches a mistyped digit
+  (12,2 entered as 21,2) that no plausibility check would.
+- **Refuse the year rather than borrow one.** Every dated table in this tier returns null
+  for a year it does not cover, and every page has a notice for that case.
+
+`CalculatorPage` renders the `us-rules` notice from the registry flag automatically — no
+per-page wiring.
 
 ## 8. Design record
 
@@ -427,3 +490,50 @@ Two process lessons, both cheap:
   should have been 8,7081%. A test that cannot fail is a finding.
 - **Never pin the suite's own size.** `expect(planned.length).toBe(13)` fails the deploy gate
   the day an unrelated calculator ships. Assert the property, not the count.
+
+### From the United States retirement tier
+
+Six more, and four of them were caught by a test written to check something else. Each is
+worth reading before touching the module named.
+
+10. **A root finder's bracket, for the THIRD time.** `annuity.ts` solved a quoted payout's
+    implied rate on the PER-PERIOD rate with a bracket just above −100%. At 480 monthly
+    periods `(1 + rate) ** periods` underflows to zero, the annuity factor divides by it,
+    and `bisect` correctly refuses a non-finite endpoint — so **every contract longer than
+    about 25 years returned "no solution"**. It now solves on the ANNUAL rate, where the
+    worst case is 1e-18. Same mechanism as defects 1 and 5, third module, and this time
+    the long-dated test §8 already demanded is what caught it. **Write that test first.**
+11. **Bisection converges on a BRACKET, so its midpoint can be on the wrong side.**
+    `solveRequiredContribution` returned a contribution 1e-4 short of funding the plan, and
+    handed back a projection reporting depletion at `endAge - 1` beside a headline saying
+    the plan was funded. Economically nothing; contractually the whole function. It now
+    settles onto the funded side before returning. The pre-existing test asserted that
+    contract and passed only because its single starting balance landed on the other side —
+    **if a property depends on which side of a root you land, sweep the input that decides
+    it.**
+12. **A start-of-year flow and an end-of-year balance need DIFFERENT deflators.**
+    `retirement.ts` had one, correct for balances. Reusing it for a withdrawal understates
+    it by exactly one year of inflation — 53.658,54 for a 55.000 spend — and no single-year
+    spot check reveals it. Both flows now carry their own real-terms figure, computed in
+    the module, and on a funded plan `realWithdrawal` equals the level spend that was asked
+    for in EVERY year. That identity is the test.
+13. **Do not average standard deviations.** `asset-allocation.ts` computes the full
+    covariance sum. Averaging σ would overstate the risk of every mix shown and make
+    diversification look inert. Two identities pin it: at a correlation of 1 the two figures
+    must coincide, and at −1 with weights inverse to the σs the risk must cancel to zero.
+    **Where a quantity does not combine linearly, assert the case where it does.**
+14. **A monotonicity you assume is a finding waiting to happen.** The Social Security
+    break-even against claiming at 62 is NOT monotone in the claiming age: it peaks at
+    78,00 for a claim at 64, dips to 77,62 at 65, then climbs to 80,37 at 70. The cause is
+    the two-tier early reduction — the reward for waiting ACCELERATES, so the years just
+    after 62 are the poorest value. The first test asserted a monotone rise and failed;
+    pinning the real shape is what let the page explain it, and it has a usable
+    consequence for a reader. The same schedule puts the best claiming age in the MIDDLE
+    of the range at some horizons.
+15. **A downward statutory rounding needs a float epsilon, and the reference matters.**
+    Social Security rounds the PIA down to the dime and a monthly benefit down to the
+    dollar. `2_800 * 0.7` is 1959,9999999999998, so a bare `Math.floor` turns a whole
+    dollar of somebody's benefit into a rounding artefact. The module has a named epsilon
+    nine orders below the smallest unit — and the first draft of a NEW test asserted
+    `Math.floor` as its reference and expected 1.959. **When a module has a rounding
+    helper, the test's reference must be that helper, not a re-derivation.**

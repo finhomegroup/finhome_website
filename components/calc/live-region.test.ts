@@ -8,13 +8,17 @@
 // a limitation but also an advantage — it catches the mistake in the component
 // as it is written, with no build.
 //
-// The measured state of the suite when this test was written, which is why the
-// assertions are shaped the way they are:
-//   - 62 calculator components
+// The measured state of the suite, which is why the assertions are shaped the
+// way they are. Re-measure rather than trusting this list; the counts were
+// written at 62 components and the suite is now complete at 75:
+//   - 75 calculator components
 //   - exactly one has more than one live group: rule-of-72 (see ALLOWLIST)
 //   - no ResultTable is nested inside a ResultGroup
 //   - the largest live group is 9 rows (loan), then 8 (biweekly,
-//     loan-analysis), then 7 (auto-loan, interest-only, price-adjust)
+//     loan-analysis), then 7 (auto-loan, interest-only, price-adjust) —
+//     unchanged by the retirement tier, whose thirteen pages each keep their
+//     live group to exactly 4 rows and put everything else in `live={false}`
+//     groups. That is the shape to copy.
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { MULTI_LIVE_ALLOWLIST } from "./multi-live-allowlist.mjs";
