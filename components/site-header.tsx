@@ -28,7 +28,7 @@ function sectionIdFromHref(href: string): string {
   return href.replace(/^#/, "");
 }
 
-const SECTION_IDS = NAV_ITEMS.map((item) => sectionIdFromHref(item.href));
+// Only home-page hash links participate in section observation.
 
 const TOP_PX = 12;
 const DIR_PX = 6;
@@ -85,8 +85,13 @@ export function SiteHeader() {
     setExpandedNav(null);
   }, [pathname]);
 
+  const navItemIsActive = (href: string) =>
+    href.startsWith("#")
+      ? activeId === sectionIdFromHref(href)
+      : pathMatchesNav(href, pathname);
+
   const navLinkClassName = (href: string, mobile = false) => {
-    const isActive = activeId === sectionIdFromHref(href);
+    const isActive = navItemIsActive(href);
     if (mobile) {
       return cn(
         "rounded-lg px-3 py-3 text-sm transition-colors hover:bg-ink/5",
@@ -138,7 +143,7 @@ export function SiteHeader() {
             <div className="hidden items-center gap-6 xl:flex xl:gap-9">
               <nav className="flex items-center gap-5 xl:gap-[34px]">
                 {NAV_ITEMS.map((item) => {
-                  const isActive = activeId === sectionIdFromHref(item.href);
+                  const isActive = navItemIsActive(item.href);
                   if (item.children?.length) {
                     return (
                       <div key={item.href} className="group relative">
@@ -265,7 +270,7 @@ export function SiteHeader() {
           {open && (
             <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-white/95 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04] backdrop-blur-md xl:hidden">
               {NAV_ITEMS.map((item) => {
-                const isActive = activeId === sectionIdFromHref(item.href);
+                const isActive = navItemIsActive(item.href);
                 return (
                   <div key={item.href}>
                     {item.children?.length ? (
@@ -350,4 +355,14 @@ export function SiteHeader() {
       </header>
     </div>
   );
+}
+
+const SECTION_IDS = NAV_ITEMS.filter((item) => item.href.startsWith("#")).map(
+  (item) => sectionIdFromHref(item.href),
+);
+
+function pathMatchesNav(href: string, pathname: string): boolean {
+  if (href.startsWith("#")) return false;
+  const base = href.replace(/\/+$/, "");
+  return pathname === base || pathname.startsWith(`${base}/`);
 }

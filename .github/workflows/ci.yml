@@ -1,0 +1,60 @@
+# PR-time CI. Until now the only gate was vercel.json's buildCommand, which
+# catches a broken build at DEPLOY time rather than at review time — so a
+# regression merged on Monday was found by whoever next deployed a content
+# change. This runs the same gate on the pull request.
+#
+# `pnpm lint` is NOT run directly: it exits 1 at baseline on three
+# pre-existing problems in two files that are out of scope. check:lint
+# asserts "exactly those three and no more".
+#
+# The gate itself (vitest, tsc, check:lint, build, check:markup, in that
+# order) is defined exactly once, as package.json's "gate" script.
+# vercel.json's buildCommand calls the same script. Do not re-type the
+# sequence here or in vercel.json — both call `pnpm gate` so there is one
+# definition to keep in sync, not two (or three, counting
+# scripts/verify-commits.mjs's own — necessarily narrower — approximation;
+# see its own top comment for why it cannot just call this script too).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A push to the same PR/branch supersedes the run already in flight for it —
+# no point finishing a check on a diff that is no longer the tip.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# This job only reads the repo and runs local scripts; it never needs to
+# write anything back.
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # No `version:` here — pnpm/action-setup reads it from package.json's
+      # `packageManager` field when `version:` is omitted, which is the only
+      # place the pinned pnpm version needs to be declared. A `version:` here
+      # would be a second source of truth that could quietly disagree with
+      # `packageManager` instead of failing loudly.
+      - uses: pnpm/action-setup@v4
+
+      # Node's line is declared once, in .nvmrc — see that file for why it is
+      # the current LTS rather than a specific patch. Never hardcode a
+      # version here; node-version-file keeps this the only source too.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Deploy gate (tests, typecheck, lint baseline, build, rendered markup)
+        run: pnpm gate
