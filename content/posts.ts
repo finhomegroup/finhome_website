@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dong-nai-mo-ban-418-can-nha-o-xa-hoi-long-hung",
+    title: "Đồng Nai mở bán 418 căn nhà ở xã hội tại Long Hưng, tiếp nhận hồ sơ từ quý IV/2026",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Đồng Nai đẩy nhanh nguồn cung nhà ở xã hội với 418 căn tại phường Long Hưng, dự kiến tiếp nhận hồ sơ đăng ký mua từ quý IV/2026.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-nai-mo-ban-418-can-nha-o-xa-hoi-long-hung.png",
+    date: "2026-09-11",
+    source: {
+        "name": "batdongsan.baoxaydung.vn",
+        "url": "https://batdongsan.baoxaydung.vn/dong-nai-sap-mo-ban-hon-400-can-nha-o-xa-hoi-va-them-hang-nghin-can-chuan-bi-khoi-cong-192260910173911362.htm",
+        "accessed": "2026-09-11"
+      },
+  },
+  {
     slug: "he-thong-bat-dong-san-3500-giao-dich-cap-nhat",
     title: "Hệ thống thông tin bất động sản ghi nhận gần 3.500 giao dịch sau hơn 1 tháng triển khai",
     category: "Chính sách",
