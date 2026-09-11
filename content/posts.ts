@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-khai-niem-chung-cu-co-thoi-han-sua-luat-nha-o",
+    title: "Bỏ khái niệm chung cư có thời hạn: Bước tiến rõ ràng hơn cho quyền sở hữu căn hộ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Bộ Xây dựng loại bỏ khái niệm chung cư có thời hạn khỏi dự thảo Luật Nhà ở sửa đổi, nhằm tránh hiểu lầm về quyền sở hữu căn hộ của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-khai-niem-chung-cu-co-thoi-han-sua-luat-nha-o.jpg",
+    date: "2026-09-11",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/bo-khai-niem-chung-cu-co-thoi-han-khi-sua-luat-nha-o-5118861.html",
+        "accessed": "2026-09-11"
+      },
+  },
+  {
     slug: "dong-nai-mo-ban-418-can-nha-o-xa-hoi-long-hung",
     title: "Đồng Nai mở bán 418 căn nhà ở xã hội tại Long Hưng, tiếp nhận hồ sơ từ quý IV/2026",
     category: "Nhà ở xã hội",
