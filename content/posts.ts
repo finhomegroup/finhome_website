@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "chu-dau-tu-nhan-tien-mat-bat-dong-san-bi-phat-300-trieu",
+    title: "Chủ đầu tư nhận thanh toán tiền mặt bị phạt đến 300 triệu đồng theo Nghị định mới",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chủ đầu tư dự án bất động sản có thể bị phạt 240-300 triệu đồng nếu nhận thanh toán bằng tiền mặt theo hợp đồng, theo Nghị định 339.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/chu-dau-tu-nhan-tien-mat-bat-dong-san-bi-phat-300-trieu.webp",
+    date: "2026-09-12",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/chu-dau-tu-nhan-thanh-toan-bang-tien-mat-co-the-bi-phat-den-300-trieu-5118455.html",
+        "accessed": "2026-09-12"
+      },
+  },
+  {
     slug: "gia-thue-mua-nha-o-xa-hoi-con-dao-133-000-dong",
     title: "Giá thuê mua nhà ở xã hội Côn Đảo từ 133.000 đồng/m², phương án linh hoạt 5-20 năm",
     category: "Nhà ở xã hội",
