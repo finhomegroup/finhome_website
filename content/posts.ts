@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "gia-thue-mua-nha-o-xa-hoi-con-dao-133-000-dong",
+    title: "Giá thuê mua nhà ở xã hội Côn Đảo từ 133.000 đồng/m², phương án linh hoạt 5-20 năm",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung"],
+    excerpt: "Dự án nhà ở xã hội tại huyện Côn Đảo, TP.HCM mở bán với giá thuê mua sau thuế chỉ từ 133.000 đến 354.000 đồng/m²/tháng, cho phép người mua trả góp linh hoạt trong 5-20 năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/gia-thue-mua-nha-o-xa-hoi-con-dao-133-000-dong.jpg",
+    date: "2026-09-12",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nha-o-xa-hoi-con-dao-co-gia-thue-mua-tu-133-000-dong-moi-m2-5118788.html",
+        "accessed": "2026-09-12"
+      },
+  },
+  {
     slug: "bo-khai-niem-chung-cu-co-thoi-han-sua-luat-nha-o",
     title: "Bỏ khái niệm chung cư có thời hạn: Bước tiến rõ ràng hơn cho quyền sở hữu căn hộ",
     category: "Chính sách",
