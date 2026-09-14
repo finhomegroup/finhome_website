@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-vay-mua-nha-giam-co-nen-mua-nha-luc-nay",
+    title: "Lãi suất vay mua nhà hạ nhiệt: Có nên xuống tiền mua nhà thời điểm này?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất cho vay mua nhà bắt đầu hạ nhiệt sau thời gian neo cao, các chuyên gia khuyến nghị người mua cần xác định rõ mục tiêu và năng lực tài chính trước khi quyết định xuống tiền.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-vay-mua-nha-giam-co-nen-mua-nha-luc-nay.jpg",
+    date: "2026-09-14",
+    source: {
+        "name": "vtcnews.vn",
+        "url": "https://vtcnews.vn/lai-suat-vay-mua-nha-giam-co-nen-mua-nha-dat-luc-nay-ar1039493.html",
+        "accessed": "2026-09-14"
+      },
+  },
+  {
     slug: "tac-dong-kinh-te-duong-metro-khong-chi-gia-dat",
     title: "Chuyên gia phân tích: Metro tạo 'kinh tế dòng người' — tác động vượt xa mức tăng giá đất",
     category: "Thị trường",
