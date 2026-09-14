@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "don-bay-no-va-buc-tuong-lai-suat-thi-truong-bat-dong-san",
+    title: "Đòn bẩy nợ vs Bức tường lãi suất: Thị trường bất động sản đối mặt bài toán thanh lọc",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: "Tồn kho bất động sản hàng trăm nghìn tỷ đồng chạm trán mặt bằng lãi suất neo cao, tạo áp lực kép lên cả chủ đầu tư và người mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/don-bay-no-va-buc-tuong-lai-suat-thi-truong-bat-dong-san.jpg",
+    date: "2026-09-14",
+    source: {
+        "name": "m.nhipcaudautu.vn",
+        "url": "https://m.nhipcaudautu.vn/bat-dong-san/don-bay-no-va-buc-tuong-lai-suat-3365710/?fbclid=IwRlRTSAUU-jZwZG9mBWZkaWQWUObBx2pRMHP8P0-2UTCMbOm1PXz9bmV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6hfQr89BG0o1oDn01Jh9PNfgflRBpRgK51AP9cZqErzIkEuORf6Y44EwX2_Q_aem_6bzoIhuej_K4loPKsImEEg",
+        "accessed": "2026-09-14"
+      },
+  },
+  {
     slug: "lai-suat-vay-mua-nha-giam-co-nen-mua-nha-luc-nay",
     title: "Lãi suất vay mua nhà hạ nhiệt: Có nên xuống tiền mua nhà thời điểm này?",
     category: "Tài chính",
