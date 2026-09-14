@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tac-dong-kinh-te-duong-metro-khong-chi-gia-dat",
+    title: "Chuyên gia phân tích: Metro tạo 'kinh tế dòng người' — tác động vượt xa mức tăng giá đất",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Hệ thống metro không chỉ đẩy giá đất lên mà còn tạo chuỗi kinh tế từ dòng người qua nhà ga, kéo theo tiêu dùng, việc làm và nhu cầu nhà ở.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tac-dong-kinh-te-duong-metro-khong-chi-gia-dat.jpg",
+    date: "2026-09-14",
+    source: {
+        "name": "dantri.com.vn",
+        "url": "https://dantri.com.vn/bat-dong-san/chuyen-gia-tac-dong-cua-metro-la-kinh-te-dong-nguoi-khong-chi-gia-dat-20260913113858831.htm",
+        "accessed": "2026-09-14"
+      },
+  },
+  {
     slug: "chu-dau-tu-nhan-tien-mat-bat-dong-san-bi-phat-300-trieu",
     title: "Chủ đầu tư nhận thanh toán tiền mặt bị phạt đến 300 triệu đồng theo Nghị định mới",
     category: "Chính sách",
