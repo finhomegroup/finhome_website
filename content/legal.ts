@@ -24,7 +24,7 @@ export interface LegalDocContent {
 export const TERMS_CONTENT: LegalDocContent = {
   pageTitle: "Điều khoản sử dụng",
   docTitle: "Điều khoản dịch vụ",
-  updated: "04/09/2026",
+  updated: "14/09/2026",
   intro:
     "Chào mừng bạn đến với FinHome. Vui lòng đọc kỹ các điều khoản sử dụng trước khi sử dụng dịch vụ của chúng tôi.",
   sections: [
@@ -64,7 +64,7 @@ export const TERMS_CONTENT: LegalDocContent = {
     {
       title: "Quyền sở hữu trí tuệ",
       content:
-        "FinHome là tên dự án được người vận hành sử dụng cho ứng dụng và website này. Nội dung, giao diện và mã nguồn do người vận hành tạo ra được bảo vệ theo pháp luật áp dụng; việc sử dụng tên FinHome trong tài liệu này không phải tuyên bố rằng nhãn hiệu đã được đăng ký. Nhãn hiệu hoặc nội dung của bên thứ ba, nếu được dẫn nguồn, thuộc chủ sở hữu tương ứng và không hàm ý quan hệ hợp tác hay bảo trợ.",
+        "FinHome là tên gọi ngắn của dự án được hiển thị bằng wordmark finhome.group trên ứng dụng và website này. Nội dung, giao diện và mã nguồn do người vận hành tạo ra được bảo vệ theo pháp luật áp dụng; việc sử dụng tên FinHome hoặc wordmark finhome.group trong tài liệu này không phải tuyên bố rằng nhãn hiệu đã được đăng ký. Nhãn hiệu hoặc nội dung của bên thứ ba, nếu được dẫn nguồn, thuộc chủ sở hữu tương ứng và không hàm ý quan hệ hợp tác hay bảo trợ.",
     },
     {
       title: "Giới hạn trách nhiệm",
@@ -77,7 +77,7 @@ export const TERMS_CONTENT: LegalDocContent = {
 export const PRIVACY_CONTENT: LegalDocContent = {
   pageTitle: "Chính sách bảo mật",
   docTitle: "Chính sách bảo mật thông tin",
-  updated: "04/09/2026",
+  updated: "14/09/2026",
   intro:
     "Chính sách này giải thích dữ liệu FinHome thu thập, cách dữ liệu được sử dụng, chia sẻ, lưu giữ và cách bạn thực hiện quyền của mình theo pháp luật bảo vệ dữ liệu cá nhân hiện hành tại Việt Nam.",
   sections: [

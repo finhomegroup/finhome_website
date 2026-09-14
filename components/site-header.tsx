@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import { useActiveSection } from "@/lib/use-active-section";
 import { Button } from "@/components/ui/button";
-import { img } from "@/lib/images";
+
 import {
   NAV_ITEMS,
   CTA_HOVER_LABEL,
@@ -119,7 +119,7 @@ export function SiteHeader() {
             <Link
               href={onHome ? "#trangchu" : "/"}
               className={cn("flex items-center", FH_POINTER)}
-              aria-label="FinHome"
+              aria-label="finhome.group"
               onClick={(e) => {
                 if (!onHome) return;
                 e.preventDefault();
@@ -134,9 +134,9 @@ export function SiteHeader() {
               }}
             >
               <img
-                src={img(LOGO.header)}
-                alt="FinHome"
-                className="h-auto w-[104px] md:w-[116px]"
+                src={LOGO.header}
+                alt="finhome.group"
+                className="block h-[19px] w-auto md:h-5"
               />
             </Link>
 

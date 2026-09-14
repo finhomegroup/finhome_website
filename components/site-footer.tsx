@@ -67,12 +67,12 @@ export function SiteFooter() {
         <Link
           href="/"
           className={cn("inline-flex items-center", FH_POINTER)}
-          aria-label="FinHome"
+          aria-label="finhome.group"
         >
           <img
             src={LOGO.footer}
-            alt="FinHome"
-            className="h-7 w-auto"
+            alt="finhome.group"
+            className="block h-6 w-auto"
           />
         </Link>
 

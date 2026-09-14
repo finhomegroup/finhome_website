@@ -31,7 +31,7 @@ export const CONTACT = {
   email: "hotro@finhome.group",
   phone: "0963 177 497",
   phoneTel: "0963177497",
-  phoneLabel: "Chuyên gia tư vấn BĐS: 0963 177 497",
+  phoneLabel: "Hỗ trợ người dùng: 0963 177 497",
   address: "Toà Nhà Lexington, 67 Mai Chí Thọ, Bình Trưng, Hồ Chí Minh",
 };
 
@@ -43,7 +43,7 @@ export const FOOTER = {
       links: [
         { label: "La bàn tài chính", href: "#" },
         { label: "Đánh giá khả năng tài chính", href: "#" },
-        { label: "Đánh giá khả năng vay vốn", href: "#" },
+        { label: "Mô phỏng sức chi trả", href: "#" },
       ],
     },
     {
@@ -66,25 +66,25 @@ export const FOOTER = {
 };
 
 export const LOGO = {
-  header: "y9hwKK3MJX6DL9OckY7P3La9kZg.svg",
-  footer: "/logos/Logo_7.png",
+  header: "/logos/logo-finhome-group.svg",
+  footer: "/logos/logo-finhome-group-white.svg",
 };
 
 // Single source of truth for SEO. Change the domain here only.
 export const SITE = {
-  url: "https://www.finhome.group", // canonical host; finhome.group 307-redirects here
+  url: "https://www.finhome.group", // canonical host; the apex domain redirects here
   name: "FinHome",
   title: "FinHome — Mua nhà an toàn, sống an yên",
   description:
-    "FinHome giúp bạn chọn đúng nhà, vay đúng sức: xác định vùng mua nhà an toàn, đánh giá khả năng vay và mở khóa la bàn định hướng tài chính.",
+    "FinHome cung cấp công cụ tự phục vụ để lập kế hoạch mua nhà, mô phỏng khả năng chi trả và nghiên cứu thông tin bất động sản từ nguồn công khai; không cung cấp, môi giới hay kết nối khoản vay.",
   locale: "vi_VN",
   ogImage: "/og-image.png", // 1200x630, resolved against SITE.url via metadataBase
   keywords: [
     "FinHome",
     "mua nhà",
-    "vay mua nhà",
+    "kế hoạch mua nhà",
     "la bàn tài chính",
-    "khả năng vay",
+    "khả năng chi trả",
     "bất động sản",
     "nhà ở xã hội",
     "tài chính cá nhân",

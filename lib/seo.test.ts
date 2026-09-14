@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { faqSchema, calculatorSchema, pageMetadata } from "@/lib/seo";
+import { faqSchema, calculatorSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { metadata as rootMetadata } from "@/app/layout";
 import { SITE } from "@/content/site";
 
@@ -57,6 +57,18 @@ describe("calculatorSchema", () => {
 
   it("is serialisable (JsonLd stringifies it)", () => {
     expect(() => JSON.stringify(schema)).not.toThrow();
+  });
+
+  it("does not claim an organization publisher before a legal entity exists", () => {
+    expect(schema).not.toHaveProperty("publisher");
+  });
+});
+
+describe("websiteSchema", () => {
+  it("describes the website without representing FinHome as a legal organization", () => {
+    const schema = websiteSchema();
+    expect(schema["@type"]).toBe("WebSite");
+    expect(JSON.stringify(schema)).not.toContain('"Organization"');
   });
 });
 

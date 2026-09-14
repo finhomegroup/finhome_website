@@ -52,7 +52,7 @@ const result = await page.evaluate(() => {
 
   // Eyebrow / small labels
   const findText = (txt) => [...document.querySelectorAll('h1,h2,h3,p,span,div')].find((n) => (n.textContent || '').trim() === txt);
-  out.eyebrowFinHome = pick(findText('FinHome'));
+  out.eyebrowBrand = pick(findText('FinHome'));
   out.bodyParagraph = pick([...document.querySelectorAll('p')].find((p) => (p.textContent || '').length > 60));
 
   // Section vertical paddings: top-level children of main content

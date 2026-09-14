@@ -1,6 +1,6 @@
 // Domain-aware URL helpers and JSON-LD schema builders. All build-time only.
 import type { Metadata } from "next";
-import { SITE, CONTACT } from "@/content/site";
+import { SITE } from "@/content/site";
 import { img } from "@/lib/images";
 import type { Post } from "@/content/posts";
 
@@ -15,23 +15,6 @@ export function canonicalPath(path: string): string {
   if (!path || path === "/") return "/";
   const withLeading = path.startsWith("/") ? path : `/${path}`;
   return withLeading.endsWith("/") ? withLeading : `${withLeading}/`;
-}
-
-export function organizationSchema(): Record<string, unknown> {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE.name,
-    url: SITE.url,
-    logo: absUrl("/logos/Logo_7.png"),
-    email: CONTACT.email,
-    telephone: CONTACT.phoneTel,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: CONTACT.address,
-      addressCountry: "VN",
-    },
-  };
 }
 
 export function websiteSchema(): Record<string, unknown> {
@@ -55,12 +38,6 @@ export function articleSchema(post: Post): Record<string, unknown> {
     ...(post.date
       ? { datePublished: post.date, dateModified: post.date }
       : {}),
-    author: { "@type": "Organization", name: SITE.name },
-    publisher: {
-      "@type": "Organization",
-      name: SITE.name,
-      logo: { "@type": "ImageObject", url: absUrl("/logos/Logo_7.png") },
-    },
     mainEntityOfPage: absUrl(canonicalPath(`/blog/${post.slug}`)),
     ...(post.source
       ? {
@@ -111,7 +88,6 @@ export function calculatorSchema(input: {
     inLanguage: "vi-VN",
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "VND" },
-    publisher: { "@type": "Organization", name: SITE.name },
   };
 }
 
