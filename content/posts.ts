@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-du-kien-bo-gioi-han-5-nam-giay-phep-xay-dung-co-thoi-han",
+    title: "Hà Nội đề xuất bỏ giới hạn 5 năm với giấy phép xây dựng có thời hạn",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Sở Xây dựng Hà Nội đề xuất loại bỏ quy định thời hạn tồn tại tối đa 5 năm cho công trình xây dựng có thời hạn, tạo thuận lợi hơn cho chủ đầu tư.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-du-kien-bo-gioi-han-5-nam-giay-phep-xay-dung-co-thoi-han.jpg",
+    date: "2026-09-15",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/ha-noi-du-kien-bo-hieu-luc-5-nam-voi-giay-phep-xay-dung-co-thoi-han-5120140.html",
+        "accessed": "2026-09-15"
+      },
+  },
+  {
     slug: "go-nut-that-cai-tao-chung-cu-cu",
     title: "Gỡ “nút thắt” cải tạo chung cư cũ: Thiếu cơ chế và xung đột lợi ích kéo dài tiến độ",
     category: "Chính sách",
