@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-340-can-nha-o-xa-hoi-eco-home-1-dang-ky",
+    title: "TP.HCM mở đăng ký 340 căn nhà ở xã hội Eco Home 1, giá 19,8 triệu/m2",
+    category: "Nhà ở xã hội",
+    topics: ["gia-cung","chinh-sach-su-kien"],
+    excerpt: "TP.HCM tiếp nhận hồ sơ đăng ký mua 340 căn nhà ở xã hội Eco Home 1 từ 14/9-15/10, diện tích 32-64m2, giá trung bình 19,8 triệu đồng/m2.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-340-can-nha-o-xa-hoi-eco-home-1-dang-ky.jpg",
+    date: "2026-09-15",
+    source: {
+        "name": "batdongsan.baoxaydung.vn",
+        "url": "https://batdongsan.baoxaydung.vn/tphcm-tiep-nhan-ho-so-dang-ky-mua-340-can-nha-o-xa-hoi-gia-198-trieu-dong-m2-192260914154658063.htm?utm_source=chatgpt.com",
+        "accessed": "2026-09-15"
+      },
+  },
+  {
     slug: "don-bay-no-va-buc-tuong-lai-suat-thi-truong-bat-dong-san",
     title: "Đòn bẩy nợ vs Bức tường lãi suất: Thị trường bất động sản đối mặt bài toán thanh lọc",
     category: "Thị trường",
