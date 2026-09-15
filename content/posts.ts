@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "go-nut-that-cai-tao-chung-cu-cu",
+    title: "Gỡ “nút thắt” cải tạo chung cư cũ: Thiếu cơ chế và xung đột lợi ích kéo dài tiến độ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Thiếu cơ chế, thiếu nguồn lực và xung đột lợi ích giữa nhà đầu tư và người dân đang là những rào cản khiến công cuộc cải tạo chung cư cũ tiến triển chậm, ảnh hưởng trực tiếp đến an toàn và đời sống cư dân.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/go-nut-that-cai-tao-chung-cu-cu.jpg",
+    date: "2026-09-15",
+    source: {
+        "name": "tinnhanhchungkhoan.vn",
+        "url": "https://www.tinnhanhchungkhoan.vn/go-nut-that-cai-tao-chung-cu-cu-post397474.html",
+        "accessed": "2026-09-15"
+      },
+  },
+  {
     slug: "tp-hcm-340-can-nha-o-xa-hoi-eco-home-1-dang-ky",
     title: "TP.HCM mở đăng ký 340 căn nhà ở xã hội Eco Home 1, giá 19,8 triệu/m2",
     category: "Nhà ở xã hội",
