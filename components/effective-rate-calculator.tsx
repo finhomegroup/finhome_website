@@ -115,17 +115,40 @@ export function EffectiveRateCalculator() {
       </ResultGroup>
 
       {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.table.caption}
-          columns={[
-            { label: C.table.compoundingColumn },
-            { label: C.table.periodsColumn, numeric: true },
-            { label: C.table.effectiveColumn, numeric: true },
-            { label: C.table.extraColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
+        <>
+          {/*
+          `mobileCards` because this table has nothing left to compact.
+          Measured at a verified 390 px viewport on 2026-09-16: 400 px inside
+          a 300 px scroll frame, and unlike the commercial-loan year table
+          NEITHER of the two levers that fixed that one is available here.
+
+          Its figures are PERCENTAGES, not money, so `hasMoneyCell` is false
+          and there is no compact reading to switch to — "10,4713" is already
+          the short form. And its first column is genuine prose (the
+          compounding names, "Hằng tháng" / "Nửa năm một lần"), so the 8,5rem
+          label floor is doing the job it exists for rather than wasting
+          space; it is 136 px of a 300 px budget that cannot be reclaimed.
+
+          That leaves the headers, which ARE the widest text in every column
+          here (68/78/118 px). Shortening all three lands at about 304 px —
+          still over, and only by turning "Hơn ghép năm" into something that
+          no longer says what it is compared against. A block per row is the
+          honest trade: the column scan survives from `md` up, and below it a
+          reader gets whole rows instead of a column hidden off-frame.
+          */}
+          <ResultTable
+            className="mt-8"
+            caption={C.table.caption}
+            columns={[
+              { label: C.table.compoundingColumn },
+              { label: C.table.periodsColumn, numeric: true },
+              { label: C.table.effectiveColumn, numeric: true },
+              { label: C.table.extraColumn, numeric: true },
+            ]}
+            rows={tableRows}
+            mobileCards
+          />
+        </>
       ) : null}
     </CalculatorCard>
   );

@@ -195,25 +195,29 @@ export const WIDE_TABLE_PENDING = [
  * stale.
  *
  * These are therefore NOT debts against docs §3 — they are evidence that docs
- * §3 under-detects. Whoever revisits the rule should start here: the cause in
- * both cases is header text length, not column count, so a threshold on
- * columns can never catch them and a rendered-width check is the only thing
- * that will. `check:markup` parses HTML and has no layout engine, so that
- * check cannot live in the gate; it lives in the measurement sweep instead.
+ * §3 under-detects. A threshold on columns can never catch them, and a
+ * rendered-width check is the only thing that will. `check:markup` parses HTML
+ * and has no layout engine, so that check cannot live in the gate; it lives in
+ * the measurement sweep instead.
+ *
+ * EMPTY IS THE GOAL STATE, and it is now empty. Both entries were fixed on
+ * 2026-09-16 and re-measured at a verified 390 px viewport: `vay-thuong-mai`
+ * went 485 px -> 300 px inside its 300 px frame with 12 over-wide elements ->
+ * 0, and `lai-suat-thuc-te` 400 px -> `mobileCards` with 13 -> 0.
+ *
+ * THE CAUSE RECORDED HERE WAS HALF WRONG, which is worth keeping because it
+ * changed the fix. This docstring used to say "the cause in both cases is
+ * header text length". Per-column measurement showed that was true only of
+ * `lai-suat-thuc-te`. On `vay-thuong-mai` the headers merely MATCHED the
+ * width of what was beside them: the real causes were an 8,5rem prose label
+ * floor misapplied to a column of "1", "2", "3" (136 px for content needing
+ * 32) and untyped money cells, which opted the table out of the compact
+ * reading and pinned each amount column at the width of "5.000.000.000"
+ * (125 px). Shortening its headers alone moved the table 380 px -> 380 px:
+ * no gain at all, because they were not the binding constraint.
+ *
+ * The lesson for the next rendered-width finding is that "the widest text in
+ * the column" is not the same as "the reason the column is that wide". Only
+ * changing one thing at a time separates them.
  */
-export const NARROW_OVERFLOW_MEASURED = [
-  {
-    slug: "vay-thuong-mai",
-    columns: 4,
-    measuredOn: "2026-09-16",
-    reason:
-      "Four columns, so docs §3 asks for nothing, yet twelve elements exceed 390 px at a verified 390 px viewport — the widest being the table and its caption. P2 and Vietnamese-facing, which makes it the higher-value of the two. No page-level overflow: the scroll is contained by the ResultTable frame, so a reader can reach the hidden columns, they just have to know to try.",
-  },
-  {
-    slug: "lai-suat-thuc-te",
-    columns: 4,
-    measuredOn: "2026-09-16",
-    reason:
-      "Four columns and thirteen elements over 390 px, same cause and same containment as the row above. Lower priority: this table compares compounding frequencies, which reads down a column rather than across a row, so a reader who scrolls loses less than one comparing loan offers side by side.",
-  },
-];
+export const NARROW_OVERFLOW_MEASURED = [];
