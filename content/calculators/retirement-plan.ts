@@ -64,8 +64,8 @@
 export const RETIREMENT_PLAN = {
   slug: "/cong-cu/ke-hoach-huu-tri",
 
-  pageTitle: "Kế hoạch dài hạn: từng năm một",
-  metaTitle: "Kế hoạch dài hạn — Tích lũy, rút tiền và năm tiền cạn",
+  pageTitle: "Kế hoạch hưu trí: từng năm một",
+  metaTitle: "Kế hoạch hưu trí — Tích lũy, rút tiền và năm tiền cạn",
   metaDescription:
     "Dự phóng cả hai giai đoạn của một kế hoạch dài hạn bằng đồng: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền — có tính lạm phát, và nói rõ năm nào tiền cạn. Công cụ miễn phí của FinHome.",
 
@@ -136,7 +136,7 @@ export const RETIREMENT_PLAN = {
     currency: "₫",
     million: "triệu",
     billion: "tỷ",
-    title: "Kế hoạch dài hạn, từng năm một",
+    title: "Kế hoạch hưu trí, từng năm một",
     series: "{label}",
     xAxis: "Năm kể từ hôm nay",
     yAxis: "Số dư ({unit})",

@@ -117,74 +117,32 @@ export const WIDE_TABLE_PENDING = [
     reason: "P2, Vietnamese-facing, just over the bound.",
   },
 
-  // ------------------------------------------- Vietnamese-facing, P3/P4 shelf
-  {
-    slug: "diem-pivot",
-    columns: 8,
-    measured390: "overflows",
-    owner: "plan row 41",
-    reason:
-      "The widest table in the suite, and the one least suited to a " +
-      "mechanical conversion. Reading ACROSS a row gives one method's ladder, " +
-      "which cards preserve — but reading DOWN a column compares the four " +
-      "conventions at one level, which is the comparison the page's whole " +
-      "argument rests on, and cards break it. The real options are a " +
-      "transposition (still five columns) or declaring R3/S3 secondary, and " +
-      "both want a viewport measurement. Reasoning recorded in " +
-      "`content/calculators/pivot.test.ts`.",
-  },
-
-  // ------------------------------------------------------- US-law (hoa-ky)
-  // Filed `reference` by the hoa-ky policy, so deliberately not investment
-  // targets. The debt is real but ranks below every Vietnamese-facing entry.
-  {
-    slug: "gop-401k",
-    columns: 7,
-    measured390: "overflows",
-    owner: "plan row 46",
-    reason: "US-law reference page; ranks below any Vietnamese-facing table.",
-  },
-  {
-    slug: "nien-kim",
-    columns: 7,
-    measured390: "overflows",
-    owner: "plan row 57",
-    reason:
-      "Already recorded as a known gap in `content/calculators/annuity.ts`. " +
-      "Per docs §4 a real table treatment wants `lib/calc/table-cell.ts` to " +
-      "carry an explicit currency first, since this table is USD — a " +
-      "suite-primitive change, deliberately deferred.",
-  },
-  {
-    slug: "phan-tich-thu-nhap-huu-tri",
-    columns: 7,
-    measured390: "overflows",
-    owner: "plan row 49",
-    reason:
-      "TWO wide tables on one page. Confirmed to stay a US reference page.",
-  },
-  {
-    slug: "rut-toi-thieu-bat-buoc",
-    columns: 6,
-    measured390: "overflows",
-    owner: "plan row 52",
-    reason:
-      "US-law reference page, shelved hoa-ky and filed `reference`, so no Vietnamese reader is expected to work through this table on a phone — the lowest-priority kind of entry here. The measurement is nonetheless the second worst in the suite: 27 elements exceed 390 px, because the table is a year-by-year withdrawal schedule and every row is six figures wide. Converting it means deciding what a single year's card should show, which is a design question about a page nobody is holding.",
-  },
-  {
-    slug: "ira-truyen-thong-hay-roth",
-    columns: 5,
-    measured390: "overflows",
-    owner: "plan row 51",
-    reason: "US-law reference page, just over the bound.",
-  },
-  {
-    slug: "toi-da-401k",
-    columns: 5,
-    measured390: "overflows",
-    owner: "plan row 47",
-    reason: "US-law reference page, just over the bound.",
-  },
+  // THE P3/P4 SHELF IS CLEARED. Seven entries lived here — diem-pivot,
+  // gop-401k, toi-da-401k, ira-truyen-thong-hay-roth, nien-kim,
+  // phan-tich-thu-nhap-huu-tri (two tables) and rut-toi-thieu-bat-buoc —
+  // and all eight tables were carded on 2026-09-16. Measured at a verified
+  // 390 px viewport before and after, each inside a 300 px scroll frame:
+  //
+  //   gop-401k                     750 px  ratio 2,50  ->  carded
+  //   phan-tich-thu-nhap-huu-tri   724 px  ratio 2,41  ->  carded (2nd table)
+  //   nien-kim                     632 px  ratio 2,11  ->  carded
+  //   diem-pivot                   617 px  ratio 2,06  ->  carded
+  //   rut-toi-thieu-bat-buoc       605 px  ratio 2,02  ->  carded
+  //   phan-tich-thu-nhap-huu-tri   586 px  ratio 1,95  ->  carded (1st table)
+  //   ira-truyen-thong-hay-roth    537 px  ratio 1,79  ->  carded
+  //   toi-da-401k                  463 px  ratio 1,54  ->  carded
+  //
+  // All eight shared one shape: a prose or index first column plus numeric
+  // measures, with the ROW as the varying entity — a method, a contribution
+  // rate, an age, an income source. A card per row is that entity's whole
+  // outcome, which is the reading each page is built around, so these were
+  // the ordinary docs §3 case rather than design questions.
+  //
+  // `diem-pivot` was the one exception and its objection is answered where
+  // the fix lives, in `components/pivot-calculator.tsx`: cards do cost the
+  // read DOWN a column that compares four conventions at one level, but at
+  // a ratio of 2,06 only about two of seven level columns were on screen,
+  // so that comparison was not available to lose.
 ];
 
 /**

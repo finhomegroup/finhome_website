@@ -323,6 +323,12 @@ export function Us401kMaxCalculator() {
               { label: T.frontMatchColumn, numeric: true },
             ]}
             rows={rows}
+            // Five columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 463 px inside a 300 px
+            // frame. This page carried the highest COUNT of over-wide
+            // elements in the suite (31) despite the narrowest table of the
+            // seven, because the table repeats per pay period.
+            mobileCards
           />
         </>
       ) : null}

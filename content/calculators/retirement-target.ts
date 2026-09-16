@@ -89,9 +89,9 @@
 export const RETIREMENT_TARGET = {
   slug: "/cong-cu/tinh-huu-tri",
 
-  pageTitle: "Kế hoạch dài hạn: cần dành bao nhiêu",
+  pageTitle: "Kế hoạch hưu trí: cần dành bao nhiêu",
   metaTitle:
-    "Cần dành bao nhiêu mỗi năm — Khoản một kế hoạch dài hạn đòi hỏi",
+    "Cần dành bao nhiêu mỗi năm — Khoản một kế hoạch hưu trí đòi hỏi",
   metaDescription:
     "Từ mức chi tiêu bạn muốn có khi nghỉ, công cụ giải ngược ra khoản phải dành thêm mỗi năm, tính bằng đồng. Có tính lạm phát, và nói rõ khoản đó sẽ tăng đến đâu. Công cụ miễn phí của FinHome.",
 

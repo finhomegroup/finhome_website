@@ -353,6 +353,16 @@ export function AnnuityCalculator() {
               { label: T.moneyBackColumn, numeric: true },
             ]}
             rows={rows}
+            // Seven columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 632 px inside a 300 px
+            // frame.
+            //
+            // `WIDE_TABLE_PENDING` deferred this one pending an explicit
+            // currency in `lib/calc/table-cell.ts`, since the figures are USD.
+            // That deferral still stands and is unrelated: `mobileCards` is a
+            // layout fallback and changes no cell's formatting, so it does not
+            // pre-empt the primitive change or depend on it.
+            mobileCards
           />
         </>
       ) : null}

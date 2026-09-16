@@ -84,8 +84,8 @@ import { LONG_TERM_PLAN } from "@/content/calculators/long-term-plan";
 export const RETIREMENT_INCOME = {
   slug: "/cong-cu/thu-nhap-huu-tri",
 
-  pageTitle: "Vốn dài hạn tiêu được bao nhiêu mỗi năm",
-  metaTitle: "Vốn dài hạn tiêu được bao nhiêu — Mức chi giữ được đến hết kỳ",
+  pageTitle: "Vốn hưu trí tiêu được bao nhiêu mỗi năm",
+  metaTitle: "Vốn hưu trí tiêu được bao nhiêu — Mức chi giữ được đến hết kỳ",
   metaDescription:
     "Từ số vốn kế hoạch dài hạn của bạn tích lũy được, công cụ tính mức chi mỗi năm giữ được đến hết kỳ dự phóng — bằng đồng, theo giá hôm nay — rồi đặt nó cạnh mức bạn mong muốn. Công cụ miễn phí của FinHome.",
 

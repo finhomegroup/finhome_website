@@ -74,8 +74,8 @@
 export const RETIREMENT_SAVINGS_ANALYSIS = {
   slug: "/cong-cu/phan-tich-tiet-kiem-huu-tri",
 
-  pageTitle: "Kế hoạch dài hạn: thiếu bao nhiêu, bù bằng gì",
-  metaTitle: "Kế hoạch dài hạn còn thiếu bao nhiêu — Và ba cách bù khoảng thiếu",
+  pageTitle: "Kế hoạch hưu trí: thiếu bao nhiêu, bù bằng gì",
+  metaTitle: "Kế hoạch hưu trí còn thiếu bao nhiêu — Và ba cách bù khoảng thiếu",
   metaDescription:
     "Đặt số vốn kế hoạch dài hạn của bạn sẽ đạt được cạnh số vốn nó thực sự cần, tính bằng đồng, rồi định lượng ba cách bù khoảng thiếu: dành thêm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Công cụ miễn phí của FinHome.",
 

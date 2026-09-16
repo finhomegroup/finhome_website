@@ -324,6 +324,12 @@ export function Us401kCalculator() {
               { label: T.projectedColumn, numeric: true },
             ]}
             rows={rows}
+            // Seven columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 750 px inside a 300 px
+            // frame — a ratio of 2,50, the worst in the suite. Rows are
+            // contribution percentages, so a card per row is one rate's whole
+            // outcome, which is how this page is read.
+            mobileCards
           />
         </>
       ) : null}
