@@ -66,8 +66,13 @@ export default function RootLayout({
 
           The watchdog is the second half. The `js` class alone does not help if
           JS loads, sets it, and then throws before framer-motion reveals
-          anything — which is the shape of the iPhone 11 report the overlay
-          below was added for.
+          anything — which is the shape of an "iPhone 11 content stuck
+          invisible" report. A temporary on-screen error overlay lived below
+          this script while that was being chased; it was removed once the
+          `initial={{ opacity: 0 }}` SSR output was identified as the cause and
+          this watchdog took over as the standing net. Do not re-add a
+          user-visible error box to production to debug a recurrence — it ships
+          a red banner to every reader to serve one developer.
 
           IT HAS TO DETECT LIVENESS, NOT JUST WAIT. The first version of this
           added the failsafe class unconditionally on a timer, and that was
@@ -117,58 +122,6 @@ export default function RootLayout({
                     h.className += ' fh-reveal-failsafe';
                   }
                 }, 2500);
-              })();
-            `,
-          }}
-        />
-        {/* TEMPORARY diagnostic overlay for the iPhone 11 "content stuck invisible"
-           report — surfaces uncaught JS errors on-screen since the site has no
-           error tracking. ES5-only so it still runs if later scripts crash.
-           Remove once root-caused. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function () {
-                function reportErr(msg, url, line, col, err) {
-                  try {
-                    var box = document.getElementById('__debug_err_box');
-                    if (!box) {
-                      box = document.createElement('div');
-                      box.id = '__debug_err_box';
-                      box.style.position = 'fixed';
-                      box.style.top = '0';
-                      box.style.left = '0';
-                      box.style.right = '0';
-                      box.style.zIndex = '2147483647';
-                      box.style.background = '#b00020';
-                      box.style.color = '#fff';
-                      box.style.fontSize = '12px';
-                      box.style.fontFamily = 'monospace';
-                      box.style.padding = '8px';
-                      box.style.maxHeight = '60vh';
-                      box.style.overflow = 'auto';
-                      box.style.whiteSpace = 'pre-wrap';
-                      box.style.wordBreak = 'break-word';
-                      document.documentElement.appendChild(box);
-                    }
-                    var text = 'ERROR: ' + msg + ' @ ' + url + ':' + line + ':' + col;
-                    if (err && err.stack) text += '\\n' + err.stack;
-                    var p = document.createElement('div');
-                    p.style.borderTop = '1px solid rgba(255,255,255,0.3)';
-                    p.style.paddingTop = '4px';
-                    p.style.marginTop = '4px';
-                    p.textContent = text;
-                    box.appendChild(p);
-                  } catch (e) {}
-                }
-                window.onerror = function (msg, url, line, col, err) {
-                  reportErr(msg, url, line, col, err);
-                };
-                window.addEventListener('unhandledrejection', function (ev) {
-                  var reason = ev.reason;
-                  var msg = 'unhandledrejection: ' + (reason && reason.message ? reason.message : String(reason));
-                  reportErr(msg, location.href, '', '', reason);
-                });
               })();
             `,
           }}

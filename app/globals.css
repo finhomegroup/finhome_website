@@ -79,10 +79,11 @@
    framer-motion, which server-renders `style="opacity:0"`. That made the
    revealed content invisible until JS ran, and MEASURED on the built export on
    2026-09-16 that was 93% of the homepage's visible text and 6 blocks on
-   /vision/. It is not hypothetical: `app/layout.tsx` still carries a temporary
-   on-screen error overlay added for an "iPhone 11 content stuck invisible"
-   report, and `lib/use-prefers-reduced-motion.ts` documents a crash on older
-   iOS that left pages "stuck at its `opacity: 0` SSR output".
+   /vision/. It is not hypothetical: an "iPhone 11 content stuck invisible"
+   report is what prompted the temporary on-screen error overlay that used to
+   sit in `app/layout.tsx` (removed once this gate and its watchdog replaced
+   it), and `lib/use-prefers-reduced-motion.ts` documents a crash on older iOS
+   that left pages "stuck at its `opacity: 0` SSR output".
 
    The hidden state now lives here and applies only under `html.js`, which the
    inline script at the top of `<body>` sets before this content is parsed — so
