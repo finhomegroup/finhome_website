@@ -375,14 +375,14 @@ export const TOOL_DISPOSITIONS: ToolDisposition[] = [
     planIndex: 44,
     slug: "ke-hoach-huu-tri",
     priority: "P3",
-    question: "Mua nhà có làm tôi thiếu tiền dài hạn không?",
+    question: "Mua nhà có làm tôi thiếu tiền hưu trí không?",
     library: "dai-han",
   },
   {
     planIndex: 45,
     slug: "tinh-huu-tri",
     priority: "P3",
-    question: "Cần dành bao nhiêu cho mục tiêu dài hạn?",
+    question: "Cần dành bao nhiêu cho hưu trí?",
     library: "dai-han",
   },
   {
@@ -403,7 +403,7 @@ export const TOOL_DISPOSITIONS: ToolDisposition[] = [
     planIndex: 48,
     slug: "phan-tich-tiet-kiem-huu-tri",
     priority: "P3",
-    question: "Kế hoạch dài hạn của tôi thiếu bao nhiêu và bù thế nào?",
+    question: "Kế hoạch hưu trí của tôi thiếu bao nhiêu và bù thế nào?",
     library: "dai-han",
   },
   {

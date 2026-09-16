@@ -67,7 +67,27 @@ export const CALCULATOR_HUB = {
     "hoa-ky": "Hoa Kỳ",
     "dau-tu": "Đầu tư",
     "doanh-nghiep": "Doanh nghiệp",
-    "dai-han": "Dài hạn",
+    // Nhãn hiển thị là "Hưu trí" trong khi KEY vẫn là `dai-han`. Kệ này có
+    // đúng 4 thành viên — bốn trang kế hoạch hưu trí — và title của chúng đã
+    // chuyển từ "dài hạn" sang "hưu trí" cho khớp slug, nên nhãn phải theo.
+    // Key không đổi vì nó chỉ là khoá nội bộ: đổi nó kéo theo union type
+    // `LibraryShelf` và bốn entry trong `plan-disposition.ts` mà người đọc
+    // không thấy lợi gì.
+    //
+    // NHÃN NÀY TRÙNG TÊN với một CATEGORY: `CATEGORY_LABELS["huu-tri"]` trong
+    // `registry.ts` cũng là "Hưu trí", và đó là tiêu đề của mục 14 công cụ mà
+    // cả 4 công cụ này nằm trong. Quan sát trên trình duyệt ở 1280×900 ngày
+    // 16/09/2026: trong mục "Hưu trí" có 4 nhãn "Hưu trí" xen giữa 10 nhãn
+    // "Hoa Kỳ". Trùng lặp này là CHỦ Ý, không phải sơ suất:
+    //   - hai trục khác nhau — category là chủ đề, nhãn là kệ thư viện, và
+    //     `libraryLegend` ở trên mới là chỗ giải nghĩa nhãn;
+    //   - "Dài hạn" hết trùng nhưng lại là đúng từ mơ hồ vừa được bỏ khỏi cả
+    //     bốn title, nên nhãn sẽ lệch với chính công cụ nó dán lên;
+    //   - "Hưu trí Việt Nam" phân biệt được với các nhãn "Hoa Kỳ" cùng mục,
+    //     nhưng ngụ ý sai rằng 71 công cụ không có nhãn thì không phải của
+    //     Việt Nam.
+    // Thừa một lần trong một mục rẻ hơn mơ hồ ở mọi nơi, nên giữ trùng.
+    "dai-han": "Hưu trí",
     "tien-ich": "Tiện ích",
   },
   libraryDescriptions: {
@@ -75,7 +95,7 @@ export const CALCULATOR_HUB = {
       "Tính theo quy định thuế hoặc hưu trí của Hoa Kỳ. Không áp dụng cho khoản vay hay thu nhập tại Việt Nam.",
     "dau-tu": "Thuộc thư viện học về đầu tư và chứng khoán.",
     "doanh-nghiep": "Thuộc thư viện tài chính doanh nghiệp.",
-    "dai-han": "Kế hoạch tài chính dài hạn, ngoài phạm vi mua nhà.",
+    "dai-han": "Kế hoạch hưu trí, ngoài phạm vi mua nhà.",
     "tien-ich": "Tiện ích dùng chung, không gắn với việc mua nhà.",
   },
 } as const;

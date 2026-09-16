@@ -67,7 +67,7 @@ export const RETIREMENT_PLAN = {
   pageTitle: "Kế hoạch hưu trí: từng năm một",
   metaTitle: "Kế hoạch hưu trí — Tích lũy, rút tiền và năm tiền cạn",
   metaDescription:
-    "Dự phóng cả hai giai đoạn của một kế hoạch dài hạn bằng đồng: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền — có tính lạm phát, và nói rõ năm nào tiền cạn. Công cụ miễn phí của FinHome.",
+    "Dự phóng cả hai giai đoạn của một kế hoạch hưu trí bằng đồng: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền — có tính lạm phát, và nói rõ năm nào tiền cạn. Công cụ miễn phí của FinHome.",
 
   lede:
     "Một bản dự phóng chạy cả hai giai đoạn: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền cho đến khi hết tiền hoặc hết kỳ. Hai điều công cụ này không làm: không đưa số danh nghĩa lên làm câu trả lời, và không im lặng khi tiền cạn.",
@@ -234,7 +234,7 @@ export const RETIREMENT_PLAN = {
         a: "Không. Phép tính không trừ thuế và không trừ phí quản lý danh mục, nên số tiền rút ở đây là số gộp. Nếu những khoản bạn đang đầu tư có chịu thuế hay phí khi bán hoặc khi nhận lãi, chi tiêu thực tế của bạn sẽ thấp hơn con số hiển thị: cách xử lý đơn giản là nhập mức chi tiêu mong muốn cao hơn tương ứng, hoặc hạ mức lợi suất bạn giả định. Công cụ không mô phỏng quy định thuế của bất kỳ nước nào.",
       },
       {
-        q: "Bốn trang kế hoạch dài hạn khác nhau ở đâu?",
+        q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
         a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: trang này vẽ kế hoạch chạy ra sao từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
       },
     ],

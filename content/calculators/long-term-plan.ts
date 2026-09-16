@@ -153,9 +153,9 @@ export const LONG_TERM_PLAN = {
         help: "Nên chọn cao hơn kỳ vọng sống của bạn: sống lâu hơn dự tính là một rủi ro tài chính, không phải một điều may.",
       },
       currentBalance: {
-        label: "Số tiền dành cho dài hạn hiện có",
+        label: "Số tiền dành cho hưu trí hiện có",
         unit: "₫",
-        help: "Tổng những khoản bạn đã để riêng cho mục tiêu dài hạn — tiền gửi, quỹ, chứng khoán. Không tính tiền dự phòng ngắn hạn.",
+        help: "Tổng những khoản bạn đã để riêng cho mục tiêu hưu trí — tiền gửi, quỹ, chứng khoán. Không tính tiền dự phòng ngắn hạn.",
       },
       annualContribution: {
         label: "Dành thêm mỗi năm",
@@ -270,6 +270,6 @@ export const LONG_TERM_PLAN = {
    */
   scope: {
     disclaimer:
-      "Công cụ này chỉ mang tính minh họa: bốn trang của kế hoạch dài hạn dùng chung một bộ giả định do chính bạn nhập, và mô hình dùng hai mức lợi suất khác nhau — một trước khi nghỉ, một sau khi nghỉ — nên ở đây không có giả định nào về một mức lãi suất giữ nguyên suốt kỳ. Mọi số tiền tính bằng đồng Việt Nam. Phép tính không trừ thuế, không trừ phí quản lý danh mục, và coi lợi suất là đều đặn mỗi năm — điều mà thị trường không làm, nên rủi ro về thứ tự các năm được và mất không được mô phỏng. Kết quả không phải cam kết lợi nhuận và không phải lời khuyên đầu tư. Vui lòng cân nhắc kỹ hoặc tham khảo chuyên gia trước khi ra quyết định tài chính.",
+      "Công cụ này chỉ mang tính minh họa: bốn trang của kế hoạch hưu trí dùng chung một bộ giả định do chính bạn nhập, và mô hình dùng hai mức lợi suất khác nhau — một trước khi nghỉ, một sau khi nghỉ — nên ở đây không có giả định nào về một mức lãi suất giữ nguyên suốt kỳ. Mọi số tiền tính bằng đồng Việt Nam. Phép tính không trừ thuế, không trừ phí quản lý danh mục, và coi lợi suất là đều đặn mỗi năm — điều mà thị trường không làm, nên rủi ro về thứ tự các năm được và mất không được mô phỏng. Kết quả không phải cam kết lợi nhuận và không phải lời khuyên đầu tư. Vui lòng cân nhắc kỹ hoặc tham khảo chuyên gia trước khi ra quyết định tài chính.",
   },
 } as const;

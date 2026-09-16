@@ -77,7 +77,7 @@ export const RETIREMENT_SAVINGS_ANALYSIS = {
   pageTitle: "Kế hoạch hưu trí: thiếu bao nhiêu, bù bằng gì",
   metaTitle: "Kế hoạch hưu trí còn thiếu bao nhiêu — Và ba cách bù khoảng thiếu",
   metaDescription:
-    "Đặt số vốn kế hoạch dài hạn của bạn sẽ đạt được cạnh số vốn nó thực sự cần, tính bằng đồng, rồi định lượng ba cách bù khoảng thiếu: dành thêm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Công cụ miễn phí của FinHome.",
+    "Đặt số vốn kế hoạch hưu trí của bạn sẽ đạt được cạnh số vốn nó thực sự cần, tính bằng đồng, rồi định lượng ba cách bù khoảng thiếu: dành thêm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Công cụ miễn phí của FinHome.",
 
   lede:
     "Trang này không lập kế hoạch mới. Nó lấy kế hoạch bạn đang chạy, đặt số vốn kế hoạch đó sẽ đạt được cạnh số vốn nó thực sự cần, rồi định lượng ba cách bù khoảng thiếu: dành thêm mỗi năm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Ba cách đó không cùng đơn vị, nên trang định lượng chúng chứ không xếp hạng chúng.",
@@ -272,7 +272,7 @@ export const RETIREMENT_SAVINGS_ANALYSIS = {
         a: "Không. Mọi con số là số gộp: phép tính không trừ thuế và không trừ phí quản lý danh mục. Nếu những khoản bạn đang đầu tư chịu thuế hay phí khi bán hoặc khi nhận lãi, vốn cần có thực tế sẽ cao hơn con số ở đây — cách xử lý đơn giản là nhập mức chi tiêu mong muốn cao hơn tương ứng, hoặc hạ mức lợi suất bạn giả định. Trang phí quỹ đầu tư trong bộ công cụ này định lượng riêng phần phí. Công cụ không mô phỏng quy định thuế hay hưu trí của bất kỳ nước nào.",
       },
       {
-        q: "Bốn trang kế hoạch dài hạn khác nhau ở đâu?",
+        q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
         a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; trang này đo khoảng cách vốn và định lượng ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được, và vẽ thêm một nhánh sống lâu hơn 5 năm so với mốc bạn nhập. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
       },
     ],

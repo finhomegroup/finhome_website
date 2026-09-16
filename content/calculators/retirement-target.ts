@@ -256,7 +256,7 @@ export const RETIREMENT_TARGET = {
         a: "Không. Phép tính không trừ thuế và không trừ phí quản lý danh mục, nên khoản rút ở đây là số gộp và khoản dành thêm là số bạn thực sự chuyển vào. Nếu những khoản bạn đang đầu tư có chịu thuế hay phí khi bán hoặc khi nhận lãi, chi tiêu thực nhận của bạn sẽ thấp hơn con số hiển thị: cách xử lý đơn giản là nhập mức chi tiêu mong muốn cao hơn tương ứng, hoặc hạ mức lợi suất bạn giả định. Công cụ không mô phỏng quy định thuế của bất kỳ nước nào.",
       },
       {
-        q: "Bốn trang kế hoạch dài hạn khác nhau ở đâu?",
+        q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
         a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: trang này giải ra khoản phải dành thêm mỗi năm; “Kế hoạch chạy ra sao” vẽ diễn biến từng năm một; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
       },
     ],
