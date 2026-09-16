@@ -48,29 +48,54 @@
 // the research pass, so the consumer copy states the basis as THIS TOOL'S
 // assumption and does not claim a contract computes it identically.
 //
-// RE-ATTEMPTED 2026-09-16, AND THIS ROW STILL HAS NO `sources` BLOCK ON
-// PURPOSE. Two things were established. The circular is CURRENT: the national
-// legal database (vbpl.vn, Bộ Tư pháp) records 14/2017/TT-NHNN as còn hiệu
-// lực with effect from 01/01/2018, superseding Quyết định 652/2001/QĐ-NHNN,
-// and the shortened daily formula it sets out is the one this module uses. And
-// the fulltext is STILL unobtainable by automated fetch — this time for a
-// different reason than the 403: vbpl.vn's document page renders its content
-// with client-side script, so a fetch returns the database's loading shell and
-// no articles at all.
+// THE FULLTEXT WAS READ ON 2026-09-16 AND THIS ROW NOW CITES IT. Three
+// automated attempts had failed, each differently: a 403 on the circular
+// fetch; then vbpl.vn's document page, which renders its articles with
+// client-side script so a fetch returns the loading shell; then a 403 from
+// thuvienphapluat.vn. It was obtained when the project owner supplied the
+// thuvienphapluat.vn URL and it was opened in a real browser, where the
+// articles render.
 //
-// So the only link that could be offered is one nobody has read. The shell's
-// own `sources` docstring says a "Nguồn" heading over a link to nothing is
-// worse than no heading, and unlike the United States payroll row — where an
-// unread SSA link sits among IRS documents that DID verify every figure — an
-// unread link would be the whole block here. The honest state is what the copy
-// already does: name the circular, call the day count the tool's own
-// assumption, and claim no contract computes it identically.
+// TWO CORRECTIONS TO WHAT THIS COMMENT USED TO SAY, both worth keeping because
+// the old wording pointed a reader at the wrong article:
 //
-// `scripts/check-done.mjs` therefore reports this row as citing nothing a
-// reader can open, which is true and should stay visible. What would close it
-// is a human opening vbpl.vn in a browser and reading Điều 5 — not another
-// automated attempt, which now has two independent failure modes on record. The
-// early-withdrawal rule cited in the FAQ comes from the consolidated document
+// 1. The 365-day basis is Điều 4 khoản 1, not Điều 5. Verbatim: "Lãi suất
+//    tính lãi: được quy đổi theo tỷ lệ %/năm (lãi suất năm); một năm là ba
+//    trăm sáu mươi lăm ngày", with điểm a repeating "Một năm là ba trăm sáu
+//    mươi lăm ngày".
+//
+// 2. Điều 5 is titled "Minh bạch lãi suất" — transparency — and the formula
+//    is its khoản 1 điểm b:
+//
+//      Số tiền lãi ngày = Số dư thực tế × Lãi suất tính lãi ÷ 365
+//      Số tiền lãi của kỳ = tổng số tiền lãi ngày của các ngày trong kỳ
+//      rút gọn: ∑(Số dư thực tế × số ngày duy trì số dư thực tế
+//               × Lãi suất tính lãi) ÷ 365
+//
+//    which is exactly what `lib/calc/deposit-plan.ts` computes.
+//
+// THE HEDGE IS NOW SOURCED RATHER THAN CAUTIOUS, which is the real gain. The
+// copy has always warned that a contract may "tính khác ngày đầu hoặc ngày
+// cuối kỳ". Điều 4 khoản 2 turns out to SAY SO: for terms of a day or more the
+// TCTD and the customer may agree either (a) bỏ ngày đầu, tính ngày cuối, with
+// the balance taken at the start of each day, or (b) tính ngày đầu, bỏ ngày
+// cuối, with the balance taken at the end of each day. Điều 5 khoản 1 a(i)
+// points the formula at variant (a). On top of that, Điều 4 khoản 4 lets the
+// parties agree a method at all, and Điều 5 khoản 2 a(ii) expressly
+// contemplates a method DIFFERENT from khoản 1 — requiring only that the
+// equivalent khoản-1 annual rate be disclosed. So "giả định của công cụ" is
+// not throat-clearing: the instrument itself permits more than one answer, and
+// `components/term-deposit-calculator.test.ts` should keep requiring that word.
+//
+// PROVENANCE LIMIT, and it is why `sources.intro` says so to the reader too:
+// this is thuvienphapluat.vn, a commercial legal database that reproduces the
+// full text, NOT the Công báo typeset original. That is weaker than the
+// Công báo PDFs cited on the VAT rows. It is enough to cite a formula this
+// tool follows and to let a reader read the articles themselves; it would not
+// be enough to assert a duty someone owes. Do not upgrade the claim on the
+// strength of this link — replace the link first.
+//
+// The early-withdrawal rule cited in the FAQ comes from the consolidated document
 // 34/VBHN-NHNN (2024), Art. 4–5, read from the indexed official text after
 // the linked PDF failed to render — and 47/2024/TT-NHNN amended Art. 3(3) of
 // the 2022 circular from 2024-11-20, so the 2022 text is never cited as
@@ -278,7 +303,7 @@ export const TERM_DEPOSIT = {
     dateInvalidNotice:
       "Chưa đọc được một trong hai ngày, nên chưa tính được phần theo ngày. Hãy sửa ô đang báo lỗi phía trên.",
     dayCountNotice:
-      "Phần theo ngày tính lãi = số dư × lãi suất năm × SỐ NGÀY THỰC TẾ ÷ 365, cộng dồn theo từng kỳ hạn. Đây là giả định của công cụ, dựa trên phương pháp tính lãi theo ngày của Thông tư 14/2017/TT-NHNN. Hợp đồng thật có thể làm tròn khác, tính khác ngày đầu hoặc ngày cuối kỳ, và có thể dịch ngày đáo hạn khi trùng ngày nghỉ — công cụ không mô phỏng những điều đó.",
+      "Phần theo ngày tính lãi = số dư × lãi suất năm × SỐ NGÀY THỰC TẾ ÷ 365, cộng dồn theo từng kỳ hạn. Đây là giả định của công cụ, theo công thức tại khoản 1 Điều 5 và mốc “một năm là 365 ngày” tại khoản 1 Điều 4 Thông tư 14/2017/TT-NHNN. Chính thông tư đó cho phép hai cách đếm ngày: bỏ ngày đầu và tính ngày cuối, hoặc tính ngày đầu và bỏ ngày cuối (khoản 2 Điều 4) — hợp đồng của bạn chọn một trong hai, nên có thể lệch một ngày so với con số ở đây. Hợp đồng thật cũng có thể làm tròn khác, có thể thỏa thuận phương pháp tính lãi khác (khoản 4 Điều 4), và có thể dịch ngày đáo hạn khi trùng ngày nghỉ — công cụ không mô phỏng những điều đó.",
     monthEndNotice:
       // The leap year is named, for the same reason it is named on
       // /cong-cu/phan-bo-tai-san/ and in the savings-goal convention: an
@@ -435,6 +460,20 @@ export const TERM_DEPOSIT = {
       {
         q: "Lãi suất công cụ điền sẵn có phải mức hiện tại không?",
         a: "Không. Đó chỉ là một con số để bạn thay. Trang này là trang tĩnh, không kết nối tới biểu lãi suất của ngân hàng nào, nên nó không thể biết mức hôm nay. Lãi suất huy động thay đổi thường xuyên và chênh nhau đáng kể giữa các ngân hàng — hãy tra mức thực tế rồi nhập vào.",
+      },
+    ],
+  },
+
+  sources: {
+    title: "Nguồn cho cách tính lãi theo ngày",
+    intro:
+      "Công thức chia 365 mà công cụ dùng lấy từ văn bản dưới đây. Bản toàn văn được đọc ngày 16/09/2026 trên Thư viện Pháp luật — một cơ sở dữ liệu pháp luật thương mại đăng lại toàn văn, KHÔNG phải bản Công báo. Nêu rõ vì đó là mức tin cậy thấp hơn: đủ để bạn tự đọc điều khoản và đối chiếu với công thức của công cụ, chưa đủ để trang này khẳng định nghĩa vụ của một bên nào. Đây không phải tư vấn và không phải danh sách đầy đủ. Hợp đồng bạn ký là căn cứ đúng hơn con số ở đây.",
+    items: [
+      {
+        url: "https://thuvienphapluat.vn/van-ban/Tien-te-Ngan-hang/Thong-tu-14-2017-TT-NHNN-phuong-phap-tinh-lai-hoat-dong-nhan-tien-gui-cap-tin-dung-363921.aspx",
+        label:
+          "Thông tư 14/2017/TT-NHNN — quy định phương pháp tính lãi trong hoạt động nhận tiền gửi, cấp tín dụng",
+        note: "Nguồn của mốc 365 ngày: khoản 1 Điều 4 ghi “một năm là ba trăm sáu mươi lăm ngày”. Nguồn của công thức: khoản 1 Điều 5 — số tiền lãi ngày = số dư thực tế × lãi suất tính lãi ÷ 365, và dạng rút gọn cộng dồn theo số ngày duy trì số dư. Đáng đọc nhất với bạn là khoản 2 Điều 4: nó cho phép hai cách đếm ngày (bỏ ngày đầu tính ngày cuối, hoặc tính ngày đầu bỏ ngày cuối), nên hợp đồng có thể lệch một ngày so với công cụ; và khoản 4 Điều 4 cùng điểm a(ii) khoản 2 Điều 5 cho phép thỏa thuận phương pháp khác, miễn là ngân hàng ghi rõ mức lãi suất năm tương ứng theo cách tính ở khoản 1 Điều 5.",
       },
     ],
   },
