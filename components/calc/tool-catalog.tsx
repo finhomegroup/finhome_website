@@ -127,7 +127,7 @@ export function ToolCatalog({
               type="button"
               onClick={() => setQuery("")}
               className={cn(
-                "inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink-4/35 bg-white px-4 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                "inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink-4/35 bg-white px-4 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
                 FH_POINTER,
               )}
             >
@@ -166,7 +166,7 @@ export function ToolCatalog({
               type="button"
               onClick={() => setQuery("")}
               className={cn(
-                "mt-4 inline-flex min-h-11 items-center rounded-full border border-ink-4/35 bg-white px-5 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                "mt-4 inline-flex min-h-11 items-center rounded-full border border-ink-4/35 bg-white px-5 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
                 FH_POINTER,
               )}
             >
@@ -211,7 +211,7 @@ export function ToolCatalog({
                           "flex min-h-11 items-baseline gap-2 rounded-md px-1.5 py-1.5 text-sm leading-snug transition-colors md:min-h-0 md:py-1",
                           tool.planned
                             ? "text-ink-3 hover:bg-bg-soft hover:text-ink-2"
-                            : "text-ink hover:bg-bg-soft hover:text-brand-green",
+                            : "text-ink hover:bg-bg-soft hover:text-brand-green-ink",
                           FH_POINTER,
                         )}
                       >

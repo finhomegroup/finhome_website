@@ -198,7 +198,7 @@ export function CalculatorPage({
                 <p className="text-sm leading-relaxed text-ink-2">{notice}</p>
                 {noticeDetail && noticeDetailTitle ? (
                   <details className="mt-2">
-                    <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+                    <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
                       {noticeDetailTitle}
                     </summary>
                     <p className="mt-2 text-sm leading-relaxed text-ink-2">

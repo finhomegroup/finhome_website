@@ -216,7 +216,7 @@ export function ChartFigure({
 
       {model.table.rows.length > 0 ? (
         <details className="mt-4">
-          <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+          <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
             {C.tableToggle}
           </summary>
           {model.table.hint ? <p className="mt-3 text-sm leading-relaxed text-ink-3">{model.table.hint}</p> : null}

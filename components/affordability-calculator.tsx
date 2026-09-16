@@ -720,7 +720,9 @@ export function AffordabilityCalculator() {
                   ? setSnapshot({ input, result })
                   : undefined
               }
-              className={`font-display text-base font-medium text-brand-green underline-offset-4 hover:underline disabled:text-ink-4 disabled:no-underline ${FH_POINTER}`}
+              // `-ink`: 16px normal-weight text owes 4.5:1 and the raw brand
+              // green is 3.02:1 on white, 2.91:1 on `bg-soft`.
+              className={`font-display text-base font-medium text-brand-green-ink underline-offset-4 hover:underline disabled:text-ink-4 disabled:no-underline ${FH_POINTER}`}
             >
               {C.form.compareCaptureAction}
             </button>

@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 /**
@@ -261,5 +262,234 @@ describe("readable text is not painted with a gradient", () => {
     ).toBe(false);
     // Control: the detector can see the construct it forbids.
     expect(/bg-clip-text/.test('className="bg-clip-text text-transparent"')).toBe(true);
+  });
+});
+
+/**
+ * THE RAW BRAND GREEN IS NOT A TEXT COLOUR, with two graphics exempted.
+ *
+ * `--color-brand-green` #17ab48 is 3.02:1 on white and 2.91:1 on the `bg-soft`
+ * tint. That clears the 3:1 WCAG 1.4.11 asks of NON-TEXT contrast — icons,
+ * borders, focus rings — and falls short of the 4.5:1 that 1.4.3 asks of
+ * normal-size TEXT. The distinction is the whole rule: the same hex is correct
+ * on an icon and wrong on a label.
+ *
+ * 20 text call sites were below AA when this was measured on 2026-09-16 — five
+ * static links and 15 `hover:` states across the calculator pages, the blog
+ * pagination controls and the legal pages. The accessible token existed the
+ * whole time; it had only been applied to the homepage and `/blog/` index.
+ *
+ * BIDIRECTIONAL, because a stale exemption is as wrong as a new violation. The
+ * forward direction walks every `.tsx` under `components/` and `app/` and
+ * rejects a raw `text-brand-green`; the reverse direction requires each
+ * exemption below to still be findable, so deleting an icon without deleting
+ * its entry fails too.
+ */
+
+/**
+ * Graphics that legitimately keep the raw brand green. Keyed on a substring
+ * rather than a line number, which drifts.
+ */
+const NON_TEXT_EXEMPTIONS = [
+  {
+    file: "components/legal-document.tsx",
+    marker: 'className="mt-0.5 shrink-0 text-brand-green"',
+    why: "16px aria-hidden check icon; non-text contrast at 3:1, measures 3.02:1 on white",
+  },
+  {
+    file: "app/vision/page.tsx",
+    marker: 'className="size-5 text-brand-green"',
+    why: "20px value-card icon on a white tile; non-text contrast at 3:1, measures 3.02:1",
+  },
+] as const;
+
+/** Strips comments, which discuss both tokens by name and are not class lists. */
+function classCode(source: string): string {
+  return source
+    .replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
+
+function allTsx(): { path: string; source: string }[] {
+  const root = fileURLToPath(new URL("../../", import.meta.url));
+  const out: { path: string; source: string }[] = [];
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === "node_modules" || entry.name.startsWith(".")) continue;
+      const full = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".tsx")) {
+        out.push({ path: full.slice(root.length), source: readFileSync(full, "utf8") });
+      }
+    }
+  };
+  for (const sub of ["components", "app"]) walk(`${root}${sub}`);
+  return out;
+}
+
+/**
+ * `bg-brand-green/NN` washes, as the BROWSER actually paints them.
+ *
+ * These are pinned rather than computed, for a reason worth recording: Tailwind
+ * v4 emits the alpha as `oklab(... / 0.1)`, and mixing in oklab lands slightly
+ * DARKER than an sRGB alpha blend. Computing the composite in node with sRGB
+ * arithmetic gave 4.61:1 where the browser gives 4.57:1 — close enough to look
+ * right and wrong enough to matter at a 4.5 threshold. So the painted colour
+ * comes from a canvas measurement (fill the ground, fill the wash over it, read
+ * the pixel) and only the RATIO is recomputed here.
+ *
+ * `ground` is white for every wash call site in the codebase, established by
+ * compositing the full ancestor chain: 24 `hover:bg-brand-green/10` controls on
+ * `/blog/` and the `example-notice` badge on `/cong-cu/vay-mua-nha/`. That
+ * matters — the same wash over `bg-soft` paints #dff3e4 and drops to 4.40:1, so
+ * moving one of these onto a tinted section would break it.
+ */
+const MEASURED_WASHES = [
+  {
+    density: 10,
+    ground: WHITE,
+    painted: "#e7f6ec",
+    where: "example-notice badge; blog filter and pagination hover states",
+  },
+] as const;
+
+/** The density that shipped and failed, kept as the non-vacuity case. */
+const REJECTED_WASH = { density: 15, painted: "#dcf2e4" } as const;
+
+describe("the raw brand green is never a text colour", () => {
+  const files = allTsx();
+
+  it("finds a non-trivial set of components to scan", () => {
+    // Non-vacuity floor: an empty walk would pass every check below.
+    expect(files.length).toBeGreaterThan(40);
+    expect(files.some((f) => f.path === "components/legal-document.tsx")).toBe(true);
+  });
+
+  it("uses text-brand-green-ink for every text call site", () => {
+    const raw = /(?:^|[^:\w-])(hover:)?text-brand-green(?![\w-])/;
+    const offenders: string[] = [];
+
+    for (const file of files) {
+      const code = classCode(file.source);
+      if (!raw.test(code)) continue;
+      const exempt = NON_TEXT_EXEMPTIONS.filter((e) => e.file === file.path);
+      // Remove each exemption's exact marker, then look again — anything left
+      // is a call site nobody has justified.
+      let remaining = code;
+      for (const e of exempt) remaining = remaining.split(e.marker).join("");
+      if (raw.test(remaining)) offenders.push(file.path);
+    }
+
+    expect(
+      offenders,
+      "these files use the raw `text-brand-green` for text. It is 3.02:1 on " +
+        "white and 2.91:1 on `bg-soft`, against the 4.5:1 normal-size text " +
+        "needs. Use `text-brand-green-ink` (5.11:1 on white). If the call " +
+        "site is an ICON rather than text, it owes only 3:1 and passes — add " +
+        "it to NON_TEXT_EXEMPTIONS with the measurement instead.",
+    ).toEqual([]);
+  });
+
+  it("keeps every non-text exemption honest", () => {
+    // Reverse direction. An entry whose marker has gone is a stale exemption,
+    // which would silently widen the rule's blind spot.
+    for (const exemption of NON_TEXT_EXEMPTIONS) {
+      const file = files.find((f) => f.path === exemption.file);
+      expect(file, `${exemption.file} no longer exists`).toBeDefined();
+      expect(
+        file!.source.includes(exemption.marker),
+        `${exemption.file} no longer contains \`${exemption.marker}\`. If the ` +
+          `icon moved or changed, update this entry; if it is gone, delete it.`,
+      ).toBe(true);
+    }
+    expect(NON_TEXT_EXEMPTIONS.every((e) => e.why.length > 20)).toBe(true);
+  });
+
+  it("confirms the raw green passes the non-text rule it is exempted under", () => {
+    // The exemptions rest on this, so assert it rather than asserting trust.
+    expect(contrast(token("brand-green"), WHITE)).toBeGreaterThanOrEqual(AA_NON_TEXT);
+    // ...and that it genuinely fails the text rule, or the sweep was pointless.
+    expect(contrast(token("brand-green"), WHITE)).toBeLessThan(AA_NORMAL);
+    expect(contrast(token("brand-green"), "#f7fcf7")).toBeLessThan(AA_NORMAL);
+  });
+
+  it("tells the raw token from its -ink variant", () => {
+    const raw = /(?:^|[^:\w-])(hover:)?text-brand-green(?![\w-])/;
+    expect(raw.test('"font-medium text-brand-green underline"')).toBe(true);
+    expect(raw.test('"text-ink-2 hover:text-brand-green"')).toBe(true);
+    expect(raw.test('"font-medium text-brand-green-ink underline"')).toBe(false);
+    expect(raw.test('"text-ink-2 hover:text-brand-green-ink"')).toBe(false);
+    // Must not fire on the non-text utilities, which keep the raw hue.
+    expect(raw.test('"hover:border-brand-green/40"')).toBe(false);
+    expect(raw.test('"outline-brand-green"')).toBe(false);
+    expect(raw.test('"hover:bg-brand-green/10"')).toBe(false);
+  });
+});
+
+describe("green text on a brand-green wash", () => {
+  const files = allTsx();
+
+  /** Wash densities the codebase actually asks for. */
+  const densitiesInUse = (() => {
+    const found = new Set<number>();
+    for (const file of files) {
+      for (const m of classCode(file.source).matchAll(/bg-brand-green\/(\d+)/g)) {
+        found.add(Number(m[1]));
+      }
+    }
+    return found;
+  })();
+
+  it("uses only densities whose painted colour has been measured", () => {
+    // Forward direction of the allowlist.
+    // Annotated: MEASURED_WASHES is `as const`, so the inferred element type
+    // would be the literal `10` and `.has(someNumber)` would not typecheck.
+    const measured = new Set<number>(MEASURED_WASHES.map((w) => w.density));
+    const unmeasured = [...densitiesInUse].filter((d) => !measured.has(d));
+    expect(
+      unmeasured,
+      `\`bg-brand-green/${unmeasured.join(", ")}\` appears in source but its ` +
+        "painted colour has never been measured. Tailwind mixes this alpha in " +
+        "oklab, so it cannot be computed here from sRGB — measure it in a " +
+        "browser and add it to MEASURED_WASHES.",
+    ).toEqual([]);
+  });
+
+  it("keeps every measured wash in use", () => {
+    // Reverse direction: a wash nobody uses is a stale measurement.
+    for (const w of MEASURED_WASHES) {
+      expect(
+        densitiesInUse.has(w.density),
+        `MEASURED_WASHES records /${w.density} (${w.where}) but no component ` +
+          "asks for it any more. Delete the entry.",
+      ).toBe(true);
+    }
+  });
+
+  it("clears 4.5:1 for brand-green-ink on every measured wash", () => {
+    for (const w of MEASURED_WASHES) {
+      const ratio = contrast(token("brand-green-ink"), w.painted);
+      expect(
+        ratio,
+        `\`bg-brand-green/${w.density}\` over ${w.ground} paints ${w.painted}, ` +
+          `where brand-green-ink is ${ratio.toFixed(2)}:1. Lighten the wash — ` +
+          "darkening the text is not available, since `brand-green-ink` is " +
+          "already the accessible variant of this hue.",
+      ).toBeGreaterThanOrEqual(AA_NORMAL);
+    }
+  });
+
+  it("would reject the density that was shipping", () => {
+    // Non-vacuity, and the reason `example-notice.tsx` lightened its wash
+    // instead of only swapping the token. Both figures are browser-measured.
+    const rejected = contrast(token("brand-green-ink"), REJECTED_WASH.painted);
+    expect(rejected).toBeLessThan(AA_NORMAL);
+    expect(rejected).toBeGreaterThan(4.2);
+    // The raw green fails on the lightened wash too, so the token swap was
+    // necessary as well as the density change.
+    expect(contrast(token("brand-green"), MEASURED_WASHES[0].painted)).toBeLessThan(
+      AA_NORMAL,
+    );
   });
 });

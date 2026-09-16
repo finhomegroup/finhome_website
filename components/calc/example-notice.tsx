@@ -44,11 +44,29 @@ export function ExampleNotice({
           "inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium",
           pristine
             ? "bg-ink-4/25 text-ink-2"
-            : "bg-brand-green/15 text-brand-green",
+            : // THE WASH HAD TO LIGHTEN TOO — the token swap alone was not
+              // enough here, and this is the one call site in the sweep where
+              // that was true. `brand-green-ink` on `brand-green/15` (which
+              // composites to #dcf2e4 over white) is 4.34:1, still short of
+              // the 4.5:1 this `text-xs` badge owes. At /10 the ground is
+              // #e8f7ed and the same token reaches 4.61:1.
+              //
+              // So BOTH halves moved, which is unusual and worth the note: the
+              // wash is mixed from `brand-green` and the text is now the
+              // darker `-ink` variant, so they are independent — lightening
+              // the tint was a free move that did not touch the label colour.
+              "bg-brand-green/10 text-brand-green-ink",
         )}
       >
         {pristine ? C.example.badge : C.example.personalBadge}
       </span>
+      {/* `ink-4` here is 1.9:1 and that is FINE, which is worth writing down
+          because a contrast probe will flag it. WCAG 1.4.3 exempts text that
+          is "pure decoration" — serving only an aesthetic purpose, carrying no
+          information and having no functionality. This is a visual separator
+          between the badge and the note, and `aria-hidden` states that
+          intention rather than leaving it inferred. Darkening it would make
+          every separator on the page read as content. */}
       <span aria-hidden className="text-ink-4">
         ·
       </span>
@@ -59,7 +77,7 @@ export function ExampleNotice({
           onClick={onReset}
           title={C.example.resetHelp}
           className={cn(
-            "font-medium text-ink-2 underline decoration-ink-4 underline-offset-2 transition-colors hover:text-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+            "font-medium text-ink-2 underline decoration-ink-4 underline-offset-2 transition-colors hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
             FH_POINTER,
           )}
         >
@@ -80,7 +98,7 @@ export function ExampleNotice({
 export function ExampleNoticeDetail({ className }: { className?: string }) {
   return (
     <details className={cn("text-sm", className)}>
-      <summary className="cursor-pointer font-medium text-ink-2 hover:text-brand-green">
+      <summary className="cursor-pointer font-medium text-ink-2 hover:text-brand-green-ink">
         {C.example.detailTitle}
       </summary>
       <p className="mt-2 leading-relaxed text-ink-2">{C.example.detail}</p>

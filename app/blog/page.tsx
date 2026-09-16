@@ -100,7 +100,7 @@ export default function BlogPage() {
               <Link
                 href={`${EDUCATION_COLLECTION.slug}/`}
                 className={cn(
-                  "mt-3 inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink-4/35 bg-white px-5 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green md:mt-0",
+                  "mt-3 inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink-4/35 bg-white px-5 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green md:mt-0",
                   FH_POINTER,
                 )}
               >
