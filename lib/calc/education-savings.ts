@@ -45,7 +45,48 @@
  * 527.887.379,55. Starting the drawdown a year late would report a balance
  * the plan never has, and labelling the post-payment figure as the target
  * would understate what has to be saved.
+ *
+ * "THIẾU 0 ₫" WAS A REACHABLE SENTENCE, and the reason is that a solved plan
+ * lands on its target only to within representational error. The monthly
+ * contribution is solved so the fund exactly meets the tuition stream, so
+ * `fund` and `entry.tuition` in the final study year are the SAME quantity
+ * arrived at two different ways — and `(1 + r) ** n` does not make them
+ * bit-equal. Measured on the fixture in `charts/education-fund-chart.test.ts`
+ * (80 triệu tuition, 10 years' wait, 4 years' study, 8% inflation, 200 triệu
+ * held, 7% return): the last year came up 5,96e-8 ₫ short on Node 20.18.0 and
+ * exactly 0 on Node 25.1.0, because `**` is not required to be bit-identical
+ * across V8 versions.
+ *
+ * A bare `unpaid > 0` therefore reported a fully funded plan as short, and
+ * every figure in the sentence it selected rounds to zero, so the reader was
+ * told "Cần 700.601.379 ₫ nhưng chỉ có 700.601.379 ₫ — thiếu 0 ₫". That
+ * sentence also suppresses the monthly-contribution figure and the
+ * behind/ahead note, so the residue cost the page its actual answer.
+ *
+ * Coverage is therefore tested with `fundedSlack` from `savings-schedule.ts`
+ * — the suite's existing convention, not a second one. It is 16 units in the
+ * last place of the larger figure compared; that module's docstring carries
+ * the calibration, a measured worst case of 1,28 ULPs swept over targets from
+ * 1 ₫ to 1e15 ₫. The residue measured here is 5,96e-8 ₫ against a final-year
+ * tuition near 2,35e8 ₫, which is about 1,14 ULPs — inside the same envelope,
+ * which is why that calibration is reused rather than re-derived. A fixed
+ * allowance in đồng was tried in that module and withdrawn: half a đồng
+ * reported a 1 ₫ goal funded at 0,5 ₫, and was pure rounding noise against a
+ * 1e15 ₫ one.
+ *
+ * NOT MIRRORED HERE: `savings-schedule.ts` also suppresses its slack when the
+ * arithmetic was provably exact (`balanceIsExact`), because at 1e15 ₫ sixteen
+ * ULPs is ~3,6 ₫ and it bridged a real three-đồng gap. That guard keys on its
+ * own `SavingsCore` shape, and the exposure differs: forgiving 3 ₫ of a
+ * quadrillion-đồng tuition changes no rendered figure, whereas there it moved
+ * a month count. If this module ever reports a whole-đồng shortfall, revisit
+ * this paragraph rather than the threshold.
  */
+
+// The suite has ONE float-slack convention for "does this balance cover this
+// target", and it lives beside the sweep that calibrated it. Imported rather
+// than restated so a future change to the envelope reaches both callers.
+import { fundedSlack } from "@/lib/calc/savings-schedule";
 
 /**
  * The longest plan this module will walk, in years from today.
@@ -330,12 +371,23 @@ export function computeEducationSavings(
   let totalTuitionUnpaid = 0;
   for (const entry of years) {
     const fund = balance;
-    const after = Math.max(0, fund - entry.tuition);
+    // DOES THE FUND COVER THIS YEAR'S TUITION? Asked with ULP-scaled slack
+    // rather than as `fund >= entry.tuition`, because on a solved plan these
+    // are one quantity computed two ways — see the module docstring for the
+    // 5,96e-8 ₫ residue this forgives and why the threshold is not in đồng.
+    // Slack decides the BRANCH only: when the fund covers the year, `paid` is
+    // the tuition exactly and `unpaid` is a hard zero, so no consumer has to
+    // know the residue existed. A real shortfall is untouched — the slack is
+    // ~1e-8 ₫ at these magnitudes and the gaps it must not hide are millions.
+    const covered = fund + fundedSlack(fund, entry.tuition) >= entry.tuition;
     // What the fund can actually hand over, and what it cannot. On a plan
     // with no time to save these differ from the first year onward, and the
     // difference is the whole answer.
-    const paid = Math.min(Math.max(0, fund), entry.tuition);
-    const unpaid = entry.tuition - paid;
+    const paid = covered
+      ? entry.tuition
+      : Math.min(Math.max(0, fund), entry.tuition);
+    const unpaid = covered ? 0 : entry.tuition - paid;
+    const after = Math.max(0, fund - paid);
     totalTuitionUnpaid += unpaid;
     series.push({
       yearsFromNow: entry.yearsFromNow,
@@ -369,7 +421,16 @@ export function computeEducationSavings(
   const fundedAtStart =
     currentSavingsAtStart +
     totalContributionsAtStart(contribution, monthsToSave, monthlyRate);
-  const fundingGapAtStart = Math.max(0, targetAtStart - fundedAtStart);
+  // Same question, same slack, one date earlier: does day one's balance cover
+  // the target? This one measured to an exact 0 on both Node versions tried,
+  // because `fundedAtStart` and the target's own discounting happen to agree
+  // bit-for-bit on the fixture — which is luck, not a property. It is the same
+  // solve against the same target, so it is forgiven on the same terms rather
+  // than left to be the next reachable "thiếu 0 ₫".
+  const fundingGapAtStart =
+    fundedAtStart + fundedSlack(fundedAtStart, targetAtStart) >= targetAtStart
+      ? 0
+      : targetAtStart - fundedAtStart;
   if (!Number.isFinite(fundedAtStart)) return null;
 
   return {

@@ -369,8 +369,62 @@ describe("the funded boundary, on the rendered page", () => {
     // cannot check. Six decimal places, because the residue is a fraction of
     // one đồng by construction and rounding it to the đồng would render the
     // disclosure itself as "0 ₫".
+    //
+    // THIS ASSERTION USED TO READ `toContain("0,000062")`, and those digits
+    // are not this repo's to choose. The residue is the terminal artefact of
+    // `(1 + r) ** n`, which is not required to be bit-identical across V8
+    // versions, and it is not: measured on this fixture, 0,00006103515625 on
+    // Node 20.18.0 and 0,00006246566772460938 on Node 25.1.0 — rendering
+    // "0,000061" and "0,000062". The pinned string failed on the older
+    // runtime while the PAGE was correct on both, which is an assertion
+    // reporting on the platform instead of on the product.
+    //
+    // THE DISCLOSURE STAYS; ONLY THE PINNING GOES. Whether to state a residue
+    // this small was reopened here and settled the same way as before: the
+    // notice exists because "a verdict that silently forgives a shortfall is
+    // a verdict the reader cannot check", and `boundaryNotice` promises the
+    // reader "phần dư đó được ghi ra đây thay vì bỏ qua trong im lặng". A
+    // page that forgave the shortfall without naming it would be the quieter
+    // defect, so rounding the figure away was rejected.
+    //
+    // What is asserted instead is the claim the COPY makes — "một phần cực
+    // nhỏ của một đồng": a figure is in the slot, and it is strictly between
+    // zero and one đồng. That holds on every runtime, and it still fails for
+    // the two ways this disclosure can actually break — the notice going
+    // missing, and the residue being formatted at a precision that renders it
+    // as "0". The verdict itself is pinned by the sibling test above, which
+    // reads `funded` rather than the residue and is stable across both Nodes.
     const html = await render(FUNDED_BOUNDARY);
-    expect(html).toContain("0,000062");
+
+    // The slot is located from the content module's own template, so a
+    // reworded notice cannot quietly stop being checked.
+    const [prefix, suffix] = C.form.boundaryNotice.split("{residue}");
+    expect(
+      suffix,
+      "boundaryNotice no longer has a {residue} slot to state",
+    ).toBeDefined();
+    const from = html.indexOf(prefix);
+    expect(from, "the boundary notice is not on the page").toBeGreaterThan(-1);
+    const start = from + prefix.length;
+    const end = html.indexOf(suffix, start);
+    expect(end, "the notice is truncated before its residue").toBeGreaterThan(
+      -1,
+    );
+
+    const rendered = html.slice(start, end);
+    const value = Number(rendered.replace(",", "."));
+    expect(
+      Number.isFinite(value),
+      `the residue slot rendered "${rendered}", which is not a number`,
+    ).toBe(true);
+    // Non-zero AS RENDERED: this is the assertion that a disclosure rounded
+    // to the đồng would fail, because it would put "0" in the slot.
+    expect(value, `the residue is disclosed as "${rendered}"`).toBeGreaterThan(
+      0,
+    );
+    expect(value, "a residue of a whole đồng is not float noise").toBeLessThan(
+      1,
+    );
   });
 
   it("answers 0 there, which is what the funded notice promises", async () => {
