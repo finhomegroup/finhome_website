@@ -246,6 +246,12 @@ export function UsRmdCalculator() {
               { label: T.closingColumn, numeric: true },
             ]}
             rows={rows}
+            // Six columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 605 px inside a 300 px
+            // frame, with 27 over-wide elements — the second worst count in
+            // the suite. Rows are ages, so a card per row is one year's
+            // required withdrawal beside the balance it comes from.
+            mobileCards
           />
         </>
       ) : null}

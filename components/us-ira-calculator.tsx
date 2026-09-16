@@ -325,6 +325,12 @@ export function UsIraCalculator() {
               { label: T.verdictColumn },
             ]}
             rows={rows}
+            // Five columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 537 px inside a 300 px
+            // frame. Rows are withdrawal tax rates and the last column is the
+            // verdict for that rate, so a card per row keeps each rate's
+            // answer with the figures it rests on.
+            mobileCards
           />
         </>
       ) : null}

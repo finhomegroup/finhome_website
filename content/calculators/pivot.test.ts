@@ -11,33 +11,59 @@ import {
 } from "@/content/calculators/plan-disposition";
 
 /**
- * THE WIDE-TABLE DEBT ON THIS ROW, and the decision not to clear it.
+ * THE WIDE-TABLE DEBT ON THIS ROW, now cleared — and why the argument that
+ * kept it open for so long did not survive a measurement.
  *
  * `check:markup` enforces docs §3 — a table needs `mobileCards` from five
  * columns up — with `WIDE_TABLE_PENDING` as the list of known exceptions,
  * checked BOTH ways: a new violation fails, and so does a stale entry. This
- * row is the widest table in the suite and it is deliberately still listed.
+ * row is the widest table in the suite and was deliberately listed for a
+ * long time, on this reasoning:
  *
- * WHY, stated so the next owner does not have to re-derive it. A mechanical
- * conversion is not obviously an improvement here, because the two readings
- * of this table pull opposite ways. Reading ACROSS a row gives one method's
- * ladder — pivot, R1, R2, R3 in order — which a per-method card block
- * actually preserves. Reading DOWN a column compares the four conventions at
- * the same level, and that is the comparison the page's whole argument rests
- * on ("four sets of numbers from one data set"); cards break it, and a
- * horizontally scrolling table at 390 px breaks both. The real options are a
- * transposition (levels as rows, methods as columns — still five columns) or
- * a decision that R3/S3 are secondary, and both are design calls that want a
- * viewport this unit could not observe.
+ *   the two readings pull opposite ways. Reading ACROSS a row gives one
+ *   method's ladder — pivot, R1, R2, R3 in order — which a per-method card
+ *   block preserves. Reading DOWN a column compares the four conventions at
+ *   the same level, and that is the comparison the page's whole argument
+ *   rests on; cards break it.
+ *
+ * All of that is still true, and it was still the wrong conclusion, because
+ * it weighed cards against a table that a phone reader never had. Measured at
+ * a verified 390 px viewport on 2026-09-16: 617 px inside a 300 px scroll
+ * frame, a ratio of 2,06 — about two of the seven level columns on screen at
+ * once. The column comparison was not available to lose. Four methods is four
+ * cards, which scans.
+ *
+ * The alternatives named here — transposing to levels-as-rows, or demoting
+ * R3/S3 — remain open as design improvements. They are no longer blocking a
+ * defect, which is the difference.
+ *
+ * WHAT THIS BLOCK CHECKS NOW is the standing invariant rather than the
+ * backlog: eight columns, so the table must be carded. A guard written against
+ * a backlog goes red when the backlog empties, which is exactly what happened
+ * here and in three other places in this repo.
  */
-describe("diem-pivot's wide table stays tracked", () => {
-  const entry = WIDE_TABLE_PENDING.find(
-    (w: { slug: string }) => w.slug === "diem-pivot",
+describe("diem-pivot's wide table is carded, and off the debt list", () => {
+  const source = readFileSync(
+    new URL("../../components/pivot-calculator.tsx", import.meta.url),
+    "utf8",
   );
 
-  it("is still listed, with a reason a reader can act on", () => {
-    expect(entry, "diem-pivot left the pending list").toBeDefined();
-    expect(entry!.reason.length).toBeGreaterThan(80);
+  it("no longer appears in the wide-table debt list", () => {
+    // The reverse direction of `check:markup`'s own both-ways check: a page
+    // that has been fixed must not still be listed, or the list stops meaning
+    // anything. Asserted here too because this file is where the decision was
+    // argued, so this is where a re-listing would need to justify itself.
+    expect(
+      WIDE_TABLE_PENDING.some((w: { slug: string }) => w.slug === "diem-pivot"),
+      "diem-pivot is carded but back on the pending list",
+    ).toBe(false);
+  });
+
+  it("cards the table, because eight columns cannot read at 390px", () => {
+    expect(
+      /mobileCards/.test(source),
+      "the widest table in the suite lost its card fallback",
+    ).toBe(true);
   });
 
   it("records the column count this table really renders", () => {
@@ -52,21 +78,16 @@ describe("diem-pivot's wide table stays tracked", () => {
     // already satisfied — `vay-mua-nha` among them, which had been reported
     // as the suite's highest-priority violation.
     //
-    // The script now matches `<th[\s>]` and the list has been corrected, so
-    // this reads `.toBe(columns)`. It is KEPT rather than deleted with the
-    // bug because it is the only thing checking that a debt entry's own
-    // number is true: the checker compares slugs, never counts.
-    const source = readFileSync(
-      new URL("../../components/pivot-calculator.tsx", import.meta.url),
-      "utf8",
-    );
+    // The script now matches `<th[\s>]`. This assertion is KEPT after the
+    // debt entry it used to cross-check was deleted, because the COUNT is
+    // what makes docs §3 apply at all: eight columns is why the card fallback
+    // above is required rather than optional. If a future edit drops this
+    // table to four columns, §3 stops asking for cards and the pairing should
+    // be reconsidered — this is the number that tells you.
     const columnsBlock = /columns=\{\[([\s\S]*?)\]\}/.exec(source)![1];
     const columns = [...columnsBlock.matchAll(/\{\s*label:/g)].length;
     expect(columns).toBe(8);
-    expect(
-      entry!.columns,
-      "wide-table-pending.mjs disagrees with the table it describes",
-    ).toBe(columns);
+    expect(columns).toBeGreaterThanOrEqual(5);
   });
 });
 

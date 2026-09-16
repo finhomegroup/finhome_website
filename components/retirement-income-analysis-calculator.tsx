@@ -377,6 +377,11 @@ export function RetirementIncomeAnalysisCalculator() {
               { label: ST.shareColumn, numeric: true },
             ]}
             rows={sourceRows}
+            // Six columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 586 px inside a 300 px
+            // frame. Rows are income sources, so a card per row is one
+            // source's whole story across the retirement.
+            mobileCards
           />
         </>
       ) : null}
@@ -397,6 +402,12 @@ export function RetirementIncomeAnalysisCalculator() {
               { label: YT.balanceColumn, numeric: true },
             ]}
             rows={yearRows}
+            // Seven columns, so `mobileCards` per docs §3. Measured at a
+            // verified 390 px viewport on 2026-09-16: 724 px inside a 300 px
+            // frame, the second worst ratio in the suite at 2,41. This is the
+            // page's SECOND wide table — `WIDE_TABLE_PENDING` recorded "TWO
+            // wide tables on one page", and both are carded in this change.
+            mobileCards
           />
         </>
       ) : null}

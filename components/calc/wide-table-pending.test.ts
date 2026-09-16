@@ -57,8 +57,20 @@ describe("the wide-table debt list is measured, not just reasoned", () => {
     // The claim that makes every assertion below meaningful. A sweep whose
     // layout width was not what it says would make all of this decorative.
     expect(narrowViewport!.viewportVerifiedForAll).toBe(true);
-    expect(overflowing.size).toBeGreaterThan(5);
-    expect(pending.length).toBeGreaterThan(5);
+    // NO FLOOR ON EITHER LIST, and this is the third time that correction has
+    // had to be made in this repo — after `STATUTORY_UNDECLARED` and
+    // `NARROW_OVERFLOW_MEASURED`. These read
+    // `expect(overflowing.size).toBeGreaterThan(5)` and
+    // `expect(pending.length).toBeGreaterThan(5)`, and on 2026-09-16 the
+    // measured-overflow list reached ZERO and the debt list dropped to one
+    // entry, so both would have gone red for the work being finished.
+    //
+    // A guard on a backlog must let the backlog empty. What it keeps checking
+    // is that the manifest is real (`viewportVerifiedForAll` above) and that
+    // whatever REMAINS in either list is accurate — which the per-entry
+    // assertions below still do, in both directions.
+    expect(overflowing.size).toBeGreaterThanOrEqual(0);
+    expect(pending.length).toBeGreaterThanOrEqual(0);
     // NO FLOOR ON `narrow`, deliberately: an empty list is the goal state and
     // it reached zero on 2026-09-16. This read
     // `expect(narrow.length).toBeGreaterThan(0)` and would have gone red the

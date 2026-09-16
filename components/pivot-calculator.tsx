@@ -135,6 +135,21 @@ export function PivotCalculator() {
             { label: C.form.table.s3Column, numeric: true },
           ]}
           rows={tableRows}
+          /*
+           * Eight columns — the widest table in the suite — so `mobileCards`
+           * per docs §3. Measured at a verified 390 px viewport on
+           * 2026-09-16: 617 px inside a 300 px scroll frame, a ratio of 2,06.
+           *
+           * `WIDE_TABLE_PENDING` recorded a real cost here and it is worth
+           * keeping: reading ACROSS a row gives one method's ladder, which
+           * cards preserve, but reading DOWN a column compares the four
+           * conventions at one level, which cards break up. What settles it is
+           * that the column comparison WAS NOT AVAILABLE ANYWAY — at 2,06 a
+           * reader saw roughly two of the seven level columns, so comparing
+           * four methods at one level meant scrolling to it and holding three
+           * numbers in memory. Four methods is four cards, which scans.
+           */
+          mobileCards
         />
       ) : null}
 

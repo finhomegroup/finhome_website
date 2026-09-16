@@ -774,7 +774,29 @@ observation, and do not promote an inference from JSX or built markup into one.
   `components/calc/wide-table-pending.mjs`, each of which now carries a
   `measured390` verdict pinned against the manifest.
 
-  Two findings came out of that sweep and are NOT closed:
+  **NO LIVE ROUTE HAS AN ELEMENT WIDER THAN 390 px AS OF 2026-09-16.** The
+  manifest's `elementsWiderThanViewport` went 11 → 9 → 7 → 0 across three
+  changes: the two four-column rows, the two loan-comparison routes, then the
+  seven-row P3/P4 shelf (eight tables, since
+  `phan-tich-thu-nhap-huu-tri` carries two). `NARROW_OVERFLOW_MEASURED` is
+  empty and `WIDE_TABLE_PENDING` is down to one entry.
+
+  That one entry is the interesting residue. `lai-kep` has five columns, so it
+  violates §3, and it MEASURED TO FIT at 390 px — a rule debt with no rendered
+  symptom, and now the clearest surviving evidence that column count and
+  rendered overflow are independent. It is deliberately not "fixed": carding a
+  table that fits is what `ResultTable`'s docstring tells you not to do.
+
+  A note for whoever runs the next sweep, because three of the tables fixed in
+  this round were invisible to the previous one. `elementsWiderThanViewport`
+  asks only whether an element exceeds the VIEWPORT. It cannot see a table that
+  overflows its own 300 px scroll frame while staying under 390 px, and it
+  cannot see a table whose column count GROWS WITH USER INPUT — the loan
+  comparison's metric table measured 281 px with the prefilled two offers and
+  354 px with the third offer the page's own title invites. Measure the frame
+  relationship, and fill each form to its advertised maximum first.
+
+  Two findings came out of that sweep, and the first is now closed:
 
   - **The five-column rule under-detects — still true, and both instances are
     now FIXED.** `vay-thuong-mai` and `lai-suat-thuc-te` have FOUR columns
