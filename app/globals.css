@@ -74,6 +74,39 @@
   --foreground: #000000;
 }
 
+/* ---- Reveal: hidden only once JavaScript has proved it is running ----
+   `components/reveal.tsx` used to pass `initial={{ opacity: 0 }}` to
+   framer-motion, which server-renders `style="opacity:0"`. That made the
+   revealed content invisible until JS ran, and MEASURED on the built export on
+   2026-09-16 that was 93% of the homepage's visible text and 6 blocks on
+   /vision/. It is not hypothetical: `app/layout.tsx` still carries a temporary
+   on-screen error overlay added for an "iPhone 11 content stuck invisible"
+   report, and `lib/use-prefers-reduced-motion.ts` documents a crash on older
+   iOS that left pages "stuck at its `opacity: 0` SSR output".
+
+   The hidden state now lives here and applies only under `html.js`, which the
+   inline script at the top of `<body>` sets before this content is parsed — so
+   there is no flash, and the animation is unchanged for everyone with working
+   JavaScript. Without JS the class is never added and the content simply shows.
+
+   ONLY OPACITY MOVED. framer-motion still owns the 24px slide through its
+   `initial={{ y }}`, which server-renders a transform. A block shifted 24px is
+   readable; a block at zero opacity is not, so the slide can stay where the
+   stagger logic already is and only the invisibility needed relocating.
+
+   THE FAILSAFE covers the third case, which the `.js` gate alone does not: JS
+   loads, sets the class, and then throws before framer-motion reveals anything
+   — exactly the iPhone 11 shape. The watchdog in that same script adds
+   `fh-reveal-failsafe` after a delay far longer than the 0.5s animation, so a
+   crash costs a late appearance rather than a blank page. */
+html.js .fh-reveal {
+  opacity: 0;
+}
+
+html.fh-reveal-failsafe .fh-reveal {
+  opacity: 1 !important;
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
