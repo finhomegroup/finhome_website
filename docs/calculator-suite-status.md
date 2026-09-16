@@ -776,15 +776,44 @@ observation, and do not promote an inference from JSX or built markup into one.
 
   Two findings came out of that sweep and are NOT closed:
 
-  - **The five-column rule under-detects.** `vay-thuong-mai` and
-    `lai-suat-thuc-te` have FOUR columns each — so §3 asks nothing of them —
-    and both overflow 390 px anyway, because the cause is Vietnamese header
-    length rather than column count. They are recorded in
-    `NARROW_OVERFLOW_MEASURED`, deliberately kept out of `WIDE_TABLE_PENDING`
-    because `check:markup` verifies that list against the column rule and would
-    report a non-violator as a stale entry. Conversely `lai-kep` has five
-    columns, violates §3, and does NOT overflow. Column count and rendered
-    overflow are independent.
+  - **The five-column rule under-detects — still true, and both instances are
+    now FIXED.** `vay-thuong-mai` and `lai-suat-thuc-te` have FOUR columns
+    each, so §3 asked nothing of them, and both overflowed 390 px anyway. They
+    were recorded in `NARROW_OVERFLOW_MEASURED`, deliberately kept out of
+    `WIDE_TABLE_PENDING` because `check:markup` verifies that list against the
+    column rule and would report a non-violator as a stale entry. Conversely
+    `lai-kep` has five columns, violates §3, and does NOT overflow. Column
+    count and rendered overflow are independent, and that remains the finding.
+
+    Re-measured at a verified 390 px viewport on 2026-09-16 after the fix:
+    `vay-thuong-mai` 485 px → **300 px** inside its 300 px frame (12 over-wide
+    elements → 0) and `lai-suat-thuc-te` 400 px → `mobileCards`, which renders
+    no table at all below `md` (13 → 0). `NARROW_OVERFLOW_MEASURED` is now
+    empty; its non-vacuity floor was removed so an empty backlog is not a
+    failure, the same correction `STATUTORY_UNDECLARED` already needed.
+
+    **THE CAUSE RECORDED HERE WAS HALF WRONG, and it changed the fix.** This
+    entry used to say the cause in both cases was Vietnamese header length.
+    Per-column measurement showed that was true only of `lai-suat-thuc-te`. On
+    `vay-thuong-mai` the headers merely MATCHED the width of the cells beside
+    them; the binding constraints were an 8,5rem prose label floor misapplied
+    to a column of "1", "2", "3" (136 px for content needing 32) and untyped
+    money cells, which opted the table out of the compact reading and pinned
+    each amount column at the width of "5.000.000.000" (125 px). Shortening
+    its headers alone moved the table 380 px → 380 px — no gain whatever.
+    **"The widest text in the column" is not the same as "the reason the
+    column is that wide", and only changing one thing at a time separates
+    them.**
+
+    The two fixes differ because the two causes did. `vay-thuong-mai` adopted
+    the four-column mortgage year table's pattern — typed `countCell` /
+    `moneyCell`, `numeric` + `nowrap` on the period column, and headers
+    without the redundant "trong năm" — and now fits as a table. For
+    `lai-suat-thuc-te` neither lever exists: its figures are percentages, so
+    there is no compact reading, and its first column is genuine prose, so the
+    label floor is doing its job. Shortening all three of its headers lands at
+    about 304 px, still over and at the cost of labels that no longer say what
+    they compare against, so it took `mobileCards` instead.
   - **The hub's search box was below the fold, and has been moved.** It sat at
     y 1866 on a 390 px viewport (1.022 px below the fold) and y 1158 at
     1280×900, on a page whose headline asks "Bạn đang muốn biết điều gì?". It

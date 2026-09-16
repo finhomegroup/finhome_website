@@ -59,7 +59,13 @@ describe("the wide-table debt list is measured, not just reasoned", () => {
     expect(narrowViewport!.viewportVerifiedForAll).toBe(true);
     expect(overflowing.size).toBeGreaterThan(5);
     expect(pending.length).toBeGreaterThan(5);
-    expect(narrow.length).toBeGreaterThan(0);
+    // NO FLOOR ON `narrow`, deliberately: an empty list is the goal state and
+    // it reached zero on 2026-09-16. This read
+    // `expect(narrow.length).toBeGreaterThan(0)` and would have gone red the
+    // moment the second row was fixed — punishing the work for being
+    // finished, which is the same mistake `STATUTORY_UNDECLARED` made and
+    // corrected. A guard on a backlog must let the backlog empty; what it
+    // keeps checking is that whatever REMAINS is real and actionable.
   });
 
   it.each(pending.map((e) => [e.slug, e] as const))(
@@ -92,23 +98,25 @@ describe("the wide-table debt list is measured, not just reasoned", () => {
     expect(overlap, "listed as both a docs §3 debt and a docs §3 gap").toEqual([]);
   });
 
-  it.each(narrow.map((n) => [n.slug, n] as const))(
-    "%s really does overflow while satisfying the column rule",
-    (slug, entry) => {
-      expect(getCalculator(slug), `${slug} is not in the registry`).toBeDefined();
+  it("keeps every remaining rule-gap entry real and actionable", () => {
+    // A plain loop rather than `it.each`, because `it.each([])` is an error in
+    // vitest and this list is allowed to be empty. Same shape as the
+    // `STATUTORY_UNDECLARED` guard, for the same reason.
+    for (const entry of narrow) {
+      expect(getCalculator(entry.slug), `${entry.slug} is not in the registry`).toBeDefined();
       // Both halves must hold, or the entry belongs in the other list.
       expect(
-        overflowing.has(slug),
-        `${slug} is recorded as a rule gap but the sweep found no overflow`,
+        overflowing.has(entry.slug),
+        `${entry.slug} is recorded as a rule gap but the sweep found no overflow`,
       ).toBe(true);
       expect(
         entry.columns,
-        `${slug} has ${entry.columns} columns, so it IS a docs §3 violation and ` +
-          `belongs in WIDE_TABLE_PENDING instead`,
+        `${entry.slug} has ${entry.columns} columns, so it IS a docs §3 violation ` +
+          `and belongs in WIDE_TABLE_PENDING instead`,
       ).toBeLessThan(5);
       expect(entry.reason.length).toBeGreaterThan(80);
-    },
-  );
+    }
+  });
 
   it("accounts for every measured overflow in one list or the other", () => {
     // The completeness half. Without this, a row could overflow at 390px and

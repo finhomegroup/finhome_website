@@ -19,6 +19,7 @@ import {
   computeCommercialLoan,
   type CommercialLoanInput,
 } from "@/lib/calc/commercial-loan";
+import { countCell, moneyCell } from "@/lib/calc/table-cell";
 import { yearlySummary } from "@/lib/calc/loan";
 import { COMMERCIAL_LOAN as C } from "@/content/calculators/commercial-loan";
 
@@ -144,12 +145,28 @@ export function CommercialLoanCalculator() {
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
 
+  /*
+   * TYPED CELLS, which is what makes this table readable on a phone.
+   *
+   * It used to pass pre-formatted strings — `formatMoney(...)` — and that
+   * opted it out of everything `ResultTable` does with money: no unit line, no
+   * compact reading, and no precision control, because all three are derived
+   * from `hasMoneyCell(rows)`. The exact đồng figure is `whitespace-nowrap` by
+   * design (a wrapped "5.000.000.000" is unreadable), so each amount column
+   * was pinned at the width of its widest number.
+   *
+   * Measured at a verified 390 px viewport on 2026-09-16: the table was 485 px
+   * inside its 300 px scroll frame, with "5.000.000.000" alone taking 125 px.
+   * The four-column mortgage year table two doors down — same shape, typed
+   * cells — is 300 px and fits exactly, which is the evidence this change
+   * copies rather than a guess.
+   */
   const tableRows = result
     ? yearlySummary(result.schedule).map((year) => [
-        formatDecimal(year.year, 0),
-        formatMoney(year.interest),
-        formatMoney(year.principal),
-        formatMoney(year.balance),
+        countCell(year.year),
+        moneyCell(year.interest),
+        moneyCell(year.principal),
+        moneyCell(year.balance),
       ])
     : [];
 
@@ -264,7 +281,14 @@ export function CommercialLoanCalculator() {
           className="mt-8"
           caption={C.form.table.caption}
           columns={[
-            { label: C.form.table.yearColumn },
+            // `numeric` + `nowrap` on the period column, which is what keeps
+            // the 8,5rem PROSE floor off it. That floor exists so a metric
+            // label cannot be squeezed to one word per line by wide figures;
+            // on a column holding "1", "2", "3" it was pure waste — measured
+            // at 136 px for content needing 32, a third of the table's budget.
+            // `result-table-render.test.ts` already asserts a period column
+            // gets no floor; this table simply never declared itself as one.
+            { label: C.form.table.yearColumn, numeric: true, nowrap: true },
             { label: C.form.table.interestColumn, numeric: true },
             { label: C.form.table.principalColumn, numeric: true },
             { label: C.form.table.balanceColumn, numeric: true },

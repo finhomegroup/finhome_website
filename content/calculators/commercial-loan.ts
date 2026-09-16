@@ -80,9 +80,21 @@ export const COMMERCIAL_LOAN = {
     table: {
       caption: "Bảng trả nợ theo năm",
       yearColumn: "Năm",
-      interestColumn: "Lãi trong năm",
-      principalColumn: "Gốc trong năm",
-      balanceColumn: "Dư nợ cuối năm",
+      // HEADERS CARRY THE COLUMN WIDTH ONCE THE FIGURES COMPACT, which is why
+      // these lost their "trong năm" / "cuối năm" suffix. Measured at a
+      // verified 390 px viewport on 2026-09-16: with typed money cells the
+      // amounts need about 65 px, so "Lãi trong năm" at 106 px and "Gốc trong
+      // năm" at 115 px were the binding constraint, not the numbers — the
+      // table sat at 372 px inside a 300 px frame.
+      //
+      // The suffix was redundant anyway: `caption` above says "theo năm" and
+      // the first column is "Năm", so every figure in the row is already
+      // known to belong to that year. This is the same naming the four-column
+      // mortgage year table uses ("Kỳ / Lãi / Gốc / Dư nợ còn lại"), which
+      // fits 390 px exactly.
+      interestColumn: "Lãi",
+      principalColumn: "Gốc",
+      balanceColumn: "Dư nợ cuối",
       // The table's own two points now open `balloonSourceNotice` below,
       // which is the same slot this string used to fill. Kept as one string
       // rather than two so the page cannot end up saying the balance stops at
