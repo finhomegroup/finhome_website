@@ -18,7 +18,34 @@ const LEAD_OVERLAY = {
 type Step = (typeof STEPS_SECTION.steps)[number];
 
 // Framer "How it works" card @360×326 — illustration clipped in a 210px header.
+//
+// THE HEADER HEIGHT MUST NOT DEPEND ON VIEWPORT HEIGHT. It read
+// `h-[min(210px,22dvh)]` for two months, and combined with `object-cover` that
+// silently ate the artwork: the three step SVGs are 482.55×315.41 (aspect
+// 1.527), so any box wider per unit height than that gets its top and bottom
+// sliced off, and the slice grows as the window gets shorter. Measured in a
+// browser on 2026-09-16: 24.8% of the artwork gone at 1280×800, 19% at 390×844
+// (this is what "Phân khúc phù hợp" being cut in half looked like), and 66.4%
+// at 844×390 — a thin horizontal band where a chart used to be. The 210px in
+// that expression only won above ~955px of viewport height, i.e. essentially
+// never.
+//
+// It was a leftover. `86a9215` added the cap for a one-viewport scroll-snap
+// homepage; `376183b` reverted that design — deleting `home-scroll-snap.tsx`
+// and, in its own commit message, "drop[ping] the leftover dvh height cap on
+// the steps artwork" — but only fixed the lead artwork below and missed this
+// line, leaving the file's last `dvh`.
+//
+// 210px is not arbitrary and is not a compromise: at the card widths this grid
+// produces it trims ~8-10% off each edge, which is the artwork's blank artboard
+// margin and nothing else. Verified against a zero-crop aspect-ratio box in the
+// browser — the two renders are indistinguishable apart from ~19px of extra
+// white per card. Do not "fix" this into an aspect box, and do not cap it
+// against `dvh`; if the illustration must shrink on short viewports, scale it
+// with `object-contain` (as the lead artwork does) rather than crop it.
 function StepCard({ step, index, delay }: { step: Step; index: number; delay: number }) {
+  // Nudges card 0's illustration up by 9px. Calibrated against the 210px box in
+  // `ab0cd6e`, which is why that height is restored rather than replaced.
   const imageOffset = index === 0 ? -9 : 0;
 
   return (
@@ -29,7 +56,7 @@ function StepCard({ step, index, delay }: { step: Step; index: number; delay: nu
           FH_CARD_SHADOW,
         )}
       >
-        <div className="h-[min(210px,22dvh)] overflow-hidden">
+        <div className="h-[210px] overflow-hidden">
           <img
             src={img(step.icon)}
             alt=""
