@@ -87,26 +87,28 @@
 export const WIDE_TABLE_PENDING = [
   // ----------------------------------------------------- P1 and P2: fix first
   // Their readers are the audience this site exists for.
-  {
-    slug: "so-sanh-khoan-vay",
-    columns: 6,
-    measured390: "overflows",
-    owner: "P1 — loan comparison",
-    reason:
-      "THE HIGHEST-PRIORITY ENTRY, and the only P1 page in this list. It is a " +
-      "COMPARISON, so the value is the row read across and a per-row card " +
-      "block breaks that up — a real design question, not a reason to leave " +
-      "it scrolling at six columns. Note it also ships a `<dl>` for something " +
-      "unrelated, which is what made an earlier `<dl>`-based card test clear " +
-      "it wrongly.",
-  },
-  {
-    slug: "lai-co-dinh-hay-tha-noi",
-    columns: 6,
-    measured390: "overflows",
-    owner: "P2 — fixed vs floating",
-    reason: "P2, Vietnamese-facing, two columns clear of the bound.",
-  },
+  //
+  // `so-sanh-khoan-vay` AND `lai-co-dinh-hay-tha-noi` WERE THE FIRST TWO
+  // ENTRIES HERE and were fixed together on 2026-09-16, because they are two
+  // routes over ONE component (`LoanCompareCalculator`) and therefore one
+  // chart builder: `mobileCards` on `costBarsModel`'s six-column table cleared
+  // the §3 violation on both at once.
+  //
+  // The design objection this list recorded against that fix did not survive
+  // measurement. It read: "it is a COMPARISON, so the value is the row read
+  // across and a per-row card block breaks that up". But that table's ROWS are
+  // offers and its COLUMNS are metrics, so a card per row is a card per offer
+  // — a coherent per-offer cost summary. The metric-read-across-offers view a
+  // comparison actually wants already exists on the same page as the
+  // "So sánh từng chỉ tiêu" table, which is metrics-as-rows and measures
+  // 281 px at 390. Nothing was lost by carding the wide one.
+  //
+  // Fixing the six-column table then exposed a SECOND overflow on the
+  // fixed-vs-floating route only: its four-column payment table at 427 px,
+  // caused by a composed `${side} — ${structure}` option label held on one
+  // line by `nowrap`. See `lib/calc/charts/compare-chart.ts` — a table docs §3
+  // expects to fit, overflowing for a reason the column rule cannot see, which
+  // is the same lesson `NARROW_OVERFLOW_MEASURED` was opened for.
   {
     slug: "lai-kep",
     columns: 5,

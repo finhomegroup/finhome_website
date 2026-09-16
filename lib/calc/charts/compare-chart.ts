@@ -119,6 +119,11 @@ function emptyBars(labels: CompareCostLabels): BarChartModel {
     legend: [],
     table: {
       caption: labels.tableCaption,
+      // Six columns, so `mobileCards` per docs §3, which sets that from five
+      // up. Set on the EMPTY model too, so the layout does not change shape
+      // depending on whether there is data — see the populated model below for
+      // why a card per offer keeps the comparison intact here.
+      mobileCards: true,
       columns: [
         { label: labels.optionColumn, nowrap: true },
         { label: labels.interestColumn, numeric: true },
@@ -154,7 +159,9 @@ function emptyLines(labels: ComparePaymentLabels): LineChartModel {
     table: {
       caption: labels.tableCaption,
       columns: [
-        { label: labels.optionColumn, nowrap: true },
+        // NO `nowrap` ON THE OPTION COLUMN, and that is the fix rather than an
+        // omission. See the populated model below for the measurement.
+        { label: labels.optionColumn },
         { label: labels.paymentColumn, numeric: true },
         { label: labels.resetPaymentColumn, numeric: true },
         { label: labels.monthsColumn, numeric: true },
@@ -267,6 +274,28 @@ export function costBarsModel(
     ],
     table: {
       caption: labels.tableCaption,
+      /*
+       * SIX COLUMNS, so `mobileCards` per docs §3 — and this is the P1 entry
+       * that sat in `WIDE_TABLE_PENDING` longest, because the list recorded a
+       * design objection to exactly this fix: "it is a COMPARISON, so the
+       * value is the row read across and a per-row card block breaks that up".
+       *
+       * Measured, that objection does not hold for THIS table. Its rows are
+       * OFFERS and its columns are metrics, so a card per row is a card per
+       * offer — "Phương án A: lãi …, phí …, dư nợ …, chi phí …" — which is a
+       * coherent per-offer cost summary, not a broken comparison. What a
+       * reader comparing offers needs is the metric read across several
+       * offers, and THAT VIEW ALREADY EXISTS on the same page: the
+       * "So sánh từng chỉ tiêu" table is metrics-as-rows with one column per
+       * offer, and at 390 px it measures 281 px, comfortably inside the
+       * viewport. Nothing is lost by carding this one.
+       *
+       * The numbers that made it necessary, at a verified 390 px viewport on
+       * 2026-09-16: 394 px inside a 300 px frame, a ratio of 1,31, with two of
+       * the five cost columns off-frame — including "Chi phí cả kỳ hạn", which
+       * the page's own winner-changes note discusses as though it were visible.
+       */
+      mobileCards: true,
       columns: [
         { label: labels.optionColumn, nowrap: true },
         { label: labels.interestColumn, numeric: true },
@@ -409,7 +438,33 @@ export function paymentTimelineModel(
     table: {
       caption: labels.tableCaption,
       columns: [
-        { label: labels.optionColumn, nowrap: true },
+        /*
+         * `nowrap` REMOVED from the option column, because on one of the two
+         * routes that share this builder the option label is not a short tag.
+         *
+         * `nowrap: true` declares "a short period or option label" — it keeps
+         * "Phương án A" on one line and switches the 8,5rem prose floor off.
+         * On `/cong-cu/lai-co-dinh-hay-tha-noi/` the labels are COMPOSED,
+         * `${side} — ${structure}`, giving strings like "Bên B — giữ một mức
+         * lãi 12 tháng rồi đổi" at 40 characters. Held on one line that is a
+         * 264 px column, and the four-column table measured 427 px inside its
+         * 300 px frame at a verified 390 px viewport on 2026-09-16 — a table
+         * docs §3 expects to fit, overflowing for a reason the column rule
+         * cannot see.
+         *
+         * Letting it wrap puts the table at exactly 300 px on BOTH routes.
+         * `/cong-cu/so-sanh-khoan-vay/`, whose labels really are short, is
+         * unaffected: wrapping never triggers for "Phương án A", and although
+         * dropping `nowrap` switches the prose floor on, the table is `w-full`
+         * in a 300 px frame and its min-content still fits, so it stays at
+         * 300 px. Measured both ways rather than reasoned.
+         *
+         * Carding this table was the alternative and was rejected: it already
+         * fits on the other route, and `ResultTable`'s own docstring says to
+         * leave `mobileCards` off where the compact table fits, because a
+         * block list is more scrolling for no gain.
+         */
+        { label: labels.optionColumn },
         { label: labels.paymentColumn, numeric: true },
         { label: labels.resetPaymentColumn, numeric: true },
         { label: labels.monthsColumn, numeric: true },
