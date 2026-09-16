@@ -252,6 +252,21 @@ const EDUCATION_ENTRIES: Post[] = [
 export const POSTS: Post[] = [
   ...EDUCATION_ENTRIES,
   {
+    slug: "gia-dat-dong-anh-vuot-100-trieu-dong-m2",
+    title: "Giá đất Đông Anh vượt 100 triệu đồng/m²: Hạ tầng đẩy giá nhưng thị trường đã bớt nóng",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Nhiều khu vực Đông Anh ghi nhận giá đất vượt 100 triệu/m² nhờ tin hạ tầng, nhưng người mua ngày càng thận trọng trong bối cảnh thanh khoản chậm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/gia-dat-dong-anh-vuot-100-trieu-dong-m2.jpg",
+    date: "2026-09-16",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/gia-dat-dong-anh-neo-cao-vuot-100-trieu-dong-m2-d150547.html",
+        "accessed": "2026-09-16"
+      },
+  },
+  {
     slug: "dau-gia-dat-xa-ven-ha-noi-o-dien",
     title: "Đất xã ven Hà Nội đấu giá trung bình hơn 5 tỷ đồng/lô: Khu vực ngoại thành hút nhà đầu tư",
     category: "Thị trường",
