@@ -1,150 +1,94 @@
-// Copy for /cong-cu/tai-cap-von/ — the refinancing calculator.
-//
-// Original FinHome copy. The arithmetic is standard finance.
-//
-// Figures quoted below are the tool's own output for its defaults (1,5 tỷ dư
-// nợ, 11%/năm, còn 216 tháng, chuyển sang 8,5%/năm, 30 triệu phí), read off
-// the module: trả hằng tháng 15.975.745 → 13.581.862 ₫, giảm 2.393.883 ₫/tháng,
-// tiết kiệm lãi 517.078.691 ₫, sau phí 487.078.691 ₫, hoàn phí sau 13 tháng.
-// Kéo kỳ hạn lên 300 tháng: trả hằng tháng còn 12.078.406 ₫ (giảm 3.897.338 ₫)
-// nhưng tổng lãi TĂNG 172.761.032 ₫, tức lỗ 202.761.032 ₫ sau phí — trong khi
-// điểm hoàn phí lại chỉ có 8 tháng.
-//
-// The shortened-term case quoted in FAQ item 4 of 5 — `faq.items[3]`,
-// "Chuyển đổi mà giữ nguyên khoản trả hằng tháng thì sao?" — is also the
-// module's own output: 9,75%/năm over 180 tháng with 60 triệu of fees gives
-// giảm mỗi tháng 85.305 ₫, điểm hoàn phí 183 tháng, tiết kiệm thực
-// 530.481.652 ₫. That break-even is solved month by month, not by chi phí ÷
-// giảm mỗi tháng, which used to report 704 tháng there. (The last FAQ answer,
-// `faq.items[4]`, is the loan-insurance one and quotes no figures.)
-//
-// FAQ item 1, `faq.items[0]`, quotes two more break-evens off the same
-// defaults at 8,5%/năm with the default 30 triệu phí: kỳ hạn mới 180 tháng →
-// 25 tháng, and shortening until the instalment barely falls → 157 tháng at
-// kỳ hạn 155 (giảm 1.694 ₫/tháng), peaking at 159 tháng at kỳ hạn 158 (giảm
-// 168.435 ₫/tháng). Swept over every new term 1–216 at 8,5%/30 triệu, those
-// 157–159 tháng ARE the far end: 159 is the latest break-even that exists at
-// all, and every term below 155 has none, because there the instalment rises
-// instead of falling. That line used to claim 181 tháng, which the module does
-// not produce at 8,5% — 181 is what 9,7%/năm over 180 tháng with 30 triệu phí
-// gives.
-//
-// Re-read the module if the defaults move.
-
+// Hypothetical defaults only. All figures come from compareRefinance.
 export const REFINANCE = {
-  slug: "/cong-cu/tai-cap-von",
-
-  pageTitle: "Tính tái cấp vốn: đảo nợ có lợi không?",
-  metaTitle: "Tính tái cấp vốn — Điểm hoàn phí và tiết kiệm thực",
-  metaDescription:
-    "So sánh khoản vay hiện tại với khoản vay mới: mức giảm hằng tháng, tổng lãi tiết kiệm sau phí và sau bao nhiêu tháng thì hoàn được phí. Công cụ miễn phí của FinHome.",
-
-  lede:
-    "Lãi suất mới gần như luôn thấp hơn, nếu không thì bạn đã không hỏi. Câu hỏi thật là mức tiết kiệm có sống lâu hơn khoản phí phải trả để có nó, và có còn là tiết kiệm không khi kỳ hạn được đặt lại từ đầu.",
-
+  metaTitle: "Chuyển khoản vay: có tiết kiệm sau phí? | FinHome",
+  metaDescription: "So chi phí chuyển khoản vay tại cùng một tháng, gồm lãi, phí trả trước và dư nợ. Tách tiết kiệm chi phí với giảm khoản trả hằng tháng.",
+  pageTitle: "Chuyển khoản vay",
+  lede: "Chuyển ngân hàng có tiết kiệm thật? So lãi, phí và dư nợ tại cùng thời điểm bạn chọn.",
+  trapNotice: "Trả ít mỗi tháng chưa chắc rẻ hơn: khoản vay mới có thể kéo dài và còn nợ nhiều hơn.",
+  disclaimer: "Công cụ này chỉ mang tính minh họa, không phải tư vấn tài chính. Đã tính các phí trả ngay bạn nhập; chưa tính thuế, lạm phát, phí định kỳ hay phí tất toán tại tháng so sánh. Lãi suất được giả định không đổi, không chiết khấu dòng tiền. Hãy xác nhận điều khoản hợp đồng trước khi quyết định.",
   form: {
-    currentGroup: "Khoản vay hiện tại",
-    balanceLabel: "Dư nợ còn lại",
-    balanceUnit: "₫",
-    balanceHelp: "Số dư nợ gốc hiện tại, đọc trên sao kê hoặc hỏi ngân hàng.",
-    balanceInvalid: "Vui lòng nhập dư nợ lớn hơn 0.",
-    defaultBalance: "1.500.000.000",
-
-    currentRateLabel: "Lãi suất hiện tại",
-    currentRateUnit: "%/năm",
-    currentRateHelp:
-      "Mức lãi bạn đang thực trả, không phải mức ưu đãi đã hết hạn.",
-    currentRateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
-    defaultCurrentRate: "11",
-
-    remainingLabel: "Số tháng còn lại",
-    remainingHelp:
-      "Số tháng còn phải trả theo hợp đồng hiện tại. 18 năm là 216 tháng.",
-    remainingInvalid: "Vui lòng nhập số nguyên tháng lớn hơn 0.",
-    defaultRemaining: "216",
-
-    newGroup: "Khoản vay mới",
-    newRateLabel: "Lãi suất mới",
-    newRateUnit: "%/năm",
-    newRateHelp: "Mức lãi sau ưu đãi của khoản vay mới, không phải mức ưu đãi.",
-    newRateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
-    defaultNewRate: "8,5",
-
-    newTermLabel: "Kỳ hạn mới",
-    newTermHelp:
-      "Số tháng của khoản vay mới. Để bằng số tháng còn lại nếu bạn không muốn kéo dài kỳ hạn.",
-    newTermInvalid: "Vui lòng nhập số nguyên tháng lớn hơn 0.",
-    defaultNewTerm: "216",
-
-    costsLabel: "Chi phí chuyển đổi",
-    costsUnit: "₫",
-    costsHelp:
-      "Gồm phí trả nợ trước hạn cho ngân hàng cũ, phí thẩm định, công chứng, đăng ký giao dịch bảo đảm và bảo hiểm bắt buộc.",
-    costsInvalid: "Vui lòng nhập một số từ 0 trở lên.",
-    defaultCosts: "30.000.000",
-
-    resultTitle: "Kết luận",
-    lifetimeLabel: "Tiết kiệm thực sau phí",
-    breakEvenLabel: "Hoàn được phí sau",
-    monthlySavingLabel: "Giảm mỗi tháng",
-    monthsUnit: "tháng",
-
-    detailTitle: "Chi tiết",
-    currentPaymentLabel: "Trả hằng tháng hiện tại",
-    newPaymentLabel: "Trả hằng tháng mới",
-    currentInterestLabel: "Lãi còn phải trả nếu giữ nguyên",
-    newInterestLabel: "Lãi phải trả nếu chuyển",
-    interestSavingLabel: "Tiết kiệm lãi trước phí",
-    costsResultLabel: "Chi phí chuyển đổi",
-    termChangeLabel: "Kỳ hạn thay đổi",
-
-    noBreakEvenNotice:
-      "Khoản trả hằng tháng không giảm, nên không có điểm hoàn phí. Điều đó không có nghĩa là phương án tệ: rút ngắn kỳ hạn làm mỗi tháng nặng hơn nhưng tổng lãi giảm. Hãy xem dòng tiết kiệm thực sau phí để quyết định.",
-    neverRecoveredNotice:
-      "Khoản trả hằng tháng có giảm, nhưng phần tiết kiệm cộng dồn không bao giờ bù đủ chi phí chuyển đổi trong suốt cả hai khoản vay, nên không có điểm hoàn phí. Hãy xem dòng tiết kiệm thực sau phí — nó đang âm.",
-    extendedNotice:
-      "Kỳ hạn mới dài hơn số tháng còn lại của khoản vay hiện tại. Hãy đọc dòng tiết kiệm thực sau phí trước khi mừng vì khoản trả hằng tháng giảm.",
-    shortenedNotice:
-      "Kỳ hạn mới ngắn hơn số tháng còn lại, nên khoản trả hằng tháng giảm ít hơn so với khi giữ nguyên kỳ hạn — càng rút ngắn nhiều thì càng giảm ít và điểm hoàn phí càng muộn; rút ngắn đủ nhiều thì khoản trả còn TĂNG và không có điểm hoàn phí nào để đọc. Bù lại, từ tháng khoản vay mới trả xong, bạn không còn phải trả gì trong khi khoản vay cũ thì vẫn còn chạy, nên phần tiết kiệm cộng dồn nhảy vọt từ đó. Vì vậy ở đây con số nên đọc là tiết kiệm thực sau phí.",
+    currentGroup: "Khoản vay đang trả", newGroup: "Khoản vay muốn chuyển sang",
+    balanceLabel: "Dư nợ hiện tại", balanceHelp: "Lấy số gốc còn nợ từ sao kê, không dùng số tiền vay ban đầu.",
+    currentRateLabel: "Lãi suất hiện tại", currentRateHelp: "Một mức lãi giả định giữ nguyên từ nay. Không phải báo giá ngân hàng.",
+    remainingLabel: "Số tháng còn lại", remainingHelp: "Số kỳ trả nợ còn lại trong hợp đồng cũ; nhập số nguyên.",
+    newRateLabel: "Lãi suất mới", newRateHelp: "Giả định không đổi. Nếu có ưu đãi rồi thả nổi, dùng công cụ lãi thả nổi để thử thêm kịch bản.",
+    newTermLabel: "Kỳ hạn mới", newTermHelp: "Có thể khác số tháng còn lại. Kéo dài kỳ hạn làm khoản trả thấp hơn nhưng có thể tăng chi phí.",
+    horizonLabel: "Tháng muốn so sánh", horizonHelp: "So cả hai gói tại cùng tháng, ví dụ 60 nếu dự kiến giữ thêm 5 năm. Tháng 0 chỉ có phí trả ngay.",
+    feesTitle: "Phí trả ngay khi chuyển khoản vay", feesGroup: "Hai khoản phí, không cộng trùng",
+    oldFeeLabel: "Phí tất toán khoản vay cũ", oldFeeHelp: "Nhập số tiền phí trả nợ trước hạn theo hợp đồng cũ. Nếu chưa biết, kết quả chưa đủ để quyết định.",
+    costsLabel: "Phí một lần của khoản vay mới", costsHelp: "Tổng các chi phí một lần bạn đã xác nhận, không gồm phí tất toán cũ ở ô trên. Không cộng vào gốc vay.",
+    feesNone: "Đang giả định cả hai khoản phí bằng 0.",
+    moneyUnit: "₫", rateUnit: "%/năm", monthsUnit: "tháng",
+    balanceInvalid: "Nhập dư nợ lớn hơn 0.", rateInvalid: "Nhập lãi suất từ 0 đến 100%/năm.",
+    monthsInvalid: "Nhập số nguyên từ 1 đến 1.200 tháng.", horizonInvalid: "Nhập số nguyên từ 0 đến 1.200 tháng.",
+    costsInvalid: "Nhập phí từ 0 trở lên; không bỏ trống nếu chưa xác định giả định.",
+    defaultBalance: "2.000.000.000", defaultCurrentRate: "11", defaultRemaining: "216",
+    defaultNewRate: "8,5", defaultNewTerm: "300", defaultCosts: "20.000.000", defaultOldFee: "20.000.000", defaultHorizon: "60",
+    resultTitle: "So tại tháng {month}", costSavingLabel: "Tiết kiệm chi phí sau phí, có tính dư nợ",
+    cashSavingLabel: "Chênh lệch tiền đã chi sau phí (chưa tính dư nợ)",
+    breakEvenLabel: "Tháng đầu lãi tiết kiệm bù đủ phí trong mốc đã chọn",
+    noBreakEven: "Chưa bù đủ trong mốc đã chọn", zeroBreakEven: "Tháng 0: không có phí cần bù",
+    signNote: "Số dương: chuyển khoản vay tốn ít hơn; số âm: tốn nhiều hơn. Dòng tiền nhẹ hơn không đồng nghĩa chi phí thấp hơn.",
+    crossingNote: "Mốc bù phí là lần đầu, không bảo đảm có lợi mãi. Đổi tháng so sánh để xem kết quả có đảo chiều không. Mức gần 0 trong phạm vi nửa đồng được coi là hòa vốn.",
+    reversalNote: "Chi phí đã từng bù đủ phí nhưng lại âm ở một tháng sau đó trong khoảng đang xem.",
+    detailToggle: "Xem lãi, khoản đã trả và dư nợ", detailTitle: "Hai phương án tại cùng tháng",
+    currentPaymentLabel: "Khoản trả tháng đầu — giữ khoản cũ", newPaymentLabel: "Khoản trả tháng đầu — chuyển khoản vay",
+    monthlySavingLabel: "Giảm khoản trả tháng đầu (âm là tăng)",
+    currentPaidLabel: "Giữ khoản cũ — gốc và lãi đã trả", newPaidLabel: "Chuyển khoản vay — gốc và lãi đã trả",
+    currentInterestLabel: "Giữ khoản cũ — lãi đã trả", newInterestLabel: "Chuyển khoản vay — lãi đã trả",
+    currentBalanceLabel: "Giữ khoản cũ — dư nợ còn lại", newBalanceLabel: "Chuyển khoản vay — dư nợ còn lại",
+    feesLabel: "Tổng phí trả tại tháng 0", lifetimeLabel: "Tiết kiệm chi phí khi cả hai gói đã trả hết",
+    cashBreakEvenLabel: "Tháng đầu bù phí bằng dòng tiền trong mốc đã chọn",
+    termChangeLabel: "Thay đổi kỳ hạn (âm là rút ngắn)",
+    assumptions: "Trả gốc và lãi đều hằng tháng, lãi suất không đổi. Phí đều trả ngay, không vay thêm để trả phí. Không chiết khấu, không tính phí tất toán ở tháng so sánh, phí định kỳ hay lịch chuyển đổi theo ngày.",
   },
-
-  trapNotice:
-    "Hai con số trong bảng có thể mâu thuẫn nhau, và đó là điểm quan trọng nhất của trang này. Với khoản vay mặc định, chuyển từ 11% sang 8,5% mà giữ nguyên 216 tháng: mỗi tháng nhẹ đi 2.393.883 ₫ và tiết kiệm thực 487.078.691 ₫ — rõ ràng nên làm. Nhưng nếu đặt kỳ hạn mới thành 300 tháng, mỗi tháng nhẹ đi tới 3.897.338 ₫, điểm hoàn phí còn 8 tháng, mà tổng lãi lại TĂNG 172.761.032 ₫ — lỗ 202.761.032 ₫. Điểm hoàn phí ngắn không đủ để kết luận; nó chỉ trả lời câu hỏi “nếu tôi trả hết sớm thì có lỗ phí không”.",
-
+  chart: {
+    title: "Tiết kiệm chi phí và chênh lệch tiền đã chi, theo thời gian", series: "Tiết kiệm chi phí (có tính dư nợ)",
+    xAxis: "Tháng kể từ khi chuyển khoản vay", yAxis: "Chênh lệch ({unit})",
+    zeroReference: "Đường 0: hai phương án bằng nhau", horizonMarker: "Mốc so sánh: tháng {month}",
+    breakEvenMarker: "Chi phí bù đủ phí lần đầu: tháng {month}",
+    // TWO MEASURES, TWO LINES, TWO MARKERS. Cash flow counts only money
+    // already handed over; cost also counts the debt still owed. On the C12
+    // fixture they land on months 14 and 18, and with a stretched new term
+    // the cash one arrives FIRST — which is exactly the trap.
+    cashSeries: "Chênh lệch tiền đã chi (chưa tính dư nợ)",
+    cashBreakEvenMarker: "Tiền đã chi bù đủ phí lần đầu: tháng {month}",
+    cashNote: "Chênh lệch tiền đã chi tại mốc đó là {cash}; con số này chưa tính dư nợ còn lại nên không phải lợi ích kinh tế.",
+    breakEvenGapNote: "Hai mốc khác nhau: chi phí bù đủ phí ở tháng {cost}, còn tiền đã chi ở tháng {cash}. Đừng đọc mốc này thay cho mốc kia.",
+    // THE SIGN MEANS DIFFERENT THINGS ON THE TWO LINES. Below zero on the
+    // COST line is "dearer in the model"; below zero on the CASH line only
+    // means more money has left the account so far, which is not a claim
+    // about economic cost at all.
+    summary: "Tại tháng {month}, chênh lệch chi phí là {saving}; dư nợ khoản cũ {oldDebt}, khoản mới {newDebt}. Đường tiết kiệm CHI PHÍ ở dưới 0 nghĩa là chuyển khoản vay đắt hơn trong mô hình; đường TIỀN ĐÃ CHI ở dưới 0 chỉ nghĩa là đến thời điểm đó bạn đã chi ra nhiều hơn, chưa nói gì về lợi ích kinh tế.",
+    assumptions: ["Tháng 0 trừ toàn bộ phí trả ngay; mỗi tháng cộng lãi khoản cũ trừ lãi khoản mới. Không dùng chênh lệch khoản trả tháng làm tiết kiệm chi phí.", "Hai khoản vay có cùng gốc ban đầu; so cùng một tháng dù kỳ hạn khác nhau. Không chiết khấu và chưa tính phí thoát khoản vay tại mốc so sánh.", "Hai đường đo hai thứ khác nhau: đường tiết kiệm chi phí có tính dư nợ còn lại, đường tiền đã chi thì không. Kỳ hạn mới dài hơn có thể làm đường tiền đã chi vượt 0 trước, trong khi dư nợ còn lại vẫn cao hơn."],
+    tableCaption: "Các mốc chọn lọc: chi phí sau phí, tiền đã chi và dư nợ", monthColumn: "Tháng", savingColumn: "Tiết kiệm chi phí", cashColumn: "Chênh lệch tiền đã chi", oldDebtColumn: "Dư nợ cũ", newDebtColumn: "Dư nợ mới",
+    // VIEWPORT-NEUTRAL: with five columns this table renders as one block
+    // per month on a phone, so telling a phone reader to swipe sideways
+    // described a layout they do not have.
+    tableHint: "Trên màn hình nhỏ, mỗi tháng hiển thị thành một khối riêng. Trên màn hình rộng đây là bảng nhiều cột: bàn phím có thể đưa tiêu điểm vào bảng rồi dùng phím mũi tên, và khi bật số tiền đầy đủ thì vuốt ngang để xem đủ các cột.",
+    unavailableReason: "Chưa đủ dữ liệu hợp lệ để so hai khoản vay.",
+    unavailableRecovery: "Kiểm tra dư nợ, hai mức lãi, hai kỳ hạn, tháng so sánh và cả hai khoản phí. Nhập lại ô đang báo lỗi để dựng lại kết quả.",
+  },
   formula: {
-    title: "Cách tính",
+    title: "Cách đọc phép so sánh",
     body: [
-      "Khoản vay hiện tại được tính như một khoản vay mới bằng đúng dư nợ còn lại, trong đúng số tháng còn lại — vì từ hôm nay trở đi nó chính là như vậy. Cả hai bên đều dùng công thức niên kim: A = P × r ÷ (1 − (1 + r)^(−n)).",
-      "Giảm mỗi tháng = khoản trả hiện tại − khoản trả mới. Tiết kiệm lãi trước phí = lãi còn phải trả nếu giữ nguyên − lãi phải trả nếu chuyển. Tiết kiệm thực sau phí là con số thứ hai trừ chi phí chuyển đổi.",
-      "Điểm hoàn phí được tính lần lượt theo từng tháng: cộng dồn phần khoản trả tiết kiệm được, rồi lấy tháng đầu tiên mà phần cộng dồn đó bù đủ chi phí chuyển đổi. Công cụ không dùng phép chia chi phí ÷ giảm mỗi tháng, vì mức tiết kiệm không phải một con số cố định: khi kỳ hạn mới NGẮN hơn số tháng còn lại thì từ lúc khoản vay mới trả xong, phần tiết kiệm nhảy lên bằng TOÀN BỘ khoản trả cũ. Phép chia đơn giản từng cho ra 704 tháng trên một khoản vay chỉ dài 180 tháng. Con số báo ra là tháng đã trả xong, vì bạn chỉ thực sự có lãi khi tháng đó đã hoàn tất.",
-      "Công cụ để trống điểm hoàn phí trong hai trường hợp, thay vì ghi 0 hay một số âm. Một là khoản trả hằng tháng không giảm — không có gì để hoàn khi không có khoản tiết kiệm hằng tháng nào. Hai là khoản trả có giảm nhưng phần tiết kiệm cộng dồn không bao giờ bù đủ chi phí chuyển đổi trong suốt cả hai khoản vay.",
-      "Cả hai bên đều giả định lãi suất không đổi. Với khoản vay mua nhà tại Việt Nam, đây là giả định mạnh nhất trong toàn bộ phép tính: hãy nhập mức lãi SAU ưu đãi ở cả hai bên, vì so mức ưu đãi mới với mức thả nổi cũ luôn cho kết quả đẹp một cách sai lệch.",
+      "Ở tháng H bạn chọn, chi phí phía cũ = tổng gốc và lãi đã trả + dư nợ cũ; phía mới = tổng gốc và lãi đã trả + dư nợ mới + tất cả phí trả ngay. Tiết kiệm là phía cũ trừ phía mới. Vì gốc ban đầu bằng nhau, kết quả cũng bằng lãi cũ đã trả − lãi mới đã trả − phí.",
+      "Chênh lệch tiền đã chi = khoản đã trả của gói cũ − khoản đã trả của gói mới − phí. Con số này không tính dư nợ nên chỉ mô tả dòng tiền, không phải tổng lợi ích kinh tế. Khi cả hai khoản vay đã trả hết, hai thước đo mới trùng nhau.",
+      "Mốc bù phí chi phí là tháng đầu lãi tiết kiệm lũy kế bù được phí trong khoảng bạn chọn. Nếu không có phí, hai bên hòa tại tháng 0, kể cả khi chuyển khoản vay sẽ đắt hơn sau đó. Một lần cắt đường 0 không bảo đảm luôn có lợi về sau.",
+      "Cả hai khoản vay được mô hình hóa với khoản trả gốc và lãi đều cuối tháng, lãi danh nghĩa năm chia 12. Tất cả phí trả bằng tiền riêng tại tháng 0; không hỗ trợ phí vay thêm vào gốc. Không chiết khấu tiền tương lai, không mô hình phí định kỳ, phí tất toán ở tháng H hoặc lãi theo ngày.",
+    ],
+    // The two measures, kept apart. C12's whole lesson is that a cash-flow
+    // recovery month is not proof of an economic saving.
+    emphasis: [
+      "Con số này không tính dư nợ nên chỉ mô tả dòng tiền, không phải tổng lợi ích kinh tế",
+      "Một lần cắt đường 0 không bảo đảm luôn có lợi về sau",
     ],
   },
-
-  faq: {
-    title: "Câu hỏi thường gặp",
-    items: [
-      {
-        q: "Nên tin điểm hoàn phí hay tiết kiệm thực sau phí?",
-        a: "Tùy bạn định giữ khoản vay bao lâu. Nếu có khả năng bán nhà hoặc tất toán trong vài năm tới, điểm hoàn phí là con số quyết định — chuyển đổi rồi trả hết trước khi hoàn được phí là lỗ. Nếu bạn sẽ trả đến hết kỳ hạn, tiết kiệm thực sau phí mới là con số đúng. Hai con số có thể mâu thuẫn theo cả hai chiều, nên đừng chỉ nhìn một chiều: kỳ hạn mới DÀI hơn số tháng còn lại thì điểm hoàn phí rất ngắn mà tiết kiệm thực lại âm. Kỳ hạn mới NGẮN hơn thì tiết kiệm thực rất lớn, còn điểm hoàn phí tùy bạn rút ngắn bao nhiêu: với dư nợ mặc định chuyển sang 8,5%, rút từ 216 xuống 180 tháng vẫn hoàn phí sau 25 tháng, nhưng rút tới mức khoản trả hằng tháng gần như không giảm — kỳ hạn mới quanh 155–158 tháng — thì điểm hoàn phí bị đẩy ra 157–159 tháng, và rút ngắn hơn nữa thì khoản trả tăng lên nên không còn điểm hoàn phí nào.",
-      },
-      {
-        q: "Phí trả nợ trước hạn tính thế nào?",
-        a: "Ngân hàng thường thu theo phần trăm dư nợ trả trước và giảm dần theo số năm đã vay — ví dụ 3% trong 2 năm đầu, 2% năm thứ ba, rồi 1% hoặc miễn. Hãy đọc lại hợp đồng và cộng khoản này vào ô chi phí chuyển đổi, vì với dư nợ 1,5 tỷ thì 2% đã là 30 triệu, đủ để đổi kết luận.",
-      },
-      {
-        q: "Vì sao phải nhập lãi suất sau ưu đãi cho khoản vay mới?",
-        a: "Vì so mức ưu đãi 12 tháng đầu của khoản vay mới với mức thả nổi hiện tại của khoản vay cũ là so hai thứ khác nhau, và luôn cho ra kết quả tốt giả tạo. Hãy hỏi ngân hàng mới về lãi cơ sở cộng biên độ, nhập mức đó, rồi chạy thêm một lần với mức ưu đãi để thấy khoảng dao động.",
-      },
-      {
-        q: "Chuyển đổi mà giữ nguyên khoản trả hằng tháng thì sao?",
-        a: "Đây thường là phương án tốt nhất và công cụ hỗ trợ được: hãy giảm kỳ hạn mới xuống cho tới khi khoản trả hằng tháng mới xấp xỉ khoản trả hiện tại. Bạn không nhẹ hơn mỗi tháng, nhưng rút ngắn kỳ hạn và tiết kiệm lãi nhiều nhất. Nhập kỳ hạn 180 tháng vào ví dụ mặc định để thấy hiệu ứng. Đổi lại, mức giảm hằng tháng gần như bằng 0, nên điểm hoàn phí sẽ rất muộn — đó là bình thường chứ không phải dấu hiệu xấu, và trong trường hợp này con số phải đọc là tiết kiệm thực sau phí. Ví dụ với dư nợ mặc định, chuyển sang 9,75%/năm trong 180 tháng và chịu 60 triệu phí: mỗi tháng chỉ nhẹ đi 85.305 ₫ nên điểm hoàn phí là 183 tháng, nhưng tiết kiệm thực sau phí vẫn là 530.481.652 ₫.",
-      },
-      {
-        q: "Công cụ có tính phí bảo hiểm khoản vay không?",
-        a: "Chỉ khi bạn cộng vào ô chi phí chuyển đổi. Nhiều ngân hàng yêu cầu mua bảo hiểm nhân thọ hoặc bảo hiểm tài sản khi giải ngân, và phí năm đầu thường được thu một lần. Nếu bảo hiểm phải đóng hằng năm suốt kỳ hạn thì nó không phải chi phí một lần — khi đó hãy trừ phần chênh lệch phí bảo hiểm hằng năm ra khỏi dòng giảm mỗi tháng để có con số thật.",
-      },
-    ],
-  },
+  faq: { title: "Câu hỏi thường gặp", items: [
+    { q: "Chuyển ngân hàng có tiết kiệm thật nếu khoản trả giảm?", a: "Chưa chắc. Kéo dài kỳ hạn có thể giảm khoản trả nhưng giữ dư nợ cao hơn. Hãy chọn cùng một tháng rồi đọc tiết kiệm chi phí có tính dư nợ; dùng chênh lệch tiền đã chi để đánh giá áp lực tiền mặt riêng." },
+    { q: "Phí trả nợ trước hạn nhập ở đâu?", a: "Nhập số tiền theo hợp đồng đang có vào Phí tất toán khoản vay cũ. Phí một lần của khoản vay mới nhập riêng. Không cộng cùng một phí ở cả hai ô; các số mặc định chỉ là giả định, không phải biểu phí thị trường." },
+    { q: "Mốc bù phí có phải lúc nào chuyển khoản vay cũng bắt đầu có lợi?", a: "Không. Đây chỉ là lần đầu chênh lệch lãi bù đủ phí trong khoảng đang xem. Đường có thể quay xuống âm; tại phí bằng 0, hòa vốn tháng 0 không có nghĩa là tháng sau sẽ tiết kiệm. Kiểm tra đúng thời điểm bạn dự định còn giữ khoản vay." },
+    { q: "Nếu rút ngắn kỳ hạn làm khoản trả tăng thì có bỏ qua điểm hòa vốn không?", a: "Không. Công cụ vẫn cộng lãi và dòng tiền từng tháng, kể cả sau khi một gói đã hết nợ. Khoản trả ban đầu tăng không loại trừ tiết kiệm chi phí hoặc việc bù lại dòng tiền về sau." },
+    { q: "Kết quả có dùng để chốt hồ sơ hoặc lưu sang ứng dụng không?", a: "Không. Trang chưa lưu hay gửi dữ liệu sang ứng dụng, và không xác nhận điều kiện được vay. Trước khi quyết định, xác minh lãi, phí và lịch tất toán trong từng hợp đồng. Mô hình không chiết khấu và chưa tính phí thoát ở tháng bạn chọn." },
+  ] },
 } as const;

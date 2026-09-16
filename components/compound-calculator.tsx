@@ -1,11 +1,12 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { AreaChart } from "@/components/calc/chart/area-chart";
+import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
-import { ResultTable } from "@/components/calc/result-table";
 import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import {
@@ -15,8 +16,10 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
-import { computeCompound } from "@/lib/calc/compound";
+import { computeCompound, MAX_COMPOUND_YEARS } from "@/lib/calc/compound";
+import { compoundChartModel } from "@/lib/calc/charts/compound-chart";
 import type { Compounding } from "@/lib/calc/finance";
+import { CHART_UI } from "@/content/calculators/chart-ui";
 import { COMPOUND as C } from "@/content/calculators/compound";
 
 /**
@@ -24,6 +27,11 @@ import { COMPOUND as C } from "@/content/calculators/compound";
  *
  * Money fields parse with `parseMoney` ("." groups thousands); the rate and
  * term parse with `parseDecimal` ("," is the decimal mark).
+ *
+ * ORIGINAL ROW 16's visual splits the balance into the starting amount, the
+ * later contributions and the interest. It is built by
+ * `lib/calc/charts/compound-chart.ts` from the SAME yearly snapshots the table
+ * below renders, so the two cannot disagree.
  *
  * The yearly schedule sits outside the results live region — see
  * `ResultTable`'s docstring for why.
@@ -44,7 +52,10 @@ export function CompoundCalculator() {
 
   const principalInvalid = principal === null || principal < 0;
   const rateInvalid = rate === null || rate < 0;
-  const yearsInvalid = years === null || years <= 0;
+  // Bounded on the TYPED value, so the field shows its own error instead of
+  // the module silently refusing a term the page never mentioned.
+  const yearsInvalid =
+    years === null || years <= 0 || years > MAX_COMPOUND_YEARS;
   const contributionInvalid = contribution === null || contribution < 0;
 
   const result =
@@ -70,14 +81,17 @@ export function CompoundCalculator() {
   const money = (value: number | null | undefined) =>
     value === null || value === undefined ? null : `${formatMoney(value)} ₫`;
 
-  const tableRows = result
-    ? result.yearlyBalances.map((year) => [
-        formatDecimal(year.year, 0),
-        formatMoney(year.contributed),
-        formatMoney(year.interest),
-        formatMoney(year.balance),
-      ])
-    : [];
+  // The three-band figure. A cleared result clears the chart rather than
+  // leaving the previous drawing beside new inputs.
+  const chart = compoundChartModel(result, principal ?? 0, {
+    ...CHART_UI.money,
+    ...C.chart,
+  });
+
+  // No second table here. The chart's own table is these same snapshots with
+  // typed cells — one stated unit, exact đồng behind a checkbox, inside a
+  // disclosure — and a dense always-expanded duplicate below it was the
+  // reading experience this unit was asked to fix.
 
   return (
     <CalculatorCard>
@@ -159,19 +173,10 @@ export function CompoundCalculator() {
         </p>
       ) : null}
 
-      {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.table.caption}
-          columns={[
-            { label: C.table.yearColumn },
-            { label: C.table.contributedColumn, numeric: true },
-            { label: C.table.interestColumn, numeric: true },
-            { label: C.table.balanceColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
-      ) : null}
+      {/* Right after the answer, and outside every ResultGroup. */}
+      <ChartFigure model={chart}>
+        <AreaChart model={chart} />
+      </ChartFigure>
     </CalculatorCard>
   );
 }

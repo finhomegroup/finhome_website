@@ -29,16 +29,18 @@
 //   Mức miễn trừ năm 2026: 24.480 USD/năm dưới tuổi hưởng đủ và
 //     65.160 USD/năm trong năm đạt tuổi hưởng đủ
 
+import { US_SOCIAL_SECURITY_SOURCES } from "@/content/calculators/us-social-security-sources";
+
 export const US_SOCIAL_SECURITY_PAYOUT = {
   slug: "/cong-cu/chi-tra-an-sinh-xa-hoi",
 
-  pageTitle: "Chi trả an sinh xã hội",
-  metaTitle: "Chi trả an sinh xã hội — Hộ gia đình thực nhận bao nhiêu mỗi tháng",
+  pageTitle: "Chi trả an sinh xã hội Hoa Kỳ",
+  metaTitle: "Chi trả an sinh xã hội Hoa Kỳ — Hộ gia đình thực nhận mỗi tháng",
   metaDescription:
     "Tính số tiền an sinh xã hội Hoa Kỳ hộ gia đình thực nhận mỗi tháng theo tuổi bắt đầu nhận của cả hai vợ chồng, gồm trợ cấp theo vợ/chồng và phần bị giữ lại khi còn làm việc. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Hai quy tắc quyết định phần lớn câu trả lời, và cả hai đều trái với trực giác: trợ cấp theo vợ/chồng tính trên mức cơ bản của người trụ cột chứ không tính trên khoản họ thực nhận, nên nhận sớm không làm giảm nó — còn trợ cấp cho người còn sống thì tính trên khoản thực nhận, nên nhận sớm làm giảm nó vĩnh viễn.",
+    "Hai quy tắc của an sinh xã hội Hoa Kỳ quyết định phần lớn câu trả lời, và cả hai đều trái với trực giác: trợ cấp theo vợ/chồng tính trên mức cơ bản của người trụ cột chứ không tính trên khoản họ thực nhận, nên nhận sớm không làm giảm nó — còn trợ cấp cho người còn sống thì tính trên khoản thực nhận, nên nhận sớm làm giảm nó vĩnh viễn.",
 
   form: {
     workerGroup: "Bạn",
@@ -56,7 +58,7 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
     spousePiaLabel: "Mức trợ cấp cơ bản của vợ/chồng",
     spousePiaUnit: "USD/tháng",
     spousePiaHelp:
-      "Nhập 0 nếu họ không có hồ sơ riêng. Họ vẫn được nhận trợ cấp theo vợ/chồng.",
+      "Nhập 0 nếu họ không có hồ sơ riêng — khi đó họ vẫn có thể nhận trợ cấp theo vợ/chồng, nếu đủ điều kiện. Công cụ không kiểm tra điều kiện hưởng (người trụ cột đã bắt đầu nhận chưa, tuổi và thời gian kết hôn của vợ/chồng); nó chỉ tính số tiền sẽ là bao nhiêu.",
     spouseBirthYearLabel: "Năm sinh của vợ/chồng",
     spouseBirthYearHelp: "Quyết định tuổi hưởng đủ của họ.",
     spouseClaimAgeLabel: "Tuổi vợ/chồng bắt đầu nhận",
@@ -155,7 +157,7 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
       "Người nhận trợ cấp theo vợ/chồng không nhận cả hai khoản. Họ nhận khoản CAO HƠN giữa hồ sơ riêng và trợ cấp theo vợ/chồng — trên thực tế SSA trả khoản riêng trước rồi cộng phần bù cho bằng, nhưng tổng số là như nhau và công cụ hiển thị theo cách dễ đọc hơn.",
       "Trợ cấp cho người còn sống thì tính trên khoản THỰC NHẬN của người đã mất, không phải trên mức cơ bản. Đó là bất đối xứng quan trọng nhất trên trang: nhận sớm không ảnh hưởng trợ cấp theo vợ/chồng nhưng làm giảm trợ cấp cho người còn sống, và phần giảm đó kéo dài suốt cuộc đời người còn lại. Với các cặp vợ chồng có mức thu nhập lệch nhau nhiều, đây thường là lý do mạnh nhất để người thu nhập cao hơn chờ.",
       "Phép thử thu nhập giữ lại 1 USD cho mỗi 2 USD tiền lương vượt mức miễn trừ, hoặc mỗi 3 USD trong năm bạn đạt tuổi hưởng đủ. Từ tuổi đó trở đi phép thử dừng hẳn. Phần bị giữ không mất hẳn — trợ cấp được tính lại theo hướng tăng ở tuổi hưởng đủ — nhưng dòng tiền của những năm bị giữ thì đúng như con số hiển thị.",
-      "Công cụ đơn giản hóa vài chỗ và nói rõ ở đây: trợ cấp cho người còn sống hiển thị theo trường hợp nhận từ tuổi hưởng đủ trở đi (nhận sớm hơn, có thể từ tuổi 60, sẽ bị giảm theo một thang riêng); không tính điều chỉnh theo giá sinh hoạt; không tính thuế trên trợ cấp; và không mô hình hóa trợ cấp cho con hoặc mức trần tổng trợ cấp của một hồ sơ gia đình.",
+      "Toàn bộ các quy tắc trên là quy tắc của an sinh xã hội Hoa Kỳ và không có tương ứng trong bảo hiểm xã hội Việt Nam — đừng áp chúng cho một hồ sơ BHXH. Công cụ cũng đơn giản hóa vài chỗ và nói rõ ở đây: trợ cấp cho người còn sống hiển thị theo trường hợp nhận từ tuổi hưởng đủ trở đi (nhận sớm hơn, có thể từ tuổi 60, sẽ bị giảm theo một thang riêng); không tính điều chỉnh theo giá sinh hoạt; không tính thuế trên trợ cấp; và không mô hình hóa trợ cấp cho con hoặc mức trần tổng trợ cấp của một hồ sơ gia đình.",
     ],
   },
 
@@ -183,5 +185,14 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
         a: "Vì con số đó nên đến từ SSA chứ không từ chúng tôi. Nó được tính từ lịch sử thu nhập thật theo từng năm của bạn, thứ mà không công cụ nào bên ngoài SSA có. Việc nhận nó làm đầu vào cũng có một lợi ích khác: trang này không cần đến các mốc của công thức trợ cấp, những con số được điều chỉnh hằng năm và chỉ có số liệu công bố cho một vài năm — nên kết quả ở đây không bị cũ đi theo năm. Nếu bạn chưa có con số của SSA, trang ước tính an sinh xã hội trong bộ công cụ này dựng một con số gần đúng từ thu nhập bình quân của bạn.",
       },
     ],
+  },
+
+  // Defined ONCE in us-social-security-sources.ts and spread here. This row is
+  // the only one of the three whose indexed figures are editable — the two
+  // earnings-test exempt amounts — so it is also the row where the difference
+  // between "you can correct this" and "you cannot" is visible. The rates it
+  // cannot expose are the same ones the other two rows cannot.
+  sources: {
+    ...US_SOCIAL_SECURITY_SOURCES,
   },
 } as const;

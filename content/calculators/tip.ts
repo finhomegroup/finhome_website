@@ -37,8 +37,23 @@ export const TIP = {
 
     taxLabel: "VAT",
     taxUnit: "%",
-    taxHelp: "Tính trên tiền món ăn cộng phí phục vụ. Thường là 8% hoặc 10%.",
-    taxInvalid: "Vui lòng nhập một số từ 0 trở lên.",
+    // THE OLD TEXT WAS "Thường là 8% hoặc 10%" AND THAT IS NOT A BASIS.
+    // Prefilling 8 rather than 10 is an implicit claim that the reduced rate
+    // is in force, and nothing on the page dated it. A reader can only decide
+    // whether to override a default if they know what the default assumed —
+    // which is the whole reason `sources` exists; see the docstring at
+    // `components/calc/calculator-page.tsx`.
+    //
+    // The reduction has an END DATE and it is inside the horizon of anyone
+    // reading this page, so the date is stated rather than left for the reader
+    // to discover when their bill stops matching.
+    taxHelp:
+      "Tính trên tiền món ăn cộng phí phục vụ: khoản phụ thu mà nhà hàng được hưởng nằm trong giá tính thuế theo Điều 7 khoản 2 Luật Thuế giá trị gia tăng số 48/2024/QH15. Mức 8% điền sẵn là mức giảm 2 điểm phần trăm, áp dụng từ 01/07/2025 đến hết 31/12/2026 theo Nghị quyết 204/2025/QH15 và Nghị định 174/2025/NĐ-CP; sau thời hạn đó mức phổ thông trở lại là 10%. Hàng hóa và dịch vụ chịu thuế tiêu thụ đặc biệt không thuộc diện được giảm và vẫn ở 10% — trên hóa đơn nhà hàng, đồ uống có cồn là trường hợp thường gặp nhất. Công cụ chỉ nhận một mức, nên một hóa đơn vừa có món ăn vừa có bia sẽ không khớp tuyệt đối; hãy nhập mức ghi trên hóa đơn của bạn. Xem phần nguồn ở cuối trang.",
+    // 0–100, not "0 trở lên". A VAT rate above 100% is not a number anyone
+    // can be invoiced, and the field used to accept 500. The tip and service
+    // fields below stay unbounded on purpose: those are the payer's own
+    // discretionary choices, not a rate set by statute.
+    taxInvalid: "Vui lòng nhập một số từ 0 đến 100.",
     defaultTax: "8",
 
     tipLabel: "Tiền tip",
@@ -113,6 +128,37 @@ export const TIP = {
       {
         q: "Chia không đều thì tính thế nào?",
         a: "Công cụ này chia đều. Khi cần chia theo món ăn của từng người, hãy cộng tiền món của mỗi người rồi áp cùng một tỷ lệ phí phục vụ, VAT và tip lên từng phần — dùng công cụ với số người là 1 và tiền món là phần của người đó. Cách này công bằng hơn khi trong bàn có người chỉ uống nước.",
+      },
+      {
+        q: "Hóa đơn của tôi ghi 10% chứ không phải 8% thì sao?",
+        a: "Hãy sửa ô VAT thành 10. Mức giảm 2 điểm phần trăm không áp cho mọi thứ: hàng hóa và dịch vụ chịu thuế tiêu thụ đặc biệt bị loại khỏi diện được giảm, nên một hóa đơn có bia hoặc rượu có thể mang hai mức thuế cùng lúc — phần món ăn 8% và phần đồ uống có cồn 10%. Công cụ chỉ nhận một mức, nên với hóa đơn như vậy con số ở đây là xấp xỉ; nếu cần chính xác, hãy chạy hai lần và cộng lại. Mức giảm cũng chỉ áp dụng đến hết 31/12/2026.",
+      },
+    ],
+  },
+
+  // The page prefills a legal parameter, which is the case `sources` exists
+  // for — `components/calc/calculator-page.tsx` says so in as many words:
+  // "Naming a decree and a date in prose is not a citation a reader can
+  // check". Both links are the official Công báo typeset PDFs rather than an
+  // aggregator: the signed copies on datafiles.chinhphu.vn are image scans
+  // with no text layer, and thuvienphapluat.vn refuses automated fetching, so
+  // neither can be checked by whoever maintains this next.
+  sources: {
+    title: "Nguồn cho mức VAT điền sẵn",
+    intro:
+      "Hai văn bản dưới đây là nguồn của mức 8% điền sẵn và của mốc hết hiệu lực 31/12/2026. Chúng được đọc trong phần rà soát nguồn của dự án ngày 16/09/2026, không phải do trang tự tra lại tại thời điểm bạn đọc. Đây không phải danh sách đầy đủ và không phải tư vấn thuế. Công cụ cũng chỉ nhận một mức VAT cho cả hóa đơn, trong khi một hóa đơn thật có thể mang hai mức. Hóa đơn của bạn là căn cứ đúng hơn con số điền sẵn ở đây.",
+    items: [
+      {
+        url: "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2025/6/45374/57334-1-2025895-896174-2025-nd-cp.pdf",
+        label:
+          "Nghị định số 174/2025/NĐ-CP — quy định giảm thuế giá trị gia tăng theo Nghị quyết số 204/2025/QH15",
+        note: "Nguồn của mức 8% và của thời hạn: Điều 2 khoản 1 ghi hiệu lực từ 01/07/2025 đến hết 31/12/2026. Điều 1 và hai phụ lục kèm theo là nơi xác định những nhóm không được giảm, trong đó có hàng hóa và dịch vụ chịu thuế tiêu thụ đặc biệt.",
+      },
+      {
+        url: "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2024/11/43576/53720-1-20241527-152848-2024-qh15.pdf",
+        label:
+          "Luật Thuế giá trị gia tăng số 48/2024/QH15 — trang Công báo",
+        note: "Nguồn của mức phổ thông 10% tại khoản 3 Điều 9, và của việc phí phục vụ nằm trong giá tính thuế tại khoản 2 Điều 7. Luật có hiệu lực từ 01/07/2025 và đã được sửa đổi bởi các văn bản ban hành sau, nên hãy đối chiếu bản hợp nhất nếu bạn cần dùng cho việc lập hóa đơn.",
       },
     ],
   },

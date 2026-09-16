@@ -5,11 +5,11 @@ Mua một chiếc điện thoại, người tiêu dùng được nhà sản xu�
 - So với các sản phẩm tiêu dùng khác, đất đai gần như không có cơ chế bảo hành hay bảo hiểm rủi ro cho người mua.
 - Thông tin pháp lý dự án, tình trạng tranh chấp, quy hoạch khu vực thường khó tiếp cận hoặc không đầy đủ.
 - Người mua phải tự thẩm định hồ sơ pháp lý, chịu rủi ro cao nếu thiếu kinh nghiệm hoặc tư vấn chuyên nghiệp.
-- Các công cụ minh bạch thị trường như mã định danh điện tử BĐS mới chỉ đang được triển khai.
+- Các công cụ minh bạch thị trường như mã định danh điện tử BĐS mới chỉ đang được triển khai. Đó là một mã số riêng, không trùng lặp, gắn với từng bất động sản để tra cứu hồ sơ của chính tài sản đó.
 
 ## Góc nhìn FinHome
 
-Sự bất cập về bảo vệ người tiêu dùng trong giao dịch đất đai tạo ra rủi ro thực tế cho người mua, đặc biệt những người lần đầu tham gia thị trường. Khác với mua hàng hóa thông thường có đầy đủ quy định bảo về quyền lợi người tiêu dùng, giao dịch bất động sản phụ thuộc phần lớn vào kinh nghiệm và sự thận trọng của chính người mua. FinHome khuyến nghị người mua luôn kiểm tra kỹ pháp lý, xác minh quy hoạch và tìm đến các chuyên gia uy tín trước khi xuống tiền với bất kỳ dự án đất nền nào.
+Sự bất cập về bảo vệ người tiêu dùng trong giao dịch đất đai tạo ra rủi ro thực tế cho người mua, đặc biệt những người lần đầu tham gia thị trường. Khác với mua hàng hóa thông thường có đầy đủ quy định bảo vệ quyền lợi người tiêu dùng, giao dịch bất động sản phụ thuộc phần lớn vào kinh nghiệm và sự thận trọng của chính người mua. FinHome khuyến nghị người mua luôn kiểm tra kỹ pháp lý, xác minh quy hoạch và tìm đến các chuyên gia uy tín trước khi xuống tiền với bất kỳ dự án đất nền nào.
 
 ## Đọc thêm
 

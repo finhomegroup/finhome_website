@@ -1,4 +1,4 @@
-Thị trường bất động sản đang chứng kiến sự dịch chuyển rõ nét trong tâm lý người mua. Trong bối giá nhà ở mức cao, mỗi quyết định xuống tiền trở nên thận trọng hơn, buộc người mua phải cân nhắc kỹ lưỡng hơn trước khi xuống tiền.
+Thị trường bất động sản đang chứng kiến sự dịch chuyển rõ nét trong tâm lý người mua. Trong bối cảnh giá nhà ở mức cao, mỗi quyết định xuống tiền trở nên thận trọng hơn, buộc người mua phải cân nhắc kỹ lưỡng hơn trước khi xuống tiền.
 
 ## Điểm chính cần nắm
 

@@ -222,6 +222,39 @@ describe("nien-kim at its shipped defaults", () => {
     expect(inverted.totalPayments).toBe(480);
     expect(inverted.quotedImpliedRatePercent!).toBeCloseTo(6, 6);
   });
+
+  it("names the United States in its own h1, not only in the registry", () => {
+    // Every other string on this surface says so — the registry title, the
+    // summary, the hub badge and the `usRules` notice — while the h1 said
+    // "Tính niên kim" and nothing else. The one string a reader sees first
+    // was the one not saying it.
+    expect(C.pageTitle).toContain("Hoa Kỳ");
+  });
+
+  it("cites the exclusion ratio instead of only asserting it", () => {
+    // The page states a rule of United States tax law that decides the
+    // tax-free share of every payment. Before this it carried no href.
+    expect(C.sources.items.length).toBeGreaterThan(0);
+    for (const item of C.sources.items) {
+      expect(item.url, item.label).toMatch(/^https:\/\/\S+$/);
+      expect(item.url, item.label).toContain("irs.gov");
+      expect(item.label.trim().length).toBeGreaterThan(10);
+    }
+    // `intro` carries the provenance limit, not a claim of completeness.
+    expect(C.sources.intro).toContain("không phải ý kiến tư vấn thuế");
+    expect(C.sources.intro).toContain("kỳ hạn xác định");
+  });
+
+  it("keeps the shortened column's unit, in the intro rather than the header", () => {
+    // The `<th>` went from "Lấy lại đủ gốc sau" (18 characters) to "Thu hồi
+    // gốc" (11) because this is a real `<table>` with seven columns at
+    // ~300 px on a phone. The qualification MOVED; it did not vanish, which
+    // is the failure this asserts against.
+    const T = C.form.table;
+    expect(T.moneyBackColumn.length).toBeLessThanOrEqual(13);
+    expect(T.intro).toContain("thu hồi gốc");
+    expect(T.intro).toContain("số năm");
+  });
 });
 
 describe("nien-kim — provenance header", () => {

@@ -36,7 +36,7 @@ export const DDM_MULTI = {
     highGrowthLabel: "Tăng trưởng giai đoạn đầu",
     highGrowthUnit: "%/năm",
     highGrowthHelp:
-      "Được phép CAO HƠN lợi nhuận yêu cầu — đó chính là lý do dùng mô hình hai giai đoạn.",
+      "Được phép cao hơn lợi nhuận yêu cầu — đó chính là lý do dùng mô hình hai giai đoạn.",
     highGrowthInvalid: "Vui lòng nhập một số.",
     defaultHighGrowth: "20",
 
@@ -81,7 +81,17 @@ export const DDM_MULTI = {
     },
 
     unpriceableNotice:
-      "Tăng trưởng vĩnh viễn bằng hoặc lớn hơn lợi nhuận yêu cầu, nên giá trị cuối kỳ không xác định. Chỉ giai đoạn ĐẦU được phép tăng trưởng nhanh hơn lợi nhuận yêu cầu; giai đoạn ổn định thì không, vì không có giá trị hữu hạn cho một dòng cổ tức tăng nhanh hơn tỷ lệ chiết khấu mãi mãi.",
+      "Tăng trưởng vĩnh viễn bằng hoặc lớn hơn lợi nhuận yêu cầu, nên giá trị cuối kỳ không xác định. Chỉ giai đoạn đầu được phép tăng trưởng nhanh hơn lợi nhuận yêu cầu; giai đoạn ổn định thì không, vì không có giá trị hữu hạn cho một dòng cổ tức tăng nhanh hơn tỷ lệ chiết khấu mãi mãi.",
+  },
+
+  // The simple mode, as a SLUG rather than an href — see the twin comment in
+  // `ddm.ts`. The link is worth having in this direction too: the one-stage
+  // model is also the CHECK on this one, since equal growth rates must
+  // reproduce its value exactly (`formula.body[4]`).
+  relatedTool: {
+    title: "Mô hình một giai đoạn, và cách đối chiếu",
+    slug: "co-phieu-tang-truong-deu",
+    why: "Với doanh nghiệp trả cổ tức đều đã trưởng thành thì một giai đoạn là đủ, và mô hình Gordon đơn giản hơn để đọc. Nó cũng là cách kiểm tra trang này: đặt tăng trưởng giai đoạn đầu bằng tăng trưởng vĩnh viễn thì hai công cụ phải cho cùng một con số, với bất kỳ độ dài giai đoạn đầu nào.",
   },
 
   terminalNotice:
@@ -91,10 +101,24 @@ export const DDM_MULTI = {
     title: "Cách tính",
     body: [
       "Giai đoạn đầu: cổ tức năm t = D0 × (1 + tăng trưởng cao)^t, rồi chiết khấu về hiện tại bằng cách chia (1 + lợi nhuận yêu cầu)^t. Với mặc định, cổ tức năm 5 là 4.977 ₫ và tổng giá trị hiện tại của cả năm năm là 12.358 ₫.",
-      "Giá trị cuối kỳ dùng công thức Gordon tại thời điểm hết giai đoạn đầu: cổ tức năm sau đó chia (lợi nhuận yêu cầu − tăng trưởng vĩnh viễn). Cổ tức năm sau đó là cổ tức năm cuối giai đoạn đầu nhân (1 + tăng trưởng VĨNH VIỄN), không nhân tăng trưởng cao — vì năm đầu của giai đoạn ổn định đã chạy theo tốc độ ổn định. Với mặc định: 4.977 × 1,05 ÷ 0,07 = 74.650 ₫.",
+      "Giá trị cuối kỳ dùng công thức Gordon tại thời điểm hết giai đoạn đầu: cổ tức năm sau đó chia (lợi nhuận yêu cầu − tăng trưởng vĩnh viễn). Cổ tức năm sau đó là cổ tức năm cuối giai đoạn đầu nhân (1 + tăng trưởng vĩnh viễn), không nhân tăng trưởng cao — vì năm đầu của giai đoạn ổn định đã chạy theo tốc độ ổn định. Với mặc định: 4.977 × 1,05 ÷ 0,07 = 74.650 ₫.",
       "Giá trị cuối kỳ đó được quy về hiện tại bằng cách chia (1 + lợi nhuận yêu cầu)^n, tức n năm chứ không phải n+1 — vì nó đã được tính tại thời điểm cuối năm n. Kết quả là 42.358 ₫.",
       "Giá trị mỗi cổ phiếu = 12.358 + 42.358 = 54.716 ₫. Tỷ trọng phần cuối kỳ là 42.358 ÷ 54.716 = 77,41%.",
-      "Một cách kiểm tra mô hình: đặt tăng trưởng giai đoạn đầu bằng tăng trưởng vĩnh viễn thì kết quả phải trùng đúng với mô hình Gordon một giai đoạn, với BẤT KỲ độ dài giai đoạn đầu nào. Tính chất này bắt được gần như mọi lỗi lệch một kỳ, và nó được kiểm tra trong bộ test của module.",
+      "Một cách kiểm tra mô hình: đặt tăng trưởng giai đoạn đầu bằng tăng trưởng vĩnh viễn thì kết quả phải trùng đúng với mô hình Gordon một giai đoạn, với bất kỳ độ dài giai đoạn đầu nào. Tính chất này bắt được gần như mọi lỗi lệch một kỳ, và nó được kiểm tra trong bộ test của module.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark the two off-by-one-period mistakes this model invites, and the property that catches them.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "không nhân tăng trưởng cao",
+      "tức n năm chứ không phải n+1",
+      "bất kỳ độ dài giai đoạn đầu nào",
     ],
   },
 

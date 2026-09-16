@@ -9,10 +9,15 @@
  * the boundary so everything downstream works in litres per 100 km. Letting
  * the two units meet anywhere else is how a 2 L/100 km car appears.
  *
- * Fuel prices in Vietnam are set by a joint MOIT/MOF announcement and move
- * every ten days, so the price is an input with no default baked into the
- * math. Nothing here fetches a rate — the site is a static export, and a
- * stale petrol price would be worse than an empty box.
+ * The price is an INPUT with no default baked into the math, and nothing here
+ * fetches a rate: the site is a static export, and a stale petrol price would
+ * be worse than an empty box.
+ *
+ * This docstring used to assert that Vietnamese fuel prices are set by a joint
+ * MOIT/MOF announcement on a ten-day cycle. Nobody here has verified that
+ * schedule against a current instrument, the P3 scope audit flagged it as a
+ * stale unsupported claim, and it made no difference to the arithmetic — the
+ * reader supplies the price either way. Removed rather than re-sourced.
  */
 
 export type ConsumptionUnit =

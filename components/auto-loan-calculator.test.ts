@@ -27,6 +27,8 @@ import {
 } from "@/components/auto-loan-calculator";
 import { formatMoney } from "@/lib/calc/number";
 import { AUTO_LOAN } from "@/content/calculators/auto-loan";
+import { TABLE_UI } from "@/content/calculators/table-ui";
+import { TOOL_SHELL } from "@/content/calculators/tool-shell";
 
 const D = AUTO_LOAN.form;
 const CONTENT = "@/content/calculators/auto-loan";
@@ -39,13 +41,18 @@ const DEFAULTS: AutoLoanFormValues = {
   rate: D.defaultRate,
   term: D.defaultTerm,
   termUnit: D.defaultTermUnit,
+  netIncome: D.defaultNetIncome,
+  essentials: D.defaultEssentials,
+  otherDebts: D.defaultOtherDebts,
+  reserve: D.defaultReserve,
+  running: D.defaultRunning,
 };
 
 const state = (over: Partial<AutoLoanFormValues> = {}) =>
   autoLoanFormState({ ...DEFAULTS, ...over });
 
 describe("autoLoanFormState — the default state", () => {
-  it("finances 600 triệu over 60 months with nothing flagged", () => {
+  it("finances 400 triệu over 60 months with nothing flagged", () => {
     const s = state();
     expect(s.termMonths).toBe(60);
     for (const flag of [
@@ -54,42 +61,211 @@ describe("autoLoanFormState — the default state", () => {
       s.tradeInInvalid,
       s.rateInvalid,
       s.termInvalid,
+      s.netIncomeInvalid,
+      s.essentialsInvalid,
+      s.otherDebtsInvalid,
+      s.reserveInvalid,
+      s.runningInvalid,
     ]) {
       expect(flag).toBe(false);
     }
     expect(s.nothingToFinance).toBe(false);
-    expect(s.result!.amountFinanced).toBe(600_000_000);
-    expect(s.result!.downPaymentPercent).toBeCloseTo(25, 10);
+    // 800 − 300 deposit − 100 trade-in, the audit's row-31 fixture.
+    expect(s.result!.amountFinanced).toBe(400_000_000);
+    expect(s.result!.downPaymentPercent).toBeCloseTo(50, 10);
     expect(s.result!.loan.months).toBe(60);
   });
 
   it("pays the published annuity instalment", () => {
     // A = P·r / (1 − (1+r)^(−n)) — the formula the page's own "Công thức tính"
-    // quotes — with P = 600.000.000, r = 9,5%/12 and n = 60. `pmt` evaluates the
+    // quotes — with P = 400.000.000, r = 10%/12 and n = 60. `pmt` evaluates the
     // algebraically equal P·g·r/(g−1) form instead, so the two are only equal to
-    // float rounding: at these inputs they happen to agree exactly, but at n=66
-    // they differ by 1,9e-9 ₫. 6 dp (5e-7 ₫ on a 1,26e7 ₫ payment, 4e-14
-    // relative) is above that divergence and still far below one đồng.
-    const r = 9.5 / 100 / 12;
-    const reference = (600_000_000 * r) / (1 - (1 + r) ** -60);
+    // float rounding: 6 dp (5e-7 ₫ on an 8,5e6 ₫ payment) is above any such
+    // divergence and still far below one đồng.
+    const r = 10 / 100 / 12;
+    const reference = (400_000_000 * r) / (1 - (1 + r) ** -60);
     const s = state();
     expect(s.result!.loan.monthlyPrincipalInterest).toBeCloseTo(reference, 6);
+    // The audit's independently computed figure for the same loan.
+    expect(s.result!.loan.monthlyPrincipalInterest).toBeCloseTo(
+      8_498_817.884507332,
+      6,
+    );
+    expect(s.result!.loan.totalInterest).toBeCloseTo(109_929_073.07043993, 4);
     // What the row actually renders: formatMoney's default is whole đồng.
     expect(formatMoney(s.result!.loan.monthlyPrincipalInterest)).toBe(
-      "12.601.117",
+      "8.498.818",
     );
   });
 
   it("adds the buyer's own money to the loan payments for total cost", () => {
     const s = state();
     expect(s.totalCost).toBe(
-      200_000_000 + 0 + s.result!.loan.totalPrincipalInterest,
+      300_000_000 + 100_000_000 + s.result!.loan.totalPrincipalInterest,
     );
     expect(state({ tradeIn: "150.000.000" }).totalCost).toBe(
-      200_000_000 +
+      300_000_000 +
         150_000_000 +
         state({ tradeIn: "150.000.000" }).result!.loan.totalPrincipalInterest,
     );
+  });
+
+  it("marks the trade-in as active, so its disclosure cannot stay silent", () => {
+    // The trade-in default is 100 triệu, which is CHANGING the amount
+    // financed — `AdvancedFields` must therefore open itself and name it.
+    expect(state().tradeInActive).toBe(true);
+    expect(state({ tradeIn: "0" }).tradeInActive).toBe(false);
+    expect(state({ tradeIn: "" }).tradeInActive).toBe(false);
+  });
+});
+
+describe("autoLoanFormState — the household month (original row 31)", () => {
+  it("allocates the audit's month on both legs", () => {
+    const s = state();
+    expect(s.budget!.withoutCar).toBe(12_000_000);
+    expect(s.budget!.withCar).toBeCloseTo(3_501_182.115492668, 6);
+  });
+
+  it("takes the vehicle payment from the LOAN, so no field can double it", () => {
+    // The instalment is not a field: there is exactly one on the page, and
+    // "nợ khác" is documented as every debt EXCEPT this vehicle.
+    const s = state();
+    expect(s.budget!.vehiclePayment).toBe(
+      s.result!.loan.monthlyPrincipalInterest,
+    );
+    expect(s.budget!.difference).toBe(s.result!.loan.monthlyPrincipalInterest);
+    expect(s.budget!.otherDebts).toBe(3_000_000);
+  });
+
+  it("coincides on both legs when the purchase genuinely needs no loan", () => {
+    // Deposit covers the price: the answer is a car with no debt, not a blank.
+    // This is the VALID zero, and it has to stay reachable — the repair below
+    // must not turn a cash purchase into an unknown.
+    const s = state({ down: "800.000.000", tradeIn: "0" });
+    expect(s.result).toBeNull();
+    expect(s.nothingToFinance).toBe(true);
+    expect(s.vehiclePayment).toBe(0);
+    expect(s.budget!.vehiclePayment).toBe(0);
+    expect(s.budget!.vehicleCostUnknown).toBe(false);
+    expect(s.budget!.withCar).toBe(s.budget!.withoutCar);
+    expect(s.budget!.difference).toBe(0);
+  });
+});
+
+/**
+ * An invalid loan is not a free car.
+ *
+ * The shipped defect, reproduced on the live page by an independent review:
+ * with the default 400 triệu loan, setting the rate to −1 made the loan
+ * unpriceable and the household moved from "12 / 3,50 triệu" to "12 / 12
+ * triệu" with a vehicle cost of 0 ₫ and a chart announcing a gap of 0 ₫.
+ *
+ * The cause was `result?.loan.monthlyPrincipalInterest ?? 0` — which cannot
+ * distinguish "there is no loan" from "we could not price the loan".
+ */
+describe("autoLoanFormState — an unpriceable loan is UNKNOWN, not zero", () => {
+  const cases: [string, Partial<AutoLoanFormValues>][] = [
+    ["a negative rate", { rate: "-1" }],
+    ["a blank rate", { rate: "" }],
+    ["an unparseable rate", { rate: "abc" }],
+    ["a zero price", { price: "0" }],
+    ["a blank price", { price: "" }],
+    ["a term that rounds to zero months", { term: "0,4", termUnit: "months" }],
+    ["a blank term", { term: "" }],
+    ["a negative deposit", { down: "-1" }],
+    // Not a field error at all: the rate is legal and the loan still cannot
+    // be priced, because (1+r)^60 overflows. Same unknown, different cause.
+    ["an overflowing rate", { rate: "1000000000" }],
+  ];
+
+  it("withholds every with-car figure instead of inferring a zero", () => {
+    for (const [name, over] of cases) {
+      const s = state(over);
+      expect(s.result, name).toBeNull();
+      expect(s.nothingToFinance, name).toBe(false);
+      expect(s.vehiclePayment, name).toBeNull();
+
+      const budget = s.budget!;
+      expect(budget.vehicleCostUnknown, name).toBe(true);
+      expect(budget.vehiclePayment, name).toBeNull();
+      expect(budget.vehicleMonthlyCost, name).toBeNull();
+      expect(budget.withCar, name).toBeNull();
+      expect(budget.difference, name).toBeNull();
+      // Not "no shortfall" — no answer. The flag above is what a caller reads.
+      expect(budget.shortfall, name).toBe(false);
+      expect(budget.shortfallAmount, name).toBeNull();
+    }
+  });
+
+  it("keeps the without-car month, which does not depend on the loan", () => {
+    // Withholding the whole ledger would take away the one figure the reader
+    // can still act on.
+    const s = state({ rate: "-1" });
+    expect(s.budget!.withoutCar).toBe(12_000_000);
+    expect(s.budget!.committedWithoutVehicle).toBe(28_000_000);
+  });
+
+  it("recovers the full comparison as soon as the field is valid again", () => {
+    const broken = state({ rate: "-1" });
+    expect(broken.budget!.withCar).toBeNull();
+
+    const fixed = state({ rate: "10" });
+    expect(fixed.budget!.vehicleCostUnknown).toBe(false);
+    expect(fixed.budget!.withCar).toBeCloseTo(3_501_182.115492668, 6);
+    expect(fixed.budget!.difference).toBeCloseTo(8_498_817.884507332, 6);
+  });
+
+  it("never lets an unknown instalment read as a smaller one", () => {
+    // The specific arithmetic the defect produced: 12 − 0 = 12, i.e. the car
+    // appeared to cost nothing at all.
+    const s = state({ rate: "-1" });
+    expect(s.budget!.withCar).not.toBe(s.budget!.withoutCar);
+    expect(s.budget!.withCar).not.toBe(0);
+  });
+});
+
+describe("autoLoanFormState — the household month, continued", () => {
+
+  it("treats a BLANK essentials box as unknown, not as zero", () => {
+    const s = state({ essentials: "" });
+    expect(s.essentialsInvalid).toBe(false);
+    expect(s.budget!.limited).toBe(true);
+    expect(s.budget!.essentialExpenses).toBeNull();
+    // 40 − 3 − 3, with nothing claimed about living costs.
+    expect(s.budget!.withoutCar).toBe(34_000_000);
+  });
+
+  it("flags a non-blank essentials box that does not parse", () => {
+    expect(state({ essentials: "abc" }).essentialsInvalid).toBe(true);
+    expect(state({ essentials: "-1" }).essentialsInvalid).toBe(true);
+    expect(state({ essentials: "abc" }).budget).toBeNull();
+  });
+
+  it("reports a shortfall rather than flooring the month at zero", () => {
+    const s = state({ netIncome: "30.000.000" });
+    expect(s.budget!.withCar).toBeCloseTo(-6_498_817.884507332, 6);
+    expect(s.budget!.shortfall).toBe(true);
+    expect(s.budget!.shortfallWithoutVehicle).toBe(false);
+  });
+
+  it("blanks the budget while one of its own fields is invalid", () => {
+    for (const over of [
+      { netIncome: "0" },
+      { netIncome: "" },
+      { otherDebts: "-1" },
+      { reserve: "-1" },
+      { running: "-1" },
+    ]) {
+      expect(state(over).budget, JSON.stringify(over)).toBeNull();
+    }
+  });
+
+  it("keeps the loan answer even when the household fields are unusable", () => {
+    // The two halves of the page fail independently: a blank net income must
+    // not blank the instalment the reader came for.
+    const s = state({ netIncome: "" });
+    expect(s.budget).toBeNull();
+    expect(s.result!.amountFinanced).toBe(400_000_000);
   });
 });
 
@@ -141,8 +317,18 @@ describe("autoLoanFormState — the term gate is on the derived months", () => {
     expect(years.result!.loan.monthlyPrincipalInterest).toBe(
       months.result!.loan.monthlyPrincipalInterest,
     );
+    // RECOMPUTED for the row-31 fixture, not weakened. This expectation still
+    // read 11.706.931, which was the 600 triệu / 9,5% loan the page shipped
+    // before original row 31 changed the defaults to 400 triệu / 10%.
+    // A = P·r / (1 − (1+r)^(−n)) with P = 400.000.000, r = 0,10/12, n = 66 is
+    // 7.903.879,717219689 — confirmed independently by the review.
+    const r = 10 / 100 / 12;
+    expect(years.result!.loan.monthlyPrincipalInterest).toBeCloseTo(
+      (400_000_000 * r) / (1 - (1 + r) ** -66),
+      6,
+    );
     expect(formatMoney(years.result!.loan.monthlyPrincipalInterest)).toBe(
-      "11.706.931",
+      "7.903.880",
     );
   });
 
@@ -183,7 +369,7 @@ describe("autoLoanFormState — the note is only for the real cause", () => {
     expect(s.rateInvalid).toBe(false);
     expect(s.termInvalid).toBe(false);
     expect(s.result).toBeNull();
-    // There is 600 triệu left to finance, so the deposit advice would be wrong.
+    // There is 400 triệu left to finance, so the deposit advice would be wrong.
     expect(s.nothingToFinance).toBe(false);
   });
 
@@ -207,17 +393,37 @@ describe("autoLoanFormState — the note is only for the real cause", () => {
 /**
  * `aria-invalid` per field, keyed by the visible label.
  *
- * `NumberField` renders the label immediately before its input, so the first
- * input after a label is that label's own. `SelectField`'s label has no input
- * after it on this page and drops out of the map, which is fine: it has no
- * validity flag.
+ * PAIRED BY `for`/`id`, NOT BY DOM ADJACENCY, and that is a repair. The first
+ * version walked from EVERY `<label>` to the next `<input>`, with a comment
+ * claiming `SelectField`'s label had no following input. That was true until
+ * the household fields were added below it: the "Đơn vị kỳ hạn" select label
+ * then sat immediately before the net-income input and consumed it under the
+ * wrong key, so `flags.get("<net income label>")` came back `undefined` and a
+ * real assertion failed for a reason that had nothing to do with the page.
+ *
+ * `NumberField` owns `htmlFor`/`id` from one `useId` (see its docstring), so
+ * the attributes are the reliable binding. A `SelectField` drops out of the
+ * map because its control is a `<select>`, not an `<input>` — which is the
+ * correct reason rather than an accident of ordering.
  */
 function fieldFlags(html: string): Map<string, boolean> {
-  return new Map(
-    [...html.matchAll(/<label[^>]*>(.*?)<\/label>[\s\S]*?<input\b([^>]*)>/g)].map(
-      (match) => [match[1], /aria-invalid="true"/.test(match[2])],
-    ),
-  );
+  const labelsFor = new Map<string, string>();
+  for (const match of html.matchAll(
+    /<label[^>]*\bfor="([^"]+)"[^>]*>(.*?)<\/label>/g,
+  )) {
+    labelsFor.set(match[1], match[2]);
+  }
+
+  const flags = new Map<string, boolean>();
+  for (const match of html.matchAll(/<input\b([^>]*)>/g)) {
+    const attributes = match[1];
+    const id = /\bid="([^"]+)"/.exec(attributes)?.[1];
+    if (id === undefined) continue;
+    const label = labelsFor.get(id);
+    if (label === undefined) continue;
+    flags.set(label, /aria-invalid="true"/.test(attributes));
+  }
+  return flags;
 }
 
 /** Render the calculator with the prefilled values overridden. */
@@ -256,16 +462,139 @@ describe("AutoLoanCalculator — the flags reach the right field", () => {
   });
 
   it("shows the note with no field flagged when the deposit covers the price", async () => {
-    const html = await render({ defaultDown: "800.000.000" });
-    expect([...fieldFlags(html).values()]).toEqual([false, false, false, false, false]);
+    const html = await render({
+      defaultDown: "800.000.000",
+      defaultTradeIn: "0",
+    });
+    expect([...fieldFlags(html).values()].some(Boolean)).toBe(false);
     expect(html).toContain(D.nothingToFinanceNotice);
     expect(html).not.toContain(D.termInvalid);
   });
 
-  it("shows neither at the defaults", async () => {
+  it("shows neither at the defaults, and renders both answers", async () => {
     const html = await render({});
-    expect([...fieldFlags(html).values()]).toEqual([false, false, false, false, false]);
+    expect([...fieldFlags(html).values()].some(Boolean)).toBe(false);
     expect(html).not.toContain(D.nothingToFinanceNotice);
-    expect(html).toContain("12.601.117");
+    // The instalment, and the two household residuals it moves between.
+    expect(html).toContain("8.498.818");
+    expect(html).toContain("12.000.000");
+    expect(html).toContain("3.501.182");
+  });
+
+  it("flags the household field, not a vehicle field, for a bad net income", async () => {
+    // The two halves fail independently; the loan rows must survive.
+    const html = await render({ defaultNetIncome: "0" });
+    const flags = fieldFlags(html);
+    expect(flags.get(`${D.netIncomeLabel} (${D.netIncomeUnit})`)).toBe(true);
+    expect(flags.get(`${D.priceLabel} (${D.priceUnit})`)).toBe(false);
+    expect(html).toContain("8.498.818");
+  });
+
+  it("opens the trade-in disclosure and names the value when one is active", async () => {
+    const html = await render({});
+    // `AdvancedFields` pushes itself open on an active setting, and its
+    // summary line carries the label and the value — collapsed AND silent is
+    // not allowed.
+    expect(html).toContain("<details open");
+    expect(html).toContain(`${D.tradeInLabel} 100.000.000 ${D.tradeInUnit}`);
+    expect(html).not.toContain(D.tradeInGroupEmpty);
+  });
+
+  it("collapses the trade-in disclosure when nothing is traded in", async () => {
+    const html = await render({ defaultTradeIn: "0" });
+    expect(html).toContain(D.tradeInGroupEmpty);
+    expect(html).not.toContain("<details open");
+  });
+
+  it("says the essentials are unknown when the box is blank", async () => {
+    const html = await render({ defaultEssentials: "" });
+    expect(html).toContain(D.budgetLimitedNotice);
+    expect(html).not.toContain(D.essentialsInvalid);
+  });
+
+  it("names the shortfall when the instalment breaks the month", async () => {
+    const html = await render({ defaultNetIncome: "30.000.000" });
+    expect(html).toContain(D.shortfallNotice);
+    expect(html).not.toContain(D.shortfallBeforeNotice);
+    expect(html).toContain("6.498.818");
+  });
+
+  it("withholds the with-car rows, with a recovery, for an invalid rate", async () => {
+    // The live defect: rate −1 rendered "12.000.000" twice and a 0 ₫ gap.
+    const html = await render({ defaultRate: "-1" });
+    expect(html).toContain(D.paymentUnknownNotice);
+    // The without-car figure survives; the with-car one is the placeholder.
+    expect(html).toContain("12.000.000");
+    expect(html).not.toContain("3.501.182");
+    // The chart withholds itself with its own reason, rather than drawing a
+    // confident zero-gap comparison.
+    expect(html).toContain(AUTO_LOAN.chart.unknownReason);
+    expect(html).toContain(AUTO_LOAN.chart.unknownRecovery);
+    // Neither summary sentence is rendered: the distinctive tail of each is
+    // absent, so no "gap" claim survives. (A leading fragment would also
+    // match the net-income FIELD label, which is not what this is about.)
+    expect(html).not.toContain("Khoảng cách đúng bằng chi phí xe mỗi tháng");
+    expect(html).not.toContain("thanh tiền ra dài hơn thanh thu nhập");
+  });
+
+  it("does not show the unknown recovery once the rate is valid", async () => {
+    const html = await render({});
+    expect(html).not.toContain(D.paymentUnknownNotice);
+    expect(html).not.toContain(AUTO_LOAN.chart.unknownReason);
+  });
+});
+
+describe("AutoLoanCalculator — the example state is stated, not implied", () => {
+  it("renders the example badge on arrival", async () => {
+    // Four prefilled household figures with no badge is a page claiming to
+    // have analysed a household it knows nothing about.
+    const html = await render({});
+    expect(html).toContain(TOOL_SHELL.example.badge);
+    expect(html).toContain(TOOL_SHELL.example.note);
+    expect(html).toContain(TOOL_SHELL.example.detailTitle);
+  });
+
+  it("no longer tells the reader the prefilled figures are theirs", async () => {
+    const html = await render({});
+    // The exact sentence an independent review found on the live page.
+    expect(html).not.toContain("là của bạn, không phải giả định");
+    // Its replacement says what the state actually is.
+    expect(html).toContain("đang điền sẵn một ví dụ");
+  });
+
+  it("keeps the chart's own assumptions honest about the prefills", async () => {
+    const html = await render({});
+    expect(html).toContain(AUTO_LOAN.chart.assumptions[0]);
+    expect(AUTO_LOAN.chart.assumptions[0]).toContain("ví dụ");
+    // And no assumption claims the numbers are the reader's own.
+    for (const assumption of AUTO_LOAN.chart.assumptions) {
+      expect(assumption).not.toContain("Mọi con số là của bạn");
+    }
+  });
+});
+
+describe("AutoLoanCalculator — the repayment table is readable on a phone", () => {
+  it("passes RAW typed amounts, so the table owns both precisions", async () => {
+    const html = await render({});
+    // The unit line only exists when the table received money CELLS; with
+    // pre-formatted strings there is no unit, no compact reading and no
+    // switch — which is what a 390 px measurement found.
+    expect(html).toContain(TABLE_UI.units.trieu);
+    expect(html).toContain(TABLE_UI.exactToggle);
+    // Year 1's interest on this loan is 37.078.567 ₫ — the sum of the first
+    // twelve months' interest, amortized independently of the module (400
+    // triệu, 0,10/12 per month, 60 months). Its compact reading in triệu at
+    // one decimal place is "37,1". BOTH are in the markup: one control
+    // switches between them and both come from the same raw number.
+    expect(html).toContain("37,1");
+    expect(html).toContain("37.078.567");
+  });
+
+  it("does not scale the year number as though it were money", async () => {
+    // `countCell`, not `moneyCell`: a year is 1, not 0,000001 triệu. Dividing
+    // a count by a million is the mirror image of the 1000× defect class.
+    const html = await render({});
+    expect(html).toContain(TABLE_UI.units.trieu);
+    expect(html).not.toContain("0,000001");
   });
 });

@@ -9,7 +9,11 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
-import { computeUsIra, type UsIraInput } from "@/lib/calc/us-ira";
+import {
+  CAPITAL_GAINS_RATES,
+  computeUsIra,
+  type UsIraInput,
+} from "@/lib/calc/us-ira";
 import { RETIREMENT_LIMITS } from "@/lib/calc/us-retirement-limits";
 import { US_IRA as C } from "@/content/calculators/us-ira";
 
@@ -25,7 +29,12 @@ function shippedInput(): UsIraInput {
     retirementRatePercent: parseDecimal(D.retirementRate)!,
     returnPercent: parseDecimal(D.returnPercent)!,
     years: parseCount(D.years)!,
-    capitalGainsRatePercent: parseDecimal(D.capitalGains)!,
+    // A SELECT, so the component takes `Number(...)` of the stored value
+    // rather than running it through a Vietnamese-grammar parser — mirroring
+    // us-dividend-tax's qualified-rate field. Kept identical to the component
+    // on purpose: docs §6 records that a test parsing a default differently
+    // from the page is a test of nothing.
+    capitalGainsRatePercent: Number(D.capitalGains),
   };
 }
 
@@ -207,6 +216,161 @@ describe("ira-truyen-thong-hay-roth at its shipped defaults", () => {
     expect(C.form.deductibilityNotice).toContain("giả định");
     expect(C.form.deductibilityNotice).toContain("ngưỡng");
     expect(C.faq.items[4].q).toContain("quá cao");
+  });
+});
+
+/**
+ * A statutory rate with three legal values, and the citation for them.
+ *
+ * `names(rate)` is the reason this file does not simply assert
+ * `toContain(String(rate))`: the set starts at ZERO, and "0" is a substring of
+ * "48.350", "20%" and most other figures in the same sentence — an assertion
+ * that prose "contains 0" passes vacuously, exactly like the `formatMoney(0)`
+ * trap docs §8 records. The lookbehind requires the digit to start a percent
+ * token, so "20%" cannot satisfy the 0% rate.
+ */
+function names(text: string, rate: number): boolean {
+  return new RegExp(`(?<![0-9.,])${rate}%`).test(text);
+}
+
+describe("ira-truyen-thong-hay-roth — the statutory capital-gains field", () => {
+  it("offers exactly the three rates the statute has", () => {
+    // Asserted as a SET against the module's own constant, not as a count: a
+    // fourth option, or a changed one, has to fail here.
+    expect(CAPITAL_GAINS_RATES).toEqual([0, 15, 20]);
+    expect(Object.values(C.form.capitalGainsOptions)).toEqual(
+      CAPITAL_GAINS_RATES.map((rate) => formatPercent(rate, 0)),
+    );
+    // The prefilled value the row already shipped, unchanged, and a member.
+    expect(D.capitalGains).toBe("15");
+    expect(CAPITAL_GAINS_RATES).toContain(
+      shippedInput().capitalGainsRatePercent,
+    );
+  });
+
+  it("rejects an off-schedule rate at the MODEL, not only in the select", () => {
+    // The defect was a text box bounded 0-100 accepting 7%. A select cannot
+    // hold 7 — but `computeUsIra` is reachable from elsewhere, so the guard
+    // lives in both places, the way us-dividend-tax does it.
+    for (const rate of [7, 10, 25, 37]) {
+      expect(
+        computeUsIra({ ...shippedInput(), capitalGainsRatePercent: rate }),
+        `${rate}% is not on the capital-gains schedule and must be refused`,
+      ).toBe(null);
+    }
+    for (const rate of CAPITAL_GAINS_RATES) {
+      expect(
+        computeUsIra({ ...shippedInput(), capitalGainsRatePercent: rate }),
+        `the statutory rate ${rate}% must be accepted`,
+      ).not.toBeNull();
+    }
+  });
+
+  it("no longer offers a percent unit, because a select has no unit", () => {
+    // The key is gone rather than left dangling: a stale `capitalGainsUnit`
+    // would read as a text field that no longer exists.
+    expect("capitalGainsUnit" in C.form).toBe(false);
+    // And the field help names the three rates rather than a 0-100 range.
+    for (const rate of CAPITAL_GAINS_RATES) {
+      expect(
+        names(C.form.capitalGainsHelp, rate),
+        `capitalGainsHelp never names the ${rate}% rate`,
+      ).toBe(true);
+    }
+  });
+});
+
+describe("ira-truyen-thong-hay-roth — sources", () => {
+  const items = C.sources.items;
+
+  it("gives the reader something to open for every citation", () => {
+    // Non-vacuous: a block that lost its items would satisfy every `for`
+    // below. docs §8's coincidental pass.
+    expect(items.length).toBeGreaterThan(3);
+    for (const item of items) {
+      expect(item.url.startsWith("https://"), `${item.url} is not https`).toBe(
+        true,
+      );
+      // irs.gov ONLY. A secondary source is how a wrong statutory figure gets
+      // laundered into looking checked.
+      expect(new URL(item.url).hostname).toBe("www.irs.gov");
+      expect(item.label.length).toBeGreaterThan(20);
+      // Every item says what it actually verified, not just what it is.
+      expect(item.note, `${item.url} carries no note`).toBeDefined();
+      expect(item.note!.length).toBeGreaterThan(80);
+    }
+    // Four distinct pages, not one page cited four times.
+    expect(new Set(items.map((item) => item.url)).size).toBe(items.length);
+  });
+
+  it("puts the provenance limit in the intro, where the shell's docs say", () => {
+    const intro = C.sources.intro!;
+    // Read during a project review on a stated date — NOT looked up live by
+    // the page, which is the claim a link list otherwise implies.
+    expect(intro).toContain("16/09/2026");
+    expect(intro).toContain("không phải do trang tự tra lại");
+    // Not exhaustive, and not advice.
+    expect(intro).toContain("không phải danh sách đầy đủ");
+    expect(intro).toContain("không phải tư vấn thuế");
+  });
+
+  it("cites the capital-gains rate set the select now enforces", () => {
+    const gains = items.find((item) => item.url.includes("/taxtopics/tc409"));
+    expect(gains, "no citation for the 0/15/20 schedule").toBeDefined();
+    const text = `${gains!.label} ${gains!.note}`;
+    for (const rate of CAPITAL_GAINS_RATES) {
+      expect(
+        names(text, rate),
+        `the capital-gains citation never names the ${rate}% rate`,
+      ).toBe(true);
+    }
+    // And it records that the thresholds read there are a 2025 vintage, so
+    // the page does not imply it knows the current year's boundaries.
+    expect(gains!.note!).toContain("2025");
+  });
+
+  it("cites the contribution ceiling the page actually renders", () => {
+    const limits = items.find((item) =>
+      item.url.includes("retirement-topics-ira-contribution-limits"),
+    );
+    expect(limits, "no citation for the IRA ceiling").toBeDefined();
+    // Derived from the dated table, so a limit change breaks the citation
+    // instead of leaving it describing a figure the page no longer shows.
+    const p = RETIREMENT_LIMITS[2026];
+    expect(limits!.note!).toContain(usd(p.ira));
+    expect(limits!.note!).toContain(usd(p.ira + p.iraCatchUp50));
+    expect(limits!.note!).toContain(usd(p.iraCatchUp50));
+    expect(limits!.note!).toContain(usd(RETIREMENT_LIMITS[2025].ira));
+    // The shipped default contribution IS that ceiling, and it is cited.
+    expect(limits!.note!).toContain(usd(shippedInput().annualContribution));
+  });
+
+  it("cites the bracket set the two rate fields name in their help", () => {
+    const brackets = items.find((item) => item.url.includes("/newsroom/irs-releases-tax-inflation-adjustments"));
+    expect(brackets, "no citation for the seven bracket rates").toBeDefined();
+    // The same seven the component's sensitivity table walks, minus the 0
+    // row it adds for readers with no taxable income in retirement.
+    for (const rate of [10, 12, 22, 24, 32, 35, 37]) {
+      expect(
+        brackets!.note!.includes(String(rate)),
+        `the bracket citation never names ${rate}`,
+      ).toBe(true);
+      expect(
+        C.form.currentRateHelp.includes(String(rate)),
+        `currentRateHelp never names ${rate}`,
+      ).toBe(true);
+    }
+    // Confirmed FOR 2026, not carried over from the 2025 table.
+    expect(brackets!.note!).toContain("2026");
+  });
+
+  it("does not pretend to model the income phase-outs it cites", () => {
+    const phaseOut = items.find((item) => item.url.includes("401k-limit-increases"));
+    expect(phaseOut, "no citation for the deductibility thresholds").toBeDefined();
+    // The row's standing disclosure and the citation have to agree that the
+    // thresholds are looked up by the reader, not computed here.
+    expect(C.form.deductibilityNotice).toContain("ngưỡng");
+    expect(phaseOut!.note!).toContain("ngưỡng");
   });
 });
 

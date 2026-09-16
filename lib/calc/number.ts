@@ -168,8 +168,83 @@ export function formatMoney(value: number, dp = 0): string {
   return `${sign}${grouped}${fraction ? `,${fraction}` : ""}`;
 }
 
+/**
+ * A dimensionless quantity at a READABLE precision: 720, 10.000, 0,000278.
+ *
+ * The fourth grammar's output side, and it exists because neither formatter
+ * above reads well for an area or a weight:
+ *
+ * - `formatDecimal(10000, 6)` is "10000,000000" — ungrouped and padded with
+ *   six zeros nobody asked for. One hectare in square metres was rendered
+ *   exactly like that.
+ * - a fixed `dp` is wrong at both ends of this range at once: the same field
+ *   holds 3.600 m² and 0,000278 mẫu.
+ *
+ * So precision is chosen in SIGNIFICANT digits and the trailing zeros come
+ * off. Thousands are grouped with "." and the decimal mark is ",", like every
+ * other figure in the suite. `significant` is the number of meaningful digits
+ * to keep; `maxDecimals` is the hard cap that stops a tiny value asking for
+ * fifty places. Rounding is display only — the conversion itself is exact.
+ */
+export function formatQuantity(
+  value: number,
+  significant = 6,
+  maxDecimals = 10,
+): string {
+  if (unrenderable(value)) return PLACEHOLDER;
+  const magnitude = Math.abs(value);
+  const exponent = magnitude === 0 ? 0 : Math.floor(Math.log10(magnitude));
+  const decimals = Math.min(
+    maxDecimals,
+    Math.max(0, significant - 1 - exponent),
+  );
+  const shown = formatMoney(value, decimals);
+  if (!shown.includes(",")) return shown;
+  // Trim the padding this function's own rounding added. A string operation
+  // on OUR output, never a re-parse of a localized figure — see §4.
+  return shown.replace(/,?0+$/, "");
+}
+
 /** 12.6825 -> "12,68%". */
 export function formatPercent(value: number, dp = 2): string {
   if (unrenderable(value)) return PLACEHOLDER;
   return `${formatDecimal(value, dp)}%`;
+}
+
+/** Which Vietnamese magnitude word a figure reads best in. */
+export type MoneyScale = "dong" | "trieu" | "ty";
+
+/**
+ * Pick a readable magnitude for a money figure, and scale it.
+ *
+ * A chart axis cannot carry "2.304.616.796 ₫" four times over; it needs
+ * "2,3 tỷ". This returns the SCALED NUMBER and the scale it chose, and
+ * deliberately not a formatted string: the magnitude words ("triệu", "tỷ") are
+ * user-facing Vietnamese and belong in a content file, not in `lib/`. The
+ * caller composes them.
+ *
+ * Thresholds are absolute so a negative figure — a household residual that
+ * came out below zero — scales the same way as its positive twin.
+ *
+ * Non-finite input comes back as `{ value: NaN, scale: "dong" }`; the
+ * formatters above already render NaN as the placeholder, so a caller that
+ * formats the result cannot leak "NaN" into prose.
+ */
+export function scaleMoney(value: number): { value: number; scale: MoneyScale } {
+  if (!Number.isFinite(value)) return { value: NaN, scale: "dong" };
+  const magnitude = Math.abs(value);
+  if (magnitude >= 1e9) return { value: value / 1e9, scale: "ty" };
+  if (magnitude >= 1e6) return { value: value / 1e6, scale: "trieu" };
+  return { value, scale: "dong" };
+}
+
+/**
+ * Decimal places a scaled figure should show.
+ *
+ * One place for tỷ and triệu — "2,3 tỷ" and "17,4 triệu" are the granularity
+ * a chart label can carry — and none for đồng, which has no subunit in
+ * circulation.
+ */
+export function scaleDecimals(scale: MoneyScale): number {
+  return scale === "dong" ? 0 : 1;
 }

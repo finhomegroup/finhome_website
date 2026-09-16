@@ -13,9 +13,21 @@ import { FH_POINTER } from "@/lib/interaction-styles";
 export function CalculatorHeading({
   title,
   lede,
+  ledeDetail,
+  ledeDetailTitle,
 }: {
   title: string;
+  /**
+   * ONE short line saying what the tool answers.
+   *
+   * Kept short deliberately: the browser check measured the first input 1067 px
+   * down a 390 px viewport, most of it heading and introductory prose. Longer
+   * explanation goes in `ledeDetail`, behind a disclosure.
+   */
   lede: string;
+  /** The rest of the explanation, collapsed. */
+  ledeDetail?: string;
+  ledeDetailTitle?: string;
 }) {
   return (
     <div className="mx-auto max-w-3xl">
@@ -58,13 +70,26 @@ export function CalculatorHeading({
         </span>
       </nav>
 
-      <div className="mt-8 text-center">
-        <h1 className="font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
+      {/* Tighter on mobile than on desktop: the vertical rhythm that reads
+          well at 1280 px pushed the first input off the first two screens at
+          390 px. */}
+      <div className="mt-5 text-center md:mt-8">
+        <h1 className="font-display text-2xl leading-tight text-ink md:text-4xl lg:text-5xl">
           {title}
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-2">
+        <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-ink-2 md:mt-5">
           {lede}
         </p>
+        {ledeDetail && ledeDetailTitle ? (
+          <details className="mx-auto mt-2 max-w-2xl text-left">
+            <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+              {ledeDetailTitle}
+            </summary>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2">
+              {ledeDetail}
+            </p>
+          </details>
+        ) : null}
       </div>
     </div>
   );

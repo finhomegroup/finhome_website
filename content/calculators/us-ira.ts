@@ -26,6 +26,33 @@
 //   Thuế suất khi rút 12%: truyền thống thắng 71.776 USD
 //   Thuế suất khi rút 21%: chênh lệch 3.552 USD, trong dải "ngang nhau"
 //   Trần góp tuổi 50: 8.600 USD
+//
+// SOURCES, resolved 2026-09-16. All four hrefs are irs.gov and their content
+// was read; no blog or aggregator was used. What each one actually verified:
+//
+//   - Topic no. 409 — the RATE SET 0/15/20 for long-term gains, which is what
+//     the capitalGains select now offers. The page's income boundaries are
+//     still the 2025 ones on the 2026-09-16 read, and the source note says so
+//     rather than implying the tool knows the current year's boundaries.
+//   - The 2026 inflation-adjustment release (Rev. Proc. 2025-32) — the seven
+//     bracket rates 10/12/22/24/32/35/37 that currentRateHelp and
+//     retirementRateHelp name, confirmed FOR 2026 rather than carried over
+//     from 2025. The same release does NOT publish the 2026 capital-gains
+//     breakpoints, which is why Topic no. 409 is still a 2025-vintage read.
+//   - IRA contribution limits by year — 7.500 for 2026 and 8.600 from age 50,
+//     which is exactly RETIREMENT_LIMITS[2026].ira and .iraCatchUp50, and
+//     7.000 / 8.000 for 2025. Notice 2025-67's release confirms the same pair.
+//
+// NOT VERIFIED, and left alone: nothing on this row. The two entered income
+// tax rates (24 and 22) are members of the verified bracket set, and they are
+// the reader's own assumption rather than a figure the law fixes — the page
+// says so in retirementRateHelp and renders the whole sensitivity table
+// precisely because a single rate would be a guess.
+//
+// THE CAPITAL-GAINS FIELD IS A SELECT, not a bounded text box. It accepted an
+// off-schedule 7% while the statute allows only 0, 15 or 20; both the field
+// and `computeUsIra` now constrain it to `CAPITAL_GAINS_RATES`, the same set
+// and the same rejection `us-dividend-tax.ts` applies to the same rate.
 
 export const US_IRA = {
   slug: "/cong-cu/ira-truyen-thong-hay-roth",
@@ -63,9 +90,13 @@ export const US_IRA = {
     retirementRateHelp:
       "Đây là biến quyết định toàn bộ kết quả, và nó là một phỏng đoán về tương lai vài chục năm. Bảng bên dưới cho thấy kết quả ở mọi mức, nên hãy dùng bảng thay vì tin vào một con số.",
     capitalGainsLabel: "Thuế lãi vốn dài hạn",
-    capitalGainsUnit: "%",
     capitalGainsHelp:
-      "Áp cho tài khoản thường nơi phần hoàn thuế được đầu tư. Ba mức theo luật là 0, 15 và 20%.",
+      "Áp cho tài khoản thường nơi phần hoàn thuế được đầu tư. Luật chỉ có ba mức: 0%, 15% và 20% — cùng thang với cổ tức đủ điều kiện. Mức áp dụng phụ thuộc thu nhập chịu thuế của bạn, và các ngưỡng đó được điều chỉnh theo lạm phát mỗi năm nên công cụ không tự suy ra; xem phần nguồn bên dưới rồi chọn mức của mình.",
+    capitalGainsOptions: {
+      zero: "0%",
+      fifteen: "15%",
+      twenty: "20%",
+    },
 
     returnGroup: "Lợi suất",
     returnLabel: "Lợi suất kỳ vọng",
@@ -135,7 +166,7 @@ export const US_IRA = {
     deductibilityNotice:
       "Công cụ giả định khoản góp truyền thống của bạn ĐƯỢC trừ thuế toàn bộ và bạn đủ điều kiện góp Roth. Cả hai điều đó phụ thuộc thu nhập, và với khoản góp truyền thống còn phụ thuộc việc bạn có được một kế hoạch hưu trí tại nơi làm việc bao phủ hay không. Các ngưỡng thu nhập này được điều chỉnh theo lạm phát mỗi năm; công cụ cố ý không cài cứng chúng, vì một bảng ngưỡng cũ một năm sẽ cho kết quả sai chắc nịch ở đúng những mức thu nhập nằm sát ranh giới. Hãy tra ngưỡng của năm thuế hiện hành trước khi dùng kết quả này.",
     invalidNotice:
-      "Một ô nhập chưa hợp lệ, hoặc năm bạn chọn chưa có số liệu trong công cụ.",
+      "Một ô nhập chưa hợp lệ, hoặc năm bạn chọn chưa có số liệu trong công cụ. Thuế lãi vốn dài hạn chỉ nhận 0, 15 hoặc 20 — luật không có mức nào khác.",
   },
 
   equalCostNotice:
@@ -176,6 +207,36 @@ export const US_IRA = {
       {
         q: "Thu nhập của tôi quá cao để góp Roth thì sao?",
         a: "Quyền được góp trực tiếp vào Roth IRA giảm dần rồi mất hẳn theo thu nhập, còn quyền được TRỪ THUẾ cho khoản góp truyền thống cũng giảm dần nếu bạn được một kế hoạch hưu trí ở nơi làm việc bao phủ. Các ngưỡng đó thay đổi hằng năm nên công cụ không cài cứng chúng — hãy tra ngưỡng của năm hiện hành. Khi vượt ngưỡng, hai hướng thường được dùng là góp vào 401(k) tại nơi làm việc, nơi không có ngưỡng thu nhập nào, hoặc góp một khoản không được trừ thuế vào IRA truyền thống rồi chuyển đổi sang Roth. Hướng thứ hai có những hệ quả về thuế mà công cụ này không tính, đặc biệt nếu bạn đã có tiền trước thuế trong IRA.",
+      },
+    ],
+  },
+
+  sources: {
+    title: "Nguồn cho các mức thuế và trần góp điền sẵn",
+    intro:
+      "Các trang dưới đây là căn cứ cho những gì trang này điền sẵn hoặc giới hạn: ba mức thuế lãi vốn dài hạn 0/15/20% mà ô chọn cho phép, thang thuế suất biên 10/12/22/24/32/35/37% mà phần trợ giúp của hai ô thuế suất nêu tên, và trần góp IRA của năm được chọn cùng phần bù từ 50 tuổi. Chúng được đọc trong phần rà soát nguồn của dự án ngày 16/09/2026, không phải do trang tự tra lại tại thời điểm bạn đọc. Đây không phải danh sách đầy đủ và không phải tư vấn thuế. Hai giới hạn cần nói rõ: bản Topic no. 409 đọc ngày 16/09/2026 vẫn công bố ngưỡng thu nhập của năm thuế 2025 chứ không phải 2026, nên hãy đối chiếu đúng năm bạn khai trước khi chọn mức thuế lãi vốn; và công cụ không mô hình hóa các ngưỡng thu nhập quyết định khoản góp truyền thống có được trừ thuế hay bạn có được góp Roth, nên phần đó phải tra ở nguồn thứ tư.",
+    items: [
+      {
+        url: "https://www.irs.gov/taxtopics/tc409",
+        label: "IRS Topic no. 409 — Ba mức thuế lãi vốn dài hạn 0, 15 và 20%",
+        note: "Nguồn của ba mức mà ô thuế lãi vốn cho phép, và là lý do ô đó là ô chọn chứ không phải ô nhập tự do: luật không có mức thứ tư. Đây cũng đúng là thang áp cho cổ tức đủ điều kiện, nên trang thuế cổ tức trong bộ công cụ này dẫn cùng một nguồn. Bản đọc ngày 16/09/2026 công bố ngưỡng của năm thuế 2025: mức 0% tới 48.350 USD với người độc thân và 96.700 USD với vợ chồng khai chung, mức 15% tới 533.400 USD độc thân, trên đó là 20%. Các ngưỡng đó điều chỉnh theo lạm phát mỗi năm; bản thân ba mức thì không.",
+      },
+      {
+        url: "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill",
+        label:
+          "IRS — Điều chỉnh theo lạm phát cho năm thuế 2026, theo Rev. Proc. 2025-32",
+        note: "Nguồn của thang bảy bậc 10, 12, 22, 24, 32, 35 và 37% mà phần trợ giúp của hai ô thuế suất biên nêu tên, xác nhận cho năm thuế 2026: thông cáo ghi “the top tax rate remains 37%” cho người độc thân có thu nhập trên 640.600 USD. Thông cáo này KHÔNG công bố ngưỡng thuế lãi vốn dài hạn của năm 2026 — đó là lý do nguồn thứ nhất vẫn là bản của năm thuế 2025.",
+      },
+      {
+        url: "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits",
+        label: "IRS — Trần góp IRA theo từng năm thuế",
+        note: "Nguồn của trần mà công cụ hiển thị và của khoản góp 7.500 USD điền sẵn: năm thuế 2026 là 7.500 USD, hoặc 8.600 USD từ 50 tuổi trở lên, tức phần bù 1.100 USD; năm thuế 2025 là 7.000 USD, hoặc 8.000 USD từ 50 tuổi. Trần này áp cho tổng mọi IRA truyền thống và Roth của bạn cộng lại, không phải cho từng tài khoản. Phần bù của IRA không còn cố định ở 1.000 USD như trước nên nó thay đổi theo năm, và đó là lý do công cụ chọn trần theo năm thuế thay vì cài cứng một con số.",
+      },
+      {
+        url: "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
+        label:
+          "IRS — Thông cáo giới hạn hưu trí năm 2026, theo Notice 2025-67",
+        note: "Nơi đặt những ngưỡng thu nhập mà công cụ cố ý không cài cứng và không mô hình hóa: quyền được trừ thuế cho khoản góp truyền thống khi bạn được một kế hoạch hưu trí tại nơi làm việc bao phủ, và quyền góp trực tiếp vào Roth IRA. Cả hai giảm dần theo thu nhập và được điều chỉnh mỗi năm, nên hãy tra ngưỡng của đúng năm thuế bạn khai trước khi dùng kết quả trên trang này. Thông cáo cũng xác nhận lại trần 7.500 USD và phần bù 1.100 USD của năm 2026.",
       },
     ],
   },

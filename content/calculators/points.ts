@@ -85,6 +85,26 @@ export const POINTS = {
       "Khoản trả hằng tháng không giảm, nên không có điểm hoàn phí. Hãy kiểm tra lại mức giảm lãi suất mà ngân hàng đưa ra.",
   },
 
+  // WHICH NOTICE GOES IN THE VISIBLE SLOT.
+  //
+  // `notice` used to be `methodNotice` and the scope caveat was FAQ item 5
+  // only. The shell's own criterion for the visible slot is "the thing a user
+  // must know BEFORE they read a figure off the tool"
+  // (`components/calc/calculator-page.tsx:70-76`), and on this row those are
+  // two different sentences:
+  //   - whether this offer structure exists for the reader at all decides
+  //     whether the tool applies — that is a before question;
+  //   - how to read the verdict against the familiar break-even is an after
+  //     question, about interpreting a figure they now have.
+  // So `scopeNotice` is the visible one and `methodNotice` moved to
+  // `noticeDetail`, one click away and still above the calculator. It is NOT
+  // gone: the 49-vs-64 argument is also `formula.body[1]` prose and FAQ
+  // item 2. `points.test.ts` asserts the move rather than trusting it.
+  scopeNotice:
+    "Ở Việt Nam hầu như không có sản phẩm nào mang tên “điểm chiết khấu”, nhưng cấu trúc thì có: nhiều ngân hàng giảm biên độ lãi suất nếu bạn mua bảo hiểm nhân thọ, mở thẻ hoặc chuyển lương về ngân hàng. Công cụ này chỉ dùng được khi bạn đang có một đề nghị cụ thể như vậy — hãy quy chi phí kèm theo về số tiền rồi nhập vào ô phí trả trước, đừng coi cấu trúc này là mặc định.",
+
+  methodNoticeTitle: "Vì sao kết luận ở đây sớm hơn điểm hoàn phí quen thuộc",
+
   methodNotice:
     "Con số quen thuộc — phí chia cho mức giảm hằng tháng — là con số sai theo chiều bất lợi cho bạn. Với khoản vay mặc định nó cho 64 tháng, nhưng thực tế bạn đã có lợi từ tháng 49. Lý do: lãi suất thấp hơn không chỉ làm khoản trả nhẹ đi, nó còn trả được nhiều gốc hơn, nên dư nợ của bạn thấp hơn. Công cụ này so hai bên bằng tổng tiền đã trả CỘNG dư nợ còn lại tại thời điểm bạn tất toán, nên nó trả lời đúng câu hỏi bạn đang hỏi.",
 
@@ -112,15 +132,21 @@ export const POINTS = {
       },
       {
         q: "Nếu tôi định trả nợ trước hạn thì sao?",
-        a: "Trả nợ trước hạn làm điểm chiết khấu bớt hấp dẫn, vì nó rút ngắn thời gian bạn được hưởng lãi suất thấp. Cách gần đúng là nhập vào ô thời gian giữ khoản vay số tháng bạn dự kiến tất toán. Ngoài ra hãy nhớ phí trả nợ trước hạn của ngân hàng — nó không nằm trong phép tính này và thường bằng 1–3% dư nợ.",
+        // No fee range: the same invented "1–3%" universal a browser check
+        // already removed from `loan.ts:149`, swept by `loan.test.ts:225-232`
+        // and `affordability.test.ts:297`. It was still here.
+        a: "Trả nợ trước hạn làm điểm chiết khấu bớt hấp dẫn, vì nó rút ngắn thời gian bạn được hưởng lãi suất thấp. Cách gần đúng là nhập vào ô thời gian giữ khoản vay số tháng bạn dự kiến tất toán. Ngoài ra hãy nhớ phí trả nợ trước hạn của ngân hàng — nó không nằm trong phép tính này, và mức phí cùng thời gian áp dụng do hợp đồng của bạn quy định.",
       },
       {
         q: "Có nên dùng tiền đó để trả trước nhiều hơn thay vì mua điểm chiết khấu?",
         a: "Đáng để so, và công cụ này chưa so hộ bạn. Dùng 20 triệu để tăng tiền trả trước làm giảm số tiền vay, giảm cả lãi và khoản trả hằng tháng, và không phụ thuộc vào việc bạn giữ khoản vay bao lâu. Hãy chạy công cụ tính khoản vay mua nhà hai lần — một lần với số tiền vay 2 tỷ và một lần với 1,98 tỷ — rồi đặt cạnh kết quả ở đây.",
       },
       {
-        q: "Điểm chiết khấu ở Việt Nam có phổ biến không?",
-        a: "Không phổ biến dưới cái tên đó, nhưng cấu trúc thì có: nhiều ngân hàng đề nghị giảm biên độ lãi suất nếu khách mua bảo hiểm nhân thọ, mở thẻ hoặc chuyển lương về ngân hàng, và phần chi phí đó chính là một dạng phí trả trước. Hãy quy khoản chi phí đó về số tiền và nhập vào ô phí trả trước để so bằng cùng một thước đo.",
+        // The scope claim itself moved up into `scopeNotice`. What is left
+        // here is the part a notice has no room for: how to turn an insurance
+        // or payroll condition into the one number this form takes.
+        q: "Quy chi phí bảo hiểm, thẻ hoặc chuyển lương về số tiền thế nào?",
+        a: "Lấy phần chi phí bạn phải bỏ ra chỉ vì điều kiện đó, không phải toàn bộ giá sản phẩm. Với hợp đồng bảo hiểm nhân thọ, phần đó là số phí bạn sẽ nộp mà nếu không vay thì bạn không nộp — nếu bạn vẫn muốn có hợp đồng đó, phần chi phí tính vào đây là 0. Với thẻ hoặc chuyển lương, phần đó thường là phí thường niên hoặc khoản bất tiện bạn tự định giá. Cộng các khoản trong thời gian bạn dự định giữ khoản vay, chia cho số tiền vay để ra phần trăm, rồi nhập vào ô phí trả trước. Nếu điều kiện kéo dài nhiều năm mà bạn định tất toán sớm, chỉ tính phần thuộc những năm đó.",
       },
     ],
   },

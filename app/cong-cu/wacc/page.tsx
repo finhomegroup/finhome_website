@@ -27,6 +27,8 @@ export default function WaccPage() {
       notice={C.shieldNotice}
       prose={C.formula}
       faq={C.faq}
+      // Primary documents behind the prefilled statutory tax rate.
+      sources={C.sources}
     >
       <WaccCalculator />
     </CalculatorPage>

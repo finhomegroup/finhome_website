@@ -46,7 +46,7 @@ function WarningIcon() {
 
 function NumberBadge({ n }: { n: number }) {
   return (
-    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-soft text-sm font-semibold text-brand-green">
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-soft text-sm font-semibold text-brand-green-ink">
       {n}
     </span>
   );

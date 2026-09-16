@@ -11,12 +11,109 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
-import { computeCommercialLoan } from "@/lib/calc/commercial-loan";
+import {
+  computeCommercialLoan,
+  type CommercialLoanInput,
+} from "@/lib/calc/commercial-loan";
 import { yearlySummary } from "@/lib/calc/loan";
 import { COMMERCIAL_LOAN as C } from "@/content/calculators/commercial-loan";
+
+/**
+ * Read the five form strings, each with the parser its FIELD KIND needs.
+ *
+ * Extracted and exported so the parser CHOICE is unit-testable, exactly as
+ * `readShareFields` is on the financial-ratios page. No module test can reach
+ * this step: `lib/calc/commercial-loan.test.ts` passes numbers straight in and
+ * never crosses a parse.
+ *
+ * The four grammars of docs §4, applied here:
+ *
+ * - `amount` is money, so `parseMoney` — "5.000.000.000" has to survive.
+ * - `rate` and `balloon` are rates, so `parseDecimal` — `parseMoney("7,5")`
+ *   would be fine but `parseMoney("7.5")` is 75.
+ * - `term` and `grace` are WHOLE COUNTS OF MONTHS, so `parseCount`. Both used
+ *   `parseDecimal` behind a `Number.isInteger` guard, which is unreachable:
+ *   `parseDecimal("1.000")` is `1`, and `1` IS an integer. So a reader who
+ *   typed a grouped "1.000" got a silently accepted ONE-MONTH loan with no
+ *   error shown, and the field's own "nhập số nguyên tháng" message could
+ *   never fire. `parseCount` takes digits only, so the grouped spelling is
+ *   rejected and the message becomes reachable.
+ */
+export function readCommercialLoanFields(values: {
+  amount: string;
+  rate: string;
+  term: string;
+  grace: string;
+  balloon: string;
+}): {
+  /**
+   * The resolved model input, or `null` when any field is rejected.
+   *
+   * Same shape as `readStatement` in `components/calc/financials-fields.tsx`,
+   * and for the same two reasons: the page can still mark the ONE offending
+   * field rather than blanking the form, and the caller gets a narrowed type
+   * instead of five `number | null`s it has to re-narrow. The first draft of
+   * this helper returned the five values loose, `vitest` was green, and
+   * `tsc` was not — which is the whole reason the gate runs both.
+   */
+  input: CommercialLoanInput | null;
+  amount: number | null;
+  rate: number | null;
+  term: number | null;
+  grace: number | null;
+  balloon: number | null;
+  amountInvalid: boolean;
+  rateInvalid: boolean;
+  termInvalid: boolean;
+  graceInvalid: boolean;
+  balloonInvalid: boolean;
+} {
+  const amount = parseMoney(values.amount);
+  const rate = parseDecimal(values.rate);
+  const term = parseCount(values.term);
+  const grace = parseCount(values.grace);
+  const balloon = parseDecimal(values.balloon);
+
+  const amountInvalid = amount === null || amount <= 0;
+  const rateInvalid = rate === null || rate < 0;
+  // `parseCount` already refuses a non-integer and a negative, so what is
+  // left here is the range check it always was.
+  const termInvalid = term === null || term <= 0;
+  // A grace period as long as the term is an interest-only loan, which the
+  // module rejects rather than reinterpreting — so it is flagged here.
+  const graceInvalid =
+    grace === null || grace < 0 || (term !== null && grace >= term);
+  const balloonInvalid = balloon === null || balloon < 0 || balloon >= 100;
+
+  const anyInvalid =
+    amountInvalid || rateInvalid || termInvalid || graceInvalid || balloonInvalid;
+
+  return {
+    input: anyInvalid
+      ? null
+      : {
+          amount: amount!,
+          annualRatePercent: rate!,
+          termMonths: term!,
+          graceMonths: grace!,
+          balloonPercent: balloon!,
+        },
+    amount,
+    rate,
+    term,
+    grace,
+    balloon,
+    amountInvalid,
+    rateInvalid,
+    termInvalid,
+    graceInvalid,
+    balloonInvalid,
+  };
+}
 
 export function CommercialLoanCalculator() {
   const fields = useCalcFields({
@@ -27,34 +124,22 @@ export function CommercialLoanCalculator() {
     balloon: C.form.defaultBalloon,
   });
 
-  const amount = parseMoney(fields.values.amount);
-  const rate = parseDecimal(fields.values.rate);
-  const term = parseDecimal(fields.values.term);
-  const grace = parseDecimal(fields.values.grace);
-  const balloon = parseDecimal(fields.values.balloon);
+  const {
+    input,
+    amountInvalid,
+    rateInvalid,
+    termInvalid,
+    graceInvalid,
+    balloonInvalid,
+  } = readCommercialLoanFields({
+    amount: fields.values.amount,
+    rate: fields.values.rate,
+    term: fields.values.term,
+    grace: fields.values.grace,
+    balloon: fields.values.balloon,
+  });
 
-  const amountInvalid = amount === null || amount <= 0;
-  const rateInvalid = rate === null || rate < 0;
-  const termInvalid = term === null || term <= 0 || !Number.isInteger(term);
-  // A grace period as long as the term is an interest-only loan, which the
-  // module rejects rather than reinterpreting — so it is flagged here.
-  const graceInvalid =
-    grace === null ||
-    grace < 0 ||
-    !Number.isInteger(grace) ||
-    (term !== null && grace >= term);
-  const balloonInvalid = balloon === null || balloon < 0 || balloon >= 100;
-
-  const result =
-    amountInvalid || rateInvalid || termInvalid || graceInvalid || balloonInvalid
-      ? null
-      : computeCommercialLoan({
-          amount,
-          annualRatePercent: rate,
-          termMonths: term,
-          graceMonths: grace,
-          balloonPercent: balloon,
-        });
+  const result = input === null ? null : computeCommercialLoan(input);
 
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;

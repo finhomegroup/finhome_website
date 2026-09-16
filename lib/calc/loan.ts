@@ -16,7 +16,25 @@
  * so explicitly rather than leaving the user to assume otherwise.
  */
 
-import { amortize, pmt, type ScheduleRow } from "@/lib/calc/finance";
+import {
+  amortize,
+  amortizeFlatPrincipal,
+  pmt,
+  type ScheduleRow,
+} from "@/lib/calc/finance";
+
+/**
+ * How the principal is repaid.
+ *
+ * Both are offered by Vietnamese banks and the choice changes both the first
+ * instalment and the lifetime interest, so it is an input rather than an
+ * assumption the tool makes silently on the borrower's behalf.
+ */
+export type RepaymentMethod =
+  /** Level instalment for the whole term — "trả góp đều" / niên kim. */
+  | "annuity"
+  /** Constant principal slice, falling instalment — "trả gốc đều". */
+  | "flatPrincipal";
 
 /** How long private mortgage insurance is charged. */
 export type PmiMode =
@@ -34,6 +52,8 @@ export type LoanInput = {
   termMonths: number;
   /** Optional extra principal paid every month. */
   extraPerMonth?: number;
+  /** Repayment structure. Defaults to `"annuity"`, the level instalment. */
+  method?: RepaymentMethod;
   /** Recurring costs, each quoted per year. */
   propertyTaxPerYear?: number;
   insurancePerYear?: number;
@@ -46,21 +66,107 @@ export type LoanInput = {
 };
 
 export type LoanResult = {
-  /** Scheduled principal-and-interest instalment, per month. */
+  /** Which structure produced this schedule. */
+  method: RepaymentMethod;
+  /**
+   * Scheduled principal-and-interest instalment, per month — what the BANK
+   * asks for, with no extra payment in it.
+   *
+   * Under `flatPrincipal` there is no single instalment: this is the FIRST
+   * month's, which is the highest one and the one a borrower has to be able to
+   * find. `finalScheduledPrincipalInterest` is the other end of the range.
+   */
   monthlyPrincipalInterest: number;
+  /**
+   * The principal-and-interest of the last instalment on the ORIGINAL
+   * schedule — the one with no extra payment.
+   *
+   * A REFERENCE figure, not the borrower's actual last payment. Under
+   * `annuity` it equals `monthlyPrincipalInterest`; under `flatPrincipal` it
+   * is the cheapest scheduled month. With an extra payment the loan ends
+   * earlier and the real last payment is `finalMonthOutflow`, which is
+   * usually much smaller. The two must never be labelled as though one were a
+   * component of the other.
+   */
+  referenceFinalInstalment: number;
+  /**
+   * Principal + interest actually paid in the final month of the ACTUAL
+   * schedule, excluding escrow and PMI.
+   *
+   * `finalMonthOutflow` is this plus whichever recurring costs still apply.
+   */
+  actualFinalPrincipalInterest: number;
   /** PMI charged per month while it applies, 0 when not applicable. */
   monthlyPmi: number;
   /** Tax + insurance + other fees, converted to a monthly figure. */
   monthlyEscrow: number;
-  /** What leaves the borrower's account in a typical month, all in. */
+  /**
+   * The SCHEDULED monthly bill: principal, interest, PMI and escrow.
+   *
+   * This deliberately excludes `extraPerMonth`. It is the figure the bank
+   * collects, which is what a borrower recognises from their contract — but on
+   * its own it is NOT what leaves their account when they are also paying
+   * extra. That is `monthlyPlannedOutflow`, and the two must be shown as
+   * separate lines: the audit found this page reporting 17.356.465 ₫ as the
+   * monthly total while the schedule had already been shortened by a
+   * 2.000.000 ₫ monthly extra the borrower was actually paying.
+   */
   monthlyPayment: number;
+  /** The extra principal the borrower chose to add, per month. 0 when none. */
+  monthlyExtra: number;
+  /**
+   * Everything that actually leaves the borrower's account in a FULL month:
+   * `monthlyPayment + monthlyExtra`.
+   *
+   * Only meaningful while `hasFullMonths` is true. The final month is almost
+   * always smaller — see `finalMonthOutflow`.
+   */
+  monthlyPlannedOutflow: number;
+  /**
+   * `monthlyPlannedOutflow × 12` — an ANNUALISED full month, not a year of
+   * actual payments.
+   *
+   * Wrong as a "money paid in the first year" figure for anything but a level
+   * annuity that runs past twelve months: under `flatPrincipal` the
+   * instalment falls every month, a large extra can end the loan inside the
+   * year, and PMI can stop partway through. Use `firstYearOutflow` when the
+   * label says "in the first year".
+   */
+  annualisedPlannedOutflow: number;
+  /**
+   * Money that actually leaves the account over the first twelve months — or
+   * over the whole loan when it is shorter.
+   *
+   * Summed from the real schedule rows, plus escrow for each of those months
+   * and PMI only for the months it is charged. This is the figure a
+   * first-year label may use.
+   */
+  firstYearOutflow: number;
+  /** How many months `firstYearOutflow` covers: `min(12, months)`. */
+  firstYearMonths: number;
+  /**
+   * What leaves the account in the LAST month of the schedule.
+   *
+   * Capped at the outstanding balance by construction, so a tiny loan or a
+   * very large extra payment cannot report a month that repays more than is
+   * owed. Includes escrow, and PMI only if PMI is still being charged then.
+   */
+  finalMonthOutflow: number;
+  /** 1-based index of that final month — the same figure as `months`. */
+  finalMonthPeriod: number;
+  /**
+   * False when the schedule is a single month, i.e. the loan clears before any
+   * full month is ever paid. `monthlyPlannedOutflow` describes nothing in that
+   * case and the page must show the final month instead.
+   */
+  hasFullMonths: boolean;
   /** Principal + interest actually paid across the whole schedule. */
   totalPrincipalInterest: number;
   /** Interest alone, across the whole schedule. */
   totalInterest: number;
   /** Everything paid over the life of the loan: P&I + PMI + escrow. */
   totalPayment: number;
-  /** `monthlyPayment` × 12. */
+  /** `monthlyPayment` × 12 — the scheduled year, excluding any extra. */
   annualPayment: number;
   /** Annual P&I divided by the original principal — the mortgage constant. */
   mortgageConstant: number;
@@ -120,6 +226,7 @@ export function computeLoan(input: LoanInput): LoanResult | null {
     annualRatePercent,
     termMonths,
     extraPerMonth = 0,
+    method = "annuity",
     propertyTaxPerYear = 0,
     insurancePerYear = 0,
     otherFeePerYear = 0,
@@ -144,7 +251,8 @@ export function computeLoan(input: LoanInput): LoanResult | null {
 
   const monthlyRate = annualRatePercent / 100 / 12;
 
-  const schedule = amortize({
+  const build = method === "flatPrincipal" ? amortizeFlatPrincipal : amortize;
+  const schedule = build({
     principal: amount,
     ratePerPeriod: monthlyRate,
     periods: termMonths,
@@ -154,8 +262,29 @@ export function computeLoan(input: LoanInput): LoanResult | null {
 
   // The scheduled instalment ignores any extra payment: it is what the bank
   // asks for, which is the figure a borrower recognises.
-  const monthlyPrincipalInterest = Math.abs(pmt(monthlyRate, termMonths, amount));
+  //
+  // Under `flatPrincipal` there is no closed form to call — the instalment
+  // falls every month — so it is read off a schedule built WITHOUT the extra
+  // payment. Reading it off `schedule` instead would fold the borrower's own
+  // extra into "what the bank asks for", which is the exact confusion this
+  // whole result shape exists to undo.
+  let monthlyPrincipalInterest: number;
+  let referenceFinalInstalment: number;
+  if (method === "flatPrincipal") {
+    const scheduled = amortizeFlatPrincipal({
+      principal: amount,
+      ratePerPeriod: monthlyRate,
+      periods: termMonths,
+    });
+    if (scheduled === null) return null;
+    monthlyPrincipalInterest = scheduled[0].payment;
+    referenceFinalInstalment = scheduled[scheduled.length - 1].payment;
+  } else {
+    monthlyPrincipalInterest = Math.abs(pmt(monthlyRate, termMonths, amount));
+    referenceFinalInstalment = monthlyPrincipalInterest;
+  }
   if (!Number.isFinite(monthlyPrincipalInterest)) return null;
+  if (!Number.isFinite(referenceFinalInstalment)) return null;
 
   const monthlyEscrow =
     (propertyTaxPerYear + insurancePerYear + otherFeePerYear) / 12;
@@ -179,11 +308,35 @@ export function computeLoan(input: LoanInput): LoanResult | null {
     monthlyEscrow * schedule.length;
 
   const monthlyPayment = monthlyPrincipalInterest + monthlyEscrow + monthlyPmi;
+  const monthlyPlannedOutflow = monthlyPayment + extraPerMonth;
+
+  // The final month, read off the schedule rather than recomputed: the
+  // schedule already caps its last principal slice at whatever is outstanding,
+  // so this cannot report a month that repays more than is owed however large
+  // the extra payment is.
+  const finalRow = schedule[schedule.length - 1];
+  const finalMonthPeriod = schedule.length;
+  // PMI is charged for `pmiMonths` months from the start, so it only lands on
+  // the final row if that count reaches it.
+  const finalMonthPmi = pmiMonths >= finalMonthPeriod ? monthlyPmi : 0;
+  const finalMonthOutflow = finalRow.payment + monthlyEscrow + finalMonthPmi;
+
+  // The first twelve months, summed from the ACTUAL rows rather than
+  // multiplied out of one of them — see `annualisedPlannedOutflow` for why
+  // that difference is not cosmetic.
+  const firstYearMonths = Math.min(12, schedule.length);
+  const firstYearPrincipalInterest = schedule
+    .slice(0, firstYearMonths)
+    .reduce((sum, row) => sum + row.payment, 0);
+  const firstYearOutflow =
+    firstYearPrincipalInterest +
+    monthlyEscrow * firstYearMonths +
+    monthlyPmi * Math.min(pmiMonths, firstYearMonths);
 
   let interestSaving: number | null = null;
   let monthsSaved: number | null = null;
   if (extraPerMonth > 0) {
-    const baseline = amortize({
+    const baseline = build({
       principal: amount,
       ratePerPeriod: monthlyRate,
       periods: termMonths,
@@ -195,10 +348,21 @@ export function computeLoan(input: LoanInput): LoanResult | null {
   }
 
   return {
+    method,
     monthlyPrincipalInterest,
+    referenceFinalInstalment,
+    actualFinalPrincipalInterest: finalRow.payment,
     monthlyPmi,
     monthlyEscrow,
     monthlyPayment,
+    monthlyExtra: extraPerMonth,
+    monthlyPlannedOutflow,
+    annualisedPlannedOutflow: monthlyPlannedOutflow * 12,
+    firstYearOutflow,
+    firstYearMonths,
+    finalMonthOutflow,
+    finalMonthPeriod,
+    hasFullMonths: schedule.length > 1,
     totalPrincipalInterest,
     totalInterest,
     totalPayment,

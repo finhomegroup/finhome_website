@@ -23,11 +23,35 @@
  * - **Exit fee** (phí bán) — a percent of the final balance, often tapering
  *   to zero after a holding period. Taken once at the end.
  *
- * Contributions land at the END of each month, matching the savings-goal
- * module, so the two agree on the fee-free case.
+ * Contributions land at the END of each month.
+ *
+ * ONE RATE CONVENTION, AND IT IS NOT THE SAVINGS TOOL'S. This module reads
+ * `grossReturnPercent` as an EFFECTIVE annual return and converts it
+ * geometrically, `(1 + r)^(1/12) − 1`. `savings-goal.ts` reads its rate as a
+ * NOMINAL annual rate and divides by 12. Both are documented and both are
+ * defensible; what is NOT true is that the same displayed percentage gives
+ * the same fee-free answer in both tools. At an effective 6% here, the
+ * equivalent savings input is 5,841060678411658% — an independent audit
+ * computed that, and an earlier comment on this page claimed the two agree.
+ * Neither engine is changed to force the equality; the copy states it.
+ *
+ * ORIGINAL ROW 27 needs the two balances OVER TIME, not just at the end, and
+ * the loop below already walks them month by month — it simply threw the
+ * history away. `series` keeps it, bounded before it allocates.
  */
 
 import { bisect } from "@/lib/calc/solve";
+
+/**
+ * The longest plan this module will walk, in months.
+ *
+ * 1.200 — the same hundred-year horizon `card-debt.ts` and `floating-loan.ts`
+ * disclose, so the suite has ONE stated bound rather than one per module. It
+ * exists because `series` allocates one entry per month: before it did, an
+ * absurd month count was merely a slow loop, and now it would be an array.
+ * Bounded BEFORE allocating, per docs §3.
+ */
+export const MAX_FUND_FEE_MONTHS = 1200;
 
 export type FundFeesInput = {
   /** Lump sum paid in at the start, in đồng. */
@@ -44,6 +68,26 @@ export type FundFeesInput = {
   managementFeePercent?: number;
   /** Percent of the final balance taken on exit. */
   exitFeePercent?: number;
+};
+
+/**
+ * One month's two balances.
+ *
+ * `net` is the balance BEFORE the exit fee, at every month including the
+ * last. That is deliberate and it is the distinction original row 27's visual
+ * has to show: on the audit's 36-month fixture the last `net` is
+ * 743.356.975,93 and the money the reader can actually take out is
+ * 739.640.191,05, because the exit fee is charged once, at the horizon. A
+ * chart that ends its line at `net` and labels it "số tiền bạn nhận" would
+ * overstate the answer by exactly that fee.
+ */
+export type FundFeesPoint = {
+  /** 0 is the opening position: the initial sum, after any entry fee. */
+  month: number;
+  /** Balance with no fee of any kind. */
+  gross: number;
+  /** Balance after entry and management fees, BEFORE the exit fee. */
+  net: number;
 };
 
 export type FundFeesResult = {
@@ -90,6 +134,14 @@ export type FundFeesResult = {
   grossAnnualReturnPercent: number | null;
   /** Percentage points of annual return lost to fees. Null if either rate is. */
   annualDragPoints: number | null;
+
+  /**
+   * Both balances at every month from 0 to `months`.
+   *
+   * `months + 1` entries. The last entry's `net` is before the exit fee; the
+   * result's `netValue` is after it. See `FundFeesPoint`.
+   */
+  series: FundFeesPoint[];
 };
 
 /**
@@ -207,6 +259,8 @@ export function computeFundFees(
     return null;
   }
   if (months <= 0 || !Number.isInteger(months)) return null;
+  // Bounded BEFORE the loop allocates its series, not by sampling afterwards.
+  if (months > MAX_FUND_FEE_MONTHS) return null;
   if (initial === 0 && monthlyContribution === 0) return null;
   for (const fee of [entryFeePercent, managementFeePercent, exitFeePercent]) {
     if (fee > 100) return null;
@@ -228,6 +282,13 @@ export function computeFundFees(
   let totalManagementFees = 0;
   let totalContributed = initial;
 
+  // Month 0 is the opening position, and the two values already differ by the
+  // entry fee on the initial sum — 500 triệu against 495 triệu on the audit's
+  // fixture. Starting the series at month 1 would hide the first charge.
+  const series: FundFeesPoint[] = [
+    { month: 0, gross: grossBalance, net: netBalance },
+  ];
+
   for (let month = 1; month <= months; month += 1) {
     // Growth first, then the management fee on the grown balance, then the
     // month's contribution — which has not been invested yet, so it is not
@@ -246,6 +307,10 @@ export function computeFundFees(
       netBalance += monthlyContribution - entryFee;
       grossBalance += monthlyContribution;
     }
+
+    // After the contribution, so a month's entry reads as the position at the
+    // end of that month — the same instant the savings tools report.
+    series.push({ month, gross: grossBalance, net: netBalance });
   }
 
   const exitFee = netBalance * (exitFeePercent / 100);
@@ -292,5 +357,6 @@ export function computeFundFees(
       netAnnualReturnPercent === null || grossAnnualReturnPercent === null
         ? null
         : grossAnnualReturnPercent - netAnnualReturnPercent,
+    series,
   };
 }

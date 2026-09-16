@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   computeTermDeposit,
+  MAX_DEPOSIT_CYCLES,
+  MAX_DEPOSIT_TOTAL_MONTHS,
   type TermDepositInput,
 } from "@/lib/calc/term-deposit";
 
@@ -333,5 +335,27 @@ describe("computeTermDeposit — rejected inputs", () => {
     expect(
       computeTermDeposit({ ...BASE, annualRatePercent: Number.NaN }),
     ).toBeNull();
+  });
+
+  it("bounds the cycle loop BEFORE it allocates", () => {
+    // This loop had no ceiling: `cycles: 1e9` is a finite input that asked for
+    // a billion iterations, and no amount of checking afterwards fixes that.
+    expect(
+      computeTermDeposit({ ...BASE, cycles: MAX_DEPOSIT_CYCLES + 1 }),
+    ).toBeNull();
+    expect(computeTermDeposit({ ...BASE, cycles: 1e9 })).toBeNull();
+    // The horizon is bounded too, so a long term cannot smuggle it past the
+    // cycle count: 120 × 24 months is two centuries.
+    expect(
+      computeTermDeposit({ ...BASE, termMonths: 24, cycles: MAX_DEPOSIT_CYCLES }),
+    ).toBeNull();
+    // At the bound itself it still answers, and reports the horizon it used.
+    const atBound = computeTermDeposit({
+      ...BASE,
+      termMonths: 1,
+      cycles: MAX_DEPOSIT_CYCLES,
+    });
+    expect(atBound?.totalMonths).toBe(MAX_DEPOSIT_CYCLES);
+    expect(MAX_DEPOSIT_TOTAL_MONTHS).toBe(1200);
   });
 });

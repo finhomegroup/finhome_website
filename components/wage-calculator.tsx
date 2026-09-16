@@ -112,6 +112,21 @@ export function WageCalculator() {
               : null
           }
         />
+        {/* The schedule the conversion rests on, beside the figures it
+            produced. "17,3 triệu mỗi tháng" means nothing without the 40
+            hours a week it assumed. */}
+        <ResultRow
+          label={C.form.scheduleEchoLabel}
+          value={
+            result === null || hours === null || days === null || weeks === null
+              ? null
+              : C.form.scheduleEchoFormat
+                  .replace("{hours}", formatDecimal(hours))
+                  .replace("{days}", formatDecimal(days))
+                  .replace("{weeks}", formatDecimal(weeks))
+          }
+          prose
+        />
       </ResultGroup>
     </CalculatorCard>
   );

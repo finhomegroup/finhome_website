@@ -9,7 +9,7 @@ Sau giai đoạn lãi suất cho vay mua nhà neo ở mức cao suốt nhiều t
 
 ## Góc nhìn FinHome
 
-Việc nhiều ngân hàng đồng loạt hạ lãi suất cho vay mua nhà là tín hiệu tích cực, đặc biệt trong bối cảnh thị trường bất động sản đang đối mặt với thanh khoản suy giảm và người mua thận trọng. Tuy nhiên, mức giảm hơn 1%/năm chủ yếu áp dụng trong kỳ ưu đãi ban đầu, thường là 12-24 tháng. Sau giai đoạn này, lãi suất thả nổi có thể cao hơn đáng kể.
+Việc nhiều ngân hàng đồng loạt hạ lãi suất cho vay mua nhà là tín hiệu tích cực, đặc biệt trong bối cảnh thị trường bất động sản đang đối mặt với thanh khoản suy giảm và người mua thận trọng. Tuy nhiên, mức giảm hơn 1%/năm chủ yếu áp dụng trong kỳ ưu đãi ban đầu, thường là 12-24 tháng. Sau giai đoạn này, lãi suất thả nổi có thể cao hơn đáng kể: lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 
 FinHome khuyến nghị người mua nhà tính toán kỹ tổng chi phí vay trong toàn bộ thời hạn hợp đồng, không chỉ nhìn vào mức lãi suất ưu đãi ban đầu. Việc so sánh lãi suất sau ưu đãi giữa các ngân hàng và chuẩn bị phương án trả nợ khi lãi suất điều chỉnh là yếu tố quan trọng để tránh áp lực tài chính về sau.
 

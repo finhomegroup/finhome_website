@@ -27,6 +27,7 @@ export default function RetirementIncomeAnalysisPage() {
       notice={C.decayNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <RetirementIncomeAnalysisCalculator />
     </CalculatorPage>

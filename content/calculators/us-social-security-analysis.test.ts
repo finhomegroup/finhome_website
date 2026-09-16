@@ -10,6 +10,7 @@ import {
   parseMoney,
 } from "@/lib/calc/number";
 import {
+  benefitFactorPercent,
   claimingAnalysis,
   fullRetirementAgeMonths,
 } from "@/lib/calc/us-social-security";
@@ -186,6 +187,141 @@ describe("phan-tich-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(C.formula.body[6]).toContain("vợ/chồng");
     expect(C.formula.body[6]).toContain("người còn sống");
     expect(C.faq.items[3].q).toContain("kết hôn");
+  });
+
+  it("names the United States in the H1 and in the first paragraph", () => {
+    // Same reasoning as the estimate page's copy of this test: the registry
+    // guard in plan-disposition.test.ts covers the hub title only, and this
+    // page's H1 and lede were the weakest of the three — before this, the
+    // only "Hoa Kỳ" in the whole module was the metaDescription, which no
+    // reader sees.
+    expect(C.pageTitle).toContain("Hoa Kỳ");
+    expect(C.metaTitle).toContain("Hoa Kỳ");
+    expect(C.lede).toContain("Hoa Kỳ");
+  });
+
+  it("does not call a life expectancy a median", () => {
+    // A life expectancy is a MEAN — the average remaining years in a life
+    // table — not the age half a cohort outlives. The two differ, and the
+    // copy asserted the median reading as a definition in two places.
+    //
+    // The page's advice is unaffected and in fact stronger without the
+    // claim: enter above the expectancy, because an average is not a
+    // threshold you have a known chance of passing. Asserting the absence
+    // rather than a replacement wording is deliberate — the defect was a
+    // false definition, and any rewording that reintroduces it should fail.
+    for (const text of [C.form.endAgeHelp, C.faq.items[0].a]) {
+      expect(text).not.toContain("trung vị");
+      expect(text).not.toContain("TRUNG VỊ");
+    }
+    // And the actionable half survives in both.
+    expect(C.form.endAgeHelp).toContain("bình quân");
+    expect(C.faq.items[0].a).toContain("Cao hơn kỳ vọng sống");
+  });
+});
+
+/**
+ * EVERY FIGURE IN THIS PAGE'S TABLE IS A STATUTORY FACTOR TIMES ONE INPUT.
+ *
+ * The reader supplies the PIA; the nine rows are that PIA times a percentage
+ * the statute fixes and this tool does not expose — 5/9 of one percent a month
+ * for the first 36 months early, 5/12 beyond them, 2/3 of one percent a month
+ * late. There is no field, no year selector and nothing on the page to
+ * disagree with, so the citation is the reader's only check. This block pins
+ * the whole curve against the table SSA publishes, which is the one artifact
+ * that would catch a factor edited in `lib/` — the break-even columns already
+ * tested above are all derived from those same factors and would move with
+ * them without a single assertion going red.
+ *
+ * The block is shared with the other two Social Security rows, in
+ * `content/calculators/us-social-security-sources.ts`: one statute, one list,
+ * and no way for three pages to end up citing three different things.
+ */
+describe("phan-tich-an-sinh-xa-hoi cites the factors it will not let you change", () => {
+  const S = C.sources;
+  const item = (tail: string) => {
+    const found = S.items.find((entry) => entry.url.endsWith(tail));
+    if (!found) throw new Error(`no cited source ends with ${tail}`);
+    return found;
+  };
+
+  it("gives the reader links, every one of them a primary SSA page", () => {
+    expect(S.items.length).toBeGreaterThanOrEqual(5);
+    for (const entry of S.items) {
+      expect(
+        entry.url.startsWith("https://www.ssa.gov/"),
+        `${entry.url} is not an https www.ssa.gov URL`,
+      ).toBe(true);
+      expect(entry.label.length).toBeGreaterThan(20);
+      expect(entry.note, `${entry.label} has no note`).toBeDefined();
+      expect(entry.note.length).toBeGreaterThan(40);
+    }
+  });
+
+  it("names the issuing body, and states what the list does not cover", () => {
+    expect(S.title).toContain("Cơ quan An sinh Xã hội Hoa Kỳ");
+    expect(S.title).toContain("SSA");
+    expect(S.intro).toContain("rà soát");
+    expect(S.intro).toContain("16/09/2026");
+    expect(S.intro).toContain("không phải danh sách đầy đủ");
+    expect(S.intro).toContain("không phải tư vấn");
+    expect(S.intro).toContain("KHÔNG có ô nhập nào để bạn sửa");
+  });
+
+  it("pins the whole age-factor curve against the SSA table it cites", () => {
+    const fra = fullRetirementAgeMonths(shipped().birthYear);
+    expect(fra).toBe(67 * 12);
+    const published = item("ar_drc.html");
+    // SSA's own percent-of-PIA table for a full retirement age of 67. The
+    // module's value is asserted first, so a factor change breaks this even
+    // if someone edits the note to match.
+    for (const [age, percent] of [
+      [62, 70],
+      [63, 75],
+      [64, 80],
+      [67, 100],
+      [70, 124],
+    ] as const) {
+      expect(benefitFactorPercent(fra, age * 12), `age ${age}`).toBe(percent);
+      expect(published.note, `the cited table quotes no ${percent}%`).toContain(
+        `${percent}%`,
+      );
+    }
+    // The two ages SSA prints as thirds. Asserted against the module only —
+    // the note quotes them the way the source writes them, as fractions.
+    expect(benefitFactorPercent(fra, 65 * 12)!).toBeCloseTo(260 / 3, 10);
+    expect(benefitFactorPercent(fra, 66 * 12)!).toBeCloseTo(280 / 3, 10);
+    expect(published.note).toContain("86 2/3%");
+    expect(published.note).toContain("93 1/3%");
+    // A second cohort off the same table, because this page's birth-year
+    // field reaches the 66 schedule too.
+    expect(benefitFactorPercent(66 * 12, 62 * 12)).toBe(75);
+    expect(benefitFactorPercent(66 * 12, 70 * 12)).toBe(132);
+    expect(published.note).toContain("132%");
+  });
+
+  it("cites the 8%-a-year delayed credit as the fraction it is", () => {
+    const fra = 67 * 12;
+    // One year of waiting past full retirement age, from the module.
+    expect(benefitFactorPercent(fra, fra + 12)).toBe(108);
+    const delayed = item("delayret.html");
+    expect(delayed.note).toContain("2/3 của 1%");
+    expect(delayed.note).toContain("8,0%");
+    // And that the credit stops, which is why 71 is refused rather than paid.
+    expect(delayed.note).toContain("70");
+    expect(benefitFactorPercent(fra, 71 * 12)).toBeNull();
+  });
+
+  it("writes the early-claiming scale as fractions, never as decimals", () => {
+    const copy = [S.intro, ...S.items.map((entry) => entry.note)].join(" ");
+    expect(copy).toContain("5/9 của 1%");
+    expect(copy).toContain("5/12 của 1%");
+    for (const rounded of ["0,55", "0,56", "0,41", "0,42", "0,67", "0,69"]) {
+      expect(
+        copy,
+        `a statutory fraction is rounded to ${rounded} somewhere in the block`,
+      ).not.toContain(rounded);
+    }
   });
 });
 

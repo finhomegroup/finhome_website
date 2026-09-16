@@ -24,7 +24,12 @@ export default function BlackScholesPage() {
       lede={C.lede}
       // What the tool is actually for in a market with no listed equity
       // options, and that N(d₂) is risk-neutral rather than a forecast.
-      notice={C.contextNotice}
+      // A model price is not a traded price — the half of this row's lesson
+      // that no sentence on the page used to state plainly. The Vietnamese
+      // market context moves one disclosure down.
+      notice={C.modelPriceNotice}
+      noticeDetail={C.contextNotice}
+      noticeDetailTitle={C.contextNoticeTitle}
       intro={C.form.greeksIntro}
       prose={C.formula}
       faq={C.faq}

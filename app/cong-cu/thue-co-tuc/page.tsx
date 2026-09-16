@@ -27,6 +27,7 @@ export default function UsDividendTaxPage() {
       notice={C.classificationNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <UsDividendTaxCalculator />
     </CalculatorPage>

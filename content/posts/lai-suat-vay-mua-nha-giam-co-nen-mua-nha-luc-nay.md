@@ -10,6 +10,10 @@ Sau giai đoạn lãi suất vay mua nhà neo ở mức cao trong nhiều tháng
 
 Việc lãi suất vay mua nhà giảm là tín hiệu đáng chú ý, đặc biệt với những người đã chờ đợi thời điểm phù hợp để xuống tiền. Tuy nhiên, FinHome lưu ý rằng mức giảm hiện tại chủ yếu ở kỳ hạn ưu đãi ban đầu, trong khi lãi suất sau ưu đãi vẫn duy trì ở mức đáng kể. Người mua cần tính toán kỹ tổng chi phí vay trong toàn bộ thời hạn hợp đồng, không chỉ nhìn vào mức lãi suất chào ban đầu. Ngoài ra, giá bất động sản tại nhiều khu vực vẫn ở mức cao, do đó quyết định mua nên dựa trên nhu cầu thực tế và khả năng tài chính ổn định dài hạn, không chỉ kỳ vọng từ việc lãi suất giảm.
 
+**Lãi suất trong bản tin là mức được ghi nhận ở thời điểm đưa tin, không phải mức áp dụng cho khoản vay của bạn.** Điều đáng kiểm tra trước khi ký không phải mức ưu đãi năm đầu mà là cách tính lãi sau ưu đãi.
+
+Hai bài tập liên quan: [Hết lãi suất ưu đãi, tiền trả hằng tháng có thể tăng bao nhiêu?](/blog/het-uu-dai-khoan-tra-tang-bao-nhieu/) và [Hai gói vay: trả ít mỗi tháng có thật sự rẻ hơn?](/blog/hai-goi-vay-thang-thap-co-re-hon/).
+
 ## Đọc thêm
 
 [Đọc bài gốc trên VTC News](https://vtcnews.vn/lai-suat-vay-mua-nha-giam-co-nen-mua-nha-dat-luc-nay-ar1039493.html)

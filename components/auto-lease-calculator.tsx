@@ -10,6 +10,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -33,7 +34,12 @@ export function AutoLeaseCalculator() {
   const tradeIn = parseMoney(fields.values.tradeIn);
   const fees = parseMoney(fields.values.fees);
   const residual = parseMoney(fields.values.residual);
-  const term = parseDecimal(fields.values.term);
+  // A whole count of months, so `parseCount` — docs §4. This was
+  // `parseDecimal` with the `Number.isInteger` guard below it, which is the
+  // arrangement `parseCount`'s docstring calls unreachable: `parseDecimal`
+  // reads a grouped "1.000" as 1, and 1 IS an integer, so the guard passed
+  // and the page priced a one-month lease with no field marked invalid.
+  const term = parseCount(fields.values.term);
   const rate = parseDecimal(fields.values.rate);
   const tax = parseDecimal(fields.values.tax);
 
@@ -44,7 +50,11 @@ export function AutoLeaseCalculator() {
   const residualInvalid = residual === null || residual < 0;
   const termInvalid = term === null || term <= 0 || !Number.isInteger(term);
   const rateInvalid = rate === null || rate < 0;
-  const taxInvalid = tax === null || tax < 0;
+  // Bounded above as well as below, the way `business-forecast-calculator.tsx`
+  // bounds its own tax field. Without the ceiling a typed 800 was a valid
+  // "thuế suất" and the page priced a rental at nine times the rent with no
+  // field marked invalid — and the field's own error text promises a range.
+  const taxInvalid = tax === null || tax < 0 || tax > 100;
 
   const fieldsUsable =
     !priceInvalid &&

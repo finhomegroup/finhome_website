@@ -4,7 +4,7 @@ Chính phủ vừa ban hành Nghị định 339/2025/NĐ-CP quy định xử ph�
 
 - Chủ đầu tư dự án bất động sản nhận thanh toán bằng tiền mặt theo hợp đồng có thể bị phạt từ 240-300 triệu đồng.
 - Quy định nhằm thúc đẩy thanh toán không dùng tiền mặt trong giao dịch bất động sản.
-- Mức phạt cao hơn nhiều soới các quy định trước đây về thanh toán trong kinh doanh bất động sản.
+- Mức phạt cao hơn nhiều so với các quy định trước đây về thanh toán trong kinh doanh bất động sản.
 - Nghị định có hiệu lực thi hành từ ngày ban hành.
 
 ## Góc nhìn FinHome

@@ -28,6 +28,11 @@ export default function UsIraPage() {
       notice={C.equalCostNotice}
       prose={C.formula}
       faq={C.faq}
+      // The row prefills three US federal rates and renders a statutory
+      // contribution ceiling. Declaring the block without passing it here
+      // renders nothing at all — `sources-wiring.test.ts` fails on exactly
+      // that, which is why this prop is not optional in practice.
+      sources={C.sources}
     >
       <UsIraCalculator />
     </CalculatorPage>

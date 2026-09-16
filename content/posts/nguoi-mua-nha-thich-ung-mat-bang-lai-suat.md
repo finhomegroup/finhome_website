@@ -9,7 +9,7 @@ Nhiều người mua nhà tại Việt Nam đang thay đổi chiến lược tà
 
 ## Góc nhìn FinHome
 
-Việc người mua nhà điều chỉnh kỳ vọng là tín hiệu tích cực cho thị trường bất động sản bền vững hơn. Khi người vay giảm tỷ lệ vay xuống mức an toàn (FinHome khuyến nghị không vượt quá 30-40% thu nhập hàng tháng), rủi ro nợ xấu và áp lực thanh khoản cá nhân cũng được kiểm soát tốt hơn. Đây cũng là cách người mua tự bảo vệ trước biến động lãi suất thả nổi có thể tăng trong tương lai. Việc lựa chọn căn nhà phù hợp với khả năng tài chính hiện tại thay vì chờ đợi giá giảm sâu có thể giúp người mua an tâm hơn trong bối cảnh nguồn cung mới vẫn hạn chế.
+Việc người mua nhà điều chỉnh kỳ vọng là tín hiệu tích cực cho thị trường bất động sản bền vững hơn. Khi người vay giảm tỷ lệ vay xuống mức an toàn (FinHome khuyến nghị không vượt quá 30-40% thu nhập hàng tháng), rủi ro nợ xấu và áp lực thanh khoản cá nhân cũng được kiểm soát tốt hơn. Đây cũng là cách người mua tự bảo vệ trước biến động lãi suất thả nổi có thể tăng trong tương lai — lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới. Việc lựa chọn căn nhà phù hợp với khả năng tài chính hiện tại thay vì chờ đợi giá giảm sâu có thể giúp người mua an tâm hơn trong bối cảnh nguồn cung mới vẫn hạn chế.
 
 ## Đọc thêm
 

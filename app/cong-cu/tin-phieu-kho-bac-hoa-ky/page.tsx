@@ -27,6 +27,7 @@ export default function UsTbillPage() {
       notice={C.quoteNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <UsTbillCalculator />
     </CalculatorPage>

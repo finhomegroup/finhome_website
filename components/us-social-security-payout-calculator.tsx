@@ -307,6 +307,12 @@ export function UsSocialSecurityPayoutCalculator() {
       {rows.length > 0 ? (
         <>
           <p className="mt-8 text-sm leading-relaxed text-ink-3">{T.intro}</p>
+          {/* Five columns, so `mobileCards` — docs §3 sets that from five up,
+              and the sibling analysis table measured 596 px inside a 300 px
+              frame at a verified 390x844 viewport with six. The table intro
+              tells the reader to "đọc ba cột cuối cùng lúc" — read the last
+              three columns together — which a scrolling frame at 390 px
+              cannot deliver: one block per claiming age can. */}
           <ResultTable
             className="mt-4"
             caption={T.caption}
@@ -318,6 +324,7 @@ export function UsSocialSecurityPayoutCalculator() {
               { label: T.survivorColumn, numeric: true },
             ]}
             rows={rows}
+            mobileCards
           />
         </>
       ) : null}

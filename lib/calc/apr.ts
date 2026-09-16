@@ -33,9 +33,27 @@
  * do not. Repay early and the fees are spread over fewer months, so the real
  * cost is higher — sometimes dramatically. That case is solved as the same
  * cash flows plus a balloon of the outstanding balance.
+ *
+ * AND A RATE IS NOT A SUM OF MONEY. Original row 4 asks for the monetary cost
+ * at that chosen horizon, not only the rate it implies: `payoffInterest`,
+ * `payoffCost` and `payoffBalance` answer "what has this loan cost me if I
+ * clear it in month H, and what do I still owe" — three figures an APR cannot
+ * give. They are summed from the SAME schedule the full-term figures come
+ * from, and at `payoffMonths === termMonths` they degenerate into the
+ * full-term ones exactly.
  */
 
 import { amortize, pmt, solveRate, toEffective } from "@/lib/calc/finance";
+
+/**
+ * The longest term and payoff horizon this tool supports, in months.
+ *
+ * 100 years, matching the bound the refinance, savings and comparison tools
+ * apply, so the suite has one supported-horizon number. It is also what keeps
+ * `amortize` from being asked to build an arbitrarily long schedule from a
+ * typed figure: the allocation below walks every month.
+ */
+export const MAX_APR_MONTHS = 1200;
 
 export type AprInput = {
   /** Amount you want in hand, in đồng, before any fees. */
@@ -84,19 +102,58 @@ export type AprResult = {
   totalCost: number;
   /** Echoed back, clamped to the term. Null when no early payoff was asked. */
   payoffMonths: number | null;
-  /** Balance outstanding at `payoffMonths`. */
+  /** Balance outstanding at `payoffMonths` — principal still owed, not a cost. */
   payoffBalance: number | null;
   /** APR if the loan is cleared at `payoffMonths`, as a nominal annual rate. */
   payoffAprPercent: number | null;
+
+  /**
+   * Payments actually made through `payoffMonths`, excluding the settlement.
+   *
+   * Reported so the ledger is checkable from the public result:
+   * `payoffPaid − payoffInterest` is the principal retired, and
+   * `principal − that` is `payoffBalance`.
+   */
+  payoffPaid: number | null;
+  /** Interest accrued through `payoffMonths`. */
+  payoffInterest: number | null;
+  /** Principal retired through `payoffMonths`. NOT a cost. */
+  payoffPrincipalRepaid: number | null;
+  /**
+   * MONEY SURRENDERED through `payoffMonths`: `payoffInterest + totalFees`.
+   *
+   * Original row 4's requirement, and the figure a borrower cannot read off an
+   * APR. Three things it is careful about:
+   *
+   * - **Principal repayment is not a cost.** Money that retires debt is not
+   *   money lost, so it is excluded — and `payoffBalance` sits beside this
+   *   figure rather than inside it.
+   * - **Each fee counts once.** Cash fees were surrendered at drawdown; a
+   *   financed fee is part of `principal` and is therefore settled by the
+   *   balloon at the horizon, so charging its full amount here is exactly
+   *   once, not twice.
+   * - **It is the settlement-economic cost**, which is the same number:
+   *   `payoffMonths × monthlyPayment + payoffBalance + cashFees − amount`
+   *   reduces to `payoffInterest + totalFees` identically. A test pins that.
+   *
+   * At `payoffMonths === termMonths` the balance is 0 and this equals
+   * `totalCost`, so the horizon measure degenerates into the full-term one
+   * rather than being a second, disagreeing model.
+   *
+   * EXCLUDES any early-settlement penalty, because this model has no field for
+   * one — the page says so rather than assuming it is zero.
+   */
+  payoffCost: number | null;
 };
 
 /**
  * Compute the APR of a loan.
  *
  * Null when the inputs cannot describe one: a non-positive amount or term, a
- * negative rate or fee, points at or above 100%, a non-integer number of
- * months, fees paid up front that reach or exceed `amount` (you would be
- * paying to receive nothing), or any non-finite number.
+ * term past `MAX_APR_MONTHS`, a negative rate or fee, points at or above
+ * 100%, a non-integer number of months, fees paid up front that reach or
+ * exceed `amount` (you would be paying to receive nothing), or any non-finite
+ * number.
  *
  * The APR fields — not the whole result — come back null when `solveRate`
  * cannot bracket a rate. That is a real outcome to surface, not an error: the
@@ -124,6 +181,7 @@ export function computeApr(input: AprInput): AprResult | null {
   if (numbers.some((value) => !Number.isFinite(value) || value < 0)) return null;
   if (amount <= 0 || termMonths <= 0) return null;
   if (!Number.isInteger(termMonths)) return null;
+  if (termMonths > MAX_APR_MONTHS) return null;
   if (pointsPercent >= 100) return null;
 
   // Financed fees are borrowed, so interest is charged on them too.
@@ -167,6 +225,10 @@ export function computeApr(input: AprInput): AprResult | null {
   let clampedPayoff: number | null = null;
   let payoffBalance: number | null = null;
   let payoffAprPercent: number | null = null;
+  let payoffPaid: number | null = null;
+  let payoffInterest: number | null = null;
+  let payoffPrincipalRepaid: number | null = null;
+  let payoffCost: number | null = null;
 
   if (payoffMonths !== undefined) {
     if (!Number.isFinite(payoffMonths) || payoffMonths <= 0) return null;
@@ -180,6 +242,23 @@ export function computeApr(input: AprInput): AprResult | null {
       -payoffBalance,
     );
     payoffAprPercent = payoffRate === null ? null : payoffRate * 12 * 100;
+
+    // Summed from the SAME schedule the full-term figures come from, so the
+    // horizon view and the full-term view cannot be two models.
+    const through = schedule.slice(0, clampedPayoff);
+    payoffPaid = through.reduce((sum, row) => sum + row.payment, 0);
+    payoffInterest = through.reduce((sum, row) => sum + row.interest, 0);
+    payoffPrincipalRepaid = through.reduce((sum, row) => sum + row.principal, 0);
+    // Interest plus every fee, once. See the field's docstring for why the
+    // financed fee belongs here in full and why principal does not.
+    payoffCost = payoffInterest + paidUpFront + financedFees;
+    if (
+      !Number.isFinite(payoffPaid) ||
+      !Number.isFinite(payoffInterest) ||
+      !Number.isFinite(payoffCost)
+    ) {
+      return null;
+    }
   }
 
   return {
@@ -199,5 +278,9 @@ export function computeApr(input: AprInput): AprResult | null {
     payoffMonths: clampedPayoff,
     payoffBalance,
     payoffAprPercent,
+    payoffPaid,
+    payoffInterest,
+    payoffPrincipalRepaid,
+    payoffCost,
   };
 }

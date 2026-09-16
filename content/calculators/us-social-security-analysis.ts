@@ -22,16 +22,18 @@
 //   Đến tuổi 95 ở mức chiết khấu 3%: cả hai thước đo đều chọn tuổi 70
 //     (tổng 1.041.600; giá trị hiện tại 576.112)
 
+import { US_SOCIAL_SECURITY_SOURCES } from "@/content/calculators/us-social-security-sources";
+
 export const US_SOCIAL_SECURITY_ANALYSIS = {
   slug: "/cong-cu/phan-tich-an-sinh-xa-hoi",
 
-  pageTitle: "Phân tích an sinh xã hội",
-  metaTitle: "Phân tích an sinh xã hội — Tuổi bắt đầu nhận và điểm hòa vốn",
+  pageTitle: "Phân tích an sinh xã hội Hoa Kỳ",
+  metaTitle: "Phân tích an sinh xã hội Hoa Kỳ — Tuổi bắt đầu nhận và điểm hòa vốn",
   metaDescription:
     "So sánh tổng tiền nhận cả đời ở từng tuổi bắt đầu nhận trợ cấp an sinh xã hội Hoa Kỳ, tính điểm hòa vốn và giá trị hiện tại theo lãi suất chiết khấu. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Chờ thêm một năm để nhận trợ cấp cao hơn là một phép đổi: khoản nhận mỗi tháng lớn hơn, số tháng được nhận ít hơn. Trang này tính cả hai vế cho từng tuổi từ 62 đến 70, và trả về hai câu trả lời khác nhau — một theo tổng tiền, một theo giá trị hiện tại — vì chúng thường không trùng nhau.",
+    "Chờ thêm một năm để nhận trợ cấp an sinh xã hội Hoa Kỳ cao hơn là một phép đổi: khoản nhận mỗi tháng lớn hơn, số tháng được nhận ít hơn. Trang này tính cả hai vế cho từng tuổi từ 62 đến 70, và trả về hai câu trả lời khác nhau — một theo tổng tiền, một theo giá trị hiện tại — vì chúng thường không trùng nhau.",
 
   form: {
     benefitGroup: "Trợ cấp của bạn",
@@ -46,7 +48,7 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
     endAgeLabel: "Phân tích đến tuổi",
     endAgeUnit: "tuổi",
     endAgeHelp:
-      "Đây là biến quyết định kết quả, và nó là một phỏng đoán về chính bạn. Kỳ vọng sống là số TRUNG VỊ: một nửa số người sống lâu hơn thế, nên nhập cao hơn kỳ vọng nếu sức khỏe gia đình bạn tốt.",
+      "Đây là biến quyết định kết quả, và nó là một phỏng đoán về chính bạn. Kỳ vọng sống là một con số bình quân của cả một thế hệ, không phải mốc tuổi mà đúng một nửa số người vượt qua — rất nhiều người sống lâu hơn nó. Hãy nhập cao hơn kỳ vọng nếu sức khỏe gia đình bạn tốt.",
     discountLabel: "Lãi suất chiết khấu",
     discountUnit: "%/năm",
     discountHelp:
@@ -122,7 +124,7 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
     items: [
       {
         q: "Nên nhập tuổi kết thúc là bao nhiêu?",
-        a: "Cao hơn kỳ vọng sống, không phải bằng. Kỳ vọng sống là số trung vị: một nửa số người sống lâu hơn nó. Nếu bạn nhập đúng tuổi kỳ vọng thì bạn đang tối ưu cho một kịch bản mà bạn có 50% khả năng vượt qua — và trong nửa còn lại, việc nhận sớm khiến bạn sống nhiều năm với khoản trợ cấp thấp hơn. Có một cách nghĩ khác giúp thoát khỏi việc phải đoán: trợ cấp an sinh xã hội là khoản thu nhập duy nhất của bạn vừa kéo dài suốt đời vừa được điều chỉnh theo lạm phát, nên vai trò tự nhiên của nó là bảo hiểm cho trường hợp sống RẤT lâu. Bảo hiểm thì nên mua ở mức cao nhất, tức là chờ.",
+        a: "Cao hơn kỳ vọng sống, không phải bằng. Kỳ vọng sống là một con số bình quân của cả một thế hệ, không phải mốc tuổi mà đúng một nửa số người vượt qua, nên nó không cho bạn biết cơ hội sống lâu hơn thế của bạn là bao nhiêu. Nếu bạn nhập đúng con số đó thì bạn đang tối ưu cho một kịch bản mà bạn hoàn toàn có thể sống vượt qua — và trong trường hợp đó, việc nhận sớm khiến bạn sống nhiều năm với khoản trợ cấp thấp hơn. Có một cách nghĩ khác giúp thoát khỏi việc phải đoán: trợ cấp an sinh xã hội là khoản thu nhập duy nhất của bạn vừa kéo dài suốt đời vừa được điều chỉnh theo lạm phát, nên vai trò tự nhiên của nó là bảo hiểm cho trường hợp sống RẤT lâu. Bảo hiểm thì nên mua ở mức cao nhất, tức là chờ.",
       },
       {
         q: "Vì sao cột hòa vốn lại tụt xuống ở tuổi 65?",
@@ -141,5 +143,13 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
         a: "Gần như không, và đó là lý do công cụ không mô hình hóa nó. Phần điều chỉnh này áp cho mọi phương án theo cùng một tỷ lệ phần trăm, nên nó phóng to tất cả các con số mà gần như giữ nguyên thứ tự giữa chúng. Tác động nhỏ còn lại thực ra có lợi cho việc chờ: phần điều chỉnh được cộng lên một khoản gốc lớn hơn. Nếu bạn muốn đọc kết quả theo giá của tương lai thì hãy nhân lên, còn nếu muốn so các phương án với nhau thì các con số ở đây đã đủ.",
       },
     ],
+  },
+
+  // Defined ONCE in us-social-security-sources.ts and spread here. This row
+  // takes the PIA as an input, so it needs none of the indexed figures — but
+  // every age factor in its table comes from the same statute the other two
+  // rows apply, and a separate list here is how the three would drift apart.
+  sources: {
+    ...US_SOCIAL_SECURITY_SOURCES,
   },
 } as const;

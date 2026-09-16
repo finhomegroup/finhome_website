@@ -6,7 +6,12 @@ import { NumberField } from "@/components/calc/number-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
-import { formatDecimal, formatPercent, parseDecimal } from "@/lib/calc/number";
+import {
+  formatDecimal,
+  formatPercent,
+  parseCount,
+  parseDecimal,
+} from "@/lib/calc/number";
 import { computeExpectedReturn } from "@/lib/calc/expected-return";
 import { EXPECTED_RETURN as C } from "@/content/calculators/expected-return";
 
@@ -30,9 +35,12 @@ export function ExpectedReturnCalculator() {
     ),
   } as Record<string, string>);
 
-  const count = parseDecimal(fields.values.count);
-  const countInvalid =
-    count === null || count < 2 || count > MAX_SCENARIOS || !Number.isInteger(count);
+  // A whole count of scenarios, so `parseCount` — docs §4. `parseDecimal`
+  // with the integer guard was unreachable for a grouped entry: "3.000"
+  // read as 3, an integer inside [2, 8], so the page rendered three
+  // scenarios rather than showing the error the field promises.
+  const count = parseCount(fields.values.count);
+  const countInvalid = count === null || count < 2 || count > MAX_SCENARIOS;
   const shown = countInvalid ? 0 : count;
 
   const rows = INDEXES.slice(0, shown).map((index) => {

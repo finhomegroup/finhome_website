@@ -9,7 +9,7 @@ Sở Xây dựng Hà Nội vừa công bố giá bán dự kiến đối với d
 
 ## Góc nhìn FinHome
 
-Mức giá 28,4 triệu đồng/m² của dự án CT2 Lĩnh Nam thuộc nhóm cao hơn so với nhiều dự án nhà ở xã hội tại các tỉnh thành khác, nhưng vẫn thấp hơn đáng kể so với giá chung cư thương mại tại khu vực Hoàng Mai và ven Vành đai 3. Với mức giá 1,1-1,5 tỷ đồng/căn, đây vẫn là cơ hội tiếp cận nhà ở có sổ hồng riêng cho người đủ điều kiện. Tuy nhiên, người mua cần lưu ý kiểm tra tiến độ hoàn thiện pháp lý và thời điểm mở bán chính thức từ chủ đầu tư trước khi đặt cọc.
+Mức giá 28,4 triệu đồng/m² của dự án CT2 Lĩnh Nam thuộc nhóm cao hơn so với nhiều dự án nhà ở xã hội tại các tỉnh thành khác, nhưng vẫn thấp hơn đáng kể so với giá chung cư thương mại tại khu vực Hoàng Mai và ven Vành đai 3. Với mức giá 1,1-1,5 tỷ đồng/căn, đây vẫn là cơ hội tiếp cận nhà ở có sổ hồng riêng — cách gọi quen dùng của Giấy chứng nhận quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất — cho người đủ điều kiện. Tuy nhiên, người mua cần lưu ý kiểm tra tiến độ hoàn thiện pháp lý và thời điểm mở bán chính thức từ chủ đầu tư trước khi đặt cọc.
 
 ## Đọc thêm
 

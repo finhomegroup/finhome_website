@@ -64,6 +64,64 @@ export type BiweeklyInput = {
   termMonths: number;
 };
 
+/**
+ * The saving separated into its TWO causes.
+ *
+ * Paying half the instalment every fortnight changes two things at once, and
+ * the combined `interestSaving` cannot tell them apart:
+ *
+ * 1. **More money.** 26 half-instalments is 13 monthly instalments' worth a
+ *    year rather than 12, so an extra instalment goes into the principal.
+ * 2. **More often.** The balance falls fortnightly rather than monthly, and
+ *    interest is charged on it fortnightly too.
+ *
+ * WHY THIS TYPE EXISTS. The page's own question is "does paying more OFTEN
+ * reduce interest?", and the copy used to answer it with "hai yếu tố này cộng
+ * lại tạo ra khoản tiết kiệm" — true, but it reads as two comparable
+ * contributors. On the shipped defaults they are 1,8% and 98,2%.
+ *
+ * HOW THE SPLIT IS DEFINED. One intermediate schedule, changing exactly one
+ * variable per step:
+ *
+ * - monthly instalment `M`, monthly  →  `12M/26` fortnightly. The annual
+ *   outlay is unchanged at `12M`; only the TIMING moved. That is
+ *   `frequencySaving`.
+ * - `12M/26` fortnightly  →  `M/2` fortnightly. The dates are unchanged; only
+ *   the MONEY moved, by one instalment a year. That is `extraPaymentSaving`.
+ *
+ * The two sum to `interestSaving` exactly, by telescoping — which is what
+ * makes this a decomposition and not a second estimate.
+ *
+ * TWO HONEST LIMITS, both of which belong on the page rather than in a
+ * footnote:
+ *
+ * - **The split is ORDER-DEPENDENT**, as every two-factor decomposition is.
+ *   `frequencySaving` is the clean isolate (same money, moved earlier) and
+ *   `extraPaymentSaving` therefore carries the interaction between the two.
+ *   Measuring the extra instalment first instead, at monthly frequency, gives
+ *   98,4% / 1,6% on the shipped defaults against 98,2% / 1,8% here, so the
+ *   conclusion does not depend on the order — but the two figures do, and the
+ *   frequency leg is deliberately the one NOT inflated by the interaction,
+ *   because it is the leg this page is tempted to oversell.
+ * - **The frequency leg carries the accrual convention with it.** A
+ *   fortnightly schedule charges `annualRate/26` per fortnight, which
+ *   compounds 26 times a year instead of 12. That is inseparable from paying
+ *   fortnightly — there is no version of "the same loan, paid fortnightly"
+ *   that still accrues monthly — so it is inside this leg by construction and
+ *   is part of why the leg is small: earlier principal reduction and slightly
+ *   faster compounding push in opposite directions.
+ */
+export type BiweeklySplit = {
+  /** The fortnightly instalment that leaves the ANNUAL outlay unchanged. */
+  samePayment: number;
+  /** Total interest on that same-money fortnightly schedule. */
+  sameTotalInterest: number;
+  /** Interest avoided by paying MORE OFTEN, with the annual money unchanged. */
+  frequencySaving: number;
+  /** Interest avoided by paying MORE — the extra instalment a year. */
+  extraPaymentSaving: number;
+};
+
 export type BiweeklyResult = {
   /** The ordinary monthly instalment, for reference. */
   monthlyPayment: number;
@@ -75,6 +133,19 @@ export type BiweeklyResult = {
   biweeklyTotalInterest: number;
   /** Interest avoided by paying fortnightly. */
   interestSaving: number;
+  /**
+   * `interestSaving` separated into its two causes, or null.
+   *
+   * NULL IS NOT ZERO. The intermediate same-money schedule pays `12M/26` a
+   * fortnight, and on a very long term `M` converges down onto the interest
+   * charge, so `12M/26` lands at or below the fortnightly interest in float
+   * and no such schedule exists — while the `M/2` schedule still clears. At
+   * 8,5% over 6.000 months that is exactly what happens. Reporting two zeros
+   * there would say "neither cause contributes anything", which is the
+   * opposite of the truth; the whole group is withheld instead, all or
+   * nothing, so a consumer cannot read one leg without the other.
+   */
+  split: BiweeklySplit | null;
   /** Number of fortnightly payments made. */
   biweeklyPeriods: number;
   /** Those payments expressed in years, for a readable payoff time. */
@@ -126,12 +197,29 @@ export function computeBiweekly(input: BiweeklyInput): BiweeklyResult | null {
   const biweeklyTotalInterest = sumOf(biweeklySchedule, "interest");
   const biweeklyYears = biweeklySchedule.length / 26;
 
+  // The intermediate schedule: the SAME annual outlay, paid fortnightly.
+  // 26 instalments of 12M/26 is 12M a year, exactly what the monthly schedule
+  // pays, so the only thing this changes is when the money arrives.
+  const samePayment = (monthlyPayment * 12) / 26;
+  const sameSchedule = amortizeFixedPayment(amount, biweeklyRate, samePayment);
+  const sameTotalInterest =
+    sameSchedule === null ? null : sumOf(sameSchedule, "interest");
+
   return {
     monthlyPayment,
     biweeklyPayment,
     monthlyTotalInterest,
     biweeklyTotalInterest,
     interestSaving: monthlyTotalInterest - biweeklyTotalInterest,
+    split:
+      sameTotalInterest === null
+        ? null
+        : {
+            samePayment,
+            sameTotalInterest,
+            frequencySaving: monthlyTotalInterest - sameTotalInterest,
+            extraPaymentSaving: sameTotalInterest - biweeklyTotalInterest,
+          },
     biweeklyPeriods: biweeklySchedule.length,
     biweeklyYears,
     monthsSaved: termMonths - biweeklyYears * 12,

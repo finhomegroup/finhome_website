@@ -23,11 +23,13 @@
 //     — thu nhập gấp 5,13 lần mà trợ cấp chỉ gấp 1,55 lần
 //   Thu nhập 30.000/năm: AIME 2.500,00; PIA 1.545,80; thay thế 61,83%
 
+import { US_SOCIAL_SECURITY_SOURCES } from "@/content/calculators/us-social-security-sources";
+
 export const US_SOCIAL_SECURITY_ESTIMATE = {
   slug: "/cong-cu/uoc-tinh-an-sinh-xa-hoi",
 
-  pageTitle: "Ước tính an sinh xã hội",
-  metaTitle: "Ước tính an sinh xã hội — Trợ cấp hằng tháng theo thu nhập và tuổi nhận",
+  pageTitle: "Ước tính an sinh xã hội Hoa Kỳ",
+  metaTitle: "Ước tính an sinh xã hội Hoa Kỳ — Trợ cấp theo thu nhập và tuổi nhận",
   metaDescription:
     "Ước tính trợ cấp an sinh xã hội Hoa Kỳ từ thu nhập bình quân và số năm làm việc, theo công thức ba mức của SSA, cho mọi tuổi bắt đầu nhận từ 62 đến 70. Công cụ miễn phí của FinHome.",
 
@@ -138,7 +140,7 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
     items: [
       {
         q: "Vì sao trang này không hỏi năm tôi tròn 62 tuổi?",
-        a: "Vì nó sẽ giới hạn công cụ chỉ dùng được cho hai thế hệ. Các mốc của công thức chỉ có số liệu công bố cho một vài năm, và chúng không suy ra được từ gì khác. Nhưng có một tính chất giúp giải quyết: các mốc này và phần điều chỉnh thu nhập từng năm của bạn đều đi theo cùng một chỉ số tiền lương bình quân, nên tỷ lệ thay thế của một người ở cùng vị trí trong phân phối thu nhập gần như không đổi qua các năm. Vì thế nhập thu nhập theo giá hôm nay và dùng công thức của năm gần nhất cho một kết quả đọc được như con số theo giá hôm nay — đúng cách mà công cụ ước tính nhanh của chính SSA hoạt động.",
+        a: "Vì nó sẽ giới hạn công cụ chỉ dùng được cho hai thế hệ. Các mốc của công thức chỉ có số liệu công bố cho một vài năm, và chúng không suy ra được từ gì khác. Nhưng có một tính chất giúp giải quyết: các mốc này và phần điều chỉnh thu nhập từng năm của bạn đều đi theo cùng một chỉ số tiền lương bình quân, nên tỷ lệ thay thế của một người ở cùng vị trí trong phân phối thu nhập gần như không đổi qua các năm. Vì thế nhập thu nhập theo giá hôm nay và dùng công thức của năm gần nhất cho một kết quả đọc được như con số theo giá hôm nay. Đó là cách xấp xỉ của riêng công cụ này, không phải cách SSA tính: công cụ ước tính của SSA hỏi ngày sinh và mức thu nhập hiện tại, rồi tự dựng lại một lịch sử thu nhập giả định cho từng năm — và cho bạn xem, sửa lại lịch sử đó. Trang này chỉ có một mức bình quân bạn tự nhập, nên hai con số có thể lệch nhau.",
       },
       {
         q: "Thiếu vài năm làm việc thì mất bao nhiêu?",
@@ -157,5 +159,14 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
         a: "Hãy tin con số của SSA. Họ có lịch sử thu nhập thật của bạn theo từng năm; công cụ này chỉ có một mức bình quân bạn tự nhập. Vài nguyên nhân khiến hai con số lệch nhau: bản ước tính của SSA giả định bạn tiếp tục làm việc với mức thu nhập hiện tại đến tuổi nhận, thu nhập thật của bạn không đều qua các năm nên 35 năm cao nhất khác mức bình quân, và bản ước tính của SSA thường trình bày theo giá hôm nay với các giả định riêng của họ về tiền lương tương lai. Nếu bạn đã có con số của SSA, hãy dùng nó cho hai trang phân tích còn lại thay vì con số ở đây.",
       },
     ],
+  },
+
+  // Defined ONCE in us-social-security-sources.ts and spread here, because
+  // this row shares every statutory rate it cites with the other two Social
+  // Security rows — see that module's header. Spread rather than referenced by
+  // name so the literal `sources: {` stays in this file, which is what
+  // sources-wiring.test.ts scans for.
+  sources: {
+    ...US_SOCIAL_SECURITY_SOURCES,
   },
 } as const;

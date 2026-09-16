@@ -66,7 +66,8 @@ export const BUSINESS_FORECAST = {
 
     taxLabel: "Thuế thu nhập doanh nghiệp",
     taxUnit: "%",
-    taxHelp: "Thuế suất phổ thông tại Việt Nam là 20%.",
+    taxHelp:
+      "Từ 01/10/2025 thuế suất phụ thuộc quy mô doanh thu: 15% nếu doanh thu năm không quá 3 tỷ, 17% nếu trên 3 tỷ đến 50 tỷ, và 20% nếu trên 50 tỷ. Doanh thu từ 1 tỷ trở xuống được miễn thuế từ 01/01/2026. Mức áp cho một năm được xác định theo doanh thu của năm trước liền kề, còn công cụ này dùng một thuế suất duy nhất cho mọi năm — nếu dự báo của bạn vượt qua một mốc doanh thu trong kỳ, hãy chạy hai lần. Xem phần nguồn ở cuối trang.",
     taxInvalid: "Vui lòng nhập một số từ 0 đến 100.",
 
     defaults: {
@@ -77,7 +78,24 @@ export const BUSINESS_FORECAST = {
       fixedGrowth: "8",
       years: "5",
       baseYear: "2026",
-      tax: "20",
+      // 17, not 20, and the form itself is why. The prefilled scenario opens
+      // at 10 tỷ of revenue and reaches 17,49 tỷ in year 5, so it sits in the
+      // "trên 3 tỷ đến 50 tỷ" band for the whole default horizon — where
+      // Điều 10 of Luật 67/2025/QH15 sets 17%. 20% is the rate above 50 tỷ.
+      //
+      // This is docs §8 defect 8 in its second form: a prefilled tax
+      // parameter that the law has moved under. There, a page charged
+      // 17.100.000 ₫ of tax that was not owed because a threshold had been
+      // revised twice. Here the rate article itself gained a size tier, and
+      // an SME reading this tool's opening state was being shown three
+      // percentage points of tax too much on every year of the forecast.
+      //
+      // No quoted figure moves with this: every number in `leverageNotice`,
+      // `formula.body` and the header comment is PRE-tax — revenue, operating
+      // profit and margin — so the tax rate reaches only the `Thuế` and `LN
+      // sau thuế` columns and the after-tax total, none of which prose
+      // quotes. The content test pins that separation.
+      tax: "17",
     },
 
     resultTitle: "Năm cuối kỳ dự báo",
@@ -109,23 +127,97 @@ export const BUSINESS_FORECAST = {
     },
 
     lossNotice:
-      "Có năm lỗ trong kỳ dự báo. Công cụ tính thuế theo TỪNG NĂM chứ không theo tổng cả kỳ, nên năm lỗ không được bù trừ vào thuế của các năm sau. Trên thực tế, doanh nghiệp được chuyển lỗ sang các năm sau theo quy định, nên số thuế thật có thể thấp hơn bảng này — đây là ước tính thận trọng, không phải tính thuế.",
+      "Có năm lỗ trong kỳ dự báo. Công cụ tính thuế theo từng năm chứ không theo tổng cả kỳ, nên năm lỗ không được bù trừ vào thuế của các năm sau. Trên thực tế, doanh nghiệp được chuyển lỗ sang các năm sau theo quy định, nên số thuế thật có thể thấp hơn bảng này — đây là ước tính thận trọng, không phải tính thuế.",
     invalidNotice:
       "Một ô nhập chưa hợp lệ. Kiểm tra lại số năm dự báo (1–30, số nguyên) và tỷ lệ biến phí (0–100%).",
   },
 
+  // REQUALIFIED. This string fills the `notice` slot — the one red box above
+  // the calculator — and it used to open "Với các số mặc định, doanh thu tăng
+  // từ 10 tỷ lên 17,49 tỷ sau 5 năm, còn lợi nhuận hoạt động tăng từ 1 tỷ lên
+  // 2,91 tỷ — gấp gần ba lần". Every figure in it was right, and the sentence
+  // still read as a finding about a business: a growth story in the most
+  // prominent slot on the page, with the words "assumption", "projection" and
+  // "you chose these numbers" nowhere in it.
+  //
+  // The row's requirement is to state the assumptions rather than a confident
+  // conclusion, and the lesson WAS written — twice — but both times below the
+  // calculator, in FAQ item 4 and in `formula.body`'s last paragraph. A
+  // reader who takes the headline and leaves never reaches either.
+  //
+  // So the notice now names the four numbers as the reader's own inputs
+  // first, and only then reads the arithmetic off them. The operating-leverage
+  // teaching is kept in full, including the experiment that makes it
+  // falsifiable — set fixed-cost growth to 15% and the margin stops moving —
+  // because that experiment is what turns the notice from a claim into
+  // something the reader can check in the form above it.
   leverageNotice:
-    "Với các số mặc định, doanh thu tăng từ 10 tỷ lên 17,49 tỷ sau 5 năm, còn lợi nhuận hoạt động tăng từ 1 tỷ lên 2,91 tỷ — gấp gần ba lần trong khi doanh thu chưa tới gấp đôi. Biên lợi nhuận nở từ 10,00% lên 16,66%. Toàn bộ mức nở đó đến từ một chỗ: định phí tăng 8%/năm trong khi doanh thu tăng 15%/năm, nên định phí co lại thành một tỷ lệ nhỏ dần trên doanh thu. Đó là đòn bẩy hoạt động, và nó chỉ hiện ra khi định phí được tách riêng — nếu bạn đặt tăng trưởng định phí bằng 15%, biên lợi nhuận sẽ đứng đúng 10,00% ở cả năm năm.",
+    "Bốn con số trong form là giả định, không phải dữ liệu: tăng trưởng doanh thu 15%/năm, biến phí 60% doanh thu, định phí tăng 8%/năm, kỳ 5 năm. Bảng bên dưới là hệ quả số học của bốn giả định đó — nó cho biết điều gì xảy ra nếu chúng đúng, chứ không phải điều gì sẽ xảy ra. Với chính bốn con số này, doanh thu đi từ 10 tỷ lên 17,49 tỷ và lợi nhuận hoạt động đi từ 1 tỷ lên 2,91 tỷ, nên biên lợi nhuận nở từ 10,00% lên 16,66%. Toàn bộ mức nở đó đến từ một chỗ: định phí tăng 8%/năm trong khi doanh thu tăng 15%/năm, nên định phí co lại thành một tỷ lệ nhỏ dần trên doanh thu. Đó là đòn bẩy hoạt động. Hãy tự kiểm tra: đặt tăng trưởng định phí bằng 15% và biên lợi nhuận sẽ đứng đúng 10,00% ở cả năm năm — mức nở biến mất, vì nó vốn là hệ quả của khoảng cách giữa hai giả định chứ không phải của doanh nghiệp.",
+
+  /**
+   * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.
+   *
+   * This row is filed `reference` in `content/calculators/plan-disposition.ts`
+   * and `check:markup` fails a `reference` page that ships a `<strong>`, so
+   * the phrases are held here and tested against the prose rather than passed
+   * to `prose.emphasis`. One line to wire once the disposition is filed.
+   */
+
+  // The documents behind the prefilled 17% and behind the rate bands named in
+  // `taxHelp`. Naming a law in prose is not a citation a reader can check,
+  // which is what `CalculatorPage`'s `sources` slot exists for — and this
+  // page prefills a statutory rate, so it is exactly the case described in
+  // docs §3. `intro` carries the provenance limit, because a list of official
+  // links implies a completeness this page has not earned.
+  sources: {
+    title: "Nguồn cho thuế suất điền sẵn",
+    intro:
+      "Các văn bản dưới đây là nguồn của thuế suất 17% điền sẵn và của các mốc doanh thu nói trong phần trợ giúp của ô thuế. Chúng được đọc trong phần rà soát nguồn của dự án, không phải do trang tự tra lại tại thời điểm bạn đọc. Đây không phải danh sách đầy đủ, không phải tư vấn thuế, và phần thuế của trang này vẫn đang chờ rà soát của người có chuyên môn về thuế. Công cụ cũng không mô phỏng chuyển lỗ giữa các năm, không mô phỏng ưu đãi theo ngành hay địa bàn, và không tự đổi thuế suất khi doanh thu dự báo vượt một mốc. Hãy đối chiếu bản công bố chính thức và hỏi cơ quan thuế cho trường hợp cụ thể của bạn.",
+    items: [
+      {
+        url: "https://xaydungchinhsach.chinhphu.vn/thue-suat-thue-thu-nhap-doanh-nghiep-moi-ap-dung-tu-1-10-2025-119250730082233732.htm",
+        label:
+          "Thuế suất thuế thu nhập doanh nghiệp mới áp dụng từ 1/10/2025 — Cổng Thông tin điện tử Chính phủ",
+        note: "Nguồn của cả ba mốc: thuế suất phổ thông 20%, 15% cho doanh thu năm không quá 3 tỷ, và 17% cho doanh thu trên 3 tỷ đến không quá 50 tỷ, theo Điều 10 Luật Thuế thu nhập doanh nghiệp số 67/2025/QH15. Trang này cũng là căn cứ cho việc mốc được xác định theo doanh thu của năm trước liền kề, và cho danh sách các khoản thu nhập không được áp mức 15% hay 17%.",
+      },
+      {
+        url: "https://vanban.chinhphu.vn/?pageid=27160&docid=214607&classid=1&typegroupid=3",
+        label:
+          "Luật số 67/2025/QH15 — Luật Thuế thu nhập doanh nghiệp, trang công báo",
+        note: "Bản ghi của chính văn bản: ban hành 14/06/2025, hiệu lực 01/10/2025, thay Luật Thuế thu nhập doanh nghiệp 2008. Toàn văn ở trang này là tệp PDF đính kèm, nên nó xác nhận văn bản và các mốc thời gian chứ không hiển thị trực tiếp các con số thuế suất — hãy đọc cùng nguồn phía trên.",
+      },
+      {
+        url: "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-so-141-2026-nd-cp-nang-nguong-doanh-thu-khong-phai-chiu-thue-len-1-ty-dong-119260504154326455.htm",
+        label:
+          "Toàn văn Nghị định số 141/2026/NĐ-CP — chính sách thuế với hộ kinh doanh, cá nhân kinh doanh và thuế thu nhập doanh nghiệp",
+        note: "Nguồn của mức miễn thuế nói trong phần trợ giúp: doanh nghiệp có tổng doanh thu năm từ 1 tỷ đồng trở xuống được miễn thuế thu nhập doanh nghiệp, hiệu lực 01/01/2026. Không áp cho công ty con hoặc công ty có quan hệ liên kết mà bên liên kết không đáp ứng điều kiện.",
+      },
+    ],
+  },
 
   formula: {
     title: "Cách tính",
     body: [
       "Doanh thu năm thứ n bằng doanh thu năm đầu nhân (1 + g) lũy thừa (n − 1). Số mũ là n − 1 chứ không phải n, nên năm đầu giữ nguyên con số bạn nhập. Định phí đi theo cùng công thức với tốc độ tăng riêng của nó.",
-      "Tăng trưởng tính KÉP. Ở kỳ 10 năm với 15%/năm, doanh thu năm cuối bằng 3,518 lần năm đầu; cộng thẳng 15% mười lần sẽ ra 2,35 lần — thấp hơn một phần ba. Kỳ dự báo càng dài, sai số của cách cộng thẳng càng lớn.",
-      "Biến phí là một tỷ lệ trên doanh thu CỦA CHÍNH NĂM ĐÓ, nên nó tự động tăng theo doanh thu. Định phí thì không, và đó là điểm mấu chốt của cả công cụ: nếu mọi chi phí đều là tỷ lệ trên doanh thu, biên lợi nhuận sẽ là một hằng số và bản dự báo chỉ lặp lại biên lợi nhuận năm đầu ở mọi năm. Đòn bẩy hoạt động chỉ xuất hiện khi định phí có đường đi riêng.",
-      "Thuế tính trên lợi nhuận của TỪNG NĂM và chỉ khi năm đó có lãi. Năm lỗ không phát sinh thuế và cũng không sinh ra khoản được hoàn. Chuyển lỗ sang năm sau là một quy định riêng mà công cụ cố ý không mô phỏng, thay vì làm nửa vời — nên với một kịch bản có năm lỗ, số thuế ở đây là ước tính thận trọng.",
+      "Tăng trưởng tính kép, không cộng thẳng. Ở kỳ 10 năm với 15%/năm, doanh thu năm cuối bằng 3,518 lần năm đầu; cộng thẳng 15% mười lần sẽ ra 2,35 lần — thấp hơn một phần ba. Kỳ dự báo càng dài, sai số của cách cộng thẳng càng lớn.",
+      "Biến phí là một tỷ lệ trên doanh thu của chính năm đó, nên nó tự động tăng theo doanh thu. Định phí thì không, và đó là điểm mấu chốt của cả công cụ: nếu mọi chi phí đều là tỷ lệ trên doanh thu, biên lợi nhuận sẽ là một hằng số và bản dự báo chỉ lặp lại biên lợi nhuận năm đầu ở mọi năm. Đòn bẩy hoạt động chỉ xuất hiện khi định phí có đường đi riêng.",
+      "Thuế tính trên lợi nhuận của từng năm riêng biệt và chỉ khi năm đó có lãi. Năm lỗ không phát sinh thuế và cũng không sinh ra khoản được hoàn. Chuyển lỗ sang năm sau là một quy định riêng mà công cụ cố ý không mô phỏng, thay vì làm nửa vời — nên với một kịch bản có năm lỗ, số thuế ở đây là ước tính thận trọng.",
       "Tăng trưởng kép ở phần kết quả chính là tốc độ bạn đã nhập. Nó ở đó như một phép kiểm tra rằng chuỗi thật sự được nhân dồn, không phải một thông tin mới — nếu công cụ tính sai thành tăng trưởng tuyến tính, con số này sẽ thấp hơn tốc độ bạn nhập.",
       "Kỳ dự báo giới hạn 30 năm. Nhân dồn một phỏng đoán qua ba thập kỷ thì kết quả nói nhiều về phỏng đoán hơn là về doanh nghiệp.",
+    ],
+    emphasis: [
+      // body[0] — the off-by-one that decides whether year one is your number.
+      "năm đầu giữ nguyên con số bạn nhập",
+      // body[1] — the arithmetic error this page's first paragraph exists for.
+      "không cộng thẳng",
+      // body[2] — what a forecast says when every cost is a percent of revenue.
+      "biên lợi nhuận sẽ là một hằng số",
+      // body[3] — a loss year is not a refund, and the tool does not pretend.
+      "không sinh ra khoản được hoàn",
+      // body[4] — the CAGR row is a self-check, not a new fact.
+      "một phép kiểm tra",
+      // body[5] — the honest limit of a compounded guess.
+      "nói nhiều về phỏng đoán hơn là về doanh nghiệp",
     ],
   },
 

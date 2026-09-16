@@ -33,10 +33,21 @@
  * the REMAINING periods, which are the ones the reader can still act on,
  * are not.
  *
- * Pay is `planCompensation / payPeriodsPerYear`, using the 401(a)(17)-capped
- * compensation for the same reason `us-401k.ts` does: a plan cannot see pay
- * above the ceiling, so neither the deferral election nor the match
- * threshold can be computed on the raw salary.
+ * ## The paycheck and the match threshold are different bases
+ *
+ * `payPerPeriod` is `annualSalary / payPeriodsPerYear` — the pay the reader
+ * actually receives, which is what a deferral is taken out of and what a
+ * percent-of-pay election is a percent of. The 401(a)(17) ceiling is NOT a
+ * second cap on it: what limits the employee's own money is 402(g), a flat
+ * dollar limit. The ceiling appears in exactly one place here,
+ * `matchThresholdPerPeriod`, because the match formula is the employer's
+ * side and a plan may not apply it to pay above the ceiling.
+ *
+ * Both were computed on capped compensation until 2026-09-16, which
+ * understated a 500.000 earner's fortnightly pay by 5.384,62 USD under a
+ * label reading "lương mỗi kỳ", and with it the amount they could still
+ * defer per paycheck. `us-401k.ts` carried the same error on its deferral
+ * election; the two were fixed together.
  */
 
 import {
@@ -210,7 +221,14 @@ export function computeUs401kMax(
   const limit = params.electiveDeferral + catchUpAvailable;
 
   const planCompensation = Math.min(annualSalary, params.compensation);
-  const payPerPeriod = planCompensation / payPeriodsPerYear;
+  // TWO BASES, and they must not be conflated. `payPerPeriod` is the pay the
+  // reader actually receives, which is what a deferral comes out of and what
+  // a percent-of-pay election is a percent OF; 402(g) is the only thing
+  // limiting what may be deferred from it. `planPayPerPeriod` is the same
+  // paycheck as the plan is allowed to see it, and it is used for the match
+  // threshold and nothing else.
+  const payPerPeriod = annualSalary / payPeriodsPerYear;
+  const planPayPerPeriod = planCompensation / payPeriodsPerYear;
   const periodsRemaining = payPeriodsPerYear - periodsElapsed;
 
   const remainingRoom = Math.max(0, limit - contributedSoFar);
@@ -223,7 +241,8 @@ export function computeUs401kMax(
     payPerPeriod * periodsRemaining,
   );
 
-  const matchThresholdPerPeriod = payPerPeriod * (employerMatchLimitPercent / 100);
+  const matchThresholdPerPeriod =
+    planPayPerPeriod * (employerMatchLimitPercent / 100);
   const matchThresholdAnnual =
     planCompensation * (employerMatchLimitPercent / 100);
 

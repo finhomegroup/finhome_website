@@ -10,6 +10,7 @@ import { useCalcFields } from "@/components/calc/use-calc-fields";
 import {
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -30,11 +31,28 @@ export function TipCalculator() {
   const service = parseDecimal(fields.values.service);
   const tax = parseDecimal(fields.values.tax);
   const tip = parseDecimal(fields.values.tip);
-  const people = parseDecimal(fields.values.people);
+  // A whole count of people, no unit toggle, so `parseCount` — docs §4. This
+  // was `parseDecimal` with the `Number.isInteger` guard below it, the
+  // arrangement `parseCount`'s docstring calls unreachable: `parseDecimal`
+  // reads a grouped "1.000" as 1, and 1 IS an integer, so the guard passed
+  // and the bill was split one way.
+  const people = parseCount(fields.values.people);
 
   const billInvalid = bill === null || bill <= 0;
   const serviceInvalid = service === null || service < 0;
-  const taxInvalid = tax === null || tax < 0;
+  // BOUNDED AT 100, and only this field of the three percentages.
+  //
+  // VAT is a rate set by statute, so a value above 100 is not a number anyone
+  // can be invoiced — the field accepted 500 before this, and the same gap is
+  // in `auto-lease-calculator.tsx` and `price-adjust-calculator.tsx` while
+  // `business-forecast-calculator.tsx` has always bounded its tax rate. Three
+  // components, one field kind, three different contracts.
+  //
+  // `service` and `tip` stay unbounded deliberately. Those are the payer's own
+  // discretionary amounts, not statutory rates: a 150% tip is unusual but it
+  // is a real thing a person can choose to do, and rejecting it would be the
+  // tool overruling the user about their own money.
+  const taxInvalid = tax === null || tax < 0 || tax > 100;
   const tipInvalid = tip === null || tip < 0;
   const peopleInvalid =
     people === null || people < 1 || !Number.isInteger(people);

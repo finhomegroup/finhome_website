@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absUrl, canonicalPath } from "@/lib/seo";
 import { POSTS } from "@/content/posts";
+import { EDUCATION_COLLECTION } from "@/content/education/collection";
 import { liveCalculators, calculatorPath } from "@/content/calculators/registry";
 
 export const dynamic = "force-static";
@@ -9,6 +10,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = [
     { url: absUrl(canonicalPath("/")), changeFrequency: "weekly", priority: 1 },
     { url: absUrl(canonicalPath("/blog")), changeFrequency: "weekly", priority: 0.8 },
+    // The education collection index. Its articles come through `postEntries`
+    // below, because they are registered in POSTS; the index itself is a
+    // static route and has to be listed here. No count: adding an article
+    // changes nothing on this line, which is the point of not writing one.
+    {
+      url: absUrl(canonicalPath(EDUCATION_COLLECTION.slug)),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     { url: absUrl(canonicalPath("/vision")), changeFrequency: "monthly", priority: 0.5 },
     { url: absUrl(canonicalPath("/cong-cu")), changeFrequency: "monthly", priority: 0.5 },
     { url: absUrl(canonicalPath("/privacy-policy")), changeFrequency: "yearly", priority: 0.3 },

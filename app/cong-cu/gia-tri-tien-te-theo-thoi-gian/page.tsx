@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { TvmCalculator } from "@/components/tvm-calculator";
 import { TVM as C } from "@/content/calculators/tvm";
 
@@ -22,11 +23,17 @@ export default function TvmPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // The sign convention. This is the one page that has to expose it, and
-      // a wrong sign still produces a plausible-looking number.
-      notice={C.signNotice}
+      // TRUE IN BOTH MODES. The full sign-convention notice used to sit here,
+      // above a form that now opens on three everyday questions where the
+      // reader types positive amounts and never sees a sign. It moved INTO
+      // the advanced mode, beside the fields it governs; this line says which
+      // mode needs it. See `tvm-calculator.tsx`.
+      notice={C.question.pageNotice}
       prose={C.formula}
       faq={C.faq}
+      // Original row 18's next step: "mục tiêu tiết kiệm hoặc khoản vay theo
+      // câu hỏi". The entry existed and this route never rendered it.
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <TvmCalculator />
     </CalculatorPage>

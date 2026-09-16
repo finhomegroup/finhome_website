@@ -23,9 +23,35 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tin tức", href: "#tintuc" },
 ];
 
+// THE PRIMARY CTA POINTS AT THE WORKING WEB TOOLS.
+//
+// Founder confirmed 2026-09-14 that the app has NOT been submitted to the App
+// Store or Google Play and that official links will follow later. So there is
+// nothing to download, and the previous state — label "Thử ngay", hover "Tải
+// xuống", href "#" — promised an install and did nothing observable.
+//
+// Until store links exist, the CTA sends people to the free calculators, which
+// are real, work without an account, and are what the site can deliver today.
+// No "Tải xuống", no install claim, no fake app persistence anywhere.
+//
+// These three constants are read by the protected `components/site-header.tsx`
+// as well as by `sections/steps.tsx`, so changing the destination here does NOT
+// require touching the header. When the store links arrive, this is the one
+// place to revisit — together with `DOWNLOAD_HREF` below, which does not exist
+// yet on purpose.
 export const CTA_LABEL = "Thử ngay";
-export const CTA_HOVER_LABEL = "Tải xuống";
-export const CTA_HREF = "#"; // placeholder until real app URL is provided
+export const CTA_HOVER_LABEL = "Mở công cụ";
+export const CTA_HREF = "/cong-cu/";
+
+/**
+ * Where a "contact us" control goes.
+ *
+ * `sections/partner-cta.tsx` says "Liên hệ ngay", so it must not inherit the
+ * tools destination: the support section on the homepage is the honest target
+ * for that label. Separate constant rather than a second meaning for
+ * `CTA_HREF`.
+ */
+export const CONTACT_HREF = "#hotro";
 
 export const CONTACT = {
   email: "hotro@finhome.group",

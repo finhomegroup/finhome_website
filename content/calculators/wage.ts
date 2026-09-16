@@ -53,18 +53,34 @@ export const WAGE = {
     weeksInvalid: "Vui lòng nhập số tuần lớn hơn 0.",
     defaultWeeks: "52",
 
-    resultTitle: "Quy đổi",
+    resultTitle: "Quy đổi (lương gộp)",
     hourlyLabel: "Theo giờ",
     dailyLabel: "Theo ngày",
     weeklyLabel: "Theo tuần",
-    monthlyLabel: "Theo tháng",
+    monthlyLabel: "Theo tháng (bình quân)",
     yearlyLabel: "Theo năm",
     hoursPerYearLabel: "Số giờ làm việc mỗi năm",
     hoursUnit: "giờ",
+    // The schedule is echoed beside the figures, so "bao nhiêu mỗi tháng"
+    // never appears without the hours it was computed from — original row 62
+    // asks for the hours/week to be visible, not just enterable.
+    scheduleEchoLabel: "Tính trên lịch làm việc",
+    /** `{hours}`, `{days}`, `{weeks}` substituted. */
+    scheduleEchoFormat:
+      "{hours} giờ/tuần · {days} ngày/tuần · {weeks} tuần được trả lương mỗi năm",
   },
 
   monthNotice:
     "Một tháng ở đây là một phần mười hai của năm, không phải bốn tuần. Với 40 giờ mỗi tuần và 52 tuần mỗi năm, một tháng là 4,33 tuần chứ không phải 4 — lấy lương tuần nhân 4 sẽ thiếu khoảng một tuần lương mỗi năm. Đây là chỗ sai phổ biến nhất khi tự quy đổi.",
+
+  // Original row 62: "không coi số quy đổi là thu nhập chứng minh được". Three
+  // separate claims the page must not make, stated above the tool because a
+  // reader takes this number somewhere.
+  grossNotice:
+    "Mọi con số ở đây là lương GỘP, và là số quy đổi — không phải tiền thực nhận, không phải thu nhập đã được chứng minh, và không nói gì về việc thu nhập đó có ổn định hay không.",
+  grossNoticeDetailTitle: "Ba điều con số này không phải",
+  grossNoticeDetail:
+    "Thứ nhất, nó chưa trừ thuế thu nhập cá nhân và các khoản bảo hiểm bắt buộc, nên tiền về tài khoản thấp hơn. Thứ hai, nó là một phép quy đổi từ số giờ bạn tự khai, không phải một con số có hợp đồng, bảng lương hay sao kê nào chứng minh — bất kỳ nơi nào cần chứng minh thu nhập sẽ yêu cầu giấy tờ chứ không nhận con số này. Thứ ba, một mức lương giờ nhân lên thành lương tháng ngầm giả định bạn làm đủ số giờ ấy mọi tuần; với công việc theo giờ, theo mùa hoặc theo dự án thì thu nhập thực tế dao động, và con số quy đổi chỉ là mức bình quân nếu mọi tuần đều đủ việc.",
 
   formula: {
     title: "Cách tính",

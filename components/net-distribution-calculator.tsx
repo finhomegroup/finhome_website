@@ -1,6 +1,8 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { BarChart } from "@/components/calc/chart/bar-chart";
+import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
@@ -13,6 +15,10 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import {
+  netProceedsModel,
+  type NamedCharge,
+} from "@/lib/calc/charts/net-proceeds-chart";
 import {
   computeNetDistribution,
   type DistributionDirection,
@@ -65,8 +71,63 @@ export function NetDistributionCalculator() {
   // the reverse direction divides by zero.
   const tooMuch = fieldsUsable && result === null;
 
+  /**
+   * Whether each percentage field is marked invalid.
+   *
+   * A CROSS-FIELD failure is attached to the fields that caused it. When the
+   * rates SUM to 100 or more, each one is individually legal — so the
+   * paragraph below used to be the only signal, and an independent review
+   * found the group carrying no `aria-invalid` and no described error for it.
+   * A screen-reader user got blank results with no announced reason.
+   *
+   * Every percentage field carries the flag, because the sum is the fault and
+   * no single field is more to blame than another; `NumberField` then shows
+   * the total-rate error in place of its own help text and sets
+   * `aria-invalid`.
+   */
+  const percentFieldInvalid = percents.map(
+    (value, index) => percentInvalid[index] || tooMuch,
+  );
+
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
+
+  /**
+   * Each charge, named, with the BASE its percentage applied to.
+   *
+   * Built from the same parsed figures the engine used, and from the
+   * engine's own gross — so a percentage line's đồng amount is always
+   * `percent% × gross` and never a share of some other number. The declared
+   * base is what makes a charge checkable against a contract.
+   */
+  const namedCharges: NamedCharge[] =
+    result === null
+      ? []
+      : [
+          ...[
+            { key: "percent1", label: C.form.percent1Label, percent: percents[0] },
+            { key: "percent2", label: C.form.percent2Label, percent: percents[1] },
+            { key: "percent3", label: C.form.percent3Label, percent: percents[2] },
+          ].map(({ key, label, percent }) => ({
+            key,
+            label,
+            percent: percent ?? 0,
+            amount: result.gross * ((percent ?? 0) / 100),
+          })),
+          ...[
+            { key: "fixed1", label: C.form.fixed1Label, amount: fixeds[0] ?? 0 },
+            { key: "fixed2", label: C.form.fixed2Label, amount: fixeds[1] ?? 0 },
+          ].map(({ key, label, amount }) => ({
+            key,
+            label,
+            // Null percent means "a flat amount", which the table labels
+            // differently from a share of the gross.
+            percent: null,
+            amount,
+          })),
+        ];
+
+  const chart = netProceedsModel(result, namedCharges, C.chart);
 
   return (
     <CalculatorCard>
@@ -99,24 +160,24 @@ export function NetDistributionCalculator() {
           label={C.form.percent1Label}
           unit={C.form.percentUnit}
           help={C.form.percentHelp}
-          error={C.form.percentInvalid}
-          invalid={percentInvalid[0]}
+          error={tooMuch ? C.form.totalRateInvalid : C.form.percentInvalid}
+          invalid={percentFieldInvalid[0]}
         />
         <NumberField
           {...fields.bind("percent2")}
           label={C.form.percent2Label}
           unit={C.form.percentUnit}
           help={C.form.percentHelp}
-          error={C.form.percentInvalid}
-          invalid={percentInvalid[1]}
+          error={tooMuch ? C.form.totalRateInvalid : C.form.percentInvalid}
+          invalid={percentFieldInvalid[1]}
         />
         <NumberField
           {...fields.bind("percent3")}
           label={C.form.percent3Label}
           unit={C.form.percentUnit}
           help={C.form.percentHelp}
-          error={C.form.percentInvalid}
-          invalid={percentInvalid[2]}
+          error={tooMuch ? C.form.totalRateInvalid : C.form.percentInvalid}
+          invalid={percentFieldInvalid[2]}
         />
       </FieldGroup>
 
@@ -141,9 +202,15 @@ export function NetDistributionCalculator() {
 
       {/* Both ends of the conversion in the headline, plus the gross-up —
           which is the figure the page exists to correct. */}
+      {/* Original row 67: the gross obligation stays VISIBLE beside the
+          smaller figure that arrives, and is named as still owed. */}
       <ResultGroup title={C.form.resultTitle} className="mt-8">
         <ResultRow label={C.form.netLabel} value={money(result?.net)} />
         <ResultRow label={C.form.grossLabel} value={money(result?.gross)} />
+        <ResultRow
+          label={C.form.obligationLabel}
+          value={money(result?.gross)}
+        />
         <ResultRow
           label={C.form.grossUpLabel}
           value={
@@ -153,6 +220,16 @@ export function NetDistributionCalculator() {
           }
         />
       </ResultGroup>
+
+      {/* Conditional on there BEING two figures. The sentence explains why
+          the first two rows differ, and a review found it still asserting
+          that while both rows were the placeholder — the cross-field
+          total-rate failure blanks them. */}
+      {result !== null ? (
+        <p className="mt-3 text-sm leading-relaxed text-ink-3">
+          {C.form.obligationNote}
+        </p>
+      ) : null}
 
       <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
         <ResultRow
@@ -194,6 +271,10 @@ export function NetDistributionCalculator() {
           {C.form.tooMuchNotice}
         </p>
       ) : null}
+
+      <ChartFigure model={chart}>
+        <BarChart model={chart} />
+      </ChartFigure>
     </CalculatorCard>
   );
 }

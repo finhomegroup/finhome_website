@@ -54,7 +54,7 @@ export const IRR_NPV = {
     period0Label: "Kỳ 0 — vốn bỏ ra",
     period0Unit: "₫",
     period0Help:
-      "Nhập số ÂM cho tiền bỏ ra. Kỳ 0 không bị chiết khấu vì nó xảy ra ngay hôm nay.",
+      "Nhập số âm cho tiền bỏ ra. Kỳ 0 không bị chiết khấu vì nó xảy ra ngay hôm nay.",
     period0Invalid: "Vui lòng nhập một số.",
     defaultPeriod0: "-1.000.000.000",
 
@@ -94,12 +94,26 @@ export const IRR_NPV = {
   formula: {
     title: "Cách tính",
     body: [
-      "NPV = tổng của dòng tiền kỳ t chia (1 + lãi suất chiết khấu)^t, với t chạy từ 0. Kỳ 0 KHÔNG bị chiết khấu vì nó xảy ra ngay hôm nay. Với dự án mặc định ở mức chiết khấu 10%: NPV là 137.236.031 ₫.",
+      "NPV = tổng của dòng tiền kỳ t chia (1 + lãi suất chiết khấu)^t, với t chạy từ 0. Kỳ 0 không bị chiết khấu vì nó xảy ra ngay hôm nay. Với dự án mặc định ở mức chiết khấu 10%: NPV là 137.236.031 ₫.",
       "IRR là mức lãi suất làm NPV bằng 0. Không có công thức đóng, nên công cụ giải bằng phương pháp chia đôi khoảng trong dải từ gần −100% đến 1000% mỗi kỳ. IRR của dự án mặc định là 15,2382%/kỳ — cao hơn mức chiết khấu 10%, khớp với việc NPV dương.",
-      "Công cụ chỉ đưa ra IRR khi dòng tiền đổi dấu ĐÚNG một lần. Đổi dấu hai lần trở lên có thể cho nhiều nghiệm, và gọi một trong số đó là “IRR” là sai; khi đó ô IRR để trống và số lần đổi dấu được hiển thị để bạn biết lý do.",
+      "Công cụ chỉ đưa ra IRR khi dòng tiền đổi dấu đúng một lần. Đổi dấu hai lần trở lên có thể cho nhiều nghiệm, và gọi một trong số đó là “IRR” là sai; khi đó ô IRR để trống và số lần đổi dấu được hiển thị để bạn biết lý do.",
       "MIRR gộp các dòng tiền dương về cuối kỳ theo lãi suất tái đầu tư, quy các dòng tiền âm về hiện tại theo lãi suất chiết khấu, rồi tìm mức lãi nối hai đầu: MIRR = (giá trị cuối kỳ ÷ giá trị hiện tại)^(1 ÷ số kỳ) − 1. Vì nó không giả định tái đầu tư ở mức IRR, MIRR luôn tồn tại và duy nhất — kể cả khi IRR thì không.",
       "Chỉ số sinh lời = giá trị hiện tại của dòng tiền vào chia giá trị hiện tại của dòng tiền ra. Lớn hơn 1 đúng khi NPV dương. Nó hữu ích khi so hai dự án có quy mô vốn khác nhau: 1,1372 nghĩa là mỗi đồng bỏ ra tạo ra 1,1372 đồng theo giá trị hôm nay.",
       "Thời gian hoàn vốn là kỳ đầu tiên dòng tiền tích lũy chuyển sang không âm, có nội suy trong kỳ: 3,33 kỳ nghĩa là một phần ba đường vào kỳ thứ tư. Bản có chiết khấu tính trên dòng tiền đã chiết khấu, nên luôn dài hơn — 4,26 kỳ với dự án mặc định. Cả hai đều bỏ qua mọi dòng tiền sau thời điểm hoàn vốn, nên đừng dùng chúng làm tiêu chí quyết định.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark the three refusals this page turns on: what is not discounted, when an IRR exists at all, and what MIRR has that IRR does not.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "Kỳ 0 không bị chiết khấu",
+      "đổi dấu đúng một lần",
+      "luôn tồn tại và duy nhất",
     ],
   },
 

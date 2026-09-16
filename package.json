@@ -14,6 +14,8 @@
     "lint": "eslint",
     "check:lint": "node scripts/check-lint-baseline.mjs",
     "check:markup": "node scripts/check-built-markup.mjs",
+    "check:done": "node scripts/check-done.mjs",
+    "probe:emphasis": "node scripts/verify-emphasis-probe.mjs",
     "test": "vitest run",
     "verify:commits": "node scripts/verify-commits.mjs",
     "gate": "vitest run && tsc --noEmit && pnpm check:lint && next build && pnpm check:markup"

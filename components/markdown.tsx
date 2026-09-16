@@ -20,7 +20,7 @@ const components: Components = {
 
 export function Markdown({ source }: { source: string }) {
   return (
-    <div className="prose prose-neutral max-w-none prose-headings:font-display prose-headings:text-ink prose-a:text-primary prose-img:rounded-2xl prose-pre:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto">
+    <div className="prose prose-neutral max-w-none prose-headings:font-display prose-headings:text-ink prose-a:text-primary-ink prose-img:rounded-2xl prose-pre:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {source}
       </ReactMarkdown>

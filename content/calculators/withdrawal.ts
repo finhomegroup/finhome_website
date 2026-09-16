@@ -23,8 +23,12 @@ export const WITHDRAWAL = {
 
   pageTitle: "Thu nhập từ đầu tư: rút bao nhiêu thì bền?",
   metaTitle: "Tính thu nhập từ đầu tư — Rút được bao lâu và mức rút bền vững",
+  // QUALIFIED. This said the tool computes the withdrawal that "có thể duy
+  // trì mãi", which is a promise the model cannot make: every figure rests on
+  // a constant return the reader typed. The meta description now says whose
+  // assumptions it is, like the label and the caveat beside the figure do.
   metaDescription:
-    "Tính danh mục đầu tư của bạn trả được thu nhập trong bao nhiêu năm, và mức rút hằng tháng có thể duy trì mãi sau khi tính lạm phát. Công cụ miễn phí của FinHome.",
+    "Tính danh mục đầu tư của bạn trả được thu nhập trong bao nhiêu năm, và mức rút hằng tháng giữ được sức mua theo đúng giả định lợi nhuận và lạm phát bạn nhập. Công cụ miễn phí của FinHome.",
 
   lede:
     "Một khoản rút phải TĂNG theo lạm phát, nếu không thu nhập thực của bạn teo lại mỗi năm. Vì vậy mức rút bền vững được cấp bởi lợi nhuận THỰC, không phải lợi nhuận danh nghĩa — và khoảng cách giữa hai con số đó lớn hơn nhiều so với cảm nhận.",
@@ -54,14 +58,43 @@ export const WITHDRAWAL = {
 
     inflationLabel: "Lạm phát",
     inflationUnit: "%/năm",
+    // NEUTRAL ABOUT WHAT 0 MEANS. The old help said to enter 0 only if you
+    // accept a falling income — but in this model 0 is the assumption that
+    // PRICES do not change, and the withdrawal then keeps its purchasing
+    // power at the same số tiền. A negative entry is the assumption that
+    // prices fall. Neither is a decision about your income; both are a stated
+    // assumption about prices, and the page says so instead of judging it.
     inflationHelp:
-      "Mức khoản rút của bạn phải tăng mỗi năm để giữ nguyên sức mua. Để 0 chỉ khi bạn thực sự chấp nhận thu nhập giảm dần theo giá cả.",
+      "Mức bạn giả định giá cả tăng mỗi năm; khoản rút sẽ tăng theo đúng mức đó để giữ nguyên sức mua. Để 0 nghĩa là bạn giả định giá cả không đổi, nên khoản rút cũng giữ nguyên số tiền. Nhập số âm nghĩa là bạn giả định giá cả giảm.",
     inflationInvalid: "Vui lòng nhập một số lớn hơn −100.",
     defaultInflation: "4",
 
     resultTitle: "Kết quả",
     lastsLabel: "Danh mục cạn sau",
-    perpetualLabel: "Mức rút duy trì được mãi",
+    // QUALIFIED IN THE LABEL ITSELF. "Mức rút duy trì được mãi" beside a
+    // figure reads as a guarantee, and original row 26's own lesson is that
+    // no draw is guaranteed. The label now says whose assumptions it rests
+    // on; `perpetualCaveat` below sits directly under the row.
+    perpetualLabel: "Mức rút giữ được sức mua, theo giả định của bạn",
+    // THE CONVENTION NOTE IS SPLIT, BECAUSE ITS DIRECTION DEPENDS ON THE
+    // INFLATION SIGN. This paragraph used to end "con số này thấp hơn mức
+    // chính xác … Thấp hơn là phía thận trọng, không phải sai" — established
+    // only on the positive-inflation fixture. The field accepts a negative
+    // rate, and an independent check on 2 tỷ with lợi nhuận 8% / lạm phát
+    // −4% gives 19.727.161,11 for this convention against 19.302.090,33 for
+    // the exact year-end-preserving amount: HIGHER, so not conservative. At
+    // 0 the two coincide exactly. `withdrawal-calculator.tsx` picks the
+    // matching clause from the rate the reader actually entered.
+    perpetualCaveat:
+      "Con số này là kết quả của phép tính trên đúng ba giả định bạn nhập: lợi nhuận, lạm phát và số dư. Nó KHÔNG phải mức rút được bảo đảm và không phải cam kết thu nhập. Nó cũng là một quy ước tính: lấy lợi nhuận THỰC quy về tháng, trong khi khoản rút trong mô phỏng lại tăng một bậc mỗi năm — hai nhịp khác nhau, nên con số này không trùng với mức giữ nguyên sức mua tính chính xác tại từng mốc cuối năm.",
+    perpetualConventionLower:
+      "Với mức lạm phát dương bạn đang nhập, quy ước này cho con số THẤP HƠN mức chính xác đó, tức nghiêng về phía thận trọng.",
+    perpetualConventionEqual:
+      "Với lạm phát bằng 0, hai cách tính cho đúng cùng một con số.",
+    perpetualConventionHigher:
+      "Với lạm phát âm — bạn đang giả định giá cả GIẢM — quy ước này lại cho con số CAO HƠN mức chính xác đó, nên ở kịch bản này nó không phải phía thận trọng.",
+    perpetualMarketCaveat:
+      "Ngoài ra thị trường không sinh lời đều đặn như mô hình, và một chuỗi năm xấu ngay đầu giai đoạn rút tiền có thể làm kế hoạch đổ dù con số ở đây trông ổn.",
     realReturnLabel: "Lợi nhuận thực",
     monthsUnit: "tháng",
     yearsUnit: "năm",
@@ -73,17 +106,74 @@ export const WITHDRAWAL = {
     lastWithdrawalLabel: "Khoản rút của năm cuối",
     totalWithdrawnLabel: "Tổng số tiền đã rút",
     finalBalanceLabel: "Số dư còn lại",
+    // The partial last payment, as its own rows. "Cạn sau 245 tháng" counts
+    // the month the money ran out, and that month's withdrawal is usually
+    // only part of what the plan asked for.
+    fullWithdrawalsLabel: "Số lần rút được trả ĐỦ",
+    lastPlannedLabel: "Lần rút cuối: kế hoạch cần",
+    lastPaidLabel: "Lần rút cuối: thực nhận được",
+    lastShortfallLabel: "Lần rút cuối: còn thiếu",
+    partialLastNotice:
+      "Số tháng ở trên tính cả tháng danh mục cạn, và tháng đó thường chỉ trả được một phần. Bốn dòng ngay trên cho biết có bao nhiêu lần rút được trả đủ, lần cuối cần bao nhiêu và thiếu bao nhiêu — nên đừng đọc số tháng như số lần rút trọn vẹn.",
 
     drawingDownNotice:
       "Khoản rút của bạn đã lớn hơn lợi nhuận của tháng đầu tiên, nghĩa là bạn bắt đầu tiêu vào gốc ngay từ tháng đầu. Danh mục sẽ cạn, và cạn nhanh hơn nhiều so với trường hợp khoản rút nằm trong phần lợi nhuận.",
     noPerpetualNotice:
-      "Lợi nhuận thực bằng 0 hoặc âm — lạm phát ăn hết phần sinh lời — nên không có mức rút nào duy trì được mãi. Mọi khoản rút, dù nhỏ đến đâu, cũng sẽ làm danh mục cạn dần theo sức mua.",
+      "Lợi nhuận thực bằng 0 hoặc âm — lạm phát ăn hết phần sinh lời — nên không có mức rút nào giữ được sức mua của danh mục. Mọi khoản rút, dù nhỏ đến đâu, cũng sẽ làm danh mục cạn dần theo sức mua.",
     survivesNotice:
       "Với các giả định này danh mục không cạn trong 100 năm mô phỏng. Đây là dấu hiệu tốt, nhưng hãy nhớ nó dựa trên một mức lợi nhuận bình quân đều đặn — thực tế thị trường không đi đều, và một chuỗi năm xấu ở đầu giai đoạn rút tiền gây thiệt hại lớn hơn nhiều so với cùng chuỗi đó ở cuối.",
   },
 
+  // ORIGINAL ROW 26's visual: "đường số dư và sức mua dưới kịch bản".
+  chart: {
+    currency: "₫",
+    million: "triệu",
+    billion: "tỷ",
+    title: "Số dư và sức mua của nó, theo thời gian",
+    series: "{label}",
+    xAxis: "Tháng kể từ khi bắt đầu rút",
+    yAxis: "Số tiền ({unit})",
+    assumptions: [
+      "Mọi con số do bạn nhập: số dư, khoản rút, lợi nhuận và lạm phát.",
+      "Lợi nhuận là mức bình quân đều đặn bạn giả định. Thị trường không đi đều như vậy, và một chuỗi năm xấu ngay đầu giai đoạn rút tiền gây thiệt hại lớn hơn cùng chuỗi đó ở cuối.",
+      "Khoản rút tăng MỘT BẬC vào mỗi năm và giữ nguyên trong năm đó.",
+      "Đường sức mua là số dư quy về giá hôm nay theo chỉ số trơn (1 + lạm phát)^(tháng ÷ 12) — khác nhịp với khoản rút, nên hai đường không song song.",
+      "Không có thuế, phí quản lý hay phí giao dịch trong phép tính này.",
+    ],
+    tableCaption: "Số dư và sức mua tại các mốc",
+    tableHint:
+      "Hai cột là HAI CÁCH ĐẾM cùng một khoản tiền, không phải hai khoản tiền. Cột “sức mua” trả lời số dư đó mua được bao nhiêu theo giá hôm nay.",
+    periodColumn: "Tháng",
+    unavailableReason:
+      "Chưa vẽ được: cần số dư lớn hơn 0 và các ô còn lại hợp lệ.",
+    unavailableRecovery:
+      "Hãy nhập số dư danh mục lớn hơn 0 và kiểm tra lại khoản rút, lợi nhuận, lạm phát.",
+    nominalPath: "Số dư (đồng của từng tháng)",
+    realPath: "Sức mua (theo giá hôm nay)",
+    ranOutMarker: "Danh mục cạn ở tháng {month}",
+    survivedMarker: "Mốc mô phỏng: tháng {month}",
+    summaryRanOut:
+      "Với các giả định này, danh mục cạn ở tháng {months} — khoảng {years} năm. Tổng đã rút {nominal}; khoản rút của năm cuối là {real} mỗi tháng.",
+    summarySurvived:
+      "Sau {months} tháng mô phỏng vẫn còn {nominal}, tương đương {real} theo giá hôm nay.",
+    indexNote:
+      "Đường sức mua dùng chỉ số trơn theo tháng, còn khoản rút tăng một bậc mỗi năm — hai nhịp khác nhau nên hai đường không song song.",
+    partialNote:
+      "Chỉ {full} lần rút được trả đủ: lần cuối cần {planned} nhưng chỉ còn {paid}, thiếu {short}.",
+    noInflationNote:
+      "Bạn đang đặt lạm phát bằng 0, nên sức mua bằng đúng số dư và hai đường trùng nhau.",
+    itemColumn: "Khoản",
+    amountColumn: "Số tiền",
+    monthRow: "Tháng",
+    nominalRow: "Số dư",
+    realRow: "Sức mua",
+  },
+
+  // The leading notice no longer opens on an unqualified "duy trì được mãi".
+  // It is a modelled figure under stated assumptions, and the sentence says
+  // that before it quotes the number.
   realReturnNotice:
-    "Con số cần đọc là mức rút duy trì được mãi, và nó nhỏ hơn nhiều so với dự đoán. Danh mục 5 tỷ sinh lời 8%/năm nghe như có thể trả 33 triệu mỗi tháng — nhưng nếu khoản rút phải tăng 4% mỗi năm theo lạm phát thì nó được cấp bởi lợi nhuận THỰC 3,8462%/năm, và mức duy trì được mãi chỉ là 15.749.891 ₫/tháng. Ví dụ mặc định minh họa điều này theo cách đáng chú ý: 30 triệu vẫn NHỎ HƠN lợi nhuận tháng đầu (32.170.151 ₫), nên tháng đầu bạn chưa tiêu vào gốc đồng nào — mà danh mục vẫn cạn sau 245 tháng, tức 20,4 năm. Phép so “khoản rút với lợi nhuận tháng này” không phải là phép kiểm tra tính bền vững.",
+    "Con số cần đọc là mức rút giữ được sức mua THEO GIẢ ĐỊNH bạn nhập — một kết quả của phép tính, không phải thu nhập được bảo đảm — và nó nhỏ hơn nhiều so với dự đoán. Danh mục 5 tỷ sinh lời 8%/năm nghe như có thể trả 33 triệu mỗi tháng — nhưng nếu khoản rút phải tăng 4% mỗi năm theo lạm phát thì nó được cấp bởi lợi nhuận THỰC 3,8462%/năm, và mức duy trì được mãi chỉ là 15.749.891 ₫/tháng. Ví dụ mặc định minh họa điều này theo cách đáng chú ý: 30 triệu vẫn NHỎ HƠN lợi nhuận tháng đầu (32.170.151 ₫), nên tháng đầu bạn chưa tiêu vào gốc đồng nào — mà danh mục vẫn cạn sau 245 tháng, tức 20,4 năm. Phép so “khoản rút với lợi nhuận tháng này” không phải là phép kiểm tra tính bền vững.",
 
   formula: {
     title: "Cách tính",
@@ -92,8 +182,9 @@ export const WITHDRAWAL = {
       "Lợi nhuận mỗi tháng = (1 + lợi nhuận năm)^(1/12) − 1, không phải lợi nhuận năm chia 12, để đủ 12 tháng cộng lại đúng bằng mức năm.",
       "Khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm đó. Với mặc định, khoản rút của năm cuối lên tới 65.733.694 ₫/tháng — gấp hơn hai lần con số ban đầu, và đó là lý do danh mục cạn.",
       "Lợi nhuận thực = (1 + lợi nhuận danh nghĩa) ÷ (1 + lạm phát) − 1, tức 3,8462% với mặc định. Không phải 8% − 4% = 4%; phép trừ là xấp xỉ và luôn cho ra số cao hơn thực tế.",
-      "Mức rút duy trì được mãi = danh mục × lợi nhuận thực quy về tháng. Nó được cấp bởi lợi nhuận thực vì khoản rút cũng phải tăng theo lạm phát — nếu dùng lợi nhuận danh nghĩa, số dư sẽ teo dần theo sức mua. Khi lợi nhuận thực bằng 0 hoặc âm, không có mức rút nào là vĩnh viễn và công cụ để trống ô đó.",
-      "Mô phỏng dừng ở 100 năm và báo “không cạn” thay vì một con số rất lớn. Khoản rút cuối cùng được cắt bằng đúng số dư còn lại, nên số dư kết thúc ở đúng 0.",
+      "Mức rút giữ được sức mua = danh mục × lợi nhuận thực quy về tháng. Nó được cấp bởi lợi nhuận thực vì khoản rút cũng phải tăng theo lạm phát — nếu dùng lợi nhuận danh nghĩa, số dư sẽ teo dần theo sức mua. Khi lợi nhuận thực bằng 0 hoặc âm, không có mức rút nào giữ được sức mua và công cụ để trống ô đó. Lưu ý cách đọc: con số này nói “nếu lợi nhuận và lạm phát đúng bằng mức bạn nhập và giữ nguyên như vậy thì số dư không teo đi theo sức mua” — nó là một phép tính trong mô hình, không phải một mức thu nhập được bảo đảm suốt đời.",
+      "Mô phỏng dừng ở 100 năm và báo “không cạn” thay vì một con số rất lớn. Khoản rút cuối cùng được cắt bằng đúng số dư còn lại, nên số dư kết thúc ở đúng 0 — và vì vậy tháng cuối cùng thường KHÔNG trả đủ khoản rút theo kế hoạch. Phần chi tiết ghi rõ có bao nhiêu lần rút được trả đủ, lần cuối cần bao nhiêu và thiếu bao nhiêu.",
+      "Đường “sức mua” trong biểu đồ là số dư quy về giá hôm nay, chia cho (1 + lạm phát)^(số tháng ÷ 12). Đây là một chỉ số TRƠN theo thời gian, khác với khoản rút — khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm. Hai nhịp khác nhau là có chủ đích: một cái là lịch chi trả thật, một cái là câu hỏi “số tiền còn lại này mua được bao nhiêu theo giá hôm nay”. Vì vậy hai đường trong hình không song song, và đó không phải lỗi tính.",
     ],
   },
 
@@ -102,7 +193,7 @@ export const WITHDRAWAL = {
     items: [
       {
         q: "Vì sao không dùng quy tắc rút 4%?",
-        a: "Quy tắc 4% xuất phát từ nghiên cứu trên dữ liệu thị trường Hoa Kỳ với một danh mục cổ phiếu và trái phiếu cụ thể trong 30 năm, và nó vốn đã là một quy tắc thô. Công cụ này cho bạn tính bằng chính giả định của mình, và điều đáng chú ý là mức rút vĩnh viễn ở đây — 3,78%/năm với mặc định — nằm rất gần con số 4% đó. Đây là một sự trùng khớp có ý nghĩa: cả hai đều bị chi phối bởi lợi nhuận thực.",
+        a: "Quy tắc 4% xuất phát từ nghiên cứu trên dữ liệu thị trường Hoa Kỳ với một danh mục cổ phiếu và trái phiếu cụ thể trong 30 năm, và nó vốn đã là một quy tắc thô. Công cụ này cho bạn tính bằng chính giả định của mình, và điều đáng chú ý là mức rút giữ được sức mua ở đây — 3,78%/năm với mặc định — nằm rất gần con số 4% đó. Đây là một sự trùng khớp có ý nghĩa: cả hai đều bị chi phối bởi lợi nhuận thực.",
       },
       {
         q: "Lợi nhuận thực sao không phải 8% − 4% = 4%?",

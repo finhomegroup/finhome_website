@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { DatesCalculator } from "@/components/dates-calculator";
 import { DATES as C } from "@/content/calculators/dates";
 
@@ -22,11 +23,18 @@ export default function DatesPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Why the fields are not prefilled with today, and why that is the
-      // right call for a statically prerendered page.
-      notice={C.noClockNotice}
+      // What the tool does NOT know comes first — no holidays, no legal
+      // deadline, nothing saved — because original row 70's failure mode is a
+      // reader treating a counted day as a deadline. Why the fields are not
+      // prefilled with today is the paragraph below the tool; it explains a
+      // design choice rather than guarding against a wrong conclusion.
+      notice={C.scopeNotice}
+      noticeDetailTitle={C.scopeNoticeDetailTitle}
+      noticeDetail={C.scopeNoticeDetail}
+      intro={C.noClockNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <DatesCalculator />
     </CalculatorPage>

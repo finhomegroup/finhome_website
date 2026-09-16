@@ -1,4 +1,4 @@
-Nhiều ngân hàng thương mại Việt Nam đang tăng cường trích lập dự phòng rủi ro tín dụng trong bối cảnh tỷ lệ nợ xấu có xu hướng tăng, đặc biệt trong phân khúc bất động sản và tín dụng tiêu dùng.
+Nhiều ngân hàng thương mại Việt Nam đang tăng cường trích lập dự phòng rủi ro tín dụng trong bối cảnh tỷ lệ nợ xấu có xu hướng tăng, đặc biệt trong phân khúc bất động sản và tín dụng tiêu dùng. Trích lập dự phòng là việc ngân hàng trừ trước vào lợi nhuận một khoản để bù cho các khoản vay có nguy cơ không thu hồi được; đó là tiền giữ lại để phòng, không phải tiền đã mất.
 
 ## Điểm chính cần nắm
 

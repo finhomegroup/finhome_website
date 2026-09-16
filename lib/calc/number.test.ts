@@ -7,6 +7,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  formatQuantity,
   PLACEHOLDER,
 } from "@/lib/calc/number";
 
@@ -237,5 +238,51 @@ describe("formatPercent", () => {
   it("appends the sign to a comma decimal", () => {
     expect(formatPercent(12.6825)).toBe("12,68%");
     expect(formatPercent(6, 0)).toBe("6%");
+  });
+});
+
+describe("formatQuantity", () => {
+  it("drops the padding a fixed precision would add", () => {
+    // The row 71 defect: 2 sào in m² rendered "720,000000".
+    expect(formatQuantity(720)).toBe("720");
+    expect(formatQuantity(999.9)).toBe("999,9");
+    expect(formatQuantity(499.95)).toBe("499,95");
+  });
+
+  it("groups thousands, which formatDecimal does not", () => {
+    // One hectare in square metres used to read "10000,000000".
+    expect(formatQuantity(10_000)).toBe("10.000");
+    expect(formatQuantity(3_600)).toBe("3.600");
+    expect(formatDecimal(10_000, 6)).toBe("10000,000000");
+  });
+
+  it("keeps significant digits on a small value", () => {
+    // 1 m² in mẫu Bắc Bộ: 1/3600.
+    expect(formatQuantity(1 / 3600)).toBe("0,000277778");
+    expect(formatQuantity(0.0929030400, 10)).toBe("0,09290304");
+  });
+
+  it("keeps a conversion factor at its own precision", () => {
+    // Ten SIGNIFICANT digits, which on a four-digit factor is six decimals.
+    expect(formatQuantity(4_046.8564224, 10)).toBe("4.046,856422");
+    expect(formatQuantity(360)).toBe("360");
+  });
+
+  it("renders zero and a negative plainly", () => {
+    expect(formatQuantity(0)).toBe("0");
+    expect(formatQuantity(-720)).toBe("-720");
+  });
+
+  it("returns the placeholder rather than NaN or exponent notation", () => {
+    expect(formatQuantity(Number.NaN)).toBe(PLACEHOLDER);
+    expect(formatQuantity(Number.POSITIVE_INFINITY)).toBe(PLACEHOLDER);
+    expect(formatQuantity(1e21)).toBe(PLACEHOLDER);
+  });
+
+  it("never trims a zero out of an integer", () => {
+    // The trim only ever touches a decimal part this function itself padded.
+    expect(formatQuantity(1_050)).toBe("1.050");
+    expect(formatQuantity(100)).toBe("100");
+    expect(formatQuantity(10.5)).toBe("10,5");
   });
 });

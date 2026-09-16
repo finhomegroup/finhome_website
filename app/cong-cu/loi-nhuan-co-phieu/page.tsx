@@ -27,6 +27,10 @@ export default function StockReturnPage() {
       notice={C.taxOnLossNotice}
       prose={C.formula}
       faq={C.faq}
+      // Both prefilled rates are statutory, so the page owes the reader links
+      // rather than a decree named in prose. Without this prop the block in
+      // the content module renders nothing at all.
+      sources={C.sources}
     >
       <StockReturnCalculator />
     </CalculatorPage>

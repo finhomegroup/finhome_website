@@ -16,13 +16,20 @@
 export const DATES = {
   slug: "/cong-cu/tinh-ngay",
 
-  pageTitle: "Tính ngày: khoảng cách và cộng trừ ngày",
+  pageTitle: "Còn bao nhiêu ngày đến mốc chuẩn bị mua nhà?",
   metaTitle: "Tính ngày — Khoảng cách giữa hai ngày và cộng trừ ngày làm việc",
   metaDescription:
-    "Tính số ngày giữa hai mốc, số ngày làm việc, và ngày sau khi cộng hoặc trừ một số ngày — có tùy chọn chỉ tính ngày làm việc. Công cụ miễn phí của FinHome.",
+    "Tính số ngày và số ngày làm việc đến một mốc bạn tự đặt — ngày xem nhà, ngày nộp hồ sơ, ngày cần đủ tiền trả trước — hoặc ngày rơi vào đâu sau khi cộng trừ. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Hai phép tính lịch thường cần nhất: khoảng cách giữa hai ngày, và ngày rơi vào đâu sau khi cộng hoặc trừ một số ngày. Cả hai đều có tùy chọn chỉ tính ngày làm việc, loại thứ Bảy và Chủ nhật.",
+    "Đặt một mốc bạn tự chọn trong kế hoạch mua nhà — ngày hẹn xem nhà, ngày nộp hồ sơ, ngày cần đủ tiền trả trước — rồi xem còn bao nhiêu ngày và bao nhiêu NGÀY LÀM VIỆC. Hoặc đi chiều ngược lại: từ hôm nay cộng thêm một số ngày thì rơi vào ngày nào.",
+
+  // Original row 70: "không suy ra hạn pháp lý", and no invented checklist.
+  scopeNotice:
+    "Công cụ đếm ngày theo lịch dương và chỉ loại thứ Bảy, Chủ nhật khi bạn bật tùy chọn đó. Nó KHÔNG biết ngày lễ, KHÔNG suy ra thời hạn pháp lý hay thời hạn hợp đồng của bạn, và không lưu mốc nào để nhắc bạn sau.",
+  scopeNoticeDetailTitle: "Vì sao không có hạn pháp lý và không có nhắc hẹn",
+  scopeNoticeDetail:
+    "Thời hạn trong một hợp đồng mua bán, một thông báo nộp hồ sơ hay một quy định hành chính được tính theo đúng văn bản đó — có nơi tính ngày làm việc, có nơi tính ngày lịch, có nơi dời khi trùng ngày nghỉ, và ngày lễ mỗi năm mỗi khác vì Tết theo âm lịch. Một trang tĩnh không thể biết những quy tắc ấy cho trường hợp của bạn, nên nó không đoán: hãy đọc chính văn bản và tự trừ số ngày lễ nằm trong khoảng. Trang này cũng không lưu gì cả — không có checklist, không có nhắc hẹn — nên hãy tự ghi lại mốc bạn vừa tính.",
 
   form: {
     modeLegend: "Bạn muốn tính gì?",
@@ -65,6 +72,17 @@ export const DATES = {
     monthInvalid: "Vui lòng nhập tháng từ 1 đến 12.",
     dayInvalid: "Ngày không tồn tại trong tháng đã chọn.",
 
+    // Real guidance for the VALID state. All six date boxes passed their
+    // ERROR string as `help` too, so a perfectly valid 1/1/2026 displayed
+    // "Ngày không tồn tại trong tháng đã chọn." under every field with no
+    // `aria-invalid` anywhere. A review found the identical defect on the
+    // pay-rise page's new date row; this is the same fix applied here, since
+    // `NumberField` swaps in the error only while the field is flagged and
+    // the two strings therefore have to differ.
+    dayHelp: "Ngày trong tháng, ví dụ 15.",
+    monthHelp: "Tháng từ 1 đến 12.",
+    yearHelp: "Năm, ví dụ 2026.",
+
     todayLabel: "Điền ngày hôm nay",
     todayHelp:
       "Điền ngày hôm nay vào ô ngày bắt đầu. Nút này lấy ngày từ máy bạn — đó là lý do các ô không được điền sẵn ngày hôm nay.",
@@ -75,6 +93,16 @@ export const DATES = {
     componentsLabel: "Tương đương",
     resultDateLabel: "Ngày kết quả",
     resultWeekdayLabel: "Thứ",
+
+    // The counting convention, BESIDE the figures rather than only in the
+    // "Cách tính" prose further down. A reader comparing this with their own
+    // count needs the rule where the number is, and the review explicitly
+    // asked for this visible convention to be preserved.
+    countingRuleLabel: "Quy tắc đếm",
+    countingRuleDifference:
+      "Tính ngày bắt đầu, KHÔNG tính ngày kết thúc. Cùng một ngày cho 0; muốn đếm cả hai đầu thì cộng 1. Ngày làm việc chỉ loại thứ Bảy và Chủ nhật, không loại ngày lễ.",
+    countingRuleOffset:
+      "Cộng từ ngày bắt đầu. Khi chỉ tính ngày làm việc, thứ Bảy và Chủ nhật bị bỏ qua nên kết quả không bao giờ rơi vào cuối tuần — nhưng ngày lễ vẫn không được loại.",
 
     detailTitle: "Chi tiết",
     weeksLabel: "Số tuần và ngày lẻ",

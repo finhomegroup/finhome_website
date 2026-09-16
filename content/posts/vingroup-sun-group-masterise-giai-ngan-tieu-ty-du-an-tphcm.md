@@ -1,4 +1,4 @@
-Thông tin từ UBND TP.HCM cho biết một số tập đoàn bất động sản lớn đã công bố kế hoạch giải ngân vốn đầu tư vào các dự án trên địa bàn thành phố trong giai đoạn tới.
+Thông tin từ UBND TP.HCM cho biết một số tập đoàn bất động sản lớn đã công bố kế hoạch giải ngân vốn đầu tư vào các dự án trên địa bàn thành phố trong giai đoạn tới. Giải ngân là khi tiền đã cam kết được chuyển ra thực tế, thường theo từng đợt gắn với tiến độ. Vì vậy một kế hoạch giải ngân chưa phải là tiền đã chi.
 
 ## Điểm chính cần nắm
 

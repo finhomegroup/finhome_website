@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeUsPayroll,
   PAYROLL_YEARS,
+  PAYROLL_YEAR_ORDER,
   SELF_EMPLOYMENT_NET_EARNINGS_FACTOR,
   type PayrollInput,
 } from "@/lib/calc/us-payroll";
@@ -12,6 +13,56 @@ const BASE: PayrollInput = {
   year: 2026,
   selfEmployed: false,
 };
+
+describe("the vendored payroll years", () => {
+  it("keys each entry by its own year and offers them newest first", () => {
+    // The same shape us-social-security.test.ts asserts over BEND_POINTS,
+    // which this table did not have. PAYROLL_YEAR_ORDER is what the year
+    // select on both consuming pages is built from, so an order entry with
+    // no table row would offer a year computeUsPayroll rejects — and an
+    // unknown year returns null, giving a page of blanks. The two consumers
+    // are /cong-cu/thue-luong-hoa-ky/ and, through the FICA layer in
+    // lib/calc/us-hsa.ts, /cong-cu/tai-khoan-tiet-kiem-y-te-hoa-ky/.
+    const years = Object.keys(PAYROLL_YEARS)
+      .map(Number)
+      .sort((a, b) => a - b);
+    for (const year of years) expect(PAYROLL_YEARS[year].year).toBe(year);
+    expect([...PAYROLL_YEAR_ORDER].sort((a, b) => a - b)).toEqual(years);
+    for (let i = 1; i < PAYROLL_YEAR_ORDER.length; i += 1) {
+      expect(PAYROLL_YEAR_ORDER[i - 1]).toBeGreaterThan(
+        PAYROLL_YEAR_ORDER[i],
+      );
+    }
+  });
+
+  it("keeps the rates flat and only the wage base moving", () => {
+    // Since 1990 the two rates have not changed and the surtax thresholds
+    // have not been indexed since 2013; the wage base is the one figure that
+    // moves. Asserting that split is what makes a transcription slip in a
+    // RATE visible, rather than being read as another annual adjustment.
+    const years = Object.keys(PAYROLL_YEARS)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const first = PAYROLL_YEARS[years[0]];
+    for (const year of years) {
+      const p = PAYROLL_YEARS[year];
+      expect(p.socialSecurityRate).toBe(first.socialSecurityRate);
+      expect(p.medicareRate).toBe(first.medicareRate);
+      expect(p.additionalMedicareRate).toBe(first.additionalMedicareRate);
+      expect(p.additionalMedicareThreshold).toEqual(
+        first.additionalMedicareThreshold,
+      );
+    }
+    // The wage base is indexed to the average wage index, which does not fall.
+    for (let i = 1; i < years.length; i += 1) {
+      expect(
+        PAYROLL_YEARS[years[i]].socialSecurityWageBase,
+      ).toBeGreaterThan(PAYROLL_YEARS[years[i - 1]].socialSecurityWageBase);
+    }
+    // And there is more than one year, so neither loop is vacuous.
+    expect(years.length).toBeGreaterThan(1);
+  });
+});
 
 describe("computeUsPayroll", () => {
   it("charges 7,65% below every threshold", () => {

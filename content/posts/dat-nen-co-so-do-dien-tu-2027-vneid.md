@@ -1,4 +1,4 @@
-Việt Nam đặt mục tiêu đến hết năm 2027 sẽ hoàn thành đo đạc, lập bản đồ, hồ sơ địa chính và phủ kín cơ sở dữ liệu đất đai toàn quốc, tích hợp trực tiếp với hệ thống định danh điện tử VNeID. Động thái này được kỳ vọng tạo bước chuyển lớn trong minh bạch thông tin bất động sản.
+Việt Nam đặt mục tiêu đến hết năm 2027 sẽ hoàn thành đo đạc, lập bản đồ, hồ sơ địa chính và phủ kín cơ sở dữ liệu đất đai toàn quốc, tích hợp trực tiếp với hệ thống định danh điện tử VNeID. Định danh điện tử ở đây là một mã số riêng, không trùng lặp, gắn với từng thửa đất để tra cứu hồ sơ của chính thửa đất đó. Động thái này được kỳ vọng tạo bước chuyển lớn trong minh bạch thông tin bất động sản.
 
 ## Điểm chính cần nắm
 

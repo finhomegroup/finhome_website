@@ -10,6 +10,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -27,11 +28,17 @@ export function PointsCalculator() {
   });
 
   const amount = parseMoney(fields.values.amount);
-  const term = parseDecimal(fields.values.term);
+  // Two whole counts of months, neither with a unit toggle, so `parseCount` —
+  // docs §4. Both were `parseDecimal` with the `Number.isInteger` guards
+  // below them, which is exactly the arrangement `parseCount`'s docstring
+  // calls unreachable: `parseDecimal` reads a grouped "1.000" as 1, and 1 IS
+  // an integer, so the guard passed. On this page that matters more than
+  // most — `hold` is the field the copy calls "ô quyết định kết luận".
+  const term = parseCount(fields.values.term);
   const baseRate = parseDecimal(fields.values.baseRate);
   const pointsPercent = parseDecimal(fields.values.points);
   const reduction = parseDecimal(fields.values.reduction);
-  const hold = parseDecimal(fields.values.hold);
+  const hold = parseCount(fields.values.hold);
 
   const amountInvalid = amount === null || amount <= 0;
   const termInvalid = term === null || term <= 0 || !Number.isInteger(term);

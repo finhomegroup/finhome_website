@@ -4,6 +4,7 @@ import {
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
 import { RefinanceCalculator } from "@/components/refinance-calculator";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { REFINANCE as C } from "@/content/calculators/refinance";
 
 const SLUG = "tai-cap-von";
@@ -22,11 +23,11 @@ export default function RefinancePage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Break-even and lifetime saving can point opposite ways. A borrower
-      // who reads the short break-even and stops has been misled by the tool.
       notice={C.trapNotice}
       prose={C.formula}
       faq={C.faq}
+      disclaimer={C.disclaimer}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <RefinanceCalculator />
     </CalculatorPage>

@@ -12,6 +12,33 @@
 //
 // The regressive-at-the-top behaviour is the point of the page, and it is
 // asserted in the module's tests, not just described here.
+//
+// SOURCES. This route applies statutory tax with NO rate box — which
+// docs/calculator-suite-status.md records as accepted design, not a defect —
+// so the reader's only way to check 6,2% / 1,45% / 0,9% / 92,35% is the
+// `sources` block below. Every href in it was fetched on 16/09/2026 and its
+// text read; each note quotes what that page actually says.
+//
+// WHAT COULD NOT BE READ: ssa.gov refused every automated fetch with HTTP 403
+// — the contribution-and-benefit-base table, the 2026 COLA fact sheet page and
+// the COLA press-release PDF all failed. So BOTH wage bases were verified on
+// IRS documents instead: 184.500 for 2026 in Topic no. 751 and again in
+// Publication 926 (2026), 176.100 for 2025 printed on line 7 of the 2025
+// Schedule SE itself. The SSA link is kept as a pointer for a year this table
+// does not carry, and its note says in as many words that it was not read.
+//
+// THERE IS NO 2026 SCHEDULE SE YET: irs.gov/pub/irs-pdf/f1040sse.pdf is still
+// the 2025 revision as of 16/09/2026, so the 92,35% factor and the 12,4% /
+// 2,9% both-halves structure are cited from that revision.
+//
+// WHAT NO SOURCE HERE SAYS. The claim that the 0,9% thresholds have never been
+// indexed rests on the Instructions for Form 8959 — "The threshold amounts
+// below aren't indexed for inflation" — and the 2013 start date on the IRS
+// question-and-answer page ("Additional Medicare Tax went into effect in
+// 2013"); neither page states the two older FICA rates are fixed in statute,
+// and no copy on this page claims that. Topic no. 751 gives each rate as "the
+// current tax rate" with no end date, which is why nothing here promises a
+// rate will still be 6,2% next year.
 
 export const US_PAYROLL_TAX = {
   slug: "/cong-cu/thue-luong-hoa-ky",
@@ -45,7 +72,12 @@ export const US_PAYROLL_TAX = {
     },
 
     yearLabel: "Năm thuế",
-    yearHelp: "Trần lương Social Security thay đổi mỗi năm.",
+    // The figures here are asserted against PAYROLL_YEARS in this module's
+    // test, so bumping a wage base without editing this sentence goes red.
+    // Both issuing bodies are named because they do different jobs: the trần
+    // is published by SSA and the copies we actually read were IRS documents.
+    yearHelp:
+      "Trần lương Social Security thay đổi mỗi năm: 176.100 USD cho năm 2025 và 184.500 USD cho năm 2026. Trần này do Cơ quan An sinh Xã hội Hoa Kỳ (SSA) công bố hằng năm; hai mức trên được đối chiếu trên tài liệu của Cơ quan Thuế vụ Hoa Kỳ (IRS) dẫn ở phần nguồn cuối trang. Ba thuế suất thì không đổi theo năm chọn ở đây.",
 
     employmentLabel: "Hình thức làm việc",
     employmentHelp:
@@ -124,7 +156,56 @@ export const US_PAYROLL_TAX = {
       },
       {
         q: "Vì sao công cụ từ chối một năm không có trong bảng?",
-        a: "Vì lặng lẽ dùng trần lương của năm khác sẽ cho ra một con số sai nhưng trông hoàn toàn hợp lý. Bảng tham số ở đây chỉ có các năm mà chúng tôi đã ghi rõ nguồn. Với các năm khác, hãy tra trần lương hiện hành từ Cơ quan An sinh Xã hội Hoa Kỳ.",
+        a: "Vì lặng lẽ dùng trần lương của năm khác sẽ cho ra một con số sai nhưng trông hoàn toàn hợp lý. Bảng tham số ở đây chỉ có các năm mà chúng tôi đã đối chiếu với tài liệu công bố của cơ quan Hoa Kỳ, và các tài liệu đó nằm ở phần nguồn cuối trang. Với các năm khác, hãy tra trần lương hiện hành từ Cơ quan An sinh Xã hội Hoa Kỳ.",
+      },
+    ],
+  },
+
+  // The case the `sources` slot exists for, stated by
+  // `components/calc/calculator-page.tsx`: this page applies a statutory rate
+  // the reader cannot see in any field, and naming SSA in FAQ prose was not a
+  // citation anyone could open. `intro` carries the provenance limits — when
+  // the pages were read, that the list is not exhaustive, that it is not tax
+  // advice, and which figure was NOT checked on the body that publishes it.
+  sources: {
+    title: "Nguồn cho các thuế suất công cụ tự áp dụng",
+    intro:
+      "Công cụ này không có ô nhập thuế suất: các mức FICA được áp theo luật Hoa Kỳ, nên những trang dưới đây là nơi bạn kiểm tra lại chúng — Social Security 6,2%, Medicare 1,45%, phụ thu Medicare 0,9% cùng ba ngưỡng theo tình trạng khai thuế, và hệ số 92,35% mà Schedule SE áp cho người tự làm chủ. Hai trần lương mà ô “Năm thuế” chọn giữa, 176.100 USD cho 2025 và 184.500 USD cho 2026, cũng lấy từ đây. Tất cả nguồn được dùng làm căn cứ đều là tài liệu của Cơ quan Thuế vụ Hoa Kỳ (IRS) và được đọc trong phần rà soát nguồn của dự án ngày 16/09/2026, không phải do trang tự tra lại tại thời điểm bạn đọc. Trang công bố trần lương của Cơ quan An sinh Xã hội Hoa Kỳ (SSA) từ chối truy cập tự động trong lần rà soát đó, nên nó chỉ được dẫn ở dòng cuối và không phải căn cứ cho con số nào ở đây. Trần lương đổi mỗi năm, nên với một năm thuế khác hãy mở lại nguồn thay vì suy ra từ hai mức này. Đây không phải danh sách đầy đủ và không phải tư vấn thuế: công cụ chỉ tính FICA, còn thuế thu nhập liên bang, thuế bang và khoản khấu trừ một nửa thuế tự làm chủ đều không nằm trong đây.",
+    items: [
+      {
+        url: "https://www.irs.gov/taxtopics/tc751",
+        label:
+          "IRS Topic no. 751 — ba thuế suất FICA và trần lương của năm 2026",
+        note: "Nguồn của hai thuế suất chính, được trang này nêu là mức hiện hành chứ không kèm thời hạn: “The current tax rate for Social Security is 6.2% for the employer and 6.2% for the employee, or 12.4% total” và “The current rate for Medicare is 1.45% for the employer and 1.45% for the employee, or 2.9% total”. Cũng là nguồn của trần 2026 — “For earnings in 2026, this base limit is $184,500” — và của việc Medicare không có trần: “There's no wage base limit for Medicare tax”. Mốc 200.000 USD mà trang này nêu là ngưỡng bên trả lương phải bắt đầu khấu trừ phụ thu, không phụ thuộc tình trạng khai thuế; ba ngưỡng của người khai thuế mà công cụ dùng nằm ở nguồn Form 8959 bên dưới.",
+      },
+      {
+        url: "https://www.irs.gov/pub/irs-pdf/f1040sse.pdf",
+        label:
+          "Schedule SE (Form 1040), bản năm 2025 — hệ số 92,35% và trần lương của năm 2025",
+        note: "Dòng 4a in đúng phép tính công cụ làm cho người tự làm chủ: “If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)”. Dòng 7 in sẵn trần 176.100 USD của năm 2025; dòng 10 và 11 áp 12,4% và 2,9%, tức cả hai nửa của hai loại thuế đầu. Dòng 13 là khoản khấu trừ một nửa thuế tự làm chủ mà công cụ KHÔNG mô phỏng và có nói rõ. Đến ngày rà soát 16/09/2026 đây vẫn là bản mới nhất: chưa có Schedule SE của năm 2026.",
+      },
+      {
+        url: "https://www.irs.gov/instructions/i8959",
+        label:
+          "Hướng dẫn Form 8959 (2025) — ba ngưỡng phụ thu 0,9% và việc chúng không theo lạm phát",
+        note: "Nguồn của ba ngưỡng công cụ dùng: 250.000 USD cho vợ chồng khai chung, 125.000 USD cho khai riêng, 200.000 USD cho độc thân, chủ hộ và vợ/chồng còn sống đủ điều kiện. Đây cũng là chỗ duy nhất trong danh sách này chống lưng cho câu “không điều chỉnh theo lạm phát” trên trang: “The threshold amounts below aren't indexed for inflation”.",
+      },
+      {
+        url: "https://www.irs.gov/businesses/small-businesses-self-employed/questions-and-answers-for-the-additional-medicare-tax",
+        label: "IRS — hỏi đáp về phụ thu Medicare 0,9%",
+        note: "Nguồn của mức phụ thu (“The rate is 0.9 percent”), của việc người sử dụng lao động không đối ứng phần này (“There is no employer match for Additional Medicare Tax”), của việc tiền lương và thu nhập tự làm chủ được cộng lại khi so với ngưỡng, và của mốc thời gian: “Additional Medicare Tax went into effect in 2013”. Trang này không nói gì về việc ngưỡng có được điều chỉnh theo lạm phát hay không, nên câu đó lấy từ hướng dẫn Form 8959 ở trên chứ không từ đây.",
+      },
+      {
+        url: "https://www.irs.gov/pub/irs-pdf/p926.pdf",
+        label:
+          "IRS Publication 926 (2026) — lần đọc thứ hai cho trần lương và hai thuế suất của năm 2026",
+        note: "Phần “What's New” ghi “The social security tax rate is 6.2% each for the employee and employer. The social security wage base limit is $184,500.” và “The Medicare tax rate is 1.45% each for the employee and employer, unchanged from 2025. There is no wage base limit for Medicare tax.” Một tài liệu khác, cùng hai con số của năm 2026 — có ở đây vì trang của SSA không đọc được, nên mức 184.500 USD cần hai lần đọc độc lập thay vì một.",
+      },
+      {
+        url: "https://www.ssa.gov/oact/cola/cbb.html",
+        label:
+          "SSA — bảng trần lương chịu thuế Social Security theo từng năm",
+        note: "Nơi Cơ quan An sinh Xã hội Hoa Kỳ công bố trần lương của từng năm, kể cả những năm không có trong bảng tham số của công cụ. KHÔNG được đọc trong lần rà soát ngày 16/09/2026: trang từ chối truy cập tự động (HTTP 403). Hai mức 176.100 và 184.500 USD mà công cụ dùng được đối chiếu bằng tài liệu IRS phía trên, không bằng trang của SSA — liên kết này có ở đây vì nó là nơi tra một năm khác, chứ không phải vì nó đã được kiểm tra.",
       },
     ],
   },

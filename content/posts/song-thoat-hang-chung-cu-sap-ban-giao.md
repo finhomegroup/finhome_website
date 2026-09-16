@@ -5,7 +5,7 @@ Thị trường căn hộ sắp bàn giao đang chứng kiến làn sóng thoát
 - Nhiều dự án căn hộ sắp bàn giao trong thời gian tới yêu cầu người mua thanh toán đợt cuối với tỷ lệ cao (khoảng 45% giá trị hợp đồng).
 - Một số nhà đầu tư chấp nhận giảm giá từ 150 triệu đồng trở lên cho căn hộ giá trị 3 tỷ đồng nhưng vẫn chưa tìm được người mua.
 - Áp lực tài chính gia tăng khi lãi suất vay mua nhà neo cao, khiến chi phí sở hữu tăng đáng kể so với thời điểm đặt cọc ban đầu.
-- Thị trường chuyển nhượng căn hộ khu vực này gặp khó khàng về thanh khoản, lệch giữa giá kỳ vọng của người bán và sức mua thực tế.
+- Thị trường chuyển nhượng căn hộ khu vực này gặp khó khăn về thanh khoản, lệch giữa giá kỳ vọng của người bán và sức mua thực tế.
 
 ## Góc nhìn FinHome
 

@@ -5,7 +5,7 @@ Nhà ở xã hội tiếp tục là giải pháp an cư cho người thu nhập 
 - Nhóm đối tượng được vay ưu đãi gồm người có công với cách mạng, hộ nghèo và cận nghèo, người thu nhập thấp tại đô thị, công nhân trong khu công nghiệp, lực lượng vũ trang, cán bộ công chức viên chức và hộ gia đình có từ hai con trở lên theo quy định mới của Luật Dân số.
 - Để được xét duyệt vay, người mua phải chứng minh năng lực tài chính ổn định, đủ khả năng trả gốc và lãi, kèm hồ sơ pháp lý đầy đủ: đơn đề nghị vay vốn, giấy tờ chứng minh thuộc diện hưởng chính sách và hợp đồng mua hoặc thuê mua đã ký với chủ đầu tư.
 - Khoản vay thường được bảo đảm bằng chính căn hộ hình thành từ vốn vay, với sự tham gia của ngân hàng, chủ đầu tư và người vay.
-- Điều kiện mua nhà (đối tượng, tình trạng nhà ở) và điều kiện vay vốn (năng lực tài chính, lịch sử tín dụng) là hai bộ tiêu chí độc lập — đủ điều kiện mua không đồng nghĩa chắc chắn được giải ngân.
+- Điều kiện mua nhà (đối tượng, tình trạng nhà ở) và điều kiện vay vốn (năng lực tài chính, lịch sử tín dụng) là hai bộ tiêu chí độc lập — đủ điều kiện mua không đồng nghĩa chắc chắn được giải ngân, tức tiền vay đã cam kết được chuyển ra thực tế.
 
 ## Góc nhìn FinHome
 

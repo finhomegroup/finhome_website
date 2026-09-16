@@ -27,6 +27,10 @@ export default function UsSocialSecurityPayoutPage() {
       notice={C.asymmetryNotice}
       prose={C.formula}
       faq={C.faq}
+      // The two earnings-test amounts prefill from a dated constant and ARE
+      // editable; the 25/36 spousal scale and the 50% ceiling are neither.
+      // Same block as the other two Social Security rows, on purpose.
+      sources={C.sources}
     >
       <UsSocialSecurityPayoutCalculator />
     </CalculatorPage>

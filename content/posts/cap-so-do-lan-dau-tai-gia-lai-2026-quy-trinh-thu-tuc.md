@@ -8,7 +8,7 @@ Việc đăng ký quyền sử dụng đất và tài sản gắn liền với �
 
 - **Thành phần hồ sơ**: Đơn đăng ký theo mẫu quy định, giấy tờ chứng minh quyền sử dụng đất (hợp đồng chuyển nhượng, quyết định giao đất, giấy tờ khác), CMND/CCCD của người đứng tên, các giấy tờ liên quan đến tài sản trên đất.
 
-- **Thời gian giải quyết**: Theo quy định, thời gian giải quyết thủ tục cấp sổ đỏ lần đầu không quá 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ.
+- **Thời gian giải quyết**: Theo quy định, thời gian giải quyết thủ tục cấp sổ đỏ lần đầu không quá 30 ngày làm việc kể từ ngày nhận đủ hồ sơ hợp lệ. “Sổ đỏ” là cách gọi quen dùng của Giấy chứng nhận quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất — chính là giấy mà thủ tục này cấp.
 
 - **Cơ quan tiếp nhận**: UBND cấp xã nơi có đất tiếp nhận hồ sơ ban đầu, sau đó chuyển lên UBND cấp huyện để thẩm tra và cấp giấy chứng nhận.
 

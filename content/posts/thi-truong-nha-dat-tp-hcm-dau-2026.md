@@ -8,7 +8,7 @@ Thị trường bất động sản TP.HCM bước vào năm 2026 với nhiều 
 
 ## Góc nhìn FinHome
 
-Với bối cảnh lãi suất vay mua nhà vẫn ở mức cao, người mua cần đánh giá kỹ khả năng tài chính dài hạn trước khi xuống tiền. Mức lãi suất ưu đãi ban đầu chỉ là yếu tố tham khảo — quan trọng hơn là tính toán chi phí trả nợ khi lãi suất thả nổi được áp dụng sau kỳ ưu đãi. FinHome khuyến nghị người mua chuẩn bị phương án dự phòng cho trường hợp lãi suất điều chỉnh tăng, đồng thời cân nhắc các phương thức thanh toán linh hoạt từ chủ đầu tư nếu có.
+Với bối cảnh lãi suất vay mua nhà vẫn ở mức cao, người mua cần đánh giá kỹ khả năng tài chính dài hạn trước khi xuống tiền. Mức lãi suất ưu đãi ban đầu chỉ là yếu tố tham khảo — quan trọng hơn là tính toán chi phí trả nợ khi lãi suất thả nổi được áp dụng sau kỳ ưu đãi. Lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới. FinHome khuyến nghị người mua chuẩn bị phương án dự phòng cho trường hợp lãi suất điều chỉnh tăng, đồng thời cân nhắc các phương thức thanh toán linh hoạt từ chủ đầu tư nếu có.
 
 ## Đọc thêm
 

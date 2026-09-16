@@ -6,6 +6,32 @@
   /* Brand palette (from Framer mirror) */
   --color-primary: #0099ff;
   --color-brand-green: #17ab48;
+
+  /*
+   * ACCESSIBLE VARIANTS OF THE TWO BRAND COLOURS, for SMALL text only.
+   *
+   * Measured in a browser on 2026-09-16: `#0099ff` is 3.00:1 on white and
+   * `#17ab48` is 3.02:1. WCAG AA wants 4.5:1 for normal text and allows 3:1
+   * only for large text (≥24px, or ≥18.66px bold). Both brand colours were
+   * being used at 11–14px on the blog — category labels, topic pills, the
+   * active filter pill — so 30 of 144 text elements on `/blog/` failed.
+   *
+   * The brand colours themselves are NOT changed. They are the logo, the
+   * buttons and the large display type, where 3:1 is permitted and where
+   * redefining them would be a brand decision rather than an accessibility
+   * fix. These two variants are the same hue and saturation, darkened until
+   * they clear 4.5:1 on every light ground the site actually uses — white,
+   * the #f7fcf7 bg-soft tint, and the #e7f6e2 wash behind the rating pill.
+   * Stopping at exactly 4.5 on white was not enough: #12893a measured 4.50 on
+   * white but only 4.00 on #e7f6e2, so the token is set from the WORST ground
+   * rather than the best one (#117f36 -> 5.11 / 4.92 / 4.54).
+   *
+   * `--color-brand-green-ink` does double duty on purpose: it is compliant as
+   * green text on a light background AND as a background under white text,
+   * because the contrast ratio of white-on-X and X-on-white is the same number.
+   */
+  --color-primary-ink: #007acc;
+  --color-brand-green-ink: #117f36;
   /* Green used by the "Thử ngay" CTA pill (sampled from the Framer mirror) */
   --color-cta: #40b354;
   --color-cta-hover: #36a449;
@@ -16,7 +42,25 @@
   /* Ink / text */
   --color-ink: #000000;
   --color-ink-2: #575757;
-  --color-ink-3: #848484;
+  /*
+   * DARKENED from #848484 to #777777 on 2026-09-16. Unlike the two brand
+   * colours above this is a plain neutral TEXT token, not part of the brand,
+   * and at #848484 it measured 3.74:1 on white — below the 4.5:1 that normal
+   * text needs. It carries muted body copy: reading-time and source lines on
+   * the blog, field help under calculator inputs, table captions. Every one of
+   * those is small text that has to be read, so the token moved rather than
+   * its call sites. #747474 is the value that clears 4.5:1 on BOTH white (4.67) and
+   * the `bg-soft` tint #f7fcf7 (4.50) that several cards use. #777777 was
+   * tried first and measured 4.48 in the browser — one 8-bit step short,
+   * because a bisection that stops at exactly 4.5 rounds down to a failure.
+   *
+   * ONE PLACE COULD NOT BE FIXED BY MOVING THIS TOKEN, and it is worth
+   * knowing why: the footer sits on #1a1a1a, where `ink-3` is LIGHT text on
+   * dark, so darkening it made that case worse (3.89 -> 3.78). A single
+   * neutral token cannot satisfy AA on both a light and a dark surface. The
+   * footer's copyright line now uses `ink-4` instead, which is 9.16:1 there.
+   */
+  --color-ink-3: #747474;
   --color-ink-4: #bcbcbc;
 
   /* Fonts — the Framer site uses Maison Neue Extended for headings AND body. */
@@ -180,4 +224,26 @@ body {
 }
 .animate-accordion-up {
   animation: accordion-up 0.2s ease-out;
+}
+
+/* ---- Readable result tables (components/calc/result-table.tsx) ----
+   A money cell renders BOTH readings — compact in one stated unit, and the
+   exact đồng figure — and these rules show one of them. No JavaScript, so a
+   prerendered page switches precision before (and without) hydration, and
+   `ChartFigure` stays usable from the server-rendered education pages.
+
+   `display: none` rather than visibility or clipping: the hidden reading must
+   leave the accessibility tree, or every figure is announced twice.
+
+   Degradation is safe. A browser without `:has()` applies only the first rule,
+   so the table stays in its compact reading and the checkbox does nothing —
+   the same state a reader who never touches the control sees. */
+.fh-rt-exact {
+  display: none;
+}
+.fh-rt:has(.fh-rt-switch:checked) .fh-rt-compact {
+  display: none;
+}
+.fh-rt:has(.fh-rt-switch:checked) .fh-rt-exact {
+  display: revert;
 }

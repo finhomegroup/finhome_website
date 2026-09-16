@@ -32,7 +32,15 @@ export type WaccInput = {
   costOfDebtPercent: number;
   /** Cost of preferred stock, in percent. */
   costOfPreferredPercent?: number;
-  /** Corporate income tax rate, in percent. Vietnam's standard rate is 20. */
+  /**
+   * Corporate income tax rate, in percent.
+   *
+   * Vietnam's STANDARD rate is 20, and since 01/10/2025 that is not the only
+   * one: the rate article itself carries revenue tiers (15% up to 3 tỷ, 17%
+   * to 50 tỷ), on top of the sectoral and geographic incentives that already
+   * existed. The module takes whatever it is given — the shield is computed
+   * on the caller's number — and the page carries the citation.
+   */
   taxRatePercent?: number;
 };
 

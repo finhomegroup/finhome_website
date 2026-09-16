@@ -6,8 +6,8 @@ Chỉ số giá nhà trên thu nhập của Việt Nam đầu năm 2026 được
 
 - Giá căn hộ sơ cấp tại Hà Nội và TP HCM đều đã vượt 90 triệu đồng/m², trong khi nhà phố, nhà gắn liền với đất tại một số khu vực nội đô Hà Nội tăng tới hơn 100 triệu đồng/m² chỉ trong hai năm.
 - Thu nhập bình quân đầu người tại Việt Nam giai đoạn 2015-2025 tăng khoảng 83%, thấp hơn nhiều so với tốc độ tăng giá nhà ở các đô thị lớn trong cùng giai đoạn.
-- Tín dụng bất động sản đang chiếm gần một phần tư tổng dư nợ toàn nền kinh tế, khiến một số chuyên gia đề xuất cần kiểm soát tỷ trọng này để giảm rủi ro hệ thống.
-- Một bộ phận người mua chấp nhận xuống tiền cho các căn hộ chưa hoàn thiện pháp lý (chưa có sổ hồng) vì giá thấp hơn, nhưng đây là lựa chọn tiềm ẩn rủi ro pháp lý và tài chính dài hạn.
+- Tín dụng bất động sản đang chiếm gần một phần tư tổng dư nợ toàn nền kinh tế, khiến một số chuyên gia đề xuất cần kiểm soát tỷ trọng này để giảm rủi ro hệ thống. Dư nợ là phần gốc còn nợ, tức số tiền đã cho vay mà chưa được trả lại.
+- Một bộ phận người mua chấp nhận xuống tiền cho các căn hộ chưa hoàn thiện pháp lý (chưa có sổ hồng — cách gọi quen dùng của Giấy chứng nhận quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất, tờ giấy xác nhận ai là chủ) vì giá thấp hơn, nhưng đây là lựa chọn tiềm ẩn rủi ro pháp lý và tài chính dài hạn.
 
 ## Góc nhìn FinHome
 

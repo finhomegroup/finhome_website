@@ -22,9 +22,18 @@
  * balance. This module takes a plain annual percentage and converts, because
  * nobody outside the trade thinks in money factors.
  *
- * VAT is charged on each monthly payment rather than on the vehicle price,
- * which is the substantive difference between leasing and buying for tax
- * purposes.
+ * `taxPercent` is a RATE THE CALLER SUPPLIES, applied to the monthly rent.
+ * This module takes no view on whether a rate applies at all, and the
+ * paragraph that used to sit here — "VAT is charged on each monthly payment
+ * rather than on the vehicle price" — was false law, which is why it is gone.
+ * Whether there is a rate is decided by the contract, and the answer lives in
+ * `content/calculators/auto-lease.ts`: a genuine cho thuê tài chính is dịch vụ
+ * cấp tín dụng and therefore không chịu thuế GTGT, so the shipped default is
+ * 0, while an ordinary taxable asset lease is taxed on the whole contractual
+ * rent — which is what multiplying `monthlyPaymentBeforeTax` computes. The
+ * finance lease's real tax charge is the lessor passing the ASSET's input VAT
+ * through on a CTTC-flagged invoice, and this module has no mode for that;
+ * the page discloses the gap rather than approximating it.
  */
 
 export type AutoLeaseInput = {
@@ -42,7 +51,10 @@ export type AutoLeaseInput = {
   termMonths: number;
   /** Nominal annual rate in percent; converted to a money factor internally. */
   annualRatePercent: number;
-  /** VAT on each monthly payment, in percent. */
+  /**
+   * VAT rate applied to the monthly rent, in percent. Defaults to 0 here and
+   * ships as 0 on the page: a finance-lease rental carries no rate at all.
+   */
   taxPercent?: number;
 };
 
@@ -57,7 +69,7 @@ export type AutoLeaseResult = {
   financeCharge: number;
   /** Depreciation + finance, before tax. */
   monthlyPaymentBeforeTax: number;
-  /** VAT on one monthly payment. */
+  /** `taxPercent` of one monthly rent. Zero whenever no rate applies. */
   monthlyTax: number;
   /** What actually leaves the account each month. */
   monthlyPayment: number;

@@ -12,6 +12,16 @@
  * Annualising uses the geometric form — `(final / cost) ** (1 / years) - 1`,
  * i.e. the compound annual growth rate — not `roi / years`. Dividing would
  * ignore compounding and overstate long holdings.
+ *
+ * WHAT THIS IS NOT: A MONEY-WEIGHTED RETURN. Both figures are ENDPOINT
+ * measures. A reader who adds interim rent or dividends into `finalValue` gets
+ * a correct simple total return and a correct endpoint-equivalent annualised
+ * rate, but NOT a return that respects when each payment arrived — 10 triệu of
+ * rent in month 1 and the same 10 triệu in month 59 land on this page as the
+ * same number. Dated cash flows need an IRR, which `/cong-cu/irr-npv/` already
+ * has; adding a second one here would be two engines for one question. Row 21
+ * of the plan asks for the total-versus-annual distinction, not for a
+ * money-weighted engine.
  */
 
 export type RoiInput = {
@@ -32,9 +42,13 @@ export type RoiResult = {
   /** Gain as a percent of the cost. −100% is a total loss. */
   roiPercent: number;
   /**
-   * Compound annual growth rate, in percent. Null when no holding period was
-   * given, and on a total loss, where no annual rate reaches zero from
-   * a positive start.
+   * Compound annual growth rate, in percent.
+   *
+   * Null in two cases, and they are different: no holding period was given,
+   * so there is nothing to annualise; or the investment is a TOTAL LOSS, where
+   * annualising stops being meaningful rather than being unsolvable. See the
+   * comment at the computation — an earlier version of it claimed no rate
+   * exists, which is false.
    */
   annualisedPercent: number | null;
   /**
@@ -65,8 +79,16 @@ export function computeRoi(input: RoiInput): RoiResult | null {
   const gain = finalValue - cost;
   const multiple = finalValue / cost;
 
-  // A total loss has no annual rate: no `r` satisfies cost × (1 + r)^n = 0
-  // for finite n, and −100%/năm would imply the money vanished in year one.
+  // A TOTAL LOSS IS WITHHELD BY CONVENTION, NOT BY ALGEBRA. This comment used
+  // to say "no r satisfies cost × (1 + r)^n = 0", which is simply wrong:
+  // r = −100% satisfies it for every positive n, and the formula below would
+  // return exactly −100%/năm. An independent audit caught the false claim.
+  //
+  // The reason to withhold it is interpretive. "−100%/năm" reads as a rate the
+  // reader could compare against another investment's rate, and it is not one:
+  // it says the money was gone after the first year whatever the real holding
+  // period was, and it annualises identically for a loss over one year and
+  // over twenty. The total return −100% already states the outcome exactly.
   const annualisedPercent =
     years > 0 && finalValue > 0 ? (multiple ** (1 / years) - 1) * 100 : null;
 

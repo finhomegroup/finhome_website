@@ -157,7 +157,10 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6">
-          <p className="text-sm text-ink-3">{FOOTER.copyright}</p>
+          {/* ink-4, not ink-3: this line sits on the #1a1a1a footer, so it is light
+              text on dark and wants the LIGHTER neutral — ink-3 measured 3.89:1
+              here and got worse when ink-3 was darkened for light backgrounds. */}
+          <p className="text-sm text-ink-4">{FOOTER.copyright}</p>
         </div>
       </Container>
     </footer>

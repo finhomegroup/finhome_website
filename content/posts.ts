@@ -1,6 +1,29 @@
-// Blog post metadata. Bodies live in content/posts/<slug>.md and are read at build time.
+// Blog post metadata. News bodies live in content/posts/<slug>.md and are read
+// at build time; education bodies are structured data in content/education/.
+
+import { SITE } from "./site";
 
 export type Topic = "gia-cung" | "cau-thanh-khoan" | "khu-vuc-ha-tang" | "chinh-sach-su-kien";
+
+/**
+ * What kind of article this is.
+ *
+ * `"news"` is a summary of a dated third-party report, filed under one of the
+ * four market topics and shown in the news feed. `"education"` is an original
+ * FinHome exercise in the "Mua nhà bằng con số" collection: evergreen, no
+ * third-party report behind it, and filed under a decision GROUP rather than a
+ * market topic.
+ *
+ * This is a separate dimension from `topics` on purpose. Education is not a
+ * fifth market topic — the four topics organise what the market did, and the
+ * collection organises a financial decision the reader is making. Mixing them
+ * would put an evergreen arithmetic exercise in a feed of dated news and make
+ * the topic filters mean two different things at once.
+ *
+ * Undefined means `"news"`, so every existing entry keeps its behaviour with
+ * no edit.
+ */
+export type PostKind = "news" | "education";
 
 export type Post = {
   slug: string;
@@ -9,8 +32,18 @@ export type Post = {
   topics: Topic[];
   excerpt: string;
   readingTime: string;
-  cover: string; // Framer base filename OR public path (/images/...); resolve with img()
+  /**
+   * Framer base filename OR public path (/images/...); resolve with `img()`.
+   *
+   * Optional: education articles have no photograph. Their visual is a
+   * rendered SVG built from the calculator's own engine, and inventing a stock
+   * cover for them would be the only fabricated thing on the page. Pages fall
+   * back to the site share card for `og:image`.
+   */
+  cover?: string;
   date?: string; // ISO YYYY-MM-DD publish date (for Article schema + sitemap lastmod)
+  /** Defaults to `"news"`. */
+  kind?: PostKind;
   source?: {
     name: string;
     url: string;
@@ -18,7 +51,206 @@ export type Post = {
   };
 };
 
+/**
+ * The "Mua nhà bằng con số" collection, as registry entries.
+ *
+ * They are in `POSTS` so they get routes, canonical URLs, Article schema and
+ * sitemap membership from the machinery that already exists — the seo-blog
+ * rules apply to them unchanged. They are `kind: "education"` so `newsPosts()`
+ * keeps them out of the news feed, the four topic filters and
+ * `api/blog-posts.ts`.
+ *
+ * `topics: []` on purpose: the four market topics describe what the market
+ * did, and these articles are not about that. Their axis is the decision
+ * group, which lives on the article itself in content/education/.
+ *
+ * No `cover`: their visual is a rendered SVG from the calculator's own engine,
+ * and a stock photograph would be the only invented thing on the page. Share
+ * cards fall back to the site card via `postCover()`.
+ *
+ * No `source`: there is no third-party report behind them. The narrow
+ * reference list lives inside each article, where each item says which single
+ * concept it supports.
+ *
+ * `date` is the day the collection was written. It is NOT a claim of review by
+ * anyone; each article's own `provenance` states what has and has not been
+ * checked.
+ */
+const EDUCATION_ENTRIES: Post[] = [
+  {
+    slug: "co-600-trieu-nen-tim-nha-tam-gia-nao",
+    title: "Có 600 triệu, nên tìm nhà trong tầm giá nào?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Phép tính ba bước từ khoản trả hằng tháng ra tầm giá, và vì sao “có 600 triệu” không có nghĩa là 600 triệu đều đi vào giá nhà.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "vay-2-ty-moi-thang-tra-bao-nhieu",
+    title: "Vay 2 tỷ mua nhà, mỗi tháng thực sự phải chuẩn bị bao nhiêu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Khoản ngân hàng thu, tiền thực ra khỏi ví và tháng cuối cùng là ba con số khác nhau. Bài tính cả ba trên một khoản vay giả lập.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "het-uu-dai-khoan-tra-tang-bao-nhieu",
+    title: "Hết lãi suất ưu đãi, tiền trả hằng tháng có thể tăng bao nhiêu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Lãi tăng 3,5 điểm phần trăm và khoản trả tăng 27% là hai con số khác nhau. Bài giải thích vì sao, và cách tự thử kịch bản của mình.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "du-tien-tra-truoc-sau-3-nam",
+    title: "Muốn đủ tiền trả trước sau 3 năm, mỗi tháng cần để dành bao nhiêu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Mục tiêu, thời hạn và mức góp luôn đi cùng nhau: cố định hai cái thì cái thứ ba là kết quả, không phải lựa chọn.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "hai-goi-vay-thang-thap-co-re-hon",
+    title: "Hai gói vay: trả ít mỗi tháng có thật sự rẻ hơn?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Cùng một cặp báo giá, hai thước đo, hai người thắng khác nhau. Bài chỉ ra thước đo nào trả lời câu hỏi nào.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "duoc-vay-khong-co-nghia-nen-vay-het",
+    title: "Được vay tới mức đó có nghĩa là nên vay hết không?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Trần theo tỷ lệ và ngân sách thật của hộ được tính từ hai thứ khác nhau, và khoảng cách giữa chúng nghiêng về phía bạn vay được nhiều hơn mức sống thoải mái.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "vay-20-nam-hay-25-nam",
+    title: "Vay 20 năm hay 25 năm: vì sao tháng nhẹ hơn mà tổng lãi cao hơn?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Kỳ hạn dài hơn 25% nhưng khoản trả chỉ giảm 7,2%. Bài tách riêng tác động của kỳ hạn và nói rõ hai đầu của đánh đổi.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "tiep-tuc-thue-hay-mua-nha",
+    title: "Tiếp tục thuê hay mua nhà: cần so những chi phí nào?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "So tiền thuê với khoản trả nợ là phép so sai. Bài liệt kê ba thứ bị bỏ qua và chỉ ra kết luận nhạy với biến nào nhất.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "gop-them-2-trieu-dat-muc-tieu-som-bao-lau",
+    title: "Nếu để dành thêm 2 triệu mỗi tháng, tôi đạt mục tiêu sớm hơn bao lâu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Thêm 25% mức góp không rút ngắn 25% thời gian. Bài giải cùng một mục tiêu hai lần để thấy phần thực sự rút ngắn được.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "co-tien-du-tra-them-no-giam-bao-nhieu-lai",
+    title: "Có tiền dư, trả thêm nợ mua nhà giúp giảm bao nhiêu lãi?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Trả thêm 2 triệu mỗi tháng cắt hơn 555 triệu tiền lãi trên một khoản vay giả lập — trước phí trả nợ trước hạn, khoản mà chỉ hợp đồng của bạn quyết định.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "lai-co-dinh-hay-tha-noi",
+    title: "Lãi cố định hay thả nổi: tôi đang đánh đổi điều gì?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Bạn đổi sự chắc chắn lấy một mức khởi điểm thấp hơn. Bài đưa ra mức lãi cố định hòa vốn để so với báo giá bạn đang có.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+  {
+    slug: "doi-sang-khoan-vay-lai-thap-hon-khi-nao-bu-duoc-chi-phi",
+    title: "Đổi sang khoản vay lãi thấp hơn: khi nào mới bù được chi phí?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Ba phần của phép tính: khoản giảm mỗi tháng, chi phí chuyển đổi, và số tháng để bù. Con số quyết định là thời gian bạn còn giữ khoản vay.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-14",
+  },
+
+  // C13–C15: the P2 calculator rows accepted into the collection later. Same
+  // shape and same rules as the twelve above — no cover, no third-party
+  // source, no market topic. A later `date` because they were written later;
+  // it is still not a claim of review by anyone.
+  {
+    slug: "lai-suat-quang-cao-va-chi-phi-vay-that",
+    title: "Lãi 8,5% kèm phí và 8,8% không phí: báo giá nào thật sự rẻ hơn?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Một khoản phí 30 triệu không làm khoản trả hằng tháng to hơn — nó làm số tiền bạn nhận nhỏ đi. Và giá trị của nó đổi theo số tháng bạn giữ khoản vay.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-16",
+  },
+  {
+    slug: "het-an-han-goc-khoan-tra-tang-bao-nhieu",
+    title: "Ân hạn gốc hai năm: khi bắt đầu trả gốc, khoản trả tăng bao nhiêu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Hai năm chỉ trả lãi thì dư nợ không nhích một đồng, và khoản trả đi lên qua hai mốc không trùng nhau. Con số cần hỏi trước khi ký là con số thứ ba.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-16",
+  },
+  {
+    slug: "tra-5-nam-no-giam-bao-nhieu",
+    title: "Trả nợ 5 năm rồi, vì sao dư nợ chỉ giảm hơn 237 triệu?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Tháng đầu tiên trả gốc nhiều hơn lãi là tháng 143 của một kỳ hạn 240 tháng. Bài chỉ ra con số người định bán nhà cần nhìn là dư nợ, không phải tổng đã trả.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-16",
+  },
+];
+
 export const POSTS: Post[] = [
+  ...EDUCATION_ENTRIES,
   {
     slug: "dau-gia-dat-xa-ven-ha-noi-o-dien",
     title: "Đất xã ven Hà Nội đấu giá trung bình hơn 5 tỷ đồng/lô: Khu vực ngoại thành hút nhà đầu tư",
@@ -2432,4 +2664,38 @@ export const POSTS: Post[] = [
 
 export function getPost(slug: string): Post | undefined {
   return POSTS.find((p) => p.slug === slug);
+}
+
+/**
+ * The image to use for a post's share card and Article schema.
+ *
+ * Education articles have no photograph — their visual is a rendered SVG built
+ * from the calculator's own engine — so they fall back to the site card rather
+ * than to an invented stock cover. Pass the result through `img()`.
+ */
+export function postCover(post: Post): string {
+  return post.cover ?? SITE.ogImage;
+}
+
+/** What kind an entry is, with `"news"` as the default for untagged entries. */
+export function postKind(post: Post): PostKind {
+  return post.kind ?? "news";
+}
+
+/**
+ * The market-news feed: everything the four topic filters and the news grid
+ * operate on.
+ *
+ * Used by `/blog/`, the homepage news section and `api/blog-posts.ts`, so the
+ * education collection cannot leak into a dated feed or into a topic filter.
+ * The sitemap and `/blog/[slug]/` deliberately keep using `POSTS`, because
+ * education articles do need routes and do belong in the sitemap.
+ */
+export function newsPosts(): Post[] {
+  return POSTS.filter((post) => postKind(post) === "news");
+}
+
+/** The "Mua nhà bằng con số" collection, in publication order. */
+export function educationPosts(): Post[] {
+  return POSTS.filter((post) => postKind(post) === "education");
 }

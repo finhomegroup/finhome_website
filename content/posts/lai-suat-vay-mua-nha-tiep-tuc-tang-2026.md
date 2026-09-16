@@ -3,7 +3,7 @@ Nhiều ngân hàng thương mại tiếp tục điều chỉnh lãi suất cho 
 ## Điểm chính cần nắm
 
 - Lãi suất ưu đãi kỳ hạn 12 tháng tại nhiều ngân hàng đã vượt mức 10%/năm, cao hơn đáng kể so với nửa đầu năm 2026.
-- Sau kỳ ưu đãi, lãi suất thả nổi thường điều chỉnh lên mức 13-15%/năm, tạo áp lực trả nợ cho người vay dài hạn.
+- Sau kỳ ưu đãi, lãi suất thả nổi thường điều chỉnh lên mức 13-15%/năm, tạo áp lực trả nợ cho người vay dài hạn. Thả nổi nghĩa là ngân hàng đặt lại lãi theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 - Một số ngân hàng siết điều kiện cho vay, yêu cầu tỷ lệ tài sản đảm bảo và thu nhập cao hơn.
 - Nhu cầu vay mua nhà để ở vẫn duy trì nhưng tốc độ tăng trưởng tín dụng bất động sản chậm lại.
 

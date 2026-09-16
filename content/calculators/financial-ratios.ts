@@ -32,12 +32,39 @@ export const FINANCIAL_RATIOS = {
   lede:
     "Nhập mười ba dòng từ báo cáo kết quả kinh doanh và bảng cân đối kế toán để có toàn bộ bộ chỉ số. Những chỉ số có mẫu số bằng 0 sẽ hiện dấu gạch ngang chứ không hiện một con số vô cùng — vì không áp dụng được thì đó là câu trả lời đúng.",
 
+  /**
+   * The thirteen statement lines — the SINGLE definition for both pages.
+   *
+   * `content/calculators/statement-analysis.ts` imports this exact object
+   * rather than declaring its own copy of it. Before that, all thirteen
+   * labels and all thirteen help strings existed twice and had already
+   * drifted: "Doanh thu sau các khoản giảm trừ." against "Doanh thu sau giảm
+   * trừ.", "Chi phí bán hàng và chi phí quản lý doanh nghiệp." against "Chi
+   * phí bán hàng và quản lý.", and every balance-sheet line reduced to "Số dư
+   * cuối kỳ." on the sibling page. `components/calc/financials-fields.tsx`
+   * already eliminated the FIELD-SHAPE duplication and its docstring names
+   * the risk that was left: "26 chances for the two pages to disagree about
+   * what 'chi phí hoạt động' means". This closes it.
+   *
+   * GROUP TITLES NAME THEIR SOURCE STATEMENT. Row 65's requirement is to
+   * group the inputs by which financial statement they come from, and one of
+   * three titles did: `incomeGroup` named the income statement while "Tài
+   * sản" and "Nợ phải trả" named balance-sheet SECTIONS without naming the
+   * balance sheet. Both now carry it. The two sections stay separate groups
+   * rather than merging into one eight-field block, because which side of the
+   * balance sheet a line sits on is the thing a reader filling the form needs
+   * to know next — and merging them would have required moving the shared
+   * field component, i.e. moving markup on the sibling page to fix copy on
+   * this one.
+   *
+   * There is no cash-flow group, by design; the FAQ says why.
+   */
   statement: {
     unit: "₫",
     invalid: "Vui lòng nhập một số từ 0 trở lên.",
     incomeGroup: "Báo cáo kết quả kinh doanh",
-    assetGroup: "Tài sản",
-    liabilityGroup: "Nợ phải trả",
+    assetGroup: "Bảng cân đối kế toán — tài sản",
+    liabilityGroup: "Bảng cân đối kế toán — nợ phải trả",
     lines: {
       revenue: {
         label: "Doanh thu thuần",
@@ -146,7 +173,7 @@ export const FINANCIAL_RATIOS = {
       nameColumn: "Chỉ số",
       valueColumn: "Giá trị",
       intro:
-        "Dấu gạch ngang trong bảng nghĩa là KHÔNG ÁP DỤNG ĐƯỢC, không phải bằng 0. Chỉ số khả năng trả lãi của một doanh nghiệp không có chi phí lãi vay là một ví dụ: mẫu số bằng 0 nên không có tỷ lệ nào, và in ra một con số vô cùng sẽ là tuyên bố doanh nghiệp an toàn vô hạn.",
+        "Dấu gạch ngang trong bảng nghĩa là không áp dụng được, không phải bằng 0. Chỉ số khả năng trả lãi của một doanh nghiệp không có chi phí lãi vay là một ví dụ: mẫu số bằng 0 nên không có tỷ lệ nào, và in ra một con số vô cùng sẽ là tuyên bố doanh nghiệp an toàn vô hạn.",
       groups: {
         profitability: "Sinh lời",
         liquidity: "Thanh khoản",
@@ -188,8 +215,36 @@ export const FINANCIAL_RATIOS = {
       "Một dòng trong báo cáo không hợp lệ. Mọi dòng đều là số dương hoặc 0 — kể cả với doanh nghiệp đang lỗ, vì phần lỗ sinh ra từ phép trừ chứ không phải từ một chi phí âm.",
   },
 
+  // THE ROW'S OWN LESSON, and it was absent as such. The prose made two
+  // adjacent but different points — "ROE cao hơn ROA là dấu hiệu của đòn bẩy"
+  // and "không có ngưỡng chung" for the current ratio — which teach how to
+  // read ONE ratio in context. Neither says that a single ratio cannot
+  // conclude a company's health, which is what the row asks for.
+  //
+  // It takes the `notice` slot, and `closingBalanceNotice` moves behind the
+  // disclosure below. That swap is also what docs §3 asks for on its own
+  // terms: a notice is meant to be "one or two sentences", the browser check
+  // found long notices pushing the form off the first screens on a phone, and
+  // the closing-balance paragraph is five sentences of technical
+  // qualification. The reader who needs it — someone comparing against a
+  // published analyst figure — is looking for it; the reader who needs the
+  // lesson is not.
+  oneRatioNotice:
+    "Một chỉ số không kết luận được sức khỏe của một doanh nghiệp. Mỗi dòng trong bảng dưới chỉ trả lời một câu hỏi hẹp, và bảng có hai mươi dòng vì chúng phải được đọc cùng nhau: một ROE 19,2% đi kèm thanh toán hiện hành 0,8 nói điều khác hẳn cùng mức ROE đó đi kèm 2,0 — doanh nghiệp thứ nhất đang sinh lời tốt và có thể vẫn mất khả năng trả nợ trong quý tới.",
+
+  // Kept, and now the long version behind the notice rather than inside it.
+  closingBalanceTitle: "Vì sao con số ở đây có thể khác báo cáo phân tích",
   closingBalanceNotice:
-    "Các chỉ số vòng quay và lợi nhuận trên tài sản, trên vốn chủ ở đây chia cho SỐ DƯ CUỐI KỲ, không phải số dư bình quân giữa đầu và cuối kỳ. Cách bình quân chính xác hơn nhưng cần hai bảng cân đối; với một bảng thì số dư cuối kỳ là lựa chọn trung thực. Điều này có nghĩa là con số ở đây có thể khác con số bạn đọc trên một báo cáo phân tích — nếu doanh nghiệp vừa tăng vốn hoặc vừa vay lớn trong kỳ, khoảng cách sẽ đáng kể. Muốn dùng số bình quân, hãy tự tính trung bình hai kỳ rồi nhập vào.",
+    "Các chỉ số vòng quay và lợi nhuận trên tài sản, trên vốn chủ ở đây chia cho số dư cuối kỳ, không phải số dư bình quân giữa đầu và cuối kỳ. Cách bình quân chính xác hơn nhưng cần hai bảng cân đối; với một bảng thì số dư cuối kỳ là lựa chọn trung thực. Điều này có nghĩa là con số ở đây có thể khác con số bạn đọc trên một báo cáo phân tích — nếu doanh nghiệp vừa tăng vốn hoặc vừa vay lớn trong kỳ, khoảng cách sẽ đáng kể. Muốn dùng số bình quân, hãy tự tính trung bình hai kỳ rồi nhập vào.",
+
+  /**
+   * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.
+   *
+   * This row is filed `reference` in `content/calculators/plan-disposition.ts`
+   * and `check:markup` fails a `reference` page that ships a `<strong>`, so
+   * the phrases are held here and tested against the prose rather than passed
+   * to `prose.emphasis`. One line to wire once the disposition is filed.
+   */
 
   formula: {
     title: "Cách tính và cách đọc",
@@ -197,9 +252,23 @@ export const FINANCIAL_RATIOS = {
       "Báo cáo được suy ra theo thứ tự: lợi nhuận gộp = doanh thu − giá vốn; lợi nhuận hoạt động = lợi nhuận gộp − chi phí hoạt động; lợi nhuận trước thuế = trừ tiếp lãi vay; lợi nhuận thuần = trừ tiếp thuế. Vốn chủ sở hữu = tổng tài sản − tổng nợ phải trả, đúng theo đẳng thức kế toán.",
       "Nhóm sinh lời chia cho doanh thu (các biên) hoặc cho số dư cuối kỳ (ROA, ROE). Với báo cáo mặc định: biên gộp 40%, biên thuần 9,6%, ROA 10,67%, ROE 19,2%. ROE cao hơn ROA là dấu hiệu của đòn bẩy, không phải của hiệu quả.",
       "Nhóm thanh khoản chia cho nợ ngắn hạn và giảm dần theo độ chặt: thanh toán hiện hành 2,0 tính cả hàng tồn kho, thanh toán nhanh 1,2 bỏ hàng tồn kho ra, thanh toán bằng tiền 0,4 chỉ tính tiền. Ba con số luôn theo thứ tự giảm dần, và khoảng cách giữa chúng cho biết bao nhiêu phần thanh khoản đang nằm ở hàng tồn kho.",
-      "Nhóm đòn bẩy: nợ trên vốn chủ 0,7, hệ số nhân vốn chủ 1,8, khả năng trả lãi 5,0 lần. Khả năng trả lãi tính trên lợi nhuận HOẠT ĐỘNG, tức trước lãi vay, vì đó mới là nguồn để trả lãi.",
+      "Nhóm đòn bẩy: nợ trên vốn chủ 0,7, hệ số nhân vốn chủ 1,8, khả năng trả lãi 5,0 lần. Khả năng trả lãi tính trên lợi nhuận hoạt động, tức trước lãi vay, vì đó mới là nguồn để trả lãi.",
       "Nhóm hiệu quả có hai cách nhìn cùng một thứ: vòng quay là số lần mỗi năm, số ngày là 365 chia cho vòng quay. Vòng quay hàng tồn kho 3,0 lần tương đương 121,7 ngày tồn kho — con số theo ngày thường dễ hình dung hơn.",
       "Nhóm định giá cần thêm số lượng cổ phiếu và giá. EPS 960 ₫, giá trị sổ sách 5.000 ₫ mỗi cổ phiếu, P/E 20,83 và P/B 4,0. P/E và P/B được tính từ vốn hóa chia lợi nhuận và vốn chủ, nên chúng khớp với giá chia EPS và giá chia giá trị sổ sách.",
+    ],
+    emphasis: [
+      // body[0] — equity is derived, not entered, and that is why.
+      "đúng theo đẳng thức kế toán",
+      // body[1] — the distinction this page's most-quoted sentence draws.
+      "dấu hiệu của đòn bẩy, không phải của hiệu quả",
+      // body[2] — the three liquidity ratios are ordered by construction.
+      "theo thứ tự giảm dần",
+      // body[3] — which profit line the coverage ratio divides.
+      "tức trước lãi vay",
+      // body[4] — turnover and days are one fact in two units.
+      "hai cách nhìn cùng một thứ",
+      // body[5] — the valuation block is opt-in, not missing.
+      "cần thêm số lượng cổ phiếu và giá",
     ],
   },
 

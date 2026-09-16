@@ -23,6 +23,30 @@
  * annually while the return compounds monthly, and the two schedules do not
  * line up. The simulation is capped and reports "does not run out" rather
  * than a very large number.
+ *
+ * ORIGINAL ROW 26 needs the SERIES, not just the totals: "đường số dư và sức
+ * mua dưới kịch bản". The loop already walks the balance month by month, so
+ * `series` keeps it, and each point carries the same month's purchasing
+ * power.
+ *
+ * THE PURCHASING-POWER CONVENTION IS DECLARED, because there are two
+ * defensible ones and they are not the same number. The withdrawal steps up
+ * ONCE A YEAR — it is flat inside each year — while `realBalance` deflates
+ * the balance SMOOTHLY by `(1 + inflation)^(month/12)`. Those are different
+ * concepts on purpose: the first is a payment schedule somebody actually
+ * receives, the second is "what this balance would buy at today's prices",
+ * which does not step. An independent audit checked both against a closed
+ * form and confirmed the arithmetic; what it asked for is that the page SAY
+ * which index it uses, rather than a reader discovering that the two curves
+ * do not move in lockstep and assuming one is wrong.
+ *
+ * THE LAST WITHDRAWAL IS USUALLY PARTIAL, AND THAT IS REPORTED. On the
+ * audit's fixture the plan asks for 25.975.146,71 in month 179 and only
+ * 2.813.709,10 is there, so `monthsLasted` of 179 does NOT mean 179 funded
+ * withdrawals: 178 were paid in full and the 179th was short by
+ * 23.161.437,62. `lastWithdrawalPaid`, `lastWithdrawalPlanned` and
+ * `lastWithdrawalShortfall` exist so a page cannot round that into "lasted
+ * 179 months" and leave it there.
  */
 
 /** Hard stop on the simulation: 100 years of monthly periods. */
@@ -37,6 +61,22 @@ export type WithdrawalInput = {
   annualReturnPercent?: number;
   /** How fast the withdrawal is increased each year, in percent. */
   inflationPercent?: number;
+};
+
+/** One month of the drawdown: what is left, and what it would buy. */
+export type WithdrawalPoint = {
+  /** 0 is the opening balance, before any return or withdrawal. */
+  month: number;
+  /** Balance in đồng of that month. */
+  balance: number;
+  /**
+   * The same balance at TODAY's prices: `balance / (1 + inflation)^(month/12)`.
+   *
+   * A smooth index, deliberately — see the module docstring on why this does
+   * not step in time with the annual withdrawal increase. Equal to `balance`
+   * at month 0 and whenever inflation is zero.
+   */
+  realBalance: number;
 };
 
 export type WithdrawalResult = {
@@ -67,6 +107,34 @@ export type WithdrawalResult = {
   withdrawalRatePercent: number;
   /** True when the first withdrawal already exceeds the first month's return. */
   drawingDownPrincipal: boolean;
+
+  /**
+   * The balance and its purchasing power at every month, from 0 to the month
+   * the money ran out — or to the cap when it never does.
+   */
+  series: WithdrawalPoint[];
+
+  /**
+   * What the final month actually paid out.
+   *
+   * Equal to `lastWithdrawalPlanned` while the plan is funded. On the month
+   * the money runs out it is whatever was left, which is usually a fraction
+   * of the planned amount. Null when the balance never runs out.
+   */
+  lastWithdrawalPaid: number | null;
+  /** What the schedule asked for in that month. Null on the same condition. */
+  lastWithdrawalPlanned: number | null;
+  /**
+   * `planned − paid` on the month it ran out, so "lasted 179 months" cannot
+   * be read as 179 full withdrawals. Null when it never runs out.
+   */
+  lastWithdrawalShortfall: number | null;
+  /**
+   * Withdrawals paid IN FULL. `monthsLasted − 1` when the last one was
+   * short, `monthsLasted` when it happened to land exactly. Null when the
+   * balance never runs out.
+   */
+  fullWithdrawals: number | null;
 };
 
 /**
@@ -108,6 +176,16 @@ export function computeWithdrawal(
   let finalMonthlyWithdrawal = monthlyWithdrawal;
   const firstMonthReturn = balance * monthlyReturn;
 
+  /** The deflator for a month, as a smooth annual index. */
+  const realValue = (nominalAmount: number, month: number) =>
+    nominalAmount / (1 + inflation) ** (month / 12);
+
+  const series: WithdrawalPoint[] = [
+    { month: 0, balance, realBalance: balance },
+  ];
+  let lastWithdrawalPaid: number | null = null;
+  let lastWithdrawalPlanned: number | null = null;
+
   for (let month = 1; month <= MAX_MONTHS; month += 1) {
     remaining *= 1 + monthlyReturn;
     // The withdrawal steps up once a year, so it is flat within each year.
@@ -116,19 +194,38 @@ export function computeWithdrawal(
     finalMonthlyWithdrawal = withdrawal;
 
     if (withdrawal >= remaining) {
-      // The last withdrawal is trimmed to whatever is left.
+      // The last withdrawal is trimmed to whatever is left — and BOTH the
+      // planned and the paid amount are kept, because reporting only the
+      // month count turns a partial payment into a full one.
+      lastWithdrawalPaid = remaining;
+      lastWithdrawalPlanned = withdrawal;
       totalWithdrawn += remaining;
       remaining = 0;
       monthsLasted = month;
+      series.push({ month, balance: 0, realBalance: 0 });
       break;
     }
 
     remaining -= withdrawal;
     totalWithdrawn += withdrawal;
+    series.push({
+      month,
+      balance: remaining,
+      realBalance: realValue(remaining, month),
+    });
   }
 
   // A perpetual withdrawal has to grow with inflation too, so it is the real
   // return that funds it. A non-positive real return funds nothing forever.
+  //
+  // THIS IS A MONTHLY-REAL-RETURN FIGURE, NOT THE EXACT MAXIMUM FOR THE
+  // ANNUAL-STEP SCHEDULE ABOVE. On the audit's fixture it gives
+  // 6.299.956,24, while the withdrawal that preserves real capital exactly at
+  // each year end under a once-a-year step-up is 6.434.030,11
+  // (= P × (G − H) / A(12), with G = 1,08, H = 1,04). This figure is the
+  // LOWER of the two, so it is conservative rather than an overspend — but
+  // the page must not present it as the precise ceiling for the schedule it
+  // simulates, and the copy says which convention it is.
   const perpetualMonthlyWithdrawal =
     realReturn > 0
       ? (balance * ((1 + realReturn) ** (1 / 12) - 1))
@@ -145,5 +242,23 @@ export function computeWithdrawal(
     realReturnPercent: realReturn * 100,
     withdrawalRatePercent: ((monthlyWithdrawal * 12) / balance) * 100,
     drawingDownPrincipal: monthlyWithdrawal > firstMonthReturn,
+    series,
+    lastWithdrawalPaid,
+    lastWithdrawalPlanned,
+    lastWithdrawalShortfall:
+      lastWithdrawalPaid === null || lastWithdrawalPlanned === null
+        ? null
+        : lastWithdrawalPlanned - lastWithdrawalPaid,
+    // A shortfall of exactly zero means the last withdrawal happened to land
+    // on the balance, so it WAS a full one. Anything short means the month
+    // before was the last funded one.
+    fullWithdrawals:
+      monthsLasted === null ||
+      lastWithdrawalPaid === null ||
+      lastWithdrawalPlanned === null
+        ? null
+        : lastWithdrawalPaid >= lastWithdrawalPlanned
+          ? monthsLasted
+          : monthsLasted - 1,
   };
 }

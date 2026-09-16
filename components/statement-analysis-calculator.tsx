@@ -149,6 +149,20 @@ export function StatementAnalysisCalculator() {
           <ResultTable
             className="mt-4"
             caption={L.caption}
+            /*
+             * Seven columns, so cards below `md` — docs §3's rule is five
+             * columns up, and this table was carrying its debt in
+             * `components/calc/wide-table-pending.mjs` until now.
+             *
+             * A card block is the right shape here specifically because the
+             * row is a LINE ITEM and the columns are its readings: "Doanh thu
+             * thuần" with kỳ này / kỳ trước / thay đổi / tăng trưởng / two
+             * shares under it is the sequence a reader wants, and nothing in
+             * the table is compared sideways across rows. The DuPont table
+             * above stays a table at four columns, which fits at 390 px
+             * compacted.
+             */
+            mobileCards
             columns={[
               { label: L.lineColumn },
               { label: L.currentColumn, numeric: true },

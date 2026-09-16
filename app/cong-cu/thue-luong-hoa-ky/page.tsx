@@ -28,6 +28,10 @@ export default function UsPayrollTaxPage() {
       notice={C.regressiveNotice}
       prose={C.formula}
       faq={C.faq}
+      // The rates are applied with no field to hold them, so the citation is
+      // the reader's only way to check them. A declared block that no route
+      // passes renders nothing — content/calculators/sources-wiring.test.ts.
+      sources={C.sources}
     >
       <UsPayrollTaxCalculator />
     </CalculatorPage>

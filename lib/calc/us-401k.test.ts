@@ -168,14 +168,21 @@ describe("computeUs401k — the four ceilings", () => {
     );
   });
 
-  it("makes pay above the 401(a)(17) ceiling invisible to the plan", () => {
+  it("makes pay above the 401(a)(17) ceiling invisible to the MATCH, not to the election", () => {
     const r = run({ annualSalary: 500_000, deferralPercent: 6 });
     expect(r.planCompensation).toBe(P.compensation);
     expect(r.compensationCapped).toBe(true);
-    // 6% of the CEILING, not 6% of the salary: 21.600, not 30.000.
-    expect(r.deferral).toBe(P.compensation * 0.06);
+    // The match is 6% of the CEILING, not 6% of the salary: 21.600, not
+    // 30.000. That is what 401(a)(17) does.
     expect(r.employerMatch).toBe(P.compensation * 0.06);
     expect(r.maxEmployerMatch).toBe(P.compensation * 0.06);
+    // The employee's own election is NOT held to the ceiling. 6% of 500.000
+    // is 30.000, and what cuts it down is 402(g) — a flat dollar limit —
+    // landing on 24.500 rather than on 6% of 360.000. This assertion was
+    // reversed until 2026-09-16; see the module docstring.
+    expect(r.electedDeferral).toBe(500_000 * 0.06);
+    expect(r.deferral).toBe(P.electiveDeferral);
+    expect(r.deferralCapped).toBe(true);
   });
 
   it("stops the match growing once pay passes the ceiling", () => {

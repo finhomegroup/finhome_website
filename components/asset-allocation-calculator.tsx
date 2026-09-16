@@ -7,6 +7,7 @@ import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
+import { moneyCell } from "@/lib/calc/table-cell";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import {
   formatDecimal,
@@ -16,6 +17,12 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import { BarChart } from "@/components/calc/chart/bar-chart";
+import { ChartFigure } from "@/components/calc/chart/chart-figure";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
+import { readDateFields } from "@/lib/calc/date-input";
+import type { CalendarDate } from "@/lib/calc/dates";
 import {
   analyseAllocation,
   ASSET_CLASSES,
@@ -24,10 +31,13 @@ import {
   type AssetClass,
   type RiskTolerance,
 } from "@/lib/calc/asset-allocation";
+import { fundAllocationModel } from "@/lib/calc/charts/fund-allocation-chart";
+import { allocateFunds } from "@/lib/calc/fund-allocation";
 import { ASSET_ALLOCATION as C } from "@/content/calculators/asset-allocation";
 
 const F = C.form;
 const T = F.table;
+const P = C.purpose;
 
 const RISK_OPTIONS: readonly { value: RiskTolerance; label: string }[] = [
   { value: "conservative", label: F.riskOptions.conservative },
@@ -35,15 +45,15 @@ const RISK_OPTIONS: readonly { value: RiskTolerance; label: string }[] = [
   { value: "aggressive", label: F.riskOptions.aggressive },
 ];
 
-function usd(value: number): string {
-  return `${formatMoney(value)} USD`;
+/** Renamed from `usd` with the currency: this page works in đồng now. */
+function dong(value: number): string {
+  return `${formatMoney(value)} ₫`;
 }
 
-/** A signed trade, so a sell reads as one. */
-function signedUsd(value: number): string {
-  const sign = value > 0 ? "+" : value < 0 ? "−" : "";
-  return `${sign}${formatMoney(Math.abs(value))} USD`;
-}
+// A `signedDong` helper used to format the trade column here. The column
+// passes `moneyCell` now, so the sign comes from the raw number and
+// `ResultTable` renders it in whichever precision the reader chose — the
+// helper would have been a second, divergent way to spell the same figure.
 
 /** Drift is in percentage points, not percent — see the module docstring. */
 function points(value: number): string {
@@ -52,8 +62,120 @@ function points(value: number): string {
 }
 
 export function AssetAllocationCalculator() {
-  const fields = useCalcFields(F.defaults);
+  const fields = useCalcFields({
+    // Original row 56: the purpose/time allocation is the DEFAULT question.
+    // The age/risk study below is a retained educational mode.
+    mode: P.defaultMode,
+    available: P.defaultAvailable,
+    reserve: P.defaultReserve,
+    homeAmount: P.defaultHomeAmount,
+    homeMonths: P.defaultHomeMonths,
+    otherAmount: P.defaultOtherAmount,
+    otherMonths: P.defaultOtherMonths,
+    // The declared anchor the month counts are measured from. A review found
+    // the help text saying "kể từ hôm nay" on a page that never showed what
+    // today was, so the convention could not be checked by a reader.
+    anchorDay: P.defaultAnchorDay,
+    anchorMonth: P.defaultAnchorMonth,
+    anchorYear: P.defaultAnchorYear,
+    ...F.defaults,
+  });
   const v = fields.values;
+  const portfolioMode = v.mode === "portfolio";
+
+  // --- the default mode: one pot, split by purpose and need date -----------
+  const available = parseMoney(v.available);
+  const reserve = parseMoney(v.reserve);
+  const homeAmount = parseMoney(v.homeAmount);
+  const otherAmount = parseMoney(v.otherAmount);
+
+  /**
+   * A month count, where BLANK is "not stated" rather than zero.
+   *
+   * 0 months is a real answer — money needed this month — so a blank cannot
+   * be defaulted to it. `parseCount` rather than `parseMoney`: "12" is a
+   * count and `parseMoney("1.2")` would read 12 from a typo (docs §4).
+   */
+  const readMonths = (raw: string): { months: number | null; bad: boolean } => {
+    const trimmed = raw.trim();
+    if (trimmed === "") return { months: null, bad: false };
+    const parsed = parseCount(trimmed);
+    return { months: parsed, bad: parsed === null };
+  };
+  const homeMonths = readMonths(v.homeMonths);
+  const otherMonths = readMonths(v.otherMonths);
+
+  // The anchor, through the shared three-field reader so each box can be
+  // blamed on its own — and so "31/2" marks the DAY rather than all three.
+  const anchorFields = readDateFields(v.anchorYear, v.anchorMonth, v.anchorDay);
+
+  const purposeInvalid = {
+    available: available === null || available < 0,
+    reserve: reserve === null || reserve < 0,
+    homeAmount: homeAmount === null || homeAmount < 0,
+    otherAmount: otherAmount === null || otherAmount < 0,
+    homeMonths: homeMonths.bad,
+    otherMonths: otherMonths.bad,
+    anchor: anchorFields.date === null,
+  };
+  const purposeUsable = !Object.values(purposeInvalid).some(Boolean);
+
+  const allocation = purposeUsable
+    ? allocateFunds({
+        available: available!,
+        reserve: reserve!,
+        // THE ORDER THIS PAGE DECLARES. Fixed, stated in the copy, and never
+        // re-sorted by need date — see `fund-allocation.ts`'s docstring.
+        purposes: [
+          {
+            key: "home",
+            requested: homeAmount!,
+            monthsUntilNeeded: homeMonths.months,
+          },
+          {
+            key: "other",
+            requested: otherAmount!,
+            monthsUntilNeeded: otherMonths.months,
+          },
+        ],
+        start: anchorFields.date!,
+      })
+    : null;
+
+  /** "15/9/2026", hand-formatted like every other figure in the suite. */
+  const showDate = (date: CalendarDate | null | undefined) =>
+    date === null || date === undefined
+      ? null
+      : `${formatDecimal(date.day, 0)}/${formatDecimal(date.month, 0)}/${formatDecimal(date.year, 0)}`;
+
+  const anchorLabel = showDate(allocation?.start ?? null);
+
+  const allocationChart = fundAllocationModel(
+    allocation,
+    { home: P.homeName, other: P.otherName },
+    C.chart,
+    anchorLabel,
+  );
+
+  /**
+   * Reads the clock — the one place in this feature that may.
+   *
+   * `lib/calc/` stays pure so the prerendered HTML and the hydrated HTML
+   * agree; this runs only on a click, well after mount. Same pattern as
+   * `raise-calculator.tsx` and `dates-calculator.tsx`.
+   */
+  const fillToday = () => {
+    const now = new Date();
+    fields.bind("anchorYear").onValueChange(String(now.getFullYear()));
+    fields.bind("anchorMonth").onValueChange(String(now.getMonth() + 1));
+    fields.bind("anchorDay").onValueChange(String(now.getDate()));
+  };
+
+  const purposeMoney = (figure: number | null | undefined) =>
+    figure === null || figure === undefined ? null : dong(figure);
+
+  const purposeOf = (key: "home" | "other") =>
+    allocation?.purposes.find((purpose) => purpose.key === key) ?? null;
 
   const age = parseCount(v.age);
   const equityHolding = parseMoney(v.equityHolding);
@@ -109,6 +231,23 @@ export function AssetAllocationCalculator() {
 
   const result = input === null ? null : analyseAllocation(input);
 
+  /**
+   * The advanced study's per-class table.
+   *
+   * THE TWO MONETARY COLUMNS ARE TYPED CELLS, not `formatMoney` strings. A
+   * review measured this six-column table at 390 px and found only the first
+   * four columns on screen — the holdings and the rebalancing trades, the two
+   * money columns, were off the right edge with no compact reading and no
+   * exact-đồng control. `moneyCell` lets `ResultTable` derive the stated unit,
+   * the compact figures and the exact switch from the raw numbers (docs §3).
+   *
+   * The percentage and percentage-POINT columns stay strings on purpose: a
+   * rate is not an amount and must never be scaled into triệu, and the signed
+   * drift keeps its own ± sign. Only `moneyCell` is ever divided.
+   *
+   * `mobileCards` because six columns cannot compact into 390 px — docs §3
+   * sets it from five up.
+   */
   const rows =
     result === null
       ? []
@@ -119,13 +258,234 @@ export function AssetAllocationCalculator() {
             ? null
             : formatPercent(result.currentWeights[key], 1),
           result.driftPoints === null ? null : points(result.driftPoints[key]),
-          input === null ? null : usd(input.holdings[key]),
-          result.trades === null ? null : signedUsd(result.trades[key]),
+          input === null ? null : moneyCell(input.holdings[key]),
+          result.trades === null ? null : moneyCell(result.trades[key]),
         ]);
 
   return (
     <CalculatorCard>
-      <FieldGroup title={F.profileGroup}>
+      <FieldGroup>
+        <RadioGroupField
+          {...fields.bind("mode")}
+          legend={P.modeLegend}
+          help={P.modeHelp}
+          options={[
+            { value: "purpose", label: P.modePurpose },
+            { value: "portfolio", label: P.modePortfolio },
+          ]}
+        />
+      </FieldGroup>
+
+      {!portfolioMode ? (
+        <>
+          <FieldGroup title={P.potGroup} className="mt-8">
+            <NumberField
+              {...fields.bind("available")}
+              label={P.availableLabel}
+              unit={P.availableUnit}
+              help={P.availableHelp}
+              error={P.amountInvalid}
+              invalid={purposeInvalid.available}
+            />
+            <NumberField
+              {...fields.bind("reserve")}
+              label={P.reserveLabel}
+              unit={P.reserveUnit}
+              help={P.reserveHelp}
+              error={P.amountInvalid}
+              invalid={purposeInvalid.reserve}
+            />
+          </FieldGroup>
+
+          <FieldGroup title={P.homeGroup} className="mt-8">
+            <NumberField
+              {...fields.bind("homeAmount")}
+              label={P.homeAmountLabel}
+              unit={P.homeAmountUnit}
+              help={P.homeAmountHelp}
+              error={P.amountInvalid}
+              invalid={purposeInvalid.homeAmount}
+            />
+            <NumberField
+              {...fields.bind("homeMonths")}
+              label={P.homeMonthsLabel}
+              unit={P.homeMonthsUnit}
+              help={P.homeMonthsHelp}
+              error={P.monthsInvalid}
+              invalid={purposeInvalid.homeMonths}
+            />
+          </FieldGroup>
+
+          <FieldGroup title={P.otherGroup} className="mt-8">
+            <NumberField
+              {...fields.bind("otherAmount")}
+              label={P.otherAmountLabel}
+              unit={P.otherAmountUnit}
+              help={P.otherAmountHelp}
+              error={P.amountInvalid}
+              invalid={purposeInvalid.otherAmount}
+            />
+            <NumberField
+              {...fields.bind("otherMonths")}
+              label={P.otherMonthsLabel}
+              unit={P.otherMonthsUnit}
+              help={P.otherMonthsHelp}
+              error={P.monthsInvalid}
+              invalid={purposeInvalid.otherMonths}
+            />
+          </FieldGroup>
+
+          {/* The anchor the two month counts above are measured from. It is a
+              FIELD rather than a sentence about "hôm nay" because a static
+              export cannot know the date and a claim the reader cannot check
+              is not a convention. */}
+          <FieldGroup title={P.anchorGroup} className="mt-8">
+            <p className="text-sm leading-relaxed text-ink-3">
+              {P.anchorIntro}
+            </p>
+            <NumberField
+              {...fields.bind("anchorDay")}
+              label={P.anchorDayLabel}
+              help={P.anchorDayHelp}
+              error={P.anchorInvalid}
+              invalid={anchorFields.dayBad}
+            />
+            <NumberField
+              {...fields.bind("anchorMonth")}
+              label={P.anchorMonthLabel}
+              help={P.anchorMonthHelp}
+              error={P.anchorInvalid}
+              invalid={anchorFields.monthBad}
+            />
+            <NumberField
+              {...fields.bind("anchorYear")}
+              label={P.anchorYearLabel}
+              help={P.anchorYearHelp}
+              error={P.anchorInvalid}
+              invalid={anchorFields.yearBad}
+            />
+            <div>
+              <button
+                type="button"
+                onClick={fillToday}
+                className={cn(
+                  "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+                  "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+                  FH_POINTER,
+                )}
+              >
+                {P.todayLabel}
+              </button>
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {P.todayHelp}
+              </p>
+            </div>
+          </FieldGroup>
+
+          {/* THE page's live region, because this is the default mode and the
+              one the static export renders. The portfolio study's groups are
+              all `live={false}`; docs §4 allows exactly one per page. */}
+          <ResultGroup title={P.resultTitle} className="mt-8">
+            <ResultRow
+              label={P.reserveResultLabel}
+              value={purposeMoney(allocation?.reserveAllocated)}
+            />
+            <ResultRow
+              label={P.homeResultLabel}
+              value={purposeMoney(purposeOf("home")?.allocated)}
+            />
+            <ResultRow
+              label={P.otherResultLabel}
+              value={purposeMoney(purposeOf("other")?.allocated)}
+            />
+            <ResultRow
+              label={P.unallocatedLabel}
+              value={purposeMoney(allocation?.unallocated)}
+            />
+            <ResultRow
+              label={P.requestedLabel}
+              value={purposeMoney(allocation?.totalRequested)}
+            />
+            {/* Mounted only when something is actually short. */}
+            {allocation !== null && allocation.shortfall > 0 ? (
+              <ResultRow
+                label={P.shortfallLabel}
+                value={purposeMoney(allocation.shortfall)}
+              />
+            ) : null}
+          </ResultGroup>
+
+          {allocation === null ? (
+            // Two distinguishable refusals: a bad date names the date group,
+            // which is the only one whose recovery is a button.
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">
+              {purposeInvalid.anchor ? P.anchorDateInvalid : P.invalidNotice}
+            </p>
+          ) : (
+            <>
+              {/* The anchor and the dates it produces, restated where the
+                  figures are read. Not inside the live region: it re-announces
+                  on every keystroke there, and it is context, not an answer. */}
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {P.anchorNotice.replace("{date}", anchorLabel ?? "")}{" "}
+                {allocation.purposes
+                  .map((purpose) => {
+                    const name =
+                      purpose.key === "home" ? P.homeName : P.otherName;
+                    return purpose.needDate === null
+                      ? P.anchorUnknownFormat.replace("{name}", name)
+                      : P.anchorPurposeFormat
+                          .replace("{name}", name)
+                          .replace("{date}", showDate(purpose.needDate) ?? "");
+                  })
+                  .join(" · ")}
+              </p>
+              {allocation.shortfall > 0 ? (
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {P.shortfallNotice}
+                </p>
+              ) : null}
+              {allocation.unallocated > 0 ? (
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {P.unallocatedNotice}
+                </p>
+              ) : null}
+              {allocation.anyTimeUnknown ? (
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {P.timeUnknownNotice}
+                </p>
+              ) : null}
+              {!allocation.orderMatchesTimeline ? (
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {P.orderNotice}
+                </p>
+              ) : null}
+            </>
+          )}
+
+          <ChartFigure model={allocationChart}>
+            <BarChart model={allocationChart} />
+          </ChartFigure>
+
+          {/* HOW TO READ THIS MODE'S OWN THREE FIGURES. It used to be the
+              page's server-rendered `intro`, which cannot see the selected
+              mode — so it went on describing an allocation bar and a
+              shortfall table after the reader switched to the portfolio
+              study, where neither exists. Mode-local guidance belongs in the
+              mode. */}
+          <p className="mt-8 text-base leading-relaxed text-ink-2">
+            {C.purposeIntro}
+          </p>
+        </>
+      ) : null}
+
+      {portfolioMode ? (
+        <>
+      <p className="mt-8 rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
+        {C.advancedNotice}
+      </p>
+
+      <FieldGroup title={F.profileGroup} className="mt-8">
         <NumberField
           {...fields.bind("age")}
           label={F.ageLabel}
@@ -219,7 +579,9 @@ export function AssetAllocationCalculator() {
         />
       </FieldGroup>
 
-      <ResultGroup title={F.resultTitle} className="mt-8">
+      {/* `live={false}`: the purpose mode above owns the page's one live
+          results region, and that is the mode the static export renders. */}
+      <ResultGroup title={F.resultTitle} className="mt-8" live={false}>
         <ResultRow
           label={F.maxDriftLabel}
           value={
@@ -297,7 +659,7 @@ export function AssetAllocationCalculator() {
       <ResultGroup title={F.currentTitle} className="mt-4" live={false}>
         <ResultRow
           label={F.totalLabel}
-          value={result === null ? null : usd(result.totalValue)}
+          value={result === null ? null : dong(result.totalValue)}
         />
         <ResultRow
           label={F.currentReturnLabel}
@@ -355,8 +717,12 @@ export function AssetAllocationCalculator() {
           <ResultTable
             className="mt-4"
             caption={T.caption}
+            // Six columns: one block per asset class below `md`, so the two
+            // money columns are reachable on a phone instead of sitting off
+            // the right edge.
+            mobileCards
             columns={[
-              { label: T.classColumn },
+              { label: T.classColumn, nowrap: true },
               { label: T.targetColumn, numeric: true },
               { label: T.currentColumn, numeric: true },
               { label: T.driftColumn, numeric: true },
@@ -382,6 +748,35 @@ export function AssetAllocationCalculator() {
         <p className="mt-4 text-sm leading-relaxed text-ink-3">
           {F.invalidNotice}
         </p>
+      ) : null}
+
+      {/* THE ADVANCED STUDY'S OWN EXPLANATION, inside the advanced mode.
+          Both of these used to render below the DEFAULT form, where they
+          explained a 65/30/5 portfolio and a covariance sum that the default
+          purpose allocation never computes — the separation an independent
+          review asked for. Nothing is removed: the figures, the correlation
+          sweep and the method are all still here, beside the inputs they are
+          about. */}
+      <p className="mt-8 text-base leading-relaxed text-ink-2">
+        {C.correlationNotice}
+      </p>
+
+      <section className="mt-8">
+        <h3 className="font-display text-lg font-medium text-ink">
+          {C.advancedFormula.title}
+        </h3>
+        <div className="mt-3 space-y-3">
+          {C.advancedFormula.body.map((paragraph) => (
+            <p
+              key={paragraph}
+              className="text-base leading-relaxed text-ink-2"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </section>
+        </>
       ) : null}
     </CalculatorCard>
   );

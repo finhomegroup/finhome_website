@@ -1,19 +1,29 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import {
+  ExampleNotice,
+  ExampleNoticeDetail,
+} from "@/components/calc/example-notice";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
 import {
+  formatDecimal,
   formatMoney,
   formatPercent,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import { readDateFields } from "@/lib/calc/date-input";
+import type { CalendarDate } from "@/lib/calc/dates";
 import { computeRaise, type RaiseMode } from "@/lib/calc/raise";
+import { planRaiseSaving } from "@/lib/calc/raise-savings";
 import { RAISE as C } from "@/content/calculators/raise";
 
 /**
@@ -59,14 +69,33 @@ const MODES = {
 >;
 
 export function RaiseCalculator() {
-  const fields = useCalcFields({
+  const initial0 = {
     mode: "percent",
     current: C.form.defaultCurrent,
     percent: C.form.defaultPercent,
     amount: C.form.defaultAmount,
     target: C.form.defaultTarget,
     perYear: C.form.defaultPerYear,
-  });
+    // Original row 63: the savings goal the rise is measured against.
+    netIncrease: C.form.defaultNetIncrease,
+    share: C.form.defaultShare,
+    baseline: C.form.defaultBaseline,
+    initial: C.form.defaultInitial,
+    goalTarget: C.form.defaultGoalTarget,
+    goalRate: C.form.defaultGoalRate,
+    startDay: C.form.defaultStartDay,
+    startMonth: C.form.defaultStartMonth,
+    startYear: C.form.defaultStartYear,
+  };
+  const fields = useCalcFields(initial0);
+
+  // The prefilled salary, the prefilled NET rise and the prefilled goal are
+  // all a worked example. The NET field in particular must never look derived
+  // from the gross one — a review flagged the two defaults being numerically
+  // equal — so the state is badged rather than left to the reader to infer.
+  const pristine = (Object.keys(initial0) as (keyof typeof initial0)[]).every(
+    (key) => fields.values[key] === initial0[key],
+  );
 
   const mode = fields.values.mode as RaiseMode;
   const active = MODES[mode];
@@ -91,11 +120,94 @@ export function RaiseCalculator() {
   // with no message. Order matters: `result` is computed above.
   const valueInvalid = value === null || (parsed && result === null);
 
-  const money = (figure: number | undefined) =>
-    figure === undefined ? null : `${formatMoney(figure)} ₫`;
+  const money = (figure: number | null | undefined) =>
+    figure === null || figure === undefined
+      ? null
+      : `${formatMoney(figure)} ₫`;
+
+  // --- original row 63: the savings goal -----------------------------------
+  // A BLANK net-increase box is "not supplied", which the model turns into
+  // `unknownNet`. It is not zero, and it is never derived from the gross rise
+  // above: this tool has no model of payroll deductions, so it asks.
+  const netRaw = fields.values.netIncrease.trim();
+  const netKnown = netRaw !== "";
+  // `parseMoney` handles a leading minus, so a pay cut is enterable.
+  const netIncrease = netKnown ? parseMoney(netRaw) : null;
+  const netIncreaseInvalid = netKnown && netIncrease === null;
+
+  const share = parseDecimal(fields.values.share);
+  const baseline = parseMoney(fields.values.baseline);
+  const initial = parseMoney(fields.values.initial);
+  const goalTarget = parseMoney(fields.values.goalTarget);
+  const goalRate = parseDecimal(fields.values.goalRate);
+
+  const shareInvalid = share === null || share < 0 || share > 100;
+  const baselineInvalid = baseline === null || baseline < 0;
+  const initialInvalid = initial === null || initial < 0;
+  const goalTargetInvalid = goalTarget === null || goalTarget <= 0;
+  const goalRateInvalid = goalRate === null || goalRate < 0;
+
+  const startFields = readDateFields(
+    fields.values.startYear,
+    fields.values.startMonth,
+    fields.values.startDay,
+  );
+  const startInvalid = startFields.date === null;
+
+  const goalUsable =
+    !netIncreaseInvalid &&
+    !shareInvalid &&
+    !baselineInvalid &&
+    !initialInvalid &&
+    !goalTargetInvalid &&
+    !goalRateInvalid &&
+    !startInvalid;
+
+  const goal = goalUsable
+    ? planRaiseSaving({
+        netIncrease,
+        sharePercent: share,
+        baselineContribution: baseline,
+        initial,
+        target: goalTarget,
+        annualRatePercent: goalRate,
+        start: startFields.date!,
+      })
+    : null;
+
+  /** "15/4/2030", hand-formatted like every other figure in the suite. */
+  const showDate = (date: CalendarDate | null) =>
+    date === null
+      ? null
+      : `${formatDecimal(date.day, 0)}/${formatDecimal(date.month, 0)}/${formatDecimal(date.year, 0)}`;
+
+  const months = (value: number | null | undefined) =>
+    value === null || value === undefined
+      ? null
+      : `${formatDecimal(value, 0)} ${C.form.monthsUnit}`;
+
+  /**
+   * Reads the clock — the one place in this feature that may.
+   *
+   * `lib/calc/` stays pure so the prerendered HTML and the hydrated HTML
+   * agree; this runs only on a click, well after mount. Same pattern as
+   * `dates-calculator.tsx`.
+   */
+  const fillToday = () => {
+    const now = new Date();
+    fields.bind("startYear").onValueChange(String(now.getFullYear()));
+    fields.bind("startMonth").onValueChange(String(now.getMonth() + 1));
+    fields.bind("startDay").onValueChange(String(now.getDate()));
+  };
 
   return (
     <CalculatorCard>
+      <ExampleNotice
+        pristine={pristine}
+        onReset={fields.reset}
+        className="mb-6"
+      />
+
       <FieldGroup>
         <RadioGroupField
           {...fields.bind("mode")}
@@ -156,6 +268,175 @@ export function RaiseCalculator() {
           value={money(result?.nextPerYear)}
         />
       </ResultGroup>
+
+      {/* Original row 63's own question. The salary block above is untouched
+          and still works on its own — this section is additive. */}
+      <FieldGroup title={C.form.goalGroup} className="mt-10">
+        <p className="text-sm leading-relaxed text-ink-3">
+          {C.form.goalIntro}
+        </p>
+        <NumberField
+          {...fields.bind("netIncrease")}
+          label={C.form.netIncreaseLabel}
+          unit={C.form.netIncreaseUnit}
+          help={C.form.netIncreaseHelp}
+          error={C.form.netIncreaseInvalid}
+          invalid={netIncreaseInvalid}
+        />
+        <NumberField
+          {...fields.bind("share")}
+          label={C.form.shareLabel}
+          unit={C.form.shareUnit}
+          help={C.form.shareHelp}
+          error={C.form.shareInvalid}
+          invalid={shareInvalid}
+        />
+        <NumberField
+          {...fields.bind("baseline")}
+          label={C.form.baselineLabel}
+          unit={C.form.baselineUnit}
+          help={C.form.baselineHelp}
+          error={C.form.baselineInvalid}
+          invalid={baselineInvalid}
+        />
+        <NumberField
+          {...fields.bind("initial")}
+          label={C.form.initialLabel}
+          unit={C.form.initialUnit}
+          help={C.form.initialHelp}
+          error={C.form.initialInvalid}
+          invalid={initialInvalid}
+        />
+        <NumberField
+          {...fields.bind("goalTarget")}
+          label={C.form.goalTargetLabel}
+          unit={C.form.goalTargetUnit}
+          help={C.form.goalTargetHelp}
+          error={C.form.goalTargetInvalid}
+          invalid={goalTargetInvalid}
+        />
+        <NumberField
+          {...fields.bind("goalRate")}
+          label={C.form.goalRateLabel}
+          unit={C.form.goalRateUnit}
+          help={C.form.goalRateHelp}
+          error={C.form.goalRateInvalid}
+          invalid={goalRateInvalid}
+        />
+      </FieldGroup>
+
+      <FieldGroup title={C.form.startGroup} className="mt-8">
+        <NumberField
+          {...fields.bind("startDay")}
+          label={C.form.startDayLabel}
+          help={C.form.startDayHelp}
+          error={C.form.startInvalid}
+          invalid={startFields.dayBad}
+        />
+        <NumberField
+          {...fields.bind("startMonth")}
+          label={C.form.startMonthLabel}
+          help={C.form.startMonthHelp}
+          error={C.form.startInvalid}
+          invalid={startFields.monthBad}
+        />
+        <NumberField
+          {...fields.bind("startYear")}
+          label={C.form.startYearLabel}
+          help={C.form.startYearHelp}
+          error={C.form.startInvalid}
+          invalid={startFields.yearBad}
+        />
+        <div>
+          <button
+            type="button"
+            onClick={fillToday}
+            className={cn(
+              "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+              "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+              FH_POINTER,
+            )}
+          >
+            {C.form.todayLabel}
+          </button>
+          <p className="mt-2 text-sm leading-relaxed text-ink-3">
+            {C.form.todayHelp}
+          </p>
+        </div>
+      </FieldGroup>
+
+      {/* Not live: the salary group above owns the page's one live region. */}
+      <ResultGroup
+        title={C.form.goalResultTitle}
+        className="mt-6"
+        live={false}
+      >
+        <ResultRow
+          label={C.form.extraLabel}
+          value={money(goal?.extraContribution)}
+        />
+        <ResultRow
+          label={C.form.raisedLabel}
+          value={money(goal?.raisedContribution)}
+        />
+        <ResultRow
+          label={C.form.currentMonthsLabel}
+          value={months(goal?.plan?.current.schedule.fundedMonth)}
+        />
+        <ResultRow
+          label={C.form.currentDateLabel}
+          value={showDate(goal?.plan?.current.fundedDate ?? null)}
+        />
+        {/* Mounted only when there IS a comparison leg: docs §6 — an optional
+            row is not mounted, not nulled. */}
+        {goal?.plan?.higher ? (
+          <>
+            <ResultRow
+              label={C.form.raisedMonthsLabel}
+              value={months(goal.plan.higher.schedule.fundedMonth)}
+            />
+            <ResultRow
+              label={C.form.raisedDateLabel}
+              value={showDate(goal.plan.higher.fundedDate)}
+            />
+          </>
+        ) : null}
+        {goal?.monthsEarlier != null ? (
+          <ResultRow
+            label={C.form.earlierLabel}
+            value={months(goal.monthsEarlier)}
+          />
+        ) : null}
+      </ResultGroup>
+
+      {/* One sentence per state, and the states are distinguishable: an
+          unknown net rise is not a pay cut and neither is a 0% share. */}
+      {goal === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.goalInvalidNotice}
+        </p>
+      ) : goal.state === "unknownNet" ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.unknownNetNotice}
+        </p>
+      ) : goal.state === "payCut" ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.payCutNotice}
+        </p>
+      ) : goal.state === "baselineOnly" ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.zeroShareNotice}
+        </p>
+      ) : null}
+
+      {goal?.plan?.current.schedule.fundedMonth === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.unreachableNotice}
+        </p>
+      ) : null}
+
+      {/* After the result, never before it. */}
+      <ExampleNoticeDetail className="mt-6" />
     </CalculatorCard>
   );
 }

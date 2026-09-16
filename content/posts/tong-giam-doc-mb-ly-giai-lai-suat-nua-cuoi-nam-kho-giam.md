@@ -1,11 +1,11 @@
-Theo chia sẻ của Tổng Giám đốc Ngân hàng TMCP Quân đội (MB) tại cuộc họp Đại hội đồng cổ đông gần đây, lãi suất từ nay đến cuối năm nhiều khả năng khó có thể giảm thêm. Đồng thời, biên lãi suất netto (NIM) của ngân hàng được dự báo sẽ tiếp tục thu hẹp trong thời gian tới.
+Theo chia sẻ của Tổng Giám đốc Ngân hàng TMCP Quân đội (MB) tại cuộc họp Đại hội đồng cổ đông gần đây, lãi suất từ nay đến cuối năm nhiều khả năng khó có thể giảm thêm. Đồng thời, biên lãi suất netto (NIM) của ngân hàng được dự báo sẽ tiếp tục thu hẹp trong thời gian tới. NIM là thước đo của chính ngân hàng: khoảng cách giữa lãi thu từ cho vay và lãi trả cho tiền gửi, tính trên tài sản sinh lời — không phải phần cộng thêm vào khoản vay của người mua nhà.
 
 ## Điểm chính cần nắm
 
 - Lãi suất huy động vẫn neo ở mức cao để đảm bảo nguồn vốn cho ngân hàng trong bối cảnh cạnh tranh huy động.
 - Chi phí vốn của các tổ chức tín dụng chưa có dấu hiệu hạ nhiệt rõ rệt.
 - NIM thu hẹp có thể khiến ngân hàng thận trọng hơn trong việc cho vay bất động sản.
-- Người vay mua nhà chịu áp lực từ lãi suất thả nổi sau kỳ ưu đãi.
+- Người vay mua nhà chịu áp lực từ lãi suất thả nổi sau kỳ ưu đãi. Thả nổi nghĩa là ngân hàng đặt lại lãi theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 
 ## Góc nhìn FinHome
 

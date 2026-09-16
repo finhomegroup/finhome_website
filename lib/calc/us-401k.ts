@@ -23,9 +23,23 @@
  * - **401(a)(17)**, compensation, makes pay above the ceiling invisible to
  *   the plan. A match of "100% up to 6% of pay" therefore stops growing at
  *   6% of the CEILING, not 6% of the salary. This is the limit that surprises
- *   high earners, and applying it to the match while forgetting it applies to
- *   the deferral election too would overstate what a 500.000 USD earner can
- *   put in.
+ *   high earners. It binds the EMPLOYER's side only: extending it to the
+ *   employee's own election understates what a 500.000 USD earner may defer,
+ *   because 402(g) — a flat dollar limit — is the only thing capping that.
+ *   The IRS's worked example on compensation above the ceiling pays the match
+ *   on capped pay and still lets the participant reach the whole annual
+ *   deferral limit.
+ *
+ *   ONE CAVEAT, deliberately not in the page copy. Applying the ceiling to
+ *   deferrals FIRST — so a percent election stops once year-to-date pay
+ *   passes the ceiling — is a legitimate PLAN-DOCUMENT option, and some
+ *   prototype plans take it (ASPPA, "Which Applies First: Compensation or
+ *   Deferral Limits?", 2026-03). What is modelled here is the IRS's own
+ *   worked example, which is the right default for a general-audience tool;
+ *   hedging every figure with an option most readers do not have would cost
+ *   more clarity than it buys. A reader whose plan does this will see a
+ *   deferral they cannot actually reach, and their plan document is the only
+ *   thing that can tell them so.
  * - **The match formula's own limit**, which is not a statutory figure at all
  *   but the most binding one for most people.
  *
@@ -94,7 +108,8 @@ export type Us401kResult = {
   deferralCapped: boolean;
   /** The part of `deferral` that is catch-up, i.e. above the 402(g) limit. */
   catchUpUsed: number;
-  /** Deferral as a percent of plan compensation, after any cap. */
+  /** Deferral as a percent of ACTUAL pay, after any cap — the same base the
+   * election was expressed in, so an uncapped election reads back unchanged. */
   effectiveDeferralPercent: number | null;
 
   employerMatch: number;
@@ -203,16 +218,20 @@ export function computeUs401k(input: Us401kInput): Us401kResult | null {
     return null;
   }
 
-  // 401(a)(17): the plan cannot see pay above the ceiling. Applied to the
-  // deferral election as well as to the match, because a plan's definition
-  // of compensation governs both.
+  // 401(a)(17): the plan cannot see pay above the ceiling when it works out
+  // what the EMPLOYER owes. It is not applied to the employee's own election
+  // — see the deferral base below.
   const planCompensation = Math.min(annualSalary, params.compensation);
 
   const tier = catchUpTier(age);
   const catchUpAvailable = catchUpAllowance(params, age);
   const deferralLimit = params.electiveDeferral + catchUpAvailable;
 
-  const electedDeferral = planCompensation * (deferralPercent / 100);
+  // The employee's own election comes off their ACTUAL pay, and 402(g) is
+  // what stops it. The 401(a)(17) ceiling is not a second cap on it: the
+  // IRS's own worked example lets a 360.000 earner reach the whole annual
+  // deferral limit while paying the match on capped compensation only.
+  const electedDeferral = annualSalary * (deferralPercent / 100);
   const deferral = Math.min(electedDeferral, deferralLimit);
   // Catch-up is the part above the 402(g) limit. Computed here because the
   // 415(c) test below must exclude it.
@@ -252,7 +271,7 @@ export function computeUs401k(input: Us401kInput): Us401kResult | null {
     deferralCapped: electedDeferral > deferralLimit,
     catchUpUsed,
     effectiveDeferralPercent:
-      planCompensation <= 0 ? null : (deferral / planCompensation) * 100,
+      annualSalary <= 0 ? null : (deferral / annualSalary) * 100,
 
     employerMatch,
     maxEmployerMatch,

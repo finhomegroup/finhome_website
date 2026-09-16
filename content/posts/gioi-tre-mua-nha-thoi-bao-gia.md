@@ -13,6 +13,10 @@ Một nghiên cứu thị trường gần đây đã phác họa ba nhóm hành 
 
 Không có lựa chọn nào trong ba nhóm là "đúng" tuyệt đối — điều quan trọng là biết mình đang ở nhóm nào dựa trên thu nhập, khoản tích lũy và kế hoạch dài hạn. Nếu đã sẵn sàng vay, nguyên tắc tích lũy tối thiểu 30% vốn tự có và giữ khoản trả nợ trong ngưỡng an toàn so với thu nhập vẫn là nền tảng quan trọng nhất. FinHome khuyến khích người trẻ dùng công cụ mô phỏng tài chính để so sánh chi phí thuê và mua trong dài hạn trước khi quyết định, thay vì chọn theo tâm lý đám đông.
 
+**Mức 30% vốn tự có trong bản tin là lựa chọn của nhóm được phỏng vấn, không phải ngưỡng bắt buộc hay mức an toàn chung.** Phần vốn bạn cần có phụ thuộc phần ngân hàng cho vay trên giá thẩm định và chi phí mua ngoài giá, và cả hai đều khác nhau theo từng giao dịch.
+
+Để tự tính: [Muốn đủ tiền trả trước sau 3 năm, mỗi tháng cần để dành bao nhiêu?](/blog/du-tien-tra-truoc-sau-3-nam/) cho biết mức góp cần thiết, và [Tiếp tục thuê hay mua nhà: cần so những chi phí nào?](/blog/tiep-tuc-thue-hay-mua-nha/) so hai hướng trên cùng một khoảng thời gian.
+
 ## Đọc thêm
 
 Nội dung phân tích đầy đủ về ba nhóm hành vi và dữ liệu thị trường chi tiết nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.

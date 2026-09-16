@@ -28,6 +28,7 @@ export default function UsInflationPage() {
       notice={C.conflationNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <UsInflationCalculator />
     </CalculatorPage>

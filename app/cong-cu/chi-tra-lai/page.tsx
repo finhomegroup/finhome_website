@@ -1,90 +1,57 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { Container } from "@/components/ui/container";
-import { Accordion } from "@/components/ui/accordion";
-import { JsonLd } from "@/components/json-ld";
-import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
-import { CalculatorHeading } from "@/components/calc/calculator-heading";
+import {
+  CalculatorPage,
+  calculatorMetadata,
+} from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { InterestOnlyCalculator } from "@/components/interest-only-calculator";
 import { INTEREST_ONLY as C } from "@/content/calculators/interest-only";
-import { calculatorMetadata } from "@/components/calc/calculator-page";
-import { calculatorSchema, faqSchema } from "@/lib/seo";
+
+const SLUG = "chi-tra-lai";
 
 // Built by the shared helper rather than by hand: Next REPLACES openGraph
 // wholesale, so a hand-written block silently dropped the share image,
 // og:site_name and og:locale that app/layout.tsx supplies.
 export const metadata: Metadata = calculatorMetadata({
-  slug: "chi-tra-lai",
+  slug: SLUG,
   metaTitle: C.metaTitle,
   metaDescription: C.metaDescription,
 });
 
-function Prose({ title, body }: { title: string; body: readonly string[] }) {
+/**
+ * MIGRATED to the shared shell in this unit.
+ *
+ * docs §3: the six pre-shell pages keep their hand-written bodies because
+ * their built HTML is a regression gate, and they should move "whenever their
+ * markup is next allowed to change". Original row 14 rewrites this page's
+ * model, framing, form and charts, so this is that moment — and the shell owns
+ * the two contracts a hand-written page can silently drop: the disclaimer and
+ * the registry's `usRules` wiring.
+ */
+export default function GraceLoanPage() {
   return (
-    <section>
-      <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-        {title}
-      </h2>
-      <div className="mt-3 space-y-3">
-        {body.map((paragraph) => (
-          <p key={paragraph} className="text-base leading-relaxed text-ink-2">
-            {paragraph}
-          </p>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export default function InterestOnlyPage() {
-  return (
-    <>
-      <JsonLd
-        data={calculatorSchema({
-          name: C.metaTitle,
-          description: C.metaDescription,
-          path: C.slug,
-        })}
-      />
-      <JsonLd data={faqSchema(C.faq.items)} />
-      <SiteHeader />
-      <main className="flex-1 py-16 md:py-24">
-        <Container>
-          <CalculatorHeading title={C.pageTitle} lede={C.lede} />
-
-          {/* Above the calculator, not below: a borrower should learn that the
-              tool assumes a fixed rate BEFORE they read a 20-year instalment
-              off it, because their real loan almost certainly floats. */}
-          <div className="mx-auto mt-8 max-w-3xl">
-            <p className="rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-              {C.jumpNotice}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-6 max-w-3xl">
-            <InterestOnlyCalculator />
-          </div>
-
-          <div className="mx-auto mt-12 max-w-3xl space-y-10">
-
-            <Prose title={C.formula.title} body={C.formula.body} />
-
-            <section>
-              <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-                {C.faq.title}
-              </h2>
-              <div className="mt-4">
-                <Accordion items={[...C.faq.items]} />
-              </div>
-            </section>
-
-            {/* Mandatory: this page outputs loan figures on a finance domain. */}
-            <CalculatorDisclaimer />
-          </div>
-        </Container>
-      </main>
-      <SiteFooter />
-    </>
+    <CalculatorPage
+      slug={SLUG}
+      metaTitle={C.metaTitle}
+      metaDescription={C.metaDescription}
+      title={C.pageTitle}
+      lede={C.lede}
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
+      // What a borrower has to know before reading an instalment off this
+      // tool: ân hạn gốc defers principal, it does not reduce it.
+      notice={C.jumpNotice}
+      noticeDetail={C.jumpDetail}
+      noticeDetailTitle={C.jumpDetailTitle}
+      intro={C.form.table.intro}
+      prose={C.formula}
+      faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      // The shared notice says the rate is assumed constant; this page models
+      // a reset. Tool-owned text, mandatory opening sentence kept.
+      disclaimer={C.disclaimer}
+    >
+      <InterestOnlyCalculator />
+    </CalculatorPage>
   );
 }

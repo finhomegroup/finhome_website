@@ -27,6 +27,10 @@ export default function RentalPropertyPage() {
       notice={C.fourNumbersNotice}
       prose={C.formula}
       faq={C.faq}
+      // The documents behind the prefilled tax parameters, openable. This
+      // does NOT close the tax review docs §6 records as a release gate — it
+      // gives the reader and that reviewer the sources the figures came from.
+      sources={C.sources}
     >
       <RentalPropertyCalculator />
     </CalculatorPage>

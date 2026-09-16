@@ -11,7 +11,7 @@ export function SourceAttribution({ name, url }: Props) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 font-medium text-white transition-opacity hover:opacity-90"
+        className="mt-3 inline-flex rounded-full bg-primary-ink px-4 py-2 font-medium text-white transition-opacity hover:opacity-90"
       >
         Xem nguồn gốc trên {name} →
       </a>

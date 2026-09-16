@@ -37,6 +37,23 @@
 // Above 182 days the Treasury switches to a quadratic this module
 // deliberately does not transcribe, and this copy says so plainly. See the
 // module docstring.
+//
+// SOURCES, added 2026-09-16. The eCFR quote above was the best provenance
+// TEXT in the P4 set and still had no href a reader could open, which is the
+// exact defect `components/calc/calculator-page.tsx` says the `sources` slot
+// exists for. Both hrefs were fetched on 2026-09-16 and their content read:
+// TreasuryDirect's pricing page carries this module's own price formula
+// verbatim ("Price = Face value (1 - (discount rate x time)/360)") and points
+// the reader on to §356.20 and Appendix B; the bills page carries the terms
+// and the tax treatment. eCFR itself is NOT linked: every ecfr.gov and
+// govinfo HTML request from this environment is redirected or blocked, so an
+// ecfr.gov href could not be verified live and a link that cannot be opened
+// is worse than naming the section in `intro`, which is what we do.
+//
+// The 6-week bill was ADDED to `daysHelp` and to formula.body[4] in the same
+// pass: TreasuryDirect lists 4, 6, 8, 13, 17, 26 and 52 weeks, and this copy
+// had omitted the 6-week term in both places. 42 days is still well under
+// the 182,5-day boundary, so the ordering claim in body[4] is unaffected.
 
 export const US_TBILL = {
   slug: "/cong-cu/tin-phieu-kho-bac-hoa-ky",
@@ -47,7 +64,7 @@ export const US_TBILL = {
     "Tính giá mua tín phiếu kho bạc từ lãi suất chiết khấu, và ba cách quy đổi lợi suất thực. Kèm giá trị của việc miễn thuế thu nhập bang. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Tín phiếu kho bạc không trả lãi định kỳ: nó được bán dưới mệnh giá và hoàn trả đúng mệnh giá, phần chênh lệch chính là toàn bộ lợi nhuận. Điều đáng chú ý là lãi suất được NIÊM YẾT luôn thấp hơn lợi suất thực nhận, vì hai lý do cộng dồn lên nhau.",
+    "Tín phiếu kho bạc không trả lãi định kỳ: nó được bán dưới mệnh giá và hoàn trả đúng mệnh giá, phần chênh lệch chính là toàn bộ lợi nhuận. Điều đáng chú ý là lãi suất được niêm yết luôn thấp hơn lợi suất thực nhận, vì hai lý do cộng dồn lên nhau.",
 
   form: {
     billGroup: "Tín phiếu",
@@ -63,7 +80,7 @@ export const US_TBILL = {
 
     daysLabel: "Số ngày đến đáo hạn",
     daysUnit: "ngày",
-    daysHelp: "Tín phiếu có kỳ hạn 4, 8, 13, 17, 26 hoặc 52 tuần.",
+    daysHelp: "Tín phiếu có kỳ hạn 4, 6, 8, 13, 17, 26 hoặc 52 tuần.",
     daysInvalid: "Vui lòng nhập một số nguyên từ 1 đến 366.",
 
     taxGroup: "Thuế",
@@ -75,7 +92,7 @@ export const US_TBILL = {
     stateLabel: "Thuế suất thu nhập bang",
     stateUnit: "%",
     stateHelp:
-      "Lãi tín phiếu được MIỄN thuế bang. Con số này chỉ dùng để định giá phần miễn đó, không bị trừ vào lợi nhuận.",
+      "Lãi tín phiếu được miễn thuế bang. Con số này chỉ dùng để định giá phần miễn đó, không bị trừ vào lợi nhuận.",
     stateInvalid: "Vui lòng nhập một số từ 0 đến 100.",
 
     defaults: {
@@ -105,23 +122,23 @@ export const US_TBILL = {
     taxableEquivalentLabel: "Sản phẩm chịu thuế bang phải trả tối thiểu",
 
     beyondShortBillNotice:
-      "Kỳ hạn trên 182 ngày. Với các kỳ hạn này, Kho bạc Hoa Kỳ công bố một chỉ số “coupon equivalent” tính theo một công thức bậc hai riêng, và con số “lợi suất ghép nửa năm” ở đây có thể lệch nhẹ so với chỉ số đó. Chúng tôi cố ý không sao chép công thức của Kho bạc mà tính lợi suất ghép nửa năm từ nguyên lý — mức tăng của chính tín phiếu — nên con số này kiểm chứng được nhưng không mang tên gọi của Kho bạc. Với kỳ hạn từ 182 ngày trở xuống, Kho bạc không ghép lãi: chỉ số của Kho bạc là lãi ĐƠN và trùng với dòng “Lợi suất quy năm (đơn, 365 ngày)” ở trên — trừ một trường hợp về cơ số ngày, khi một năm kể từ ngày phát hành có ngày 29/02 thì quy định cho Kho bạc dùng 366 ngày, và con số của Kho bạc cao hơn dòng đó đúng 366/365 lần. Công cụ không nhận ngày phát hành nên luôn tính trên 365 ngày.",
+      "Kỳ hạn trên 182 ngày. Với các kỳ hạn này, Kho bạc Hoa Kỳ công bố một chỉ số “coupon equivalent” tính theo một công thức bậc hai riêng, và con số “lợi suất ghép nửa năm” ở đây có thể lệch nhẹ so với chỉ số đó. Chúng tôi cố ý không sao chép công thức của Kho bạc mà tính lợi suất ghép nửa năm từ nguyên lý — mức tăng của chính tín phiếu — nên con số này kiểm chứng được nhưng không mang tên gọi của Kho bạc. Với kỳ hạn từ 182 ngày trở xuống, Kho bạc không ghép lãi: chỉ số của Kho bạc là lãi đơn và trùng với dòng “Lợi suất quy năm (đơn, 365 ngày)” ở trên — trừ một trường hợp về cơ số ngày, khi một năm kể từ ngày phát hành có ngày 29/02 thì quy định cho Kho bạc dùng 366 ngày, và con số của Kho bạc cao hơn dòng đó đúng 366/365 lần. Công cụ không nhận ngày phát hành nên luôn tính trên 365 ngày.",
     invalidNotice:
       "Một ô nhập chưa hợp lệ. Kiểm tra lại số ngày (số nguyên, 1–366) và lãi suất chiết khấu.",
   },
 
   quoteNotice:
-    "Với tín phiếu mặc định, lãi suất niêm yết là 5,00% nhưng lợi suất quy năm thực nhận là 5,1343% — cao hơn 0,1343 điểm phần trăm. Chênh lệch đến từ hai quy ước cộng dồn. Thứ nhất, mức chiết khấu được tính trên MỆNH GIÁ, còn nhà đầu tư chỉ bỏ ra giá mua thấp hơn: 126,39 USD lãi trên 9.873,61 USD bỏ ra, không phải trên 10.000 USD. Thứ hai, lãi suất niêm yết quy năm theo 360 ngày trong khi khoản đầu tư chạy trên lịch 365 ngày. Riêng lý do thứ nhất đưa con số lên 5,0640%, riêng lý do thứ hai lên 5,0694%; cả hai cùng lúc cho 5,1343%. Vì vậy, so lãi suất niêm yết 5,00% của tín phiếu với APY 5,00% của một khoản tiền gửi là đang so hai đại lượng khác nhau.",
+    "Với tín phiếu mặc định, lãi suất niêm yết là 5,00% nhưng lợi suất quy năm thực nhận là 5,1343% — cao hơn 0,1343 điểm phần trăm. Chênh lệch đến từ hai quy ước cộng dồn. Thứ nhất, mức chiết khấu được tính trên mệnh giá, còn nhà đầu tư chỉ bỏ ra giá mua thấp hơn: 126,39 USD lãi trên 9.873,61 USD bỏ ra, không phải trên 10.000 USD. Thứ hai, lãi suất niêm yết quy năm theo 360 ngày trong khi khoản đầu tư chạy trên lịch 365 ngày. Riêng lý do thứ nhất đưa con số lên 5,0640%, riêng lý do thứ hai lên 5,0694%; cả hai cùng lúc cho 5,1343%. Vì vậy, so lãi suất niêm yết 5,00% của tín phiếu với APY 5,00% của một khoản tiền gửi là đang so hai đại lượng khác nhau.",
 
   formula: {
     title: "Cách tính",
     body: [
       "Giá mua bằng mệnh giá nhân với (1 − lãi suất chiết khấu × số ngày / 360). Đây đúng là công thức định giá của Kho bạc Hoa Kỳ, và cơ sở 360 ngày là một quy ước chứ không phải một cuốn lịch.",
-      "Lợi suất trong kỳ bằng chiết khấu chia GIÁ MUA. Chia cho mệnh giá là lỗi phổ biến nhất khi tự tính, vì mệnh giá không phải số tiền bạn bỏ ra.",
+      "Lợi suất trong kỳ bằng chiết khấu chia giá mua. Chia cho mệnh giá là lỗi phổ biến nhất khi tự tính, vì mệnh giá không phải số tiền bạn bỏ ra.",
       "Lợi suất quy năm đơn nhân lợi suất trong kỳ với 365 / số ngày. Đây là con số so sánh được với lãi suất niêm yết của các sản phẩm khác trên cơ sở đơn giản nhất.",
-      "Lợi suất ghép nửa năm là mức lãi suất mà nếu ghép hai lần một năm sẽ tạo ra đúng mức tăng của tín phiếu. Đây KHÔNG phải chỉ số “coupon equivalent” của Kho bạc: với kỳ hạn từ 182 ngày trở xuống, Kho bạc tính lãi ĐƠN và không ghép lãi, nên chỉ số Kho bạc công bố ứng với dòng “Lợi suất quy năm (đơn, 365 ngày)” ở trên chứ không phải dòng này — với tín phiếu mặc định là 5,1343% so với 5,1674%. Một lưu ý về cơ số ngày: quy định (31 CFR 356 App B §VI.D.1) dùng 365 ngày, nhưng nếu một năm kể từ ngày phát hành có ngày 29/02 thì dùng 366 ngày, và khi đó con số Kho bạc công bố cao hơn dòng trên đúng 366/365 lần — với tín phiếu mặc định là 5,1484% thay vì 5,1343%. Công cụ không nhận ngày phát hành nên luôn tính trên 365 ngày. Với kỳ hạn dài hơn, Kho bạc dùng một công thức bậc hai riêng; chúng tôi tính từ nguyên lý thay vì sao chép công thức đó, và bộ kiểm thử kiểm chứng bằng cách ghép ngược con số trở lại để phải ra đúng tỷ lệ mệnh giá trên giá mua.",
-      "Lợi suất ghép năm là con số so được trực tiếp với APY của một khoản tiền gửi ngân hàng. Ba con số là ba cách quy năm CÙNG một mức tăng, chỉ khác số lần ghép lãi trong một năm: 365/số ngày lần, 2 lần, và 1 lần. Với cùng một mức tăng, càng ghép nhiều lần thì lãi suất công bố càng THẤP — nên thứ tự tăng dần đơn < ghép nửa năm < ghép năm chỉ đúng khi 365/số ngày lớn hơn 2, tức kỳ hạn dưới 182,5 ngày. Tín phiếu 4, 8, 13, 17 và 26 tuần đều nằm trong khoảng đó. Từ 183 ngày trở lên thứ tự đảo chiều: tín phiếu 52 tuần (364 ngày) ở chiết khấu 5,00% cho đơn 5,3394%, ghép nửa năm 5,2703% và ghép năm 5,3398%. Riêng ghép nửa năm thì luôn thấp hơn ghép năm ở mọi kỳ hạn.",
-      "Lãi tín phiếu chịu thuế thu nhập liên bang nhưng được MIỄN thuế thu nhập bang. Vì vậy thuế suất bang không bị trừ vào lợi nhuận ở đây; nó chỉ dùng để tính xem một sản phẩm chịu thuế bang phải trả lãi suất bao nhiêu mới để lại cùng số tiền sau thuế. Thuế liên bang áp cho cả hai bên nên triệt tiêu khỏi phép so đó.",
+      "Lợi suất ghép nửa năm là mức lãi suất mà nếu ghép hai lần một năm sẽ tạo ra đúng mức tăng của tín phiếu. Đây không phải chỉ số “coupon equivalent” của Kho bạc: với kỳ hạn từ 182 ngày trở xuống, Kho bạc tính lãi đơn và không ghép lãi, nên chỉ số Kho bạc công bố ứng với dòng “Lợi suất quy năm (đơn, 365 ngày)” ở trên chứ không phải dòng này — với tín phiếu mặc định là 5,1343% so với 5,1674%. Một lưu ý về cơ số ngày: quy định (31 CFR 356 App B §VI.D.1) dùng 365 ngày, nhưng nếu một năm kể từ ngày phát hành có ngày 29/02 thì dùng 366 ngày, và khi đó con số Kho bạc công bố cao hơn dòng trên đúng 366/365 lần — với tín phiếu mặc định là 5,1484% thay vì 5,1343%. Công cụ không nhận ngày phát hành nên luôn tính trên 365 ngày. Với kỳ hạn dài hơn, Kho bạc dùng một công thức bậc hai riêng; chúng tôi tính từ nguyên lý thay vì sao chép công thức đó, và bộ kiểm thử kiểm chứng bằng cách ghép ngược con số trở lại để phải ra đúng tỷ lệ mệnh giá trên giá mua.",
+      "Lợi suất ghép năm là con số so được trực tiếp với APY của một khoản tiền gửi ngân hàng. Ba con số là ba cách quy năm cùng một mức tăng, chỉ khác số lần ghép lãi trong một năm: 365/số ngày lần, 2 lần, và 1 lần. Với cùng một mức tăng, càng ghép nhiều lần thì lãi suất công bố càng thấp — nên thứ tự tăng dần đơn < ghép nửa năm < ghép năm chỉ đúng khi 365/số ngày lớn hơn 2, tức kỳ hạn dưới 182,5 ngày. Tín phiếu 4, 6, 8, 13, 17 và 26 tuần đều nằm trong khoảng đó. Từ 183 ngày trở lên thứ tự đảo chiều: tín phiếu 52 tuần (364 ngày) ở chiết khấu 5,00% cho đơn 5,3394%, ghép nửa năm 5,2703% và ghép năm 5,3398%. Riêng ghép nửa năm thì luôn thấp hơn ghép năm ở mọi kỳ hạn.",
+      "Lãi tín phiếu chịu thuế thu nhập liên bang nhưng được miễn thuế thu nhập bang. Vì vậy thuế suất bang không bị trừ vào lợi nhuận ở đây; nó chỉ dùng để tính xem một sản phẩm chịu thuế bang phải trả lãi suất bao nhiêu mới để lại cùng số tiền sau thuế. Thuế liên bang áp cho cả hai bên nên triệt tiêu khỏi phép so đó.",
     ],
   },
 
@@ -147,6 +164,24 @@ export const US_TBILL = {
       {
         q: "Nếu bán trước khi đáo hạn thì sao?",
         a: "Công cụ này giả định giữ đến đáo hạn, khi đó lợi nhuận đã biết chắc từ lúc mua. Bán trước đáo hạn phải bán theo giá thị trường, phụ thuộc lãi suất tại thời điểm bán: lãi suất tăng thì tín phiếu đang giữ mất giá, và bạn có thể lỗ. Kỳ hạn ngắn khiến mức lỗ đó nhỏ, nhưng không phải bằng 0 — đó là lý do người ta nói tín phiếu kho bạc không có rủi ro tín dụng, chứ không nói là không có rủi ro.",
+      },
+    ],
+  },
+
+  sources: {
+    title: "Nguồn",
+    intro:
+      "Hai trang dưới đây là căn cứ cho hai thứ công cụ prefill: công thức định giá trên cơ sở 360 ngày, và việc lãi tín phiếu được miễn thuế thu nhập bang. Quy định gốc là Uniform Offering Circular của Kho bạc Hoa Kỳ — 31 CFR phần 356, mục 356.20 và Appendix B — và trang định giá của TreasuryDirect dẫn thẳng tới đó. Danh sách chỉ gồm nguồn cho hai điều trên, không phải toàn bộ quy định về tín phiếu kho bạc.",
+    items: [
+      {
+        url: "https://www.treasurydirect.gov/marketable-securities/understanding-pricing/",
+        label: "TreasuryDirect — Giá và lãi suất của chứng khoán Kho bạc",
+        note: "Công thức giá tín phiếu đúng như công cụ dùng, kể cả cơ số 360 ngày: “Price = Face value (1 – (discount rate x time)/360)”. Trang này cũng dẫn tới §356.20 và Appendix B của Code of Federal Regulations, nơi đặt công thức lợi suất đầu tư (coupon equivalent) mà công cụ cố ý không sao chép.",
+      },
+      {
+        url: "https://www.treasurydirect.gov/marketable-securities/treasury-bills/",
+        label: "TreasuryDirect — Tín phiếu kho bạc: kỳ hạn và thuế",
+        note: "Tín phiếu được bán dưới mệnh giá hoặc bằng mệnh giá, kỳ hạn 4, 6, 8, 13, 17, 26 và 52 tuần. Phần thuế ghi đúng giả định của công cụ: “Federal tax due on interest earned. No state or local taxes.”",
       },
     ],
   },

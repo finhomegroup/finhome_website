@@ -280,11 +280,218 @@ describe("computeApr — repaying early", () => {
     expect(result.payoffMonths).toBeNull();
     expect(result.payoffBalance).toBeNull();
     expect(result.payoffAprPercent).toBeNull();
+    // The monetary block too: a horizon nobody chose has no cost figure, and
+    // 0 would read as "costs nothing up to then".
+    expect(result.payoffPaid).toBeNull();
+    expect(result.payoffInterest).toBeNull();
+    expect(result.payoffPrincipalRepaid).toBeNull();
+    expect(result.payoffCost).toBeNull();
   });
 
   it("equals the contract rate on an early payoff with no fees", () => {
     const result = apr({ ...BASE, upfrontFees: 0, payoffMonths: 36 });
     expect(result.payoffAprPercent).toBeCloseTo(8.5, 6);
+  });
+});
+
+/**
+ * ORIGINAL ROW 4 — the monetary cost at a chosen payoff horizon.
+ *
+ * A rate is not a sum of money, and the page's whole subject is a payoff month
+ * the reader picks. The supervisor's reference fixture: 2 tỷ in hand, a 30
+ * triệu fee financed into the principal, 35 triệu of cash fees, 8,5%/năm over
+ * 240 months, payment 17.616.811,63732034 ₫.
+ *
+ * | H   | Interest through H    | Balance at H         | Cost through H        |
+ * |-----|-----------------------|----------------------|-----------------------|
+ * | 12  | 171.000.087,1422235   | 1.989.598.347,494380 | 236.000.087,1422235   |
+ * | 60  | 815.990.515,3636489   | 1.788.981.817,124432 | 880.990.515,3636489   |
+ * | 240 | 2.198.034.792,9569035 | 0                    | 2.263.034.792,9569035 |
+ *
+ * Bounds are stated absolutely, per docs §8: `toBeCloseTo`'s second argument
+ * is a digit count, not a delta.
+ */
+describe("computeApr — what it has cost by the payoff month", () => {
+  const HORIZON: AprInput = {
+    amount: 2_000_000_000,
+    annualRatePercent: 8.5,
+    termMonths: 240,
+    upfrontFees: 35_000_000,
+    financedFees: 30_000_000,
+  };
+
+  /** `|actual − expected| < tolerance`, with the bound stated at the call. */
+  const near = (
+    actual: number | null,
+    expected: number,
+    tolerance: number,
+    label?: string,
+  ) => {
+    expect(actual, label).not.toBeNull();
+    expect(Math.abs((actual as number) - expected), label).toBeLessThan(
+      tolerance,
+    );
+  };
+
+  /** A thousandth of a đồng on a total accumulated over up to 240 additions. */
+  const DONG = 1e-3;
+
+  it("charges interest on the financed fee, at the reference payment", () => {
+    const result = apr(HORIZON);
+    expect(result.principal).toBe(2_030_000_000);
+    near(result.monthlyPayment, 17_616_811.63732034, 1e-6, "payment");
+    // Each fee once: 35 triệu of cash plus 30 triệu financed.
+    expect(result.totalFees).toBe(65_000_000);
+    // And the financed fee is BORROWED, never received.
+    expect(result.netProceeds).toBe(1_965_000_000);
+  });
+
+  it.each([
+    [12, 171_000_087.1422235, 1_989_598_347.4943798, 236_000_087.1422235],
+    [60, 815_990_515.3636489, 1_788_981_817.1244318, 880_990_515.3636489],
+    [240, 2_198_034_792.9569035, 0, 2_263_034_792.9569035],
+  ])(
+    "at H=%i reports %d of interest and %d still owed",
+    (payoffMonths, interest, balance, cost) => {
+      const result = apr({ ...HORIZON, payoffMonths });
+      expect(result.payoffMonths).toBe(payoffMonths);
+      near(result.payoffInterest, interest, DONG, `interest at ${payoffMonths}`);
+      near(result.payoffBalance, balance, DONG, `balance at ${payoffMonths}`);
+      near(result.payoffCost, cost, DONG, `cost at ${payoffMonths}`);
+    },
+  );
+
+  it("counts every fee once, and only interest on top", () => {
+    for (const payoffMonths of [1, 12, 60, 119, 240]) {
+      const result = apr({ ...HORIZON, payoffMonths });
+      near(
+        result.payoffCost,
+        (result.payoffInterest ?? 0) + result.totalFees,
+        1e-6,
+        `fee identity at ${payoffMonths}`,
+      );
+    }
+  });
+
+  it("is the settlement-economic cost, derived independently", () => {
+    // `H × payment + balance + cashFees − amount` is what the borrower is
+    // actually out of pocket if they clear the debt in month H. It reduces to
+    // `interest + fees` algebraically; this checks the arithmetic too.
+    for (const payoffMonths of [1, 12, 60, 240]) {
+      const result = apr({ ...HORIZON, payoffMonths });
+      const outOfPocket =
+        payoffMonths * result.monthlyPayment +
+        (result.payoffBalance ?? 0) +
+        35_000_000 -
+        2_000_000_000;
+      near(
+        result.payoffCost,
+        outOfPocket,
+        1e-3,
+        `settlement cost at ${payoffMonths}`,
+      );
+    }
+  });
+
+  it("excludes principal repayment from the cost", () => {
+    const result = apr({ ...HORIZON, payoffMonths: 60 });
+    // 60 payments is over a billion đồng of outflow; the cost is not that.
+    near(result.payoffPaid, 60 * result.monthlyPayment, 1e-3, "paid");
+    expect(result.payoffPaid!).toBeGreaterThan(result.payoffCost!);
+    // The ledger: paid − interest is principal retired, and what is left is
+    // the balance.
+    // 1e-4, not 1e-6: these are differences of two sums near 2 × 10⁹, so the
+    // residue is ~1e-15 RELATIVE — float64 and nothing else. docs §8's
+    // too-tight-tolerance lesson.
+    near(
+      result.payoffPrincipalRepaid,
+      (result.payoffPaid ?? 0) - (result.payoffInterest ?? 0),
+      1e-4,
+      "principal retired",
+    );
+    near(
+      result.payoffBalance,
+      result.principal - (result.payoffPrincipalRepaid ?? 0),
+      1e-4,
+      "balance identity",
+    );
+  });
+
+  it("degenerates into the full-term figures at the term", () => {
+    // Not a second, disagreeing model: at H = term the balance is 0 and the
+    // horizon measures ARE the full-term ones.
+    const result = apr({ ...HORIZON, payoffMonths: 240 });
+    expect(result.payoffBalance).toBe(0);
+    near(result.payoffInterest, result.totalInterest, 1e-6, "interest");
+    near(result.payoffCost, result.totalCost, 1e-6, "cost");
+    near(result.payoffPaid, result.totalPaid, 1e-6, "paid");
+    // And a payoff past the term is clamped to it, so it does the same.
+    const clamped = apr({ ...HORIZON, payoffMonths: 600 });
+    near(clamped.payoffCost, result.totalCost, 1e-6, "clamped cost");
+  });
+
+  it("rises with the horizon, because interest accrues", () => {
+    let previous = 0;
+    for (const payoffMonths of [1, 12, 60, 120, 240]) {
+      const result = apr({ ...HORIZON, payoffMonths });
+      expect(result.payoffCost!).toBeGreaterThan(previous);
+      previous = result.payoffCost!;
+    }
+  });
+
+  it("costs exactly the fees at a zero rate, however long you hold it", () => {
+    // The case that separates a cost from a cash flow: at 0% every đồng of
+    // every payment retires principal, so the cost is the fees and nothing
+    // else — while `payoffPaid` is in the hundreds of millions.
+    const free = apr({
+      ...HORIZON,
+      annualRatePercent: 0,
+      payoffMonths: 60,
+    });
+    expect(free.payoffInterest).toBe(0);
+    near(free.payoffCost, 65_000_000, 1e-6, "cost at 0%");
+    expect(free.payoffPaid!).toBeGreaterThan(400_000_000);
+    // Same reason as above: 2,03 tỷ less sixty equal slices of it, summed one
+    // month at a time by the engine and in one multiplication here.
+    near(
+      free.payoffBalance,
+      2_030_000_000 - 60 * (2_030_000_000 / 240),
+      1e-4,
+      "balance at 0%",
+    );
+  });
+
+  it("reports the horizon block with cash fees only, and financed only", () => {
+    // Each fee kind alone, so neither is double-counted in the other's path.
+    const cashOnly = apr({
+      ...HORIZON,
+      financedFees: 0,
+      payoffMonths: 60,
+    });
+    near(cashOnly.payoffCost, (cashOnly.payoffInterest ?? 0) + 35_000_000, 1e-6);
+    const financedOnly = apr({
+      ...HORIZON,
+      upfrontFees: 0,
+      payoffMonths: 60,
+    });
+    near(
+      financedOnly.payoffCost,
+      (financedOnly.payoffInterest ?? 0) + 30_000_000,
+      1e-6,
+    );
+    // The financed one is charged interest, so its interest is the larger.
+    expect(financedOnly.payoffInterest!).toBeGreaterThan(
+      cashOnly.payoffInterest!,
+    );
+  });
+
+  it("refuses a fractional or non-positive payoff month", () => {
+    for (const payoffMonths of [0, -1, 12.5, Number.NaN]) {
+      expect(
+        computeApr({ ...HORIZON, payoffMonths }),
+        String(payoffMonths),
+      ).toBeNull();
+    }
   });
 });
 

@@ -3,7 +3,8 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
-import { CardMinimumCalculator } from "@/components/card-minimum-calculator";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
+import { CardPayoffCalculator } from "@/components/card-payoff-calculator";
 import { CARD_MINIMUM as C } from "@/content/calculators/card-minimum";
 
 const SLUG = "tra-toi-thieu-the-tin-dung";
@@ -14,6 +15,21 @@ export const metadata: Metadata = calculatorMetadata({
   metaDescription: C.metaDescription,
 });
 
+/**
+ * ORIGINAL ROW 30: "Gộp thành chế độ so sánh của công cụ trả hết nợ."
+ *
+ * This route keeps its URL, its title, its own prose and its own FAQ, and
+ * renders the SAME workspace the payoff route does — opened on the `minimum`
+ * strategy. The old page was a second form with its own balance and rate
+ * fields, no dates, no chart and no household budget, so a reader who had
+ * typed their figures into the other card tool had to retype them here to ask
+ * this question.
+ *
+ * What comes with the consolidation: both debt paths drawn from the same
+ * schedules, both payoff dates under one stated start-date convention, the
+ * household allocation that frees up after payoff, and the fixed-payment and
+ * target-date modes reachable without leaving the page.
+ */
 export default function CardMinimumPage() {
   return (
     <CalculatorPage
@@ -27,8 +43,9 @@ export default function CardMinimumPage() {
       notice={C.trapNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <CardMinimumCalculator />
+      <CardPayoffCalculator strategy="minimum" />
     </CalculatorPage>
   );
 }

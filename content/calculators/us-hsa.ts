@@ -16,6 +16,37 @@
 //
 // Limits are transcribed and sit in one dated table; an unknown year returns
 // null. See docs/calculator-suite-status.md §8.
+//
+// SOURCES, resolved 2026-09-16. All four hrefs are irs.gov and their content
+// was read; no blog or aggregator was used. Both revenue procedures were read
+// as PRIMARY TEXT, not through a search summary. What each one verified:
+//
+//   - Rev. Proc. 2025-19 §2.01(1) — 2026 limits 4.400 self-only and 8.750
+//     family, matching HSA_YEARS[2026] exactly. §3 dates it to calendar 2026.
+//   - Rev. Proc. 2024-25 §2.01(1) — 2025 limits 4.300 and 8.550, matching
+//     HSA_YEARS[2025]. These two documents are the only years the tool offers,
+//     which is HSA_YEAR_ORDER, so every year in the select is now cited.
+//   - Publication 969 — the 1.000 catch-up from age 55 and the 20% additional
+//     tax on non-qualified distributions, which are the two figures with NO
+//     field on the page (catchUpLimit/catchUpAge and
+//     EARLY_WITHDRAWAL_PENALTY_PERCENT in lib/calc/us-hsa.ts).
+//   - The 2026 inflation-adjustment release — the seven bracket rates that
+//     federalHelp names, confirmed for 2026.
+//
+// TWO THINGS THE SOURCES DO NOT SUPPORT, recorded rather than papered over:
+//
+//   1. The 1.000 catch-up was read on the 2025 revision of Pub. 969. It is
+//      absent from BOTH revenue procedures' inflation-adjusted items, which
+//      is consistent with it being fixed rather than indexed — but that is an
+//      inference from two silences, not a 2026 statement on an IRS page.
+//   2. The prefilled 5% state rate has no irs.gov source and cannot have one:
+//      it is not a federal figure and not any particular state's rate. It is
+//      an example value. The sources intro says that out loud instead of
+//      letting the citation list imply the whole form is sourced.
+//
+// Pub. 969 also gives THREE exits from the 20% penalty — age 65, disability,
+// and death — while the module models only the age. The source note states
+// all three, so the page does not quietly narrow the rule it cites.
 
 export const US_HSA = {
   slug: "/cong-cu/tai-khoan-tiet-kiem-y-te-hoa-ky",
@@ -228,6 +259,36 @@ export const US_HSA = {
       {
         q: "Lợi suất đầu tư 7% có thực tế không?",
         a: "Chỉ khi bạn thực sự đầu tư số dư. Rất nhiều tài khoản HSA để mặc tiền ở dạng tiền gửi lãi suất gần bằng 0, và nhiều nơi yêu cầu số dư tối thiểu trước khi cho phép mua quỹ. Nếu tài khoản của bạn đang ở dạng tiền gửi, hãy nhập lãi suất thật của nó — lớp ưu đãi thứ hai, tăng trưởng miễn thuế, chỉ đáng giá khi có tăng trưởng để miễn.",
+      },
+    ],
+  },
+
+  sources: {
+    title: "Nguồn cho trần góp và mức phạt điền sẵn",
+    intro:
+      "Các trang dưới đây là căn cứ cho những gì công cụ ấn định sẵn: trần góp của mỗi năm thuế trong ô chọn, phần góp thêm 1.000 USD từ 55 tuổi, mức phạt 20% khi rút cho mục đích khác trước 65 tuổi, và thang thuế suất liên bang mà phần trợ giúp của ô thuế suất nêu tên. Chúng được đọc trong phần rà soát nguồn của dự án ngày 16/09/2026, không phải do trang tự tra lại tại thời điểm bạn đọc. Đây không phải danh sách đầy đủ và không phải tư vấn thuế. Ba giới hạn cần nói rõ: thuế suất thu nhập bang điền sẵn 5% không có nguồn liên bang nào và không phải mức của một bang cụ thể — đó là một con số ví dụ, hãy thay bằng mức của bang bạn hoặc 0 nếu bang bạn không cho khấu trừ; các mức FICA mà lớp ưu đãi thứ tư dựa vào được dẫn nguồn ở trang thuế lương Hoa Kỳ trong bộ công cụ này chứ không ở đây; và trần góp là con số điều chỉnh theo lạm phát mỗi năm, nên nó được chọn theo năm thuế thay vì có một mốc hết hiệu lực.",
+    items: [
+      {
+        url: "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+        label: "IRS Rev. Proc. 2025-19 — Trần góp HSA năm 2026",
+        note: "Nguồn của hai con số năm thuế 2026: mục 2.01(1) ghi trần khấu trừ theo § 223(b)(2)(A) cho bảo hiểm chỉ cá nhân là 4.400 USD và theo § 223(b)(2)(B) cho bảo hiểm gia đình là 8.750 USD, còn mục 3 ghi văn bản có hiệu lực cho HSA của năm dương lịch 2026. Cùng mục đó cũng đặt định nghĩa HDHP của năm 2026: mức khấu trừ tối thiểu 1.700 USD cá nhân và 3.400 USD gia đình. Văn bản không nói gì về phần góp thêm theo tuổi, vì khoản đó không thuộc nhóm điều chỉnh theo lạm phát.",
+      },
+      {
+        url: "https://www.irs.gov/pub/irs-drop/rp-24-25.pdf",
+        label: "IRS Rev. Proc. 2024-25 — Trần góp HSA năm 2025",
+        note: "Nguồn của năm thuế 2025, năm còn lại trong ô chọn: mục 2.01(1) ghi trần 4.300 USD cho bảo hiểm chỉ cá nhân và 8.550 USD cho bảo hiểm gia đình, cùng cấu trúc mục như văn bản của năm sau. Công cụ giữ mỗi năm trong một dòng riêng của một bảng có ghi năm; một năm không có trong bảng cho kết quả rỗng thay vì mượn trần của năm khác.",
+      },
+      {
+        url: "https://www.irs.gov/publications/p969",
+        label:
+          "IRS Publication 969 — Phần góp thêm từ 55 tuổi và mức phạt 20%",
+        note: "Nguồn của hai con số không có ô nhập nào trên trang. Thứ nhất: nếu đủ 55 tuổi vào cuối năm thuế thì trần góp được tăng thêm 1.000 USD. Thứ hai: khoản rút không dùng cho chi phí y tế đủ điều kiện chịu thêm 20% thuế, và phần thêm này không còn áp dụng sau khi người thụ hưởng qua 65 tuổi, bị khuyết tật hoặc qua đời — đúng ba trường hợp, trong khi công cụ chỉ mô hình hóa mốc tuổi. Bản đọc ngày 16/09/2026 là bản của năm thuế 2025; mức 1.000 USD không xuất hiện trong hai văn bản điều chỉnh lạm phát ở trên, tức nó không thay đổi theo năm.",
+      },
+      {
+        url: "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill",
+        label:
+          "IRS — Điều chỉnh theo lạm phát cho năm thuế 2026, theo Rev. Proc. 2025-32",
+        note: "Nguồn của thang bảy bậc 10, 12, 22, 24, 32, 35 và 37% mà phần trợ giúp của ô thuế suất liên bang nêu tên, xác nhận cho năm thuế 2026: thông cáo ghi “the top tax rate remains 37%” cho người độc thân có thu nhập trên 640.600 USD. Thông cáo này không nói về HSA — trần góp HSA nằm ở hai văn bản riêng phía trên, và thuế suất bang thì không thuộc phạm vi của bất kỳ nguồn liên bang nào.",
       },
     ],
   },

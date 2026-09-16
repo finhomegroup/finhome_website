@@ -27,6 +27,7 @@ export default function UsRmdPage() {
       notice={C.risingNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <UsRmdCalculator />
     </CalculatorPage>

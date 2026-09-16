@@ -78,7 +78,7 @@ export const US_401K_MAX = {
     matchLimitLabel: "Nhưng chỉ cho phần bạn góp đến",
     matchLimitUnit: "% lương",
     matchLimitHelp:
-      "Với quỹ tính theo từng kỳ, đây là ngưỡng của MỖI KỲ, không phải của cả năm — và đó là toàn bộ nguyên nhân của cái bẫy trên trang này.",
+      "Với quỹ tính theo từng kỳ, đây là ngưỡng của mỗi kỳ, không phải của cả năm — và đó là toàn bộ nguyên nhân của cái bẫy trên trang này.",
     frontLoadLabel: "Kịch bản dồn sớm: góp",
     frontLoadUnit: "% lương mỗi kỳ",
     frontLoadHelp:
@@ -111,14 +111,14 @@ export const US_401K_MAX = {
     yourPlanTitle: "Kế hoạch của bạn",
     yourMatchPeriodLabel: "Đối ứng nếu quỹ tính theo từng kỳ",
     yourMatchTrueUpLabel: "Đối ứng nếu quỹ bù cuối năm",
-    yourLostLabel: "Mất nếu quỹ KHÔNG bù",
+    yourLostLabel: "Mất nếu quỹ không bù",
     yourUnderLabel: "Số kỳ góp dưới ngưỡng đối ứng",
 
     frontTitle: "Nếu dồn góp sớm",
     frontEmptyLabel: "Số kỳ lương không góp được gì",
     frontMatchPeriodLabel: "Đối ứng nếu quỹ tính theo từng kỳ",
     frontMatchTrueUpLabel: "Đối ứng nếu quỹ bù cuối năm",
-    frontLostLabel: "Mất nếu quỹ KHÔNG bù",
+    frontLostLabel: "Mất nếu quỹ không bù",
 
     limitTitle: "Trần và ngưỡng",
     limitLabel: "Trần góp cả năm",
@@ -156,17 +156,63 @@ export const US_401K_MAX = {
   frontLoadNotice:
     "Với các giá trị mặc định, chia đều cả năm cần 942,31 USD mỗi kỳ lương, tức 18,85% lương, và nhận đủ 7.800 USD đối ứng. Dồn góp ở mức 50% lương thì trần được lấp sau 10 kỳ và 16 kỳ lương cuối năm không còn gì để góp — nếu quỹ tính đối ứng theo từng kỳ, phần đối ứng rơi từ 7.800 xuống 3.000 USD. Mất 4.800 USD với đúng cùng một số tiền bạn đã bỏ vào. Nếu quỹ có điều khoản bù cuối năm thì cả hai cách đều nhận đủ 7.800 USD. Cùng một hành động, hai kết quả cách nhau 4.800 USD, và điều quyết định là một dòng trong tài liệu quỹ chứ không phải một quyết định đầu tư.",
 
+  // The authority for the trần this page divides up, as links a reader can
+  // open. The 401(a)(17) treatment here was CORRECTED against the first of
+  // these two pages — so the page that changed is the page that has to cite
+  // it. The true-up clause deliberately has no source: it is not in statute.
+  sources: {
+    title: "Nguồn",
+    intro:
+      "Hai trang dưới đây là căn cứ cho trần cả năm mà trang này chia ra, và cho cách trần thu nhập 401(a)(17) chỉ áp vào ngưỡng đối ứng chứ không áp vào tiền lương mỗi kỳ. Điều khoản bù cuối năm thì không có trong luật: nó nằm trong tài liệu quỹ của bạn, nên không có nguồn nào ở đây trả lời thay được.",
+    items: [
+      {
+        url: "https://www.irs.gov/retirement-plans/401k-plans-deferrals-and-matching-when-compensation-exceeds-the-annual-limit",
+        label: "IRS — Trần thu nhập 401(a)(17): phần tự góp và phần đối ứng",
+        note: "Ví dụ của IRS: lương 360.000 USD, trần thu nhập của năm đó 280.000 USD, chính sách đối ứng 50% cho 5% đầu. Phần đối ứng được tính trên thu nhập đã áp trần, còn phần người lao động tự góp vẫn được đóng đến hết trần của năm.",
+      },
+      {
+        url: "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits",
+        label: "IRS — Trần đóng góp 401(k) theo năm",
+        note: "Trần 402(g), phần bù tuổi và trần thu nhập 401(a)(17) của từng năm.",
+      },
+    ],
+  },
+
+  // The other half of the same question, linked rather than described. The
+  // slug is stored, never a written-out href: the route resolves it through
+  // the registry so a dead link fails `next build`. Not a `next-steps.ts`
+  // entry — that file's guard forbids one on a library-shelved row.
+  relatedTool: {
+    title: "Cùng một quỹ, câu hỏi trước đó",
+    slug: "gop-401k",
+    why: "Trang này giả định bạn đã quyết định góp đến trần. Nếu chưa, câu hỏi đáng tiền hơn là mức góp hiện tại của bạn có nhận đủ phần đối ứng của công ty hay không, và bốn loại trần của luật chặn những gì.",
+  },
+
   formula: {
     title: "Cách tính",
     body: [
       "Phần chia rất đơn giản: trần của năm trừ đi số đã góp, chia cho số kỳ lương còn lại. Con số phần trăm là số tiền đó chia cho tiền lương một kỳ. Điều nhiều người bỏ qua là mẫu số đổi theo thời gian — cùng một trần, sang giữa năm thì phần trăm cần thiết đã gấp đôi so với tháng Một.",
-      "Trần này chỉ chặn TIỀN CỦA BẠN. Phần đối ứng của công ty không tính vào đó, nên đừng trừ nó ra khỏi ô “đã góp từ đầu năm”. Trần cũng là của bạn chứ không của công ty: nếu bạn đổi việc giữa năm, tổng của cả hai nơi mới là số bị chặn, và không nơi nào biết nơi kia đã trừ bao nhiêu.",
+      "Trần này chỉ chặn tiền của bạn. Phần đối ứng của công ty không tính vào đó, nên đừng trừ nó ra khỏi ô “đã góp từ đầu năm”. Trần cũng là của bạn chứ không của công ty: nếu bạn đổi việc giữa năm, tổng của cả hai nơi mới là số bị chặn, và không nơi nào biết nơi kia đã trừ bao nhiêu.",
       "Phần đối ứng được tính theo hai cách, vì các quỹ làm hai cách khác nhau. Quỹ tính theo từng kỳ lương trả đối ứng trên mức góp của riêng kỳ đó, tối đa bằng ngưỡng của kỳ đó — nên một kỳ không góp gì thì không có đối ứng, bất kể trước đó đã góp bao nhiêu. Quỹ có bù cuối năm thì tính lại trên tổng cả năm và trả bù phần còn thiếu.",
       "Vì thế công cụ không chọn một cách. Nó tính cả hai và hiển thị khoảng cách. Một công cụ mặc định rằng quỹ có bù cuối năm sẽ nói với người có quỹ không bù rằng dồn góp sớm là miễn phí, và đó là lời khuyên tốn tiền thật.",
       "Phần mất mát được tính đúng bằng phần đối ứng của những kỳ lương bị bỏ trống, cộng phần thiếu của những kỳ góp dưới ngưỡng. Bộ kiểm thử chốt lại đúng cơ chế đó — số kỳ trống nhân ngưỡng mỗi kỳ — thay vì chỉ so hai con số tổng, để một sai sót trong vòng lặp không thể ẩn sau một hiệu số trông hợp lý.",
-      "Với những kỳ lương đã qua, công cụ chia đều số bạn đã góp cho số kỳ đã qua, vì đó là kết quả của một mức góp phần trăm cố định. Nếu nửa năm đầu của bạn thực sự không đều thì con số đối ứng của các kỳ đã qua chỉ là gần đúng; các con số của những kỳ CÒN LẠI — phần bạn còn thay đổi được — thì không.",
-      "Tiền lương mỗi kỳ được tính trên phần thu nhập mà kế hoạch được phép nhìn thấy, tức đã áp trần thu nhập của luật. Với người có lương rất cao, ngưỡng đối ứng mỗi kỳ vì thế thấp hơn phần trăm lương thật của họ.",
+      "Với những kỳ lương đã qua, công cụ chia đều số bạn đã góp cho số kỳ đã qua, vì đó là kết quả của một mức góp phần trăm cố định. Nếu nửa năm đầu của bạn thực sự không đều thì con số đối ứng của các kỳ đã qua chỉ là gần đúng; các con số của những kỳ còn lại — phần bạn còn thay đổi được — thì không.",
+      "Trần thu nhập của luật chỉ chạm vào một con số trên trang này: ngưỡng đối ứng. Tiền lương mỗi kỳ vẫn là tiền lương thật bạn nhận, vì phần bạn tự trừ vào lương bị trần 402(g) chặn theo số tiền chứ không theo phần trăm thu nhập. Với người có lương cao hơn trần thu nhập, ngưỡng đối ứng mỗi kỳ vì thế thấp hơn 6% của một kỳ lương thật — phải góp ít hơn để nhận đủ đối ứng, nhưng phần đối ứng tối đa cũng thấp hơn đúng theo tỷ lệ đó.",
     ],
+    // NO `emphasis` HERE, AND THAT IS THE POLICY, not an omission.
+    //
+    // `plan-disposition.test.ts` ("marks every US-law tool as reference,
+    // never as a reading funnel") requires every `library: "hoa-ky"` row to
+    // be filed `reference`, and `reference` means this pass added nothing.
+    // Emphasis is an investment in the page as READING; this page models law
+    // that does not apply to the site's readers, so P4's "maintain or move
+    // to a library until audience evidence justifies more" puts the
+    // investment elsewhere. A declared phrase list was proposed here on
+    // 2026-09-16 and refused for exactly that reason.
+    //
+    // The mid-sentence capitals this paragraph set used to carry were still
+    // removed, because shouting is bad copy whether or not a page is a
+    // reading funnel — see the sweep in `us-401k-max.test.ts`.
   },
 
   faq: {
@@ -178,7 +224,7 @@ export const US_401K_MAX = {
       },
       {
         q: "Dồn góp sớm để tiền vào thị trường sớm hơn có đáng không?",
-        a: "Nếu quỹ có bù cuối năm thì có, và về mặt kỳ vọng thì tiền vào sớm hơn vài tháng có lợi. Nếu quỹ KHÔNG bù thì gần như chắc chắn là không: phần đối ứng mất đi là một con số chắc chắn và lớn, còn phần lợi từ việc vào thị trường sớm là một con số kỳ vọng và nhỏ. Với các giá trị mặc định, mất 4.800 USD chắc chắn để đổi lấy khoảng vài trăm đô lợi nhuận kỳ vọng trên phần tiền vào sớm — một đánh đổi tệ theo cả hai cách đo.",
+        a: "Nếu quỹ có bù cuối năm thì có, và về mặt kỳ vọng thì tiền vào sớm hơn vài tháng có lợi. Nếu quỹ không bù thì gần như chắc chắn là không: phần đối ứng mất đi là một con số chắc chắn và lớn, còn phần lợi từ việc vào thị trường sớm là một con số kỳ vọng và nhỏ. Với các giá trị mặc định, mất 4.800 USD chắc chắn để đổi lấy khoảng vài trăm đô lợi nhuận kỳ vọng trên phần tiền vào sớm — một đánh đổi tệ theo cả hai cách đo.",
       },
       {
         q: "Còn quá ít kỳ lương thì làm sao đạt trần?",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Reveal } from "@/components/reveal";
 import { PostCardLink } from "@/components/post-card-link";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
@@ -10,7 +9,7 @@ import {
   FH_CLICKABLE_CARD,
   FH_POINTER,
 } from "@/lib/interaction-styles";
-import type { Post, Topic } from "@/content/posts";
+import { postCover, type Post, type Topic } from "@/content/posts";
 import { TOPICS, topicLabel } from "@/content/blog-topics";
 
 type TopicFilter = Topic | "all";
@@ -118,7 +117,7 @@ export function BlogPostGrid({
             "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
             FH_POINTER,
             topic === "all"
-              ? "bg-brand-green text-white"
+              ? "bg-brand-green-ink text-white"
               : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
           )}
         >
@@ -135,7 +134,7 @@ export function BlogPostGrid({
               "rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none",
               FH_POINTER,
               topic === t.id
-                ? "bg-brand-green text-white"
+                ? "bg-brand-green-ink text-white"
                 : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
             )}
           >
@@ -150,7 +149,7 @@ export function BlogPostGrid({
         </p>
       )}
 
-      <Reveal
+      <div
         className={cn(
           "mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 transition-opacity",
           loading && "opacity-50",
@@ -167,7 +166,7 @@ export function BlogPostGrid({
           >
             <div className="overflow-hidden rounded-xl">
               <img
-                src={img(post.cover)}
+                src={img(postCover(post))}
                 alt={post.title}
                 loading={index < 3 ? "eager" : "lazy"}
                 decoding="async"
@@ -178,7 +177,7 @@ export function BlogPostGrid({
               />
             </div>
             <div className="flex flex-1 flex-col gap-2 pt-4">
-              <span className="text-xs font-medium uppercase tracking-wide text-primary">
+              <span className="text-xs font-medium uppercase tracking-wide text-primary-ink">
                 {post.category}
               </span>
               <h2 className="mt-2 font-display text-xl leading-snug text-ink">
@@ -195,7 +194,7 @@ export function BlogPostGrid({
                 {post.topics.map((t) => (
                   <span
                     key={t}
-                    className="inline-flex items-center rounded-full bg-brand-green/10 px-2.5 py-0.5 text-[11px] font-medium text-brand-green"
+                    className="inline-flex items-center rounded-full bg-brand-green-ink/10 px-2.5 py-0.5 text-[11px] font-medium text-brand-green-ink"
                   >
                     {topicLabel(t)}
                   </span>
@@ -204,7 +203,7 @@ export function BlogPostGrid({
             </div>
           </PostCardLink>
         ))}
-      </Reveal>
+      </div>
 
       {pageCount > 1 && (
         <nav
@@ -234,7 +233,7 @@ export function BlogPostGrid({
                 "h-10 w-10 rounded-full text-sm font-medium transition-colors disabled:pointer-events-none",
                 FH_POINTER,
                 n === page
-                  ? "bg-brand-green text-white"
+                  ? "bg-brand-green-ink text-white"
                   : "text-ink-2 hover:bg-brand-green/10",
               )}
             >

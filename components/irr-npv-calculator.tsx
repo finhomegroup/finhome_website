@@ -10,6 +10,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -40,7 +41,13 @@ export function IrrNpvCalculator() {
     ),
   } as Record<string, string>);
 
-  const periods = parseDecimal(fields.values.periods);
+  // A whole count of periods, so `parseCount` — docs §4. This was
+  // `parseDecimal` with the `Number.isInteger` guard below it, which is the
+  // arrangement `parseCount`'s docstring calls unreachable: `parseDecimal`
+  // reads a grouped "1.000" as 1, and 1 IS an integer inside [1, 12], so
+  // the guard passed and the page priced a one-period project with no
+  // field marked invalid.
+  const periods = parseCount(fields.values.periods);
   const discount = parseDecimal(fields.values.discount);
 
   // The reinvestment rate is optional: empty means "same as the discount
@@ -48,11 +55,10 @@ export function IrrNpvCalculator() {
   const reinvestRaw = fields.values.reinvest.trim();
   const reinvest = reinvestRaw === "" ? null : parseDecimal(reinvestRaw);
 
-  const periodsInvalid =
-    periods === null ||
-    periods < 1 ||
-    periods > MAX_PERIODS ||
-    !Number.isInteger(periods);
+  // `parseCount` returns only safe integers, so the range is the whole
+  // check; an `Number.isInteger` line here would now be unreachable in the
+  // other direction.
+  const periodsInvalid = periods === null || periods < 1 || periods > MAX_PERIODS;
   const discountInvalid = discount === null || discount <= -100;
   const reinvestInvalid =
     reinvestRaw !== "" && (reinvest === null || reinvest <= -100);

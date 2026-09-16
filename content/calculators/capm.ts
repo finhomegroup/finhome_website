@@ -43,7 +43,7 @@ export const CAPM = {
 
     marketModeLegend: "Bạn có con số thị trường nào?",
     marketModeHelp:
-      "Chỉ nhập MỘT trong hai. Hai con số cùng nói về một đại lượng, và nếu chúng lệch nhau thì không có cách nào chọn đúng.",
+      "Chỉ nhập một trong hai. Hai con số cùng nói về một đại lượng, và nếu chúng lệch nhau thì không có cách nào chọn đúng.",
     marketModeReturn: "Lợi nhuận kỳ vọng của thị trường",
     marketModePremium: "Phần bù rủi ro thị trường",
     defaultMarketMode: "return",
@@ -88,7 +88,7 @@ export const CAPM = {
   },
 
   precisionNotice:
-    "Con số công cụ đưa ra có ba bốn chữ số nhưng không có chữ số nào trong đó là chắc chắn. Beta được đo trên dữ liệu QUÁ KHỨ và thay đổi theo khoảng thời gian bạn chọn để đo; phần bù thị trường là một ước lượng mà các nhà nghiên cứu không đồng ý với nhau trong phạm vi vài điểm phần trăm; lãi suất phi rủi ro thay đổi theo kỳ hạn bạn lấy. Hãy dùng CAPM để trả lời “mức này có hợp lý không”, đừng dùng nó như một dự báo. Cách thực dụng: chạy công cụ với ba mức phần bù thị trường — 6%, 8%, 10% — rồi xem kết luận của bạn có đổi hay không.",
+    "Con số công cụ đưa ra có ba bốn chữ số nhưng không có chữ số nào trong đó là chắc chắn. Beta được đo trên dữ liệu quá khứ và thay đổi theo khoảng thời gian bạn chọn để đo; phần bù thị trường là một ước lượng mà các nhà nghiên cứu không đồng ý với nhau trong phạm vi vài điểm phần trăm; lãi suất phi rủi ro thay đổi theo kỳ hạn bạn lấy. Hãy dùng CAPM để trả lời “mức này có hợp lý không”, đừng dùng nó như một dự báo. Cách thực dụng: chạy công cụ với ba mức phần bù thị trường — 6%, 8%, 10% — rồi xem kết luận của bạn có đổi hay không.",
 
   formula: {
     title: "Cách tính",
@@ -96,9 +96,22 @@ export const CAPM = {
       "Lợi nhuận kỳ vọng = lãi suất phi rủi ro + beta × phần bù rủi ro thị trường. Phần bù thị trường bằng lợi nhuận kỳ vọng của thị trường trừ lãi suất phi rủi ro, nên bạn có thể nhập trực tiếp phần bù hoặc để công cụ suy ra.",
       "Với mặc định: phần bù là 12% − 4% = 8%; beta 1,2 nhân 8% cho phần bù rủi ro của tài sản là 9,6%; cộng 4% cho lợi nhuận kỳ vọng 13,6%.",
       "Hai mốc đáng nhớ. Beta bằng 1 cho ra đúng lợi nhuận thị trường, tức 12% — tài sản gánh đúng rủi ro thị trường nên được trả đúng mức thị trường. Beta bằng 0 cho ra đúng lãi suất phi rủi ro, tức 4% — tài sản không gánh rủi ro thị trường nào thì không được trả phần bù nào.",
-      "Beta âm cho lợi nhuận kỳ vọng THẤP HƠN lãi suất phi rủi ro: beta −0,5 với các con số mặc định cho 0%. Không phải lỗi. Tài sản tăng khi thị trường giảm có giá trị bảo hiểm cho danh mục, nên nhà đầu tư chấp nhận sinh lời thấp hơn để giữ nó.",
+      "Beta âm cho lợi nhuận kỳ vọng thấp hơn lãi suất phi rủi ro: beta −0,5 với các con số mặc định cho 0%. Không phải lỗi. Tài sản tăng khi thị trường giảm có giá trị bảo hiểm cho danh mục, nên nhà đầu tư chấp nhận sinh lời thấp hơn để giữ nó.",
       "Alpha Jensen = lợi nhuận thực tế − lợi nhuận kỳ vọng. Đây là con số mà mọi quỹ chủ động đều tuyên bố có: phần sinh lời vượt trên mức mà rủi ro đã gánh biện minh được. Alpha dương 4,4% nghĩa là tài sản đạt 18% trong khi rủi ro của nó chỉ đáng 13,6%.",
-      "CAPM chỉ tính rủi ro THỊ TRƯỜNG, tức phần rủi ro không thể loại bỏ bằng đa dạng hóa. Nó giả định bạn đã đa dạng hóa hết phần rủi ro riêng của từng doanh nghiệp. Nếu danh mục của bạn chỉ có ba mã cổ phiếu, mô hình này không mô tả rủi ro thật của bạn.",
+      "CAPM chỉ tính rủi ro thị trường, tức phần rủi ro không thể loại bỏ bằng đa dạng hóa. Nó giả định bạn đã đa dạng hóa hết phần rủi ro riêng của từng doanh nghiệp. Nếu danh mục của bạn chỉ có ba mã cổ phiếu, mô hình này không mô tả rủi ro thật của bạn.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark why a negative beta is not an error, and which half of risk the model prices.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "giá trị bảo hiểm cho danh mục",
+      "không thể loại bỏ bằng đa dạng hóa",
     ],
   },
 

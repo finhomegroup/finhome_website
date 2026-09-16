@@ -2,7 +2,7 @@ Sở Xây dựng tỉnh Đồng Nai vừa công bố thông tin mở bán 1.104 
 
 ## Điểm chính cần nắm
 
-- Dự án cung cấp 1.104 căn hộ nhà �i xã hội tại phường Nhơn Trạch, thành phố Đồng Nai.
+- Dự án cung cấp 1.104 căn hộ nhà ở xã hội tại phường Nhơn Trạch, thành phố Đồng Nai.
 - Đây là dự án thuộc khu dân cư được quy hoạch đồng bộ với hạ tầng khu vực.
 - Thông tin mở bán được công bố công khai trên cổng thông tin Sở Xây dựng Đồng Nai.
 - Khu vực Nhơn Trạch đang được đầu tư hạ tầng giao thông kết nối với TP.HCM và sân bay Long Thành.

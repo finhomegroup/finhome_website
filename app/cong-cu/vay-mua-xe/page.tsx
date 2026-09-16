@@ -1,93 +1,48 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { Container } from "@/components/ui/container";
-import { Accordion } from "@/components/ui/accordion";
-import { JsonLd } from "@/components/json-ld";
-import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
-import { CalculatorHeading } from "@/components/calc/calculator-heading";
+import {
+  CalculatorPage,
+  calculatorMetadata,
+} from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { AutoLoanCalculator } from "@/components/auto-loan-calculator";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
-import { calculatorMetadata } from "@/components/calc/calculator-page";
-import { calculatorSchema, faqSchema } from "@/lib/seo";
 
-// Built by the shared helper rather than by hand: Next REPLACES openGraph
-// wholesale, so a hand-written block silently dropped the share image,
-// og:site_name and og:locale that app/layout.tsx supplies.
+const SLUG = "vay-mua-xe";
+
 export const metadata: Metadata = calculatorMetadata({
-  slug: "vay-mua-xe",
+  slug: SLUG,
   metaTitle: C.metaTitle,
   metaDescription: C.metaDescription,
 });
 
-function Prose({ title, body }: { title: string; body: readonly string[] }) {
-  return (
-    <section>
-      <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-        {title}
-      </h2>
-      <div className="mt-3 space-y-3">
-        {body.map((paragraph) => (
-          <p key={paragraph} className="text-base leading-relaxed text-ink-2">
-            {paragraph}
-          </p>
-        ))}
-      </div>
-    </section>
-  );
-}
-
+/**
+ * Migrated onto `CalculatorPage` in the P3 buyer-support unit.
+ *
+ * Original row 31 rewrote this page's question, its results and its form, so
+ * its rendered markup was moving anyway — which is the condition
+ * `docs/calculator-suite-status.md` §3 sets for migrating one of the
+ * pre-shell pages. The shell brings the disclaimer and the `usRules` wiring
+ * under one owner and removes the hand-written header/footer/JSON-LD copy.
+ */
 export default function AutoLoanPage() {
   return (
-    <>
-      <JsonLd
-        data={calculatorSchema({
-          name: C.metaTitle,
-          description: C.metaDescription,
-          path: C.slug,
-        })}
-      />
-      <JsonLd data={faqSchema(C.faq.items)} />
-      <SiteHeader />
-      <main className="flex-1 py-16 md:py-24">
-        <Container>
-          <CalculatorHeading title={C.pageTitle} lede={C.lede} />
-
-          {/* Above the calculator, not below: a borrower should learn that the
-              tool assumes a fixed rate BEFORE they read a 20-year instalment
-              off it, because their real loan almost certainly floats. */}
-          <div className="mx-auto mt-8 max-w-3xl">
-            <p className="rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-              {C.depreciationNotice}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-6 max-w-3xl">
-            <AutoLoanCalculator />
-          </div>
-
-          <div className="mx-auto mt-12 max-w-3xl space-y-10">
-            <p className="text-base leading-relaxed text-ink-2">
-              {C.table.intro}
-            </p>
-
-            <Prose title={C.formula.title} body={C.formula.body} />
-
-            <section>
-              <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-                {C.faq.title}
-              </h2>
-              <div className="mt-4">
-                <Accordion items={[...C.faq.items]} />
-              </div>
-            </section>
-
-            {/* Mandatory: this page outputs loan figures on a finance domain. */}
-            <CalculatorDisclaimer />
-          </div>
-        </Container>
-      </main>
-      <SiteFooter />
-    </>
+    <CalculatorPage
+      slug={SLUG}
+      metaTitle={C.metaTitle}
+      metaDescription={C.metaDescription}
+      title={C.pageTitle}
+      lede={C.lede}
+      // Above the calculator: a buyer should learn that the debt does not
+      // depreciate with the car BEFORE they read a 60-month instalment off it.
+      notice={C.depreciationNotice}
+      noticeDetailTitle={C.scopeNoticeTitle}
+      noticeDetail={C.scopeNotice}
+      intro={C.table.intro}
+      prose={C.formula}
+      faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
+    >
+      <AutoLoanCalculator />
+    </CalculatorPage>
   );
 }

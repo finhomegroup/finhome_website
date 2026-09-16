@@ -24,10 +24,50 @@
  * A deliberate simplification, stated on the page: the module does NOT
  * assume the buyer invests the difference when the mortgage payment is lower
  * than rent. Modelling that requires assuming a discipline most people do
- * not have, and it would quietly tilt the result toward buying.
+ * not have, and it would quietly tilt the result toward buying. Neither side
+ * invests its monthly cash-flow difference here, and the page says so for
+ * BOTH — this is a net-cost comparison, not a wealth forecast.
+ *
+ * THE RENTAL DEPOSIT COMES OUT OF THE SAME POOL. Corrected 2026-09-15 after
+ * an independent runtime check: the renter used to invest the buyer's WHOLE
+ * upfront cash while also funding and getting back a rental deposit from
+ * nowhere, so the deposit earned a return it never could. On the reference
+ * fixture — 960 triệu of upfront cash, a 24 triệu deposit, 6%/năm over 60
+ * months — that overstated the renter's gain by 8.117.413,86 ₫ and its
+ * net cost accordingly. The investable pool is now `buyerUpfront −
+ * rentDeposit`, the deposit is returned once at the horizon, and a deposit
+ * larger than the upfront cash is REFUSED rather than quietly financed:
+ * "identical starting wealth" is the whole basis of the comparison, and a
+ * renter who cannot fund the deposit out of it is not that comparison.
  */
 
 import { amortize, pmt } from "@/lib/calc/finance";
+
+/**
+ * The longest term or horizon this comparison supports, in months — 100
+ * years, the suite's one disclosed horizon (see `savings-schedule.ts`).
+ *
+ * Checked BEFORE `amortize` allocates a row per month and before the
+ * trajectory evaluates a position per month.
+ */
+export const MAX_RENT_BUY_MONTHS = 1200;
+
+/**
+ * Below this, the two net costs are the same figure — a TIE, not a win.
+ *
+ * Half a đồng, on the same reasoning as `SETTLED_BALANCE_DONG` in
+ * `card-debt.ts`: the đồng has no circulating subunit, so a difference under
+ * half of one is below anything a statement or a page can express. It has to
+ * be a band rather than `=== 0` because both sides are sums of compounded
+ * monthly paths, so an economically exact tie generally lands on float noise;
+ * the only inputs that hit bit-exact zero are the degenerate ones (a cash
+ * purchase with every rate at 0).
+ *
+ * Deliberately NOT a relative band. A relative tolerance on a 3 tỷ
+ * comparison would swallow tens of thousands of đồng of real difference,
+ * which is a figure a reader can act on.
+ */
+export const TIE_BAND_DONG = 0.5;
 
 export type RentVsBuyInput = {
   /** Purchase price, in đồng. */
@@ -92,9 +132,17 @@ export type RentVsBuyResult = {
   sellingCost: number;
   /** Rent paid over the horizon, with growth applied yearly. */
   totalRent: number;
+  /**
+   * The cash the renter actually has to invest: `buyerUpfront − rentDeposit`.
+   *
+   * Both sides start from `buyerUpfront`. The buyer spends it on the deposit
+   * and the purchase costs; the renter has to leave the landlord's deposit
+   * with the landlord, so only the rest of it can be invested.
+   */
+  investedCash: number;
   /** What the renter's invested cash grows to. */
   investmentValue: number;
-  /** Growth on that cash: `investmentValue − buyerUpfront`. */
+  /** Growth on that cash: `investmentValue − investedCash`. */
   investmentGain: number;
   buy: RentVsBuySide;
   rent: RentVsBuySide;
@@ -103,14 +151,133 @@ export type RentVsBuyResult = {
    * that many đồng over the horizon.
    */
   advantageOfBuying: number;
-  /** Whether buying won at this horizon. */
+  /** Whether buying won at this horizon. False also when the two are level. */
   buyingWins: boolean;
   /**
-   * First month at which buying is ahead and stays ahead through the
-   * horizon. Null when buying never gets ahead within it.
+   * Whether the two net costs are the same figure.
+   *
+   * `buyingWins` alone cannot say this: it is `advantage > 0`, so a tie
+   * reads as a win for renting and a page built on it announces "thuê lợi
+   * hơn 0 ₫". A cash purchase at a 0% growth, a 0% return and no rent is an
+   * exact tie, and a reader can reach it.
+   *
+   * Banded, not `=== 0`, for the reason §8 of the suite doc gives for every
+   * equality against a computed float: both sides are sums of compounded
+   * paths, so an economic tie lands on float noise rather than on zero. The
+   * band is `TIE_BAND_DONG`.
+   */
+  tied: boolean;
+  /**
+   * First month at which buying is ahead AND stays ahead through the horizon.
+   *
+   * Null in TWO different situations, and a page must not describe them the
+   * same way: buying was never ahead at any month, or it was ahead for a
+   * while and the lead was reversed again before the horizon. The second is
+   * real — on a 360-month horizon at 4% growth and a 10% return, buying is
+   * ahead from month 90 to month 302 and renting is 2 tỷ ahead by month 360 —
+   * so "mua không lúc nào có lợi" would be false. `trajectory` is what
+   * distinguishes them.
    */
   breakEvenMonth: number | null;
+  /**
+   * Both net costs at every month from 0 to the horizon.
+   *
+   * ORIGINAL ROW 8 asks for two bounded net-cost trajectories rather than a
+   * single endpoint, because the endpoint hides the crossing. Month 0 is
+   * included and is not a zero row: the buyer is already down the entry and
+   * exit costs there, the renter is level. Every figure comes from the same
+   * `positionsAt` the headline and the break-even scan use.
+   */
+  trajectory: {
+    month: number;
+    buyNetCost: number;
+    rentNetCost: number;
+    /** `rentNetCost − buyNetCost`: positive means buying is ahead. */
+    advantageOfBuying: number;
+  }[];
 };
+
+/**
+ * How many named growth scenarios one comparison may carry.
+ *
+ * Each one is a full comparison over the same horizon, so this is a bound on
+ * work as well as on how much a reader can be asked to hold in their head.
+ */
+export const MAX_GROWTH_SCENARIOS = 5;
+
+export type RentVsBuyScenario = {
+  /** The growth rate this scenario assumes, in percent per year. */
+  priceGrowthPercent: number;
+  /** The comparison at that rate. Null when the engine refused it. */
+  result: RentVsBuyResult | null;
+};
+
+/**
+ * The same comparison under several NAMED house-growth assumptions.
+ *
+ * ORIGINAL ROW 8 asks for this because the answer genuinely reverses: on the
+ * reference fixture buying costs 1.144 tỷ at 0% growth and 149,7 triệu at 6%,
+ * while renting costs 447,9 triệu either way — so the ranking flips between
+ * the two. A single growth rate hides that.
+ *
+ * THESE ARE SCENARIOS, NOT A FORECAST OR AN INTERVAL. The module computes
+ * exactly the rates it is handed and attaches no likelihood to any of them;
+ * the page says so. Rates come from the caller so a reader's own assumption
+ * can be one of them.
+ *
+ * No second engine: every scenario is `compareRentVsBuy` on the same input
+ * with one field changed. Null for the whole call when more scenarios are
+ * asked for than are supported, or when the list is empty.
+ */
+export function compareGrowthScenarios(
+  input: RentVsBuyInput,
+  growthPercents: readonly number[],
+): RentVsBuyScenario[] | null {
+  if (growthPercents.length === 0) return null;
+  if (growthPercents.length > MAX_GROWTH_SCENARIOS) return null;
+  return growthPercents.map((priceGrowthPercent) => ({
+    priceGrowthPercent,
+    result: compareRentVsBuy({ ...input, priceGrowthPercent }),
+  }));
+}
+
+/**
+ * How far above the reader's own assumption the third scenario sits, in
+ * percentage POINTS per year.
+ *
+ * Points, not a multiplier: doubling a 0,5%/năm assumption is not a scenario
+ * anyone would notice, and doubling a 12%/năm one is not a scenario anyone
+ * should be shown. Three points is the same step the floating-rate tool's
+ * stress presets use.
+ */
+export const GROWTH_SCENARIO_STEP_POINTS = 3;
+
+/**
+ * The named growth rates a page should compare, given the reader's own.
+ *
+ * Always includes 0 — "the house does not go up at all" is the one assumption
+ * that needs no forecast and is the case the copy asks the reader to try — and
+ * always includes the rate they actually typed, so the scenario view contains
+ * the figure the headline is built from. The third is their rate plus
+ * `GROWTH_SCENARIO_STEP_POINTS`.
+ *
+ * Sorted ascending and de-duplicated, so a reader on 0%/năm gets two
+ * scenarios rather than the same one three times. At 3%/năm it returns
+ * exactly 0/3/6, which is the fixture the reversal is documented on.
+ *
+ * Null for a rate the comparison itself would refuse, so a caller cannot
+ * build a scenario list around an input that has no result.
+ */
+export function growthScenarioRates(
+  priceGrowthPercent: number,
+): number[] | null {
+  if (!Number.isFinite(priceGrowthPercent)) return null;
+  if (priceGrowthPercent <= -100) return null;
+  const rates = [0, priceGrowthPercent, priceGrowthPercent + GROWTH_SCENARIO_STEP_POINTS]
+    .filter((rate) => rate > -100)
+    .sort((a, b) => a - b);
+  return [...new Set(rates)];
+}
 
 /** One month's rent, with growth compounded once a year. */
 function rentInMonth(
@@ -134,6 +301,7 @@ function positionsAt(
   ctx: {
     schedule: ReturnType<typeof amortize>;
     price: number;
+    loanAmount: number;
     buyerUpfront: number;
     monthlyOwnerCosts: number;
     priceGrowthMonthly: number;
@@ -152,14 +320,27 @@ function positionsAt(
   totalOwnerCosts: number;
   sellingCost: number;
   totalRent: number;
+  investedCash: number;
   investmentValue: number;
 } } {
   const rows = (ctx.schedule ?? []).slice(0, months);
 
   const totalInterest = rows.reduce((sum, row) => sum + row.interest, 0);
   const totalPrincipal = rows.reduce((sum, row) => sum + row.principal, 0);
-  // Past the end of the schedule the loan is repaid and nothing is owed.
-  const loanBalance = rows.length > 0 ? rows[rows.length - 1].balance : 0;
+  /**
+   * What is still owed at this month.
+   *
+   * MONTH 0 OWES THE WHOLE LOAN. The empty slice used to fall through to 0,
+   * which reads as a paid-off mortgage at the moment of purchase and would
+   * hand a trajectory its first point as a fictitious equity gain. Past the
+   * end of the schedule the loan really is repaid, and only then is 0 right.
+   */
+  const loanBalance =
+    rows.length > 0
+      ? rows[rows.length - 1].balance
+      : months === 0
+        ? ctx.loanAmount
+        : 0;
   const totalOwnerCosts = ctx.monthlyOwnerCosts * months;
 
   const houseValue = ctx.price * (1 + ctx.priceGrowthMonthly) ** months;
@@ -179,17 +360,20 @@ function positionsAt(
     totalRent += rentInMonth(ctx.baseRent, ctx.rentGrowthPerYear, month);
   }
 
-  // The renter invests exactly what the buyer committed up front, so both
-  // sides start from identical wealth and the comparison is like-for-like.
-  const investmentValue =
-    ctx.buyerUpfront * (1 + ctx.investmentMonthly) ** months;
-  // `buyerUpfront` is counted as committed on BOTH sides. The buyer spends it
-  // on a deposit, the renter locks it into an investment — but if it appeared
-  // only on the buy side, renting would look cheaper by that whole amount and
-  // the verdict would be biased. It cancels out of the net cost, leaving
-  // `totalRent − investmentGain`, which is the right figure.
-  const renterPaid = ctx.buyerUpfront + totalRent + ctx.rentDeposit;
-  // The rental deposit comes back at the end, so it is worth, not cost.
+  // Both sides start from `buyerUpfront`. The renter has to leave the
+  // landlord's deposit with the landlord, so only the REST of that cash is
+  // invested — see the module docstring for the figure this corrected.
+  const investedCash = ctx.buyerUpfront - ctx.rentDeposit;
+  const investmentValue = investedCash * (1 + ctx.investmentMonthly) ** months;
+  // `buyerUpfront` is counted as committed on BOTH sides, exactly once: the
+  // buyer spends it on the deposit and the fees, the renter splits it between
+  // the landlord's deposit and the investment. If it appeared only on the buy
+  // side, renting would look cheaper by that whole amount and the verdict
+  // would be biased. It cancels out of the net cost, leaving `totalRent −
+  // investmentGain`, which is the right figure.
+  const renterPaid = investedCash + ctx.rentDeposit + totalRent;
+  // The rental deposit comes back at the end — returned ONCE, and it is worth
+  // rather than cost. It earns nothing while the landlord holds it.
   const renterNetWorth = investmentValue + ctx.rentDeposit;
 
   return {
@@ -211,6 +395,7 @@ function positionsAt(
       totalOwnerCosts,
       sellingCost,
       totalRent,
+      investedCash,
       investmentValue,
     },
   };
@@ -278,6 +463,17 @@ export function compareRentVsBuy(
   }
   if (downPayment > price) return null;
   if (sellingCostPercent > 100) return null;
+  // BOUNDED BEFORE `amortize` ALLOCATES. A term is a count of rows in a
+  // schedule and the horizon is a count of evaluations over it, so both are
+  // checked against the suite's one disclosed horizon first — a finite
+  // `termMonths: 1e9` is a finite input asking for a billion rows.
+  if (termMonths > MAX_RENT_BUY_MONTHS) return null;
+  if (horizonMonths > MAX_RENT_BUY_MONTHS) return null;
+
+  const buyerUpfrontCash = downPayment + purchaseCosts;
+  // A deposit the renter cannot fund out of the SAME starting cash breaks the
+  // comparison's only premise. Refused rather than financed from nowhere.
+  if (rentDeposit > buyerUpfrontCash) return null;
 
   const loanAmount = price - downPayment;
   const monthlyRate = annualRatePercent / 100 / 12;
@@ -300,7 +496,8 @@ export function compareRentVsBuy(
   const ctx = {
     schedule,
     price,
-    buyerUpfront: downPayment + purchaseCosts,
+    loanAmount,
+    buyerUpfront: buyerUpfrontCash,
     monthlyOwnerCosts,
     // Annual growth spread over months as a compound rate, so a 12-month
     // horizon reproduces the annual figure exactly.
@@ -330,16 +527,50 @@ export function compareRentVsBuy(
 
   const advantageOfBuying = at.rent.netCost - at.buy.netCost;
 
-  return {
+  const result: RentVsBuyResult = {
     loanAmount,
     monthlyPayment,
     buyerUpfront: ctx.buyerUpfront,
     ...at.detail,
-    investmentGain: at.detail.investmentValue - ctx.buyerUpfront,
+    // Growth on the cash that was actually invested — not on the part the
+    // landlord is holding.
+    investmentGain: at.detail.investmentValue - at.detail.investedCash,
     buy: at.buy,
     rent: at.rent,
     advantageOfBuying,
     buyingWins: advantageOfBuying > 0,
+    tied: Math.abs(advantageOfBuying) <= TIE_BAND_DONG,
     breakEvenMonth,
+    // Month 0 first, where the buyer is already down the entry and exit costs
+    // and the renter is level. Bounded by `horizonMonths`, itself bounded
+    // above.
+    trajectory: Array.from({ length: horizonMonths + 1 }, (_, month) => {
+      const position = positionsAt(month, ctx);
+      return {
+        month,
+        buyNetCost: position.buy.netCost,
+        rentNetCost: position.rent.netCost,
+        advantageOfBuying: position.rent.netCost - position.buy.netCost,
+      };
+    }),
   };
+
+  // FINITE INPUTS DO NOT PROVE FINITE OUTPUTS: a 1e308 growth rate is finite
+  // and its compound path is not.
+  const figures = [
+    result.monthlyPayment,
+    result.houseValue,
+    result.loanBalance,
+    result.investmentValue,
+    result.investmentGain,
+    result.buy.netCost,
+    result.rent.netCost,
+    result.advantageOfBuying,
+    ...result.trajectory.flatMap((point) => [
+      point.buyNetCost,
+      point.rentNetCost,
+    ]),
+  ];
+  if (figures.some((value) => !Number.isFinite(value))) return null;
+  return result;
 }

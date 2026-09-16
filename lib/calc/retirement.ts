@@ -22,15 +22,23 @@
  * withdrawals here are annual, applied once a year, and the returns are
  * annual. Mixing a monthly contribution into an annual compounding loop
  * overstates growth by roughly half a year's return on each contribution.
- * The pages that want monthly inputs multiply by 12 before calling.
+ * The pages that want monthly inputs multiply by 12 before calling — and a
+ * yearly figure divided by 12 is a BUDGETING equivalence, not a monthly plan
+ * that reaches the same balance. See `long-term-plan.ts` on which direction
+ * that gap runs.
  *
  * ## Ordering within a year
  *
- * Accumulation: contribution first, then the return, so a contribution
- * earns a full year. Drawdown: withdrawal first, then the return on what
- * remains, so the retiree is never credited with growth on money they
- * already spent. Those two conventions are opposite on purpose, and each is
- * the conservative choice for its phase.
+ * Accumulation: contribution first, then the return, so a contribution earns
+ * a full year — which is the GENEROUS reading of a yearly deposit, matching a
+ * deposit made in January. (An earlier version of this note called both
+ * conventions conservative. This one is not: twelve month-end deposits of a
+ * twelfth each end up BEHIND one January deposit of the same total, so a
+ * reader who pays monthly does slightly worse than this model says.)
+ * Drawdown: withdrawal first, then the return on what remains, so the retiree
+ * is never credited with growth on money they already spent — that one IS the
+ * conservative choice. The two are opposite on purpose, and only the second
+ * errs in the reader's favour.
  */
 
 import { bisect } from "@/lib/calc/solve";
@@ -107,6 +115,28 @@ export type RetirementResult = {
   realFinalBalance: number;
   /** Age the money ran out, or null if it lasted. THE headline for a shortfall. */
   depletionAge: number | null;
+  /**
+   * The year the money ran out, as three figures rather than one date.
+   *
+   * "Cạn ở tuổi 84" counts the year the plan could not pay IN FULL, and that
+   * year is normally a PARTIAL payment: the balance covers part of the need
+   * and stops. Reporting only the age loses how much was actually received,
+   * which is the same defect `withdrawal.ts` records on row 26 — there, month
+   * 179 paid 2.813.709 of a planned 25.975.147. All three are nominal, in the
+   * money of that year. Null when the plan never depletes.
+   */
+  lastWithdrawalPlanned: number | null;
+  lastWithdrawalPaid: number | null;
+  lastWithdrawalShortfall: number | null;
+  /**
+   * True when other income covers the whole desired spend in every year of
+   * retirement, so the portfolio is never drawn on at all.
+   *
+   * NOT the same as a funded plan, and a consumer that treats them alike
+   * tells a reader their savings funded a retirement their pension funded.
+   * `depletionAge` is null in both cases.
+   */
+  fundedByOtherIncome: boolean;
   /** Years of retirement funded before depletion, or the full span. */
   yearsFunded: number;
   /** Years of retirement the plan is short by. Zero when funded. */
@@ -212,13 +242,22 @@ export function projectRetirement(
 
   if (currentBalance < 0 || annualContribution < 0) return null;
   if (desiredAnnualSpending < 0 || otherAnnualIncome < 0) return null;
+  // STRICTLY above −100%, not "at or above". At exactly −100% every derived
+  // figure in this module leaves the reals: `1 + inflation` is 0, so the
+  // deflators are 0 and every `realBalance` is ±Infinity; and the real return
+  // `(1 + rateAfter) / (1 + inflation) − 1` is Infinity or, at
+  // returnAfter = −100%, −1, which makes `(1 + realReturn) ** -span` divide by
+  // zero inside the annuity factor and returns NaN for the sustainable spend.
+  // A rate of −100% means the money is entirely gone or prices are zero;
+  // refusing it is the honest answer, and it is the same boundary
+  // `withdrawal.ts` and `fund-fees.ts` already enforce.
   for (const rate of [
     contributionGrowthPercent,
     returnBeforePercent,
     returnAfterPercent,
     inflationPercent,
   ]) {
-    if (!Number.isFinite(rate) || rate < -100 || rate > 100) return null;
+    if (!Number.isFinite(rate) || rate <= -100 || rate > 100) return null;
   }
 
   const growth = contributionGrowthPercent / 100;
@@ -233,6 +272,10 @@ export function projectRetirement(
   let totalGrowth = 0;
   let balanceAtRetirement = currentBalance;
   let depletionAge: number | null = null;
+  let lastWithdrawalPlanned: number | null = null;
+  let lastWithdrawalPaid: number | null = null;
+  // Set false the first time a retirement year actually needs the portfolio.
+  let fundedByOtherIncome = true;
 
   for (let age = currentAge; age < endAge; age += 1) {
     const elapsed = age - currentAge;
@@ -275,9 +318,14 @@ export function projectRetirement(
       balance += investmentReturn;
       totalWithdrawn += withdrawal;
 
-      // Depleted means the year's need could not be met in full.
+      if (needed > 0) fundedByOtherIncome = false;
+
+      // Depleted means the year's need could not be met in full — and that
+      // year's payment is usually PARTIAL, so all three figures are kept.
       if (depletionAge === null && withdrawal < needed) {
         depletionAge = age;
+        lastWithdrawalPlanned = needed;
+        lastWithdrawalPaid = withdrawal;
       }
     }
 
@@ -362,6 +410,16 @@ export function projectRetirement(
     finalBalance,
     realFinalBalance: finalBalance / finalDeflator,
     depletionAge,
+    lastWithdrawalPlanned,
+    lastWithdrawalPaid,
+    lastWithdrawalShortfall:
+      lastWithdrawalPlanned === null || lastWithdrawalPaid === null
+        ? null
+        : lastWithdrawalPlanned - lastWithdrawalPaid,
+    // Vacuously true when there are no retirement years to need anything, so
+    // it is pinned to there actually being a spend the portfolio avoided.
+    fundedByOtherIncome:
+      fundedByOtherIncome && desiredAnnualSpending > 0 && span > 0,
     yearsFunded,
     yearsShort: span - yearsFunded,
     initialWithdrawalRatePercent,

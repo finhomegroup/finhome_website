@@ -8,6 +8,29 @@
 // whole subject is that the sources index differently, so it runs
 // lib/calc/retirement-income-sources.ts instead. See that module's docstring.
 //
+// SOURCES, added 2026-09-16 — exactly ONE item, and that is the finding
+// rather than a shortfall. Nothing on this page is prefilled from law:
+// `lib/calc/retirement-income-sources.ts` has no US table, no year key and
+// no statutory constant, and every amount and rate here is a reader input.
+// The single place the page asserts United States law is the lede's claim
+// that Social Security is cost-of-living adjusted while a fixed corporate
+// pension is not, so that is the single claim that needed an href.
+//
+// WHY THE STATUTE AND NOT SSA. ssa.gov refuses automated requests from this
+// environment — /cola/, /news/cola/, /oact/cola/colaseries.html and
+// /oact/cola/latestCOLA.html all returned 403 — so no ssa.gov href could be
+// verified live, and an unverified href is the thing `sources` exists to
+// stop. 42 U.S.C. §415(i) on govinfo WAS fetched and read on 2026-09-16,
+// it is the law the COLA comes from, and it is on a .gov host. A later pass
+// with a browser may prefer an SSA explainer; it should verify it first.
+//
+// ONE PRECISION THE STATUTE BUYS US. §415(i) ties the increase to "the
+// Consumer Price Index (as prepared by the Department of Labor)" and does
+// NOT name CPI-W. The FAQ already said "gắn với một chỉ số giá tiêu dùng"
+// rather than naming a series, which turns out to be exactly as specific as
+// the law is. Do not "improve" that to CPI-W: it would make the page more
+// precise than its own citation.
+//
 // Figures quoted are projectIncomeSources' output, verified by running it on
 // this page's own defaults (nhận từ 67 đến 95; chi 80.000/năm theo giá năm
 // 67; lạm phát 2,5%; danh mục 600.000 sinh lời 5%; an sinh xã hội
@@ -46,7 +69,7 @@ export const RETIREMENT_INCOME_ANALYSIS = {
     startAgeLabel: "Tuổi bắt đầu nhận",
     startAgeUnit: "tuổi",
     startAgeHelp:
-      "Dự phóng bắt đầu ở tuổi này, và MỌI số tiền bạn nhập bên dưới là số tiền theo giá của năm đó.",
+      "Dự phóng bắt đầu ở tuổi này, và mọi số tiền bạn nhập bên dưới là số tiền theo giá của năm đó.",
     endAgeLabel: "Dự phóng đến tuổi",
     endAgeUnit: "tuổi",
     endAgeHelp:
@@ -179,7 +202,7 @@ export const RETIREMENT_INCOME_ANALYSIS = {
     title: "Cách tính",
     body: [
       "Mỗi nguồn tăng theo tốc độ danh nghĩa của riêng nó, tính từ năm đầu tiên. An sinh xã hội và làm thêm tăng đúng bằng lạm phát bạn nhập; lương hưu và thu nhập khác tăng theo tỷ lệ bạn tự nhập, mặc định lương hưu là 0. Nhu cầu chi tiêu cũng tăng bằng lạm phát, nên sức mua của nó không đổi và mọi thay đổi trong dòng “lo được” đều đến từ phía thu nhập.",
-      "Mỗi năm, phần nhu cầu mà các nguồn cố định không lo được sẽ rút từ danh mục, nhưng không bao giờ rút quá số dư. Lợi nhuận được tính trên phần CÒN LẠI sau khi rút — tính lợi nhuận trước sẽ cấp vốn cho kế hoạch bằng lợi nhuận trên số tiền đã tiêu. Nếu số dư không đủ, phần còn thiếu được ghi lại thành thiếu hụt chứ không bị làm tròn đi.",
+      "Mỗi năm, phần nhu cầu mà các nguồn cố định không lo được sẽ rút từ danh mục, nhưng không bao giờ rút quá số dư. Lợi nhuận được tính trên phần còn lại sau khi rút — tính lợi nhuận trước sẽ cấp vốn cho kế hoạch bằng lợi nhuận trên số tiền đã tiêu. Nếu số dư không đủ, phần còn thiếu được ghi lại thành thiếu hụt chứ không bị làm tròn đi.",
       "Mọi con số đều có hai phiên bản: danh nghĩa và theo giá năm đầu. Module dùng hai hệ số lạm phát khác nhau cho hai loại — dòng tiền chuyển vào đầu năm, số dư là con số cuối năm — nên chúng cách nhau đúng một năm lạm phát. Đây là chi tiết dễ sai và sai thì không ai thấy, nên nó nằm trong module chứ không nằm ở trang.",
       "Cột “sức mua giữ được” là giá trị thực của khoản chi trả năm cuối so với giá trị thực của khoản chi trả năm đầu. Nguồn được điều chỉnh đủ bằng lạm phát cho 100%; nguồn cố định cho 51,3% ở kỳ 28 năm với lạm phát 2,5%. Một nguồn đã dừng chi trả thì để trống, không ghi 0% — “đã hết” và “mất hết giá trị” là hai chuyện khác nhau.",
       "Cột “tỷ trọng cả kỳ” cộng tất cả các khoản chi trả của một nguồn sau khi đã quy về giá năm đầu, rồi chia cho tổng nhu cầu cả kỳ tính cùng đơn vị. Tổng các tỷ trọng cộng phần danh mục và phần thiếu hụt luôn bằng 100%, và bộ kiểm thử chốt đúng đẳng thức đó — một sổ sách không tự khớp thì không cần số liệu tham chiếu nào để chứng minh là sai.",
@@ -196,7 +219,7 @@ export const RETIREMENT_INCOME_ANALYSIS = {
       },
       {
         q: "Vì sao tỷ lệ rút năm đầu 2,33% trông rất an toàn mà kế hoạch vẫn chật vật?",
-        a: "Vì tỷ lệ rút năm đầu không phải là tỷ lệ rút của những năm sau. Quy tắc 4% giả định khoản rút giữ nguyên sức mua suốt kỳ; ở đây khoản rút thực TĂNG, vì nó phải bù cho phần các nguồn cố định mất dần. Khoản rút thực năm cuối là 34.759 USD, gấp 2,48 lần năm đầu. Đó là lý do một tỷ lệ rút năm đầu thấp không phải bằng chứng kế hoạch an toàn, khi trong danh mục thu nhập của bạn có một khoản trả cố định lớn.",
+        a: "Vì tỷ lệ rút năm đầu không phải là tỷ lệ rút của những năm sau. Quy tắc 4% giả định khoản rút giữ nguyên sức mua suốt kỳ; ở đây khoản rút thực tăng, vì nó phải bù cho phần các nguồn cố định mất dần. Khoản rút thực năm cuối là 34.759 USD, gấp 2,48 lần năm đầu. Đó là lý do một tỷ lệ rút năm đầu thấp không phải bằng chứng kế hoạch an toàn, khi trong danh mục thu nhập của bạn có một khoản trả cố định lớn.",
       },
       {
         q: "Vì sao công cụ không cho tôi nhập mức điều chỉnh của an sinh xã hội?",
@@ -209,6 +232,26 @@ export const RETIREMENT_INCOME_ANALYSIS = {
       {
         q: "Có nên đặt lợi suất danh mục cao hơn để bù phần lương hưu mất giá?",
         a: "Đó là cách sửa con số trên màn hình chứ không phải sửa kế hoạch. Nhưng có một cách đọc đúng hướng: khoản lương hưu cố định của bạn đã hoạt động giống một trái phiếu danh nghĩa dài hạn, nên nếu tính nó là một phần của tổng tài sản thì danh mục còn lại của bạn đang thiên về trái phiếu hơn mức bảng phân bổ tài sản hiển thị. Nhiều người trong tình huống đó chọn nắm giữ nhiều cổ phiếu hơn ở phần danh mục tự quản — không phải để bù mất giá, mà vì phần thu nhập cố định của họ đã lớn hơn họ tưởng.",
+      },
+    ],
+  },
+
+  sources: {
+    // "Nguồn tham khảo", not the suite's usual "Nguồn", and only on this row.
+    // This is the one page where "Nguồn" already means something else: the
+    // source table's first column header is `<th scope="col">Nguồn</th>` and
+    // it means an INCOME source — an sinh xã hội, lương hưu, làm thêm. A
+    // citations heading reading exactly the same word, on the same page,
+    // labels two unrelated things identically. The shell takes this title as
+    // data precisely so a page can differ where it has to.
+    title: "Nguồn tham khảo",
+    intro:
+      "Danh sách này chỉ có một mục, và đó là điều đáng nói: trang này không ấn định sẵn con số nào — mọi khoản tiền, mọi tỷ lệ điều chỉnh và cả mức lạm phát đều là ô bạn nhập. Chỗ duy nhất trang viện đến luật Hoa Kỳ là câu nói an sinh xã hội được điều chỉnh theo giá sinh hoạt, trong khi lương hưu cố định thì không, nên đó là chỗ duy nhất cần một nguồn. Mức điều chỉnh cụ thể của từng năm không có ở đây: công cụ cho khoản an sinh xã hội tăng đúng bằng mức lạm phát bạn nhập, và trang nói rõ như vậy.",
+    items: [
+      {
+        url: "https://www.govinfo.gov/content/pkg/USCODE-2023-title42/html/USCODE-2023-title42-chap7-subchapII-sec415.htm",
+        label: "42 U.S.C. §415(i) — Cơ chế tăng theo chi phí sinh hoạt của an sinh xã hội Hoa Kỳ",
+        note: "Căn cứ cho câu duy nhất trên trang này nói về luật Hoa Kỳ. Khoản (i) mang tiêu đề “Cost-of-living increases in benefits” và gắn mức tăng vào chỉ số giá tiêu dùng do Bộ Lao động lập, so giữa các quý. Lưu ý điều văn bản luật không làm: nó không nêu tên một phiên bản chỉ số cụ thể, nên trang này cũng chỉ nói “một chỉ số giá tiêu dùng” thay vì nêu tên một chuỗi.",
       },
     ],
   },

@@ -25,7 +25,12 @@ export default function CommercialLoanPage() {
       // Neither structure makes the loan cheaper — they move when you pay,
       // and both cost more in total. Say it before the small figure is read.
       notice={C.structureNotice}
-      intro={C.form.table.intro}
+      // Where the balloon principal is repaid from — the row's own
+      // requirement, promoted out of the collapsed FAQ. `intro` is the only
+      // always-visible prose slot near the figure: `noticeDetail` and
+      // `ledeDetail` are both `<details>`, so moving a buried sentence into
+      // either would have been the same burial with a different lid.
+      intro={C.balloonSourceNotice}
       prose={C.formula}
       faq={C.faq}
     >

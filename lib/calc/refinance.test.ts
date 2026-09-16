@@ -1,263 +1,152 @@
 import { describe, it, expect } from "vitest";
 import { compareRefinance, type RefinanceInput } from "@/lib/calc/refinance";
-import { computeLoan } from "@/lib/calc/loan";
-import { pmt } from "@/lib/calc/finance";
 
-// 1,5 tỷ outstanding, 11%/năm with 18 years to run, refinanced at 8,5% over
-// the same 18 years, for 30 triệu of fees.
-const BASE: RefinanceInput = {
-  balance: 1_500_000_000,
-  currentRatePercent: 11,
-  remainingMonths: 216,
-  newRatePercent: 8.5,
-  newTermMonths: 216,
-  closingCosts: 30_000_000,
-};
+const BASE: RefinanceInput = { balance: 2e9, currentRatePercent: 11, remainingMonths: 216,
+  newRatePercent: 8.5, newTermMonths: 300, closingCosts: 40e6, horizonMonths: 60 };
 
+// Independent direct recurrence: no production finance or loan imports.
+function reference(principal: number, annual: number, term: number, horizon: number) {
+  const rate = annual / 1200;
+  const payment = rate === 0 ? principal / term : principal * rate / (1 - (1 + rate) ** -term);
+  let balance = principal, paid = 0, interest = 0;
+  const rows = [{ balance, paid, interest }];
+  for (let month = 1; month <= horizon; month++) {
+    const charge = month <= term ? balance * rate : 0;
+    const principalPaid = month <= term ? (month === term ? balance : Math.min(balance, payment - charge)) : 0;
+    paid += principalPaid + charge;
+    interest += charge;
+    balance = month >= term ? 0 : balance - principalPaid;
+    rows.push({ balance, paid, interest });
+  }
+  return { payment, rows };
+}
 function refi(input: RefinanceInput) {
   const result = compareRefinance(input);
   expect(result).not.toBeNull();
   return result!;
 }
 
-describe("compareRefinance — the two loans", () => {
-  it("prices the current loan as its remaining balance over its remaining term", () => {
-    const result = refi(BASE);
-    expect(result.currentPayment).toBeCloseTo(
-      Math.abs(pmt(11 / 100 / 12, 216, 1_500_000_000)),
-      6,
-    );
-    const direct = computeLoan({
-      amount: 1_500_000_000,
-      annualRatePercent: 11,
-      termMonths: 216,
-    })!;
-    expect(result.currentRemainingInterest).toBeCloseTo(direct.totalInterest, 6);
+describe("refinance: debt-aware horizon, not monthly cash-flow recoup", () => {
+  it("fixture A: lower payment from doubled term saves cash but LOSES cost at month60", () => {
+    const r = refi({ ...BASE, currentRatePercent: 8.5, remainingMonths: 120, newTermMonths: 240 });
+    expect(r.currentPayment).toBeCloseTo(24_797_137.774902, 2);
+    expect(r.newPayment).toBeCloseTo(17_356_464.667311, 2);
+    expect(r.horizon.currentPaid).toBeCloseTo(1_487_828_266.4941, 2);
+    expect(r.horizon.currentInterest).toBeCloseTo(696_470_087.0638, 2);
+    expect(r.horizon.currentBalance).toBeCloseTo(1_208_641_820.5697, 2);
+    expect(r.horizon.newPaid).toBeCloseTo(1_041_387_880.0386, 2);
+    expect(r.horizon.newInterest).toBeCloseTo(803_931_542.2302, 2);
+    expect(r.horizon.newBalance).toBeCloseTo(1_762_543_662.1916, 2);
+    expect(r.horizonCashFlowSaving).toBeCloseTo(406_440_386.4555, 2);
+    expect(r.horizonCostSaving).toBeCloseTo(-147_461_455.1664, 2);
+    expect(r.breakEvenMonths).toBeNull();
+    expect(r.cashFlowBreakEvenMonths).not.toBeNull();
   });
-
-  it("prices the new loan on the same balance", () => {
-    const result = refi(BASE);
-    expect(result.newPayment).toBeCloseTo(
-      Math.abs(pmt(8.5 / 100 / 12, 216, 1_500_000_000)),
-      6,
-    );
+  it("fixture B: both figures positive but unequal at month60", () => {
+    const r = refi(BASE);
+    expect(r.currentPayment).toBeCloseTo(21_300_992.863284, 2);
+    expect(r.newPayment).toBeCloseTo(16_104_541.669243, 2);
+    expect(r.horizon.currentPaid).toBeCloseTo(1_278_059_571.7970, 2);
+    expect(r.horizon.currentInterest).toBeCloseTo(1_042_076_984.8140, 2);
+    expect(r.horizon.currentBalance).toBeCloseTo(1_764_017_413.0170, 2);
+    expect(r.horizon.newPaid).toBeCloseTo(966_272_500.1546, 2);
+    expect(r.horizon.newInterest).toBeCloseTo(822_012_361.6915, 2);
+    expect(r.horizon.newBalance).toBeCloseTo(1_855_739_861.5369, 2);
+    expect(r.horizonCashFlowSaving).toBeCloseTo(271_787_071.6425, 2);
+    expect(r.horizonCostSaving).toBeCloseTo(180_064_623.1226, 2);
   });
-
-  it("keeps the saving identities", () => {
-    const result = refi(BASE);
-    expect(result.monthlySaving).toBeCloseTo(
-      result.currentPayment - result.newPayment,
-      6,
-    );
-    expect(result.interestSaving).toBeCloseTo(
-      result.currentRemainingInterest - result.newTotalInterest,
-      6,
-    );
-    expect(result.lifetimeSaving).toBeCloseTo(
-      result.interestSaving - result.closingCosts,
-      6,
-    );
-  });
-});
-
-describe("compareRefinance — a genuinely good refinance", () => {
-  it("cuts both the instalment and the total interest", () => {
-    const result = refi(BASE);
-    expect(result.monthlySaving).toBeGreaterThan(0);
-    expect(result.interestSaving).toBeGreaterThan(0);
-    expect(result.lifetimeSaving).toBeGreaterThan(0);
-  });
-
-  it("breaks even within a plausible number of months", () => {
-    const result = refi(BASE);
-    expect(result.breakEvenMonths).toBeGreaterThan(0);
-    expect(result.breakEvenMonths!).toBeLessThan(24);
-  });
-
-  it("rounds break-even UP", () => {
-    const result = refi(BASE);
-    const exact = result.closingCosts / result.monthlySaving;
-    // Equal terms, so the level saving holds for the whole horizon and the
-    // month-by-month answer coincides with ceil(cost ÷ saving). It does NOT
-    // coincide when the new term is shorter — see the shortened-term tests.
-    expect(result.breakEvenMonths).toBe(Math.ceil(exact));
-    // And the rounded month is genuinely enough to cover the costs.
-    expect(result.monthlySaving * result.breakEvenMonths!).toBeGreaterThanOrEqual(
-      result.closingCosts,
-    );
-  });
-
-  it("does not extend the term when the term is unchanged", () => {
-    const result = refi(BASE);
-    expect(result.termExtended).toBe(false);
-    expect(result.termShortened).toBe(false);
-    expect(result.termChangeMonths).toBe(0);
-  });
-});
-
-describe("compareRefinance — the reset-the-term trap", () => {
-  it("lowers the instalment while costing MORE interest overall", () => {
-    // The whole reason both figures are reported. 18 years left, refinanced
-    // into a fresh 25-year term at a lower rate: cheaper every month, dearer
-    // in total.
-    const result = refi({ ...BASE, newTermMonths: 300 });
-    expect(result.monthlySaving).toBeGreaterThan(0);
-    expect(result.interestSaving).toBeLessThan(0);
-    expect(result.lifetimeSaving).toBeLessThan(0);
-    expect(result.termExtended).toBe(true);
-    expect(result.termChangeMonths).toBe(84);
-  });
-
-  it("still reports a break-even, which is why break-even alone is not enough", () => {
-    // Break-even is short and positive here, and following it would be wrong.
-    const result = refi({ ...BASE, newTermMonths: 300 });
-    expect(result.breakEvenMonths).toBeGreaterThan(0);
-    expect(result.lifetimeSaving).toBeLessThan(0);
-  });
-
-  it("saves more in total on a SHORTER new term, at a higher instalment", () => {
-    const result = refi({ ...BASE, newTermMonths: 180 });
-    expect(result.termExtended).toBe(false);
-    expect(result.termShortened).toBe(true);
-    expect(result.termChangeMonths).toBe(-36);
-    expect(result.interestSaving).toBeGreaterThan(refi(BASE).interestSaving);
-    expect(result.monthlySaving).toBeLessThan(refi(BASE).monthlySaving);
-  });
-});
-
-describe("compareRefinance — a SHORTER new term", () => {
-  it("does not report a break-even past the end of the new loan", () => {
-    // 1,5 tỷ at 11% with 216 months left, refinanced at 9,75% over 180 months
-    // for 60 triệu. The instalment barely moves (85.305 ₫/tháng), so
-    // ceil(cost ÷ saving) gave 704 months — on a loan that is fully repaid at
-    // month 180. From month 181 the new loan is gone and the saving is the
-    // WHOLE old instalment of 15.975.745 ₫, so the running total goes
-    // −44.645.155 at 180 → +3.282.079 at 183. Hand-checked month by month.
-    const result = refi({
-      ...BASE,
-      newRatePercent: 9.75,
-      newTermMonths: 180,
-      closingCosts: 60_000_000,
-    });
-    expect(result.termExtended).toBe(false);
-    expect(result.termShortened).toBe(true);
-    expect(result.monthlySaving).toBeGreaterThan(0);
-    expect(result.breakEvenMonths).toBe(183);
-    expect(result.breakEvenMonths!).toBeLessThanOrEqual(Math.max(216, 180));
-  });
-
-  it("never reports a break-even beyond the longer of the two terms", () => {
-    // The property the closed form violated, swept rather than spot-checked:
-    // 13 of these 128 combinations returned a break-even past the end of both
-    // loans before the fix (worst: 8,5% over 155 months for 30 triệu, which
-    // reported 17.710 months).
-    for (const newRatePercent of [8.5, 9.75, 10.5, 10.9]) {
-      for (const newTermMonths of [120, 150, 155, 180, 200, 216, 240, 300]) {
-        for (const closingCosts of [0, 30_000_000, 60_000_000, 120_000_000]) {
-          const result = refi({
-            ...BASE,
-            newRatePercent,
-            newTermMonths,
-            closingCosts,
-          });
-          if (result.breakEvenMonths !== null) {
-            expect(result.breakEvenMonths).toBeLessThanOrEqual(
-              Math.max(216, newTermMonths),
-            );
-          }
-        }
+  it("independent monthly ledgers and both saving identities, including both maturities", () => {
+    for (const oldTerm of [1, 120, 216, 360]) for (const newTerm of [1, 60, 240, 300]) {
+      for (const newRate of [0, 8.5, 13]) {
+        const input = { ...BASE, remainingMonths: oldTerm, newTermMonths: newTerm, newRatePercent: newRate, horizonMonths: 400 };
+        const r = refi(input);
+        const a = reference(input.balance, input.currentRatePercent, oldTerm, 400);
+        const b = reference(input.balance, newRate, newTerm, 400);
+        r.timeline.forEach((row, m) => {
+          // Absolute 0.02 đồng tolerance: independent annuity implementations
+          // accumulate slightly different floating point residues over 400 rows.
+          const expected = a.rows[m].interest - b.rows[m].interest - 40e6;
+          expect(Math.abs(row.costSaving - expected)).toBeLessThan(0.02);
+          expect(Math.abs(row.currentPaid - a.rows[m].paid)).toBeLessThan(0.02);
+          expect(Math.abs(row.newBalance - b.rows[m].balance)).toBeLessThan(0.02);
+          const ledger = row.currentPaid + row.currentBalance - row.newPaid - row.newBalance - r.closingCosts;
+          expect(Math.abs(row.costSaving - ledger)).toBeLessThan(0.02);
+          expect(row.costSaving).toBe(row.currentInterest - row.newInterest - r.closingCosts);
+          expect(row.cashFlowSaving).toBe(row.currentPaid - row.newPaid - r.closingCosts);
+        });
+        expect(r.horizon.currentBalance).toBe(0);
+        expect(r.horizon.newBalance).toBe(0);
+        expect(r.horizonCostSaving).toBeCloseTo(r.lifetimeSaving, 2);
+        expect(r.horizonCashFlowSaving).toBeCloseTo(r.lifetimeSaving, 2);
       }
     }
   });
-
-  it("declines a break-even when the payments avoided never cover the costs", () => {
-    // The instalment DOES fall here, so the closed form still produced a
-    // number (7034). But 600 triệu of fees against a lifetime saving of
-    // −9.518.348 ₫ is never recovered, so the honest answer is no answer.
-    const result = refi({
-      ...BASE,
-      newRatePercent: 9.75,
-      newTermMonths: 180,
-      closingCosts: 600_000_000,
-    });
-    expect(result.monthlySaving).toBeGreaterThan(0);
-    expect(result.lifetimeSaving).toBeLessThan(0);
-    expect(result.breakEvenMonths).toBeNull();
+  it("charges both fee inputs once at period zero and preserves legacy closingCosts", () => {
+    const legacy = refi(BASE), split = refi({ ...BASE, closingCosts: 20e6, earlySettlementFee: 20e6 });
+    expect(split.horizon).toEqual(legacy.horizon);
+    expect(split.closingCosts).toBe(40e6);
+    const zero = refi({ ...BASE, horizonMonths: 0 });
+    expect(zero.timeline).toHaveLength(1);
+    expect(zero.horizonCostSaving).toBe(-40e6);
+    expect(zero.horizonCashFlowSaving).toBe(-40e6);
+    expect(zero.horizon.currentBalance).toBe(2e9);
+    expect(zero.horizon.newBalance).toBe(2e9);
   });
-
-  it("ends the cumulative saving exactly at lifetimeSaving", () => {
-    // Both loans retire the same principal, so the payments avoided over the
-    // whole horizon ARE the interest saving. This is the identity the
-    // month-by-month loop sums, so it has to close. 2 dp: the two sides differ
-    // by 4e-5 ₫, the last-row nudge inside computeLoan.
-    const result = refi({ ...BASE, newTermMonths: 180 });
-    const total =
-      result.currentPayment * 216 - result.newPayment * 180 - result.closingCosts;
-    expect(total).toBeCloseTo(result.lifetimeSaving, 2);
+  it("equal loans, zero fees: zero throughout is equality, not guaranteed profit", () => {
+    const r = refi({ ...BASE, newRatePercent: 11, newTermMonths: 216, closingCosts: 0 });
+    expect(r.timeline.every((row) => row.costSaving === 0 && row.cashFlowSaving === 0)).toBe(true);
+    expect(r.breakEvenMonths).toBe(0);
+    expect(r.costTurnsNegativeAgain).toBe(false);
   });
-});
-
-describe("compareRefinance — refinances not worth doing", () => {
-  it("returns a null break-even when the instalment does not fall", () => {
-    // Same rate, shorter term: the payment rises, so there is nothing to
-    // break even on even though total interest falls.
-    const result = refi({
-      ...BASE,
-      newRatePercent: 11,
-      newTermMonths: 120,
-    });
-    expect(result.monthlySaving).toBeLessThan(0);
-    expect(result.breakEvenMonths).toBeNull();
-    expect(result.interestSaving).toBeGreaterThan(0);
+  it("equal loans with fees stay negative and never break even", () => {
+    const r = refi({ ...BASE, newRatePercent: 11, newTermMonths: 216 });
+    expect(r.timeline.every((row) => row.costSaving === -40e6)).toBe(true);
+    expect(r.breakEvenMonths).toBeNull();
   });
-
-  it("reports negative savings when the new rate is worse", () => {
-    const result = refi({ ...BASE, newRatePercent: 13 });
-    expect(result.monthlySaving).toBeLessThan(0);
-    expect(result.interestSaving).toBeLessThan(0);
-    expect(result.breakEvenMonths).toBeNull();
+  it("zero rates and different terms have zero interest, but distinct cash flow", () => {
+    const r = refi({ ...BASE, currentRatePercent: 0, newRatePercent: 0, closingCosts: 0 });
+    expect(r.horizonCostSaving).toBe(0);
+    expect(r.horizonCashFlowSaving).not.toBe(0);
   });
-
-  it("is neutral on identical terms except for the fees", () => {
-    const result = refi({
-      ...BASE,
-      newRatePercent: 11,
-      newTermMonths: 216,
-    });
-    expect(result.monthlySaving).toBeCloseTo(0, 6);
-    expect(result.interestSaving).toBeCloseTo(0, 4);
-    expect(result.lifetimeSaving).toBeCloseTo(-30_000_000, 4);
-    // A zero monthly saving is not a positive one: no break-even.
-    expect(result.breakEvenMonths).toBeNull();
+  it("huge fees never recovered within the horizon", () => {
+    const r = refi({ ...BASE, closingCosts: 1e12, horizonMonths: 400 });
+    expect(r.breakEvenMonths).toBeNull();
+    expect(r.cashFlowBreakEvenMonths).toBeNull();
   });
-
-  it("treats zero fees as an instant break-even", () => {
-    const result = refi({ ...BASE, closingCosts: 0 });
-    // Month 0 comes from the check before the month-by-month loop, not from
-    // the loop: with nothing to recover the costs are covered before the first
-    // instalment falls due, so no month has to complete.
-    expect(result.breakEvenMonths).toBe(0);
-    expect(result.lifetimeSaving).toBeCloseTo(result.interestSaving, 6);
+  it("does not suppress later CASH crossings when the first new payment rises", () => {
+    const r = refi({ ...BASE, newRatePercent: 11, newTermMonths: 120, horizonMonths: 216 });
+    expect(r.monthlySaving).toBeLessThan(0);
+    expect(r.horizonCashFlowSaving).toBeGreaterThan(0);
+    expect(r.cashFlowBreakEvenMonths).toBeGreaterThan(120);
+    expect(r.breakEvenMonths).not.toBeNull();
   });
-});
-
-describe("compareRefinance — realistic terms and rejection", () => {
-  it("survives 240, 300 and 360 monthly periods on either side", () => {
-    for (const months of [240, 300, 360]) {
-      expect(refi({ ...BASE, remainingMonths: months }).currentPayment).toBeGreaterThan(0);
-      expect(refi({ ...BASE, newTermMonths: months }).newPayment).toBeGreaterThan(0);
-    }
+  it("a first cost crossing can reverse; result at H is the conclusion", () => {
+    const r = refi({ ...BASE, horizonMonths: 300 });
+    expect(r.breakEvenMonths).not.toBeNull();
+    expect(r.costTurnsNegativeAgain).toBe(true);
+    expect(r.horizonCostSaving).toBeLessThan(0);
   });
-
-  it("returns null rather than a guess", () => {
-    expect(compareRefinance({ ...BASE, balance: 0 })).toBeNull();
-    expect(compareRefinance({ ...BASE, balance: -1 })).toBeNull();
-    expect(compareRefinance({ ...BASE, currentRatePercent: -1 })).toBeNull();
-    expect(compareRefinance({ ...BASE, newRatePercent: -1 })).toBeNull();
-    expect(compareRefinance({ ...BASE, remainingMonths: 0 })).toBeNull();
-    expect(compareRefinance({ ...BASE, newTermMonths: 0 })).toBeNull();
-    expect(compareRefinance({ ...BASE, remainingMonths: 216.5 })).toBeNull();
-    expect(compareRefinance({ ...BASE, closingCosts: -1 })).toBeNull();
-    expect(compareRefinance({ ...BASE, balance: Number.NaN })).toBeNull();
+  it("cost break-even is the first covered month, not fees/monthlySaving", () => {
+    const r = refi(BASE), crossing = r.breakEvenMonths!;
+    expect(r.timeline[crossing].costSaving).toBeGreaterThanOrEqual(-0.5);
+    expect(r.timeline[crossing - 1].costSaving).toBeLessThan(-0.5);
+    expect(crossing).not.toBe(r.cashFlowBreakEvenMonths);
+    expect(refi({ ...BASE, horizonMonths: crossing - 1 }).breakEvenMonths).toBeNull();
   });
+  it("zero fees may immediately become a loss", () => {
+    const r = refi({ ...BASE, closingCosts: 0, newRatePercent: 15 });
+    expect(r.breakEvenMonths).toBe(0);
+    expect(r.costTurnsNegativeAgain).toBe(true);
+    expect(r.horizonCostSaving).toBeLessThan(0);
+  });
+  it("defaults an omitted horizon to both maturities for legacy consumers", () => {
+    expect(refi({ ...BASE, horizonMonths: undefined }).horizonMonths).toBe(300);
+  });
+  it.each([
+    { balance: 0 }, { balance: -1 }, { balance: NaN }, { balance: Infinity },
+    { currentRatePercent: -1 }, { newRatePercent: Infinity }, { remainingMonths: 0 },
+    { remainingMonths: 2.5 }, { newTermMonths: 1201 }, { closingCosts: -1 },
+    { earlySettlementFee: NaN }, { earlySettlementFee: -1 },
+    { horizonMonths: -1 }, { horizonMonths: 1.5 }, { horizonMonths: 1201 }, { horizonMonths: NaN },
+  ])("rejects invalid inputs: %o", (patch) => { expect(compareRefinance({ ...BASE, ...patch })).toBeNull(); });
 });

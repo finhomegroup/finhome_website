@@ -3,7 +3,7 @@ Lãi suất vay mua nhà tại nhiều ngân hàng thương mại sau khi hết 
 ## Điểm chính cần nắm
 
 - Lãi suất vay mua nhà sau ưu đãi hiện phổ biến 13-15%/năm, mức tăng đáng kể so với cùng kỳ năm ngoái.
-- Người mua đối mặt áp lực thanh khoản khi khoản vay ban đầu với lãi suất ưu đãi thấp chuyển sang mức lãi suất thả nổi cao hơn.
+- Người mua đối mặt áp lực thanh khoản khi khoản vay ban đầu với lãi suất ưu đãi thấp chuyển sang mức lãi suất thả nổi cao hơn. Lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 - Giá bất động sản vẫn neo cao khiến tổng gánh nợ vay mua nhà trở nên nặng nề hơn với phần lớn người mua.
 
 ## Góc nhìn FinHome

@@ -1,4 +1,4 @@
-Thị trường chung cư đang chứng kiến một nghịch lý: sức mua chậm lại rõ rệt nhưng nguồn cung mới vẫn tiếp tục đổ ra thị trường với tốc độ cao. Hiện tượng này xuất phát từ những ràng buộc tài chính và pháp lý mà chủ đầu tư không thể tránh khỏi sau khi đã giải ngân vốn lớn cho quỹ đất.
+Thị trường chung cư đang chứng kiến một nghịch lý: sức mua chậm lại rõ rệt nhưng nguồn cung mới vẫn tiếp tục đổ ra thị trường với tốc độ cao. Hiện tượng này xuất phát từ những ràng buộc tài chính và pháp lý mà chủ đầu tư không thể tránh khỏi sau khi đã giải ngân vốn lớn cho quỹ đất. Giải ngân là khi tiền đã cam kết được chuyển ra thực tế, thường theo từng đợt gắn với tiến độ.
 
 ## Điểm chính cần nắm
 

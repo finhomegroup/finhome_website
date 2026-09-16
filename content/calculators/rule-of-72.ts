@@ -41,6 +41,31 @@ export const RULE_OF_72 = {
     rateResultTitle: "Lãi suất cần thiết để gốc nhân đôi",
     rateUnit: "%/năm",
     defaultYears: "10",
+
+    // Original row 17's "quy tắc nhẩm có sai số", as a figure rather than a
+    // claim. In MONTHS: at 8%/năm the gap is 0,0065 năm, which would render
+    // "0,0 năm" and teach nothing.
+    errorLabel: "Nhẩm nhanh lệch so với chính xác",
+    errorUnit: "tháng",
+    errorAheadSuffix: "(nhẩm lâu hơn thực tế)",
+    errorBehindSuffix: "(nhẩm ngắn hơn thực tế)",
+    errorHelp:
+      "Số tháng chênh lệch giữa cột nhẩm nhanh và cột chính xác, ở đúng mức lãi suất bạn vừa nhập. Quanh 8%/năm con số này gần bằng 0; càng xa khoảng 6–10%/năm thì càng lớn.",
+  },
+
+  // The small timeline original row 17 asks for instead of a chart: each rung
+  // is one further doubling, so the years simply multiply.
+  milestones: {
+    title: "Mốc thời gian: nhân đôi, nhân bốn, nhân tám",
+    intro:
+      "Lãi kép nhân lên chứ không cộng thêm, nên mỗi lần nhân đôi lại mất đúng một khoảng thời gian như nhau. Bảng dưới dùng công thức CHÍNH XÁC, không dùng số nhẩm — nhân một con số xấp xỉ lên ba lần thì sai số cũng lên ba lần.",
+    multipleColumn: "Số tiền thành",
+    doublingsColumn: "Số lần nhân đôi",
+    yearsColumn: "Sau bao nhiêu năm",
+    caption: "Thời gian để số tiền gốc nhân lên, theo lãi suất đã nhập",
+    /** `{multiple}` substituted. */
+    multipleFormat: "{multiple} lần số ban đầu",
+    yearsUnit: "năm",
   },
 
   table: {

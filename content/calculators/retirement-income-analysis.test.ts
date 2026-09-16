@@ -15,6 +15,10 @@ import {
   type RetirementIncomeSourcesInput,
 } from "@/lib/calc/retirement-income-sources";
 import { RETIREMENT_INCOME_ANALYSIS as C } from "@/content/calculators/retirement-income-analysis";
+import {
+  dispositionFor,
+  readingDispositionFor,
+} from "@/content/calculators/plan-disposition";
 
 const D = C.form.defaults;
 
@@ -286,5 +290,209 @@ describe("phan-tich-thu-nhap-huu-tri — provenance header", () => {
         figure,
       );
     }
+  });
+});
+
+/**
+ * ---------------------------------------------------------------------------
+ * Added 2026-09-16 with this row's `sources` list. Three guards that did not
+ * exist on this file: a copy sweep, a shouting sweep, and the reading-
+ * disposition chain.
+ *
+ * NOTE FOR THE NEXT READER. `sources` means two unrelated things around this
+ * file. `shippedInput().sources` above is the income-source INPUT fixtures —
+ * social, pension, work, other. `C.sources` below is the content module's
+ * CITATIONS field. They are not related and a grep for "sources" here will
+ * hit both.
+ * ---------------------------------------------------------------------------
+ */
+
+/** Proper nouns a reader cannot mistake for shouting. */
+const PROPER_NOUNS = ["USD", "COLA"];
+
+/**
+ * Every user-facing string in the module, by WALKING the exported object.
+ *
+ * Not a hand-written field list and not a regex over the source text. A
+ * field list goes stale the moment a field is added — `sources` arrived on
+ * this module today — and extracting the literals with a regex first is
+ * what made an earlier sweep of a sibling report zero shouted words on a
+ * file that had ten.
+ */
+function userFacingStrings(value: unknown, out: string[] = []): string[] {
+  if (typeof value === "string") out.push(value);
+  else if (Array.isArray(value)) for (const v of value) userFacingStrings(v, out);
+  else if (value !== null && typeof value === "object")
+    for (const v of Object.values(value)) userFacingStrings(v, out);
+  return out;
+}
+
+/** Runs of three or more capitals, once the proper nouns are removed. */
+function shoutedRuns(strings: readonly string[]): string[] {
+  const found: string[] = [];
+  for (const original of strings) {
+    // A URL is not prose. Strip hrefs BEFORE the proper-noun pass: the
+    // govinfo href on a sibling US row is
+    // ".../USCODE-2023-title42-..." and reported "USCODE" as shouting,
+    // which is a false positive no allowlist should have to absorb. Doing
+    // it here rather than per-file means the next agent who adds a
+    // capitalised href does not have to rediscover this.
+    let text = original.replace(/https?:\/\/\S+/g, " ");
+    // split/join, not a regex: these tokens can contain regex metacharacters.
+    for (const noun of PROPER_NOUNS) text = text.split(noun).join(" ");
+    // `\p{Lu}`, never a range like `Ạ-Ỹ` — that range spans the LOWERCASE
+    // accented block, so `[Ạ-Ỹ]` matches "ạ" and the sweep reads as clean.
+    for (const match of text.matchAll(/\p{Lu}{3,}/gu)) found.push(match[0]);
+  }
+  return [...new Set(found)];
+}
+
+describe("phan-tich-thu-nhap-huu-tri's copy", () => {
+  it("quotes no invented statistical range", () => {
+    // Same list as `apr-advanced.test.ts` and `loan.test.ts`, deliberately
+    // reused rather than rewritten: an invented range survived in the one
+    // sibling module that had no test of its own, and a fresh list here
+    // would be a list that can drift from theirs.
+    const copy = userFacingStrings(C).join(" ");
+    for (const range of ["1–3%", "1-3%", "35–40", "45–55", "70–80", "3–6 tháng"]) {
+      expect(copy, `copy quotes "${range}"`).not.toContain(range);
+    }
+  });
+
+  it("shouts nowhere mid-sentence", () => {
+    // VACUITY GUARD FIRST, because a sweep that matches nothing passes on
+    // every file. Both fixtures are lines this module REALLY shipped before
+    // 2026-09-16.
+    expect(
+      shoutedRuns(["Lợi nhuận được tính trên phần CÒN LẠI sau khi rút"]),
+    ).toEqual(["CÒN", "LẠI"]);
+    expect(
+      shoutedRuns(["và MỌI số tiền bạn nhập bên dưới là số tiền theo giá"]),
+    ).toEqual(["MỌI"]);
+    // And the allowlist must not swallow a real shout beside an allowed one.
+    expect(
+      shoutedRuns(["an sinh xã hội có COLA nên KHÔNG mất sức mua"]),
+    ).toEqual(["KHÔNG"]);
+    expect(shoutedRuns(["Chi tiêu mỗi năm, tính bằng USD"])).toEqual([]);
+
+    expect(shoutedRuns(userFacingStrings(C))).toEqual([]);
+  });
+
+  it("keeps the market visible in the lede, since the H1 does not carry it", () => {
+    // This row's H1 is market-neutral and the registry row is not. That is
+    // acceptable here — unlike row 9 — precisely because the lede's FIRST
+    // substantive clause names the market. Assert the thing that makes it
+    // acceptable, so a lede rewrite cannot quietly remove it.
+    expect(C.lede).toContain("Hoa Kỳ");
+  });
+});
+
+/**
+ * This row adds NO emphasis, and that is enforced here.
+ *
+ * The chain is `library: "hoa-ky"` => filed `reference` => this pass added
+ * nothing. `plan-disposition.test.ts` enforces the FIRST arrow for all 75
+ * rows. Nothing enforced the second: `reference` is documented as asserting
+ * that nothing was added, and no test checked that a `reference` row had in
+ * fact added nothing — which is how a sibling US row shipped seven
+ * `<strong>` per page while still filed `reference`, with the suite green.
+ *
+ * This row is the one where the temptation is strongest, because the
+ * twenty-first unit's handoff confirmed it "stays as it is" as a US
+ * reference page and it reads more like an essay than a calculator. P4's
+ * standing instruction is still "maintain or move to a library until
+ * audience evidence justifies more", and `emphasis` is an investment in a
+ * page as reading. If that evidence arrives, the disposition moves FIRST.
+ */
+describe("phan-tich-thu-nhap-huu-tri — reading disposition adds nothing", () => {
+  it("is a hoa-ky row, filed reference, declaring no emphasis", () => {
+    expect(dispositionFor("phan-tich-thu-nhap-huu-tri")?.library).toBe("hoa-ky");
+    expect(readingDispositionFor("phan-tich-thu-nhap-huu-tri")).toBe("reference");
+    // `in`, not a property read: the content object is `as const`, so once
+    // the key is gone `C.formula.emphasis` is a TYPE error rather than
+    // `undefined`, and a test that cannot compile guards nothing.
+    expect(
+      "emphasis" in C.formula,
+      "phan-tich-thu-nhap-huu-tri is filed `reference` but declares emphasis phrases",
+    ).toBe(false);
+  });
+});
+
+describe("phan-tich-thu-nhap-huu-tri — sources", () => {
+  it("cites an openable source for every item", () => {
+    expect(C.sources.items.length).toBeGreaterThan(0);
+    for (const item of C.sources.items) {
+      expect(item.url, "a source item has an empty url").not.toBe("");
+      expect(item.url).toMatch(/^https:\/\//);
+      expect(item.label.trim()).not.toBe("");
+    }
+  });
+
+  it("states the provenance limit rather than implying completeness", () => {
+    expect(C.sources.intro).toBeDefined();
+    expect(C.sources.intro.length).toBeGreaterThan(40);
+  });
+
+  it("cites the statute behind the one legal claim the page makes", () => {
+    const urls = C.sources.items.map((item) => item.url);
+    expect(
+      urls.some((url) => url.includes("title42-chap7-subchapII-sec415")),
+      "the Social Security COLA statute is missing",
+    ).toBe(true);
+    expect(
+      urls.every((url) => url.endsWith(".gov") || url.includes(".gov/")),
+      "a source is not on a .gov host",
+    ).toBe(true);
+  });
+
+  it("does not label its citations with the word its table already uses", () => {
+    // `sourceTable.sourceColumn` is "Nguồn" and means an INCOME source. A
+    // citations heading reading "Nguồn" too would put the same word on two
+    // unrelated things on one page, which is why this row overrides the
+    // suite's usual heading. Asserted as a RELATION, so renaming either side
+    // keeps them distinct rather than re-colliding.
+    expect(C.form.sourceTable.sourceColumn).toBe("Nguồn");
+    expect(C.sources.title).not.toBe(C.form.sourceTable.sourceColumn);
+    expect(C.sources.title).toBe("Nguồn tham khảo");
+  });
+
+  it("cites once, because only one figure on this page comes from law", () => {
+    // The short list is the FINDING, not an omission. Every amount and rate
+    // here is a reader input — there is no US table, no year key and no
+    // statutory constant in `lib/calc/retirement-income-sources.ts` — so a
+    // longer list would be citing things the page does not assert.
+    expect(C.sources.items.length).toBe(1);
+    expect(C.sources.intro).toContain("ô bạn nhập");
+  });
+
+  it("stays no more precise than the statute it cites", () => {
+    // §415(i) ties the increase to "the Consumer Price Index (as prepared by
+    // the Department of Labor)" and names no series. The page says "một chỉ
+    // số giá tiêu dùng" and must not be sharpened to naming CPI-W, which
+    // would make the claim more specific than its own citation.
+    //
+    // Scoped to the CLAIM-BEARING surfaces, deliberately. The first version
+    // of this assertion swept `userFacingStrings(C)` — which includes the
+    // source note whose whole job is to say the statute does NOT name a
+    // series — so it failed on the sentence that makes the point. A guard
+    // that cannot distinguish asserting a thing from disclaiming it is
+    // measuring the wrong string.
+    const claims = [
+      C.lede,
+      ...C.formula.body,
+      ...C.faq.items.map((item) => `${item.q} ${item.a}`),
+      ...userFacingStrings(C.form),
+    ].join(" ");
+    expect(claims).toContain("một chỉ số giá tiêu dùng");
+    expect(claims).not.toContain("CPI-W");
+    expect(claims).not.toContain("CPI-U");
+  });
+
+  it("does not claim a source for the indexation rate, which is an input", () => {
+    // The page derives Social Security growth from the reader's own
+    // inflation field rather than from a published COLA, and says so. A
+    // citation implying it ships real COLA figures would be false.
+    expect(C.sources.intro).toContain("mức lạm phát bạn nhập");
+    expect(C.form.socialHelp).toContain("theo luật");
   });
 });

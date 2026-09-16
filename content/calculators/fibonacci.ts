@@ -43,7 +43,7 @@ export const FIBONACCI = {
 
     directionLegend: "Chiều của đợt biến động",
     directionHelp:
-      "Xu hướng tăng: giá đi từ đáy lên đỉnh, nên điều chỉnh là đi XUỐNG từ đỉnh. Xu hướng giảm: giá đi từ đỉnh xuống đáy, nên hồi phục là đi LÊN từ đáy.",
+      "Xu hướng tăng: giá đi từ đáy lên đỉnh, nên điều chỉnh là đi xuống từ đỉnh. Xu hướng giảm: giá đi từ đỉnh xuống đáy, nên hồi phục là đi lên từ đáy.",
     directionUp: "Xu hướng tăng — đo điều chỉnh xuống từ đỉnh",
     directionDown: "Xu hướng giảm — đo hồi phục lên từ đáy",
     defaultDirection: "uptrend",
@@ -72,8 +72,22 @@ export const FIBONACCI = {
     },
   },
 
-  directionNotice:
-    "Chiều là ô quan trọng nhất và cũng là ô dễ nhập sai nhất. Với đợt biến động từ 40.000 lên 60.000, mức điều chỉnh 61,8% ở xu hướng TĂNG là 47.640 ₫ — thấp hơn giá hiện tại, đúng nghĩa một nhịp điều chỉnh. Nếu nhập là xu hướng giảm, cùng tỷ lệ đó cho 52.360 ₫ — một con số trông hoàn toàn hợp lý và nằm sai phía. Hãy tự hỏi: giá đã đi từ đâu đến đâu, và bạn đang chờ nó quay lại theo hướng nào.",
+  // The visible notice leads with the statement the row's own requirement
+  // names: a technical level does not guarantee a reversal. That sentence was
+  // already written, and better, but it sat in the collapsed FAQ while this
+  // slot was spent entirely on the direction input — the same asymmetry that
+  // makes row 41 (`diem-pivot`) the sibling this one now matches.
+  //
+  // The direction warning stays here in one sentence; the worked example
+  // moved to `directionDetail` rather than being cut, because promoting the
+  // claim without moving anything out would have pushed the form off the
+  // first screens on a phone (see `calculator-page.tsx` on `noticeDetail`).
+  noSignalNotice:
+    "Một mức Fibonacci không bảo đảm giá sẽ đảo chiều ở đó: không có bằng chứng thống kê thuyết phục nào cho thấy các tỷ lệ này có tính chất đặc biệt. Giá thường phản ứng quanh chúng vì nhiều người cùng đặt lệnh ở đó — đó là hành vi của người tham gia thị trường, không phải giá trị của tài sản. Hãy đọc chúng như những vùng cần chú ý, và nhớ rằng chiều của đợt biến động là ô quyết định kết quả: nhập sai chiều cho ra các mức nằm sai phía thị trường.",
+
+  directionDetailTitle: "Ví dụ: cùng một tỷ lệ, hai chiều",
+  directionDetail:
+    "Với đợt biến động từ 40.000 lên 60.000, mức điều chỉnh 61,8% ở xu hướng tăng là 47.640 ₫ — thấp hơn giá hiện tại, đúng nghĩa một nhịp điều chỉnh. Nếu nhập là xu hướng giảm, cùng tỷ lệ đó cho 52.360 ₫ — một con số trông hoàn toàn hợp lý và nằm sai phía. Hãy tự hỏi: giá đã đi từ đâu đến đâu, và bạn đang chờ nó quay lại theo hướng nào.",
 
   formula: {
     title: "Cách tính",
@@ -81,9 +95,23 @@ export const FIBONACCI = {
       "Biên độ = đỉnh − đáy, tức 20.000 ₫ với mặc định. Mọi mức đều là biên độ nhân một tỷ lệ, cộng hoặc trừ vào một trong hai đầu.",
       "Xu hướng tăng: mức điều chỉnh = đỉnh − biên độ × tỷ lệ. Mức 0% là đỉnh, mức 100% là đáy. Với mặc định: 38,2% cho 52.360 ₫, 50% cho 50.000 ₫, 61,8% cho 47.640 ₫, 78,6% cho 44.280 ₫.",
       "Xu hướng giảm: mức điều chỉnh = đáy + biên độ × tỷ lệ. Mức 0% là đáy, mức 100% là đỉnh. Cùng tỷ lệ, neo ngược lại — nên hai chiều đối xứng nhau qua điểm giữa, và mức 50% trùng nhau ở cả hai chiều.",
-      "Mức mở rộng đi VƯỢT QUA điểm cuối của đợt biến động, theo chiều xu hướng. Xu hướng tăng: đáy + biên độ × tỷ lệ, nên 161,8% cho 72.360 ₫ và 200% cho 80.000 ₫ — cả hai đều cao hơn đỉnh. Xu hướng giảm thì các mức này nằm dưới đáy.",
+      "Mức mở rộng đi vượt qua điểm cuối của đợt biến động, theo chiều xu hướng. Xu hướng tăng: đáy + biên độ × tỷ lệ, nên 161,8% cho 72.360 ₫ và 200% cho 80.000 ₫ — cả hai đều cao hơn đỉnh. Xu hướng giảm thì các mức này nằm dưới đáy.",
       "Chỉ 23,6%, 38,2% và 61,8% xuất phát từ dãy Fibonacci. Mức 50% là một nửa biên độ, mức 78,6% là căn bậc hai của 0,618. Bảng kết quả ghi rõ mức nào thuộc loại nào.",
       "Khi đỉnh bằng đáy, biên độ bằng 0 và mọi mức trùng vào một giá. Công cụ vẫn tính chứ không báo lỗi — kết quả suy biến nhưng không sai.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark why the two directions share the 50% level, that extensions go beyond the move, and which ratio is convention.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "đối xứng nhau qua điểm giữa",
+      "vượt qua điểm cuối",
+      "một nửa biên độ",
     ],
   },
 

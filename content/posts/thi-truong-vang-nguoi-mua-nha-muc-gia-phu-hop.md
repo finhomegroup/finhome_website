@@ -11,7 +11,7 @@ Thị trường bất động sản Việt Nam đang trong giai đoạn paradox 
 
 Sự chênh lệch giữa nhu cầu cao và giao dịch thấp phản ánh bài toán cốt lõi của thị trường bất động sản hiện nay: không phải người mua không có nhu cầu, mà là nguồn cung không đáp ứng được khả năng tài chính của họ. Khi phần lớn dự án mới tập trung vào phân khúc trung-cao cấp với mức giá từ 60-100 triệu đồng/m² trở lên, phân khúc căn hộ giá hợp lý (dưới 40 triệu/m²) gần như bị bỏ ngỏ.
 
-Với người mua đang tìm kiểm nhà ở, FinHome khuyến nghị cân nhắc kỹ khả năng tài chính dài hạn trước khi quyết định xuống tiền. Nếu nguồn cung trong tầm giá quá khan hiếm tại khu vực mong muốn, việc mở rộng phạm vi tìm kiếm hoặc cân nhắc các phương án nhà ở xã hội, cho thuê mua có thể là lựa chọn thực tế hơn trong giai đoạn thị trường điều chỉnh.
+Với người mua đang tìm kiếm nhà ở, FinHome khuyến nghị cân nhắc kỹ khả năng tài chính dài hạn trước khi quyết định xuống tiền. Nếu nguồn cung trong tầm giá quá khan hiếm tại khu vực mong muốn, việc mở rộng phạm vi tìm kiếm hoặc cân nhắc các phương án nhà ở xã hội, cho thuê mua (trả trước một phần giá trị căn nhà, phần còn lại trả dần hằng tháng như tiền thuê, và chỉ sang tên sau khi hết hạn hợp đồng cùng việc trả hết phần còn lại) có thể là lựa chọn thực tế hơn trong giai đoạn thị trường điều chỉnh.
 
 ## Đọc thêm
 

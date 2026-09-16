@@ -119,15 +119,15 @@ describe("computeEducationSavings — funding it", () => {
     const result = plan(BASE);
     const monthlyRate = 1.07 ** (1 / 12) - 1;
     const grown =
-      (result.monthlyContribution *
+      (result.monthlyContribution! *
         ((1 + monthlyRate) ** result.monthsToSave - 1)) /
       monthlyRate;
     expect(grown).toBeCloseTo(result.shortfallAtStart, 2);
   });
 
   it("needs less each month with more time", () => {
-    const soon = plan({ ...BASE, yearsUntilStart: 5 }).monthlyContribution;
-    const later = plan({ ...BASE, yearsUntilStart: 18 }).monthlyContribution;
+    const soon = plan({ ...BASE, yearsUntilStart: 5 }).monthlyContribution!;
+    const later = plan({ ...BASE, yearsUntilStart: 18 }).monthlyContribution!;
     expect(later).toBeLessThan(soon);
   });
 
@@ -135,11 +135,19 @@ describe("computeEducationSavings — funding it", () => {
     const result = plan({ ...BASE, currentSavings: 3_000_000_000 });
     expect(result.alreadyFunded).toBe(true);
     expect(result.shortfallAtStart).toBe(0);
+    // 0, not null: nothing NEEDS to be contributed, which is a different
+    // state from "no monthly amount can be solved".
     expect(result.monthlyContribution).toBe(0);
-    // The return's share of REACHING the target is 0 here: principal alone
-    // already covers it. Unfloored, the difference would be
-    // −2.299.398.621 ₫ and the page would render that as "lãi đóng góp".
-    expect(result.interestEarned).toBe(0);
+    expect(result.fundingGapAtStart).toBe(0);
+    // And the return's contribution is the GROWTH on the money actually
+    // held — 3 tỷ compounding at 7% for ten years — not the difference
+    // between the target and the principal, which here would be
+    // −2.299.398.621 ₫ and used to be floored to hide that.
+    expect(result.interestEarned).toBeCloseTo(
+      3_000_000_000 * 1.07 ** 10 - 3_000_000_000,
+      4,
+    );
+    expect(result.interestEarned).toBeGreaterThan(0);
   });
 
   it("never reports a negative contribution from the return", () => {
@@ -153,20 +161,25 @@ describe("computeEducationSavings — funding it", () => {
     }
   });
 
-  it("keeps a partly over-funded plan's return contribution positive", () => {
-    // 600 triệu is already-funded (it GROWS past the target by the start
-    // date) but is well under the target itself, so the floor must not
-    // clamp this one. Reference from the definition — the tuition stream
-    // discounted to the start of study, less the principal put in:
-    const target = [0, 1, 2, 3].reduce(
-      (sum, k) => sum + (80_000_000 * 1.08 ** (10 + k)) / 1.07 ** k,
-      0,
-    );
+  it("reports an over-funded plan's return as the GROWTH it actually earned", () => {
+    // 600 triệu is already-funded: it grows past the target by the start
+    // date. The old definition (`target − principal`) reported 100.601.379 ₫
+    // here — the amount of the TARGET the return covered, which is not what
+    // the return did, and which needed a floor to stop it going negative on
+    // a heavily over-funded plan. The figure is now the growth on the money
+    // held: 600 triệu at 7% for ten years.
     const result = plan({ ...BASE, currentSavings: 600_000_000 });
     expect(result.alreadyFunded).toBe(true);
     expect(result.totalContributions).toBe(0);
-    expect(result.interestEarned).toBeCloseTo(target - 600_000_000, 2);
-    expect(result.interestEarned).toBeCloseTo(100_601_379.336, 2);
+    expect(result.fundedAtStart).toBeCloseTo(600_000_000 * 1.07 ** 10, 4);
+    expect(result.interestEarned).toBeCloseTo(
+      600_000_000 * 1.07 ** 10 - 600_000_000,
+      4,
+    );
+    expect(result.interestEarned).toBeCloseTo(580_290_814.374, 2);
+    // The plan holds MORE than it needs, and that is its own statement.
+    expect(result.fundedAtStart).toBeGreaterThan(result.targetAtStart);
+    expect(result.fundingGapAtStart).toBe(0);
   });
 
   it("reports a NEGATIVE return contribution when the return loses money", () => {
@@ -211,14 +224,70 @@ describe("computeEducationSavings — funding it", () => {
     expect(result.interestEarned).toBe(0);
   });
 
-  it("has no contribution to solve when study starts now", () => {
-    const result = plan({ ...BASE, yearsUntilStart: 0 });
-    expect(result.noTimeToSave).toBe(true);
-    expect(result.monthsToSave).toBe(0);
-    expect(result.monthlyContribution).toBe(0);
-    // The target is still meaningful, at today's prices.
-    expect(result.years[0].tuition).toBeCloseTo(80_000_000, 6);
-    expect(result.shortfallAtStart).toBeGreaterThan(0);
+  // The boundary an independent review found on the live page: wait 0 with
+  // 10 triệu saved reported "Cần góp mỗi tháng 0 ₫" beside "Phần do lãi đóng
+  // góp 314.513.997 ₫" — a monthly amount nobody can pay and interest nobody
+  // earned, with zero months elapsed.
+  describe("study starting NOW", () => {
+    const NOW = { ...BASE, yearsUntilStart: 0, currentSavings: 10_000_000 };
+
+    it("withholds the monthly contribution instead of reporting 0", () => {
+      const result = plan(NOW);
+      expect(result.noTimeToSave).toBe(true);
+      expect(result.monthsToSave).toBe(0);
+      expect(result.monthlyContribution).toBeNull();
+      expect(result.totalContributions).toBe(0);
+    });
+
+    it("reports the gap as a GAP, and no interest at all", () => {
+      const result = plan(NOW);
+      // 4 years of tuition from today at 8% growth, discounted at 7%.
+      expect(result.targetAtStart).toBeCloseTo(324_513_996.9, 0);
+      expect(result.fundedAtStart).toBe(10_000_000);
+      expect(result.fundingGapAtStart).toBeCloseTo(
+        result.targetAtStart - 10_000_000,
+        6,
+      );
+      expect(result.fundingGapAtStart).toBe(result.shortfallAtStart);
+      // The figure that was being displayed as earned interest.
+      expect(result.fundingGapAtStart).toBeCloseTo(314_513_996.9, 0);
+      // No time elapsed, so nothing was earned.
+      expect(result.interestEarned).toBe(0);
+    });
+
+    it("keeps tuition DUE apart from tuition the fund can PAY", () => {
+      const result = plan(NOW);
+      const first = result.series.find((p) => p.tuitionDue > 0)!;
+      expect(first.tuitionDue).toBeCloseTo(80_000_000, 6);
+      // Only 10 triệu exists, so only 10 triệu is paid.
+      expect(first.tuitionPaid).toBe(10_000_000);
+      expect(first.tuitionUnpaid).toBeCloseTo(70_000_000, 6);
+      expect(first.fundAfterTuition).toBe(0);
+      // Every later year is entirely unpaid, and the total says so.
+      expect(result.totalTuitionUnpaid).toBeCloseTo(
+        result.totalTuitionNominal - 10_000_000,
+        6,
+      );
+    });
+
+    it("a FUNDED no-time plan solves 0 and pays every year in full", () => {
+      // Same zero wait, enough money. The contribution is 0 because none is
+      // needed — the state `null` deliberately does not cover.
+      const funded = plan({ ...NOW, currentSavings: 400_000_000 });
+      expect(funded.noTimeToSave).toBe(true);
+      expect(funded.alreadyFunded).toBe(true);
+      expect(funded.monthlyContribution).toBe(0);
+      expect(funded.fundingGapAtStart).toBe(0);
+      expect(funded.totalTuitionUnpaid).toBeCloseTo(0, 6);
+      for (const point of funded.series.filter((p) => p.tuitionDue > 0)) {
+        expect(point.tuitionPaid).toBeCloseTo(point.tuitionDue, 6);
+        expect(point.tuitionUnpaid).toBeCloseTo(0, 6);
+      }
+      // And the growth it does earn is real: the fund keeps earning between
+      // the yearly payments even though no month of saving happened.
+      expect(funded.interestEarned).toBe(0);
+      expect(funded.fundedAtStart).toBe(400_000_000);
+    });
   });
 
   it("divides evenly at a 0% return", () => {
@@ -232,11 +301,13 @@ describe("computeEducationSavings — funding it", () => {
   it("keeps the funding identity", () => {
     const result = plan(BASE);
     expect(result.totalContributions).toBeCloseTo(
-      result.monthlyContribution * result.monthsToSave,
+      result.monthlyContribution! * result.monthsToSave,
       6,
     );
-    // BASE is under-funded, so the floor on interestEarned is inactive and
-    // the raw identity holds exactly. Over-funded plans are covered above.
+    // On a solvable plan `fundedAtStart` IS the target, so the identity
+    // reads the same way it always did — and now it also holds on the
+    // unfundable and over-funded cases, which is why the special cases went.
+    expect(result.fundedAtStart).toBeCloseTo(result.targetAtStart, 4);
     expect(result.interestEarned).toBeCloseTo(
       result.targetAtStart - 200_000_000 - result.totalContributions,
       6,

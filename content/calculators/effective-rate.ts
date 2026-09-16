@@ -14,13 +14,29 @@
 export const EFFECTIVE_RATE = {
   slug: "/cong-cu/lai-suat-thuc-te",
 
-  pageTitle: "Lãi suất thực tế: 8%/năm là bao nhiêu?",
-  metaTitle: "Tính lãi suất thực tế — Quy đổi lãi danh nghĩa và hiệu dụng",
+  // ORIGINAL ROW 58 RENAMED THIS PAGE, and the URL deliberately did not move.
+  // "Lãi suất thực tế" is the phrase Vietnamese readers also use for an APR
+  // that folds in arrangement fees and insurance, so the old title invited
+  // exactly the confusion this page exists to remove. Everything visible now
+  // says HIỆU DỤNG — the effect of the compounding frequency alone — and
+  // `aprNotice` states what is NOT in it. `/cong-cu/lai-suat-thuc-te/` stays
+  // as the route.
+  pageTitle: "Lãi suất hiệu dụng: 8%/năm thực nhận là bao nhiêu?",
+  metaTitle: "Tính lãi suất hiệu dụng — Quy đổi lãi danh nghĩa và hiệu dụng",
   metaDescription:
-    "Quy lãi suất danh nghĩa về lãi suất hiệu dụng theo kỳ ghép lãi, và ngược lại, kèm bảng so sánh mọi tần suất ghép lãi. Công cụ miễn phí của FinHome.",
+    "Quy lãi suất danh nghĩa về lãi suất hiệu dụng theo kỳ ghép lãi, và ngược lại, kèm bảng so sánh mọi tần suất ghép lãi. Đây là tác động của kỳ ghép lãi, không phải APR có phí. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Một mức “8%/năm” không phải một con số duy nhất. Ghép lãi một lần một năm thì đúng là 8%; ghép hằng tháng thành 8,30%; ghép hằng ngày thành 8,33%. Lãi suất danh nghĩa là con số được niêm yết, lãi suất hiệu dụng là con số bạn thực nhận — và chỉ con số thứ hai so sánh được giữa các sản phẩm.",
+    "Một mức “8%/năm” không phải một con số duy nhất. Ghép lãi một lần một năm thì đúng là 8%; ghép hằng tháng thành 8,30%; ghép hằng ngày thành 8,33%. Lãi suất danh nghĩa là con số được niêm yết, lãi suất hiệu dụng là con số bạn thực nhận sau khi tính kỳ ghép lãi — và chỉ con số thứ hai so sánh được giữa các sản phẩm có kỳ ghép lãi khác nhau.",
+
+  // The distinction original row 58 asks for, above the tool rather than in a
+  // collapsed FAQ: a reader must not read a number off this page and take it
+  // to a loan quote as though it included the fees.
+  aprNotice:
+    "Trang này chỉ tính tác động của KỲ GHÉP LÃI. Nó không cộng phí thu xếp, phí bảo hiểm, phí thẩm định hay phí trả nợ trước hạn — nên con số “hiệu dụng” ở đây KHÔNG phải APR. Với một khoản vay, phí thường ảnh hưởng nhiều hơn cả kỳ ghép lãi; hãy dùng công cụ APR cho phần đó.",
+  aprNoticeDetailTitle: "Hiệu dụng và APR khác nhau ở chỗ nào?",
+  aprNoticeDetail:
+    "Lãi hiệu dụng trả lời: cùng một mức niêm yết, ghép lãi dày hơn thì thành bao nhiêu? Đó là câu hỏi về CÁCH TÍNH LÃI. APR trả lời: quy mọi khoản phải trả — gồm cả phí — về một mức lãi suất tương đương để so hai báo giá. Đó là câu hỏi về TỔNG CHI PHÍ. Hai con số có thể chênh nhau nhiều điểm phần trăm, và chúng không thay thế nhau được: một sản phẩm ghép lãi hằng năm nhưng thu 2% phí thu xếp có APR cao hơn hẳn mức niêm yết, trong khi lãi hiệu dụng của nó đúng bằng mức niêm yết.",
 
   form: {
     directionLegend: "Bạn có con số nào?",
@@ -42,8 +58,8 @@ export const EFFECTIVE_RATE = {
     defaultCompounding: "monthly",
 
     resultTitle: "Kết quả",
-    effectiveLabel: "Lãi suất hiệu dụng",
-    nominalLabel: "Lãi suất danh nghĩa",
+    effectiveLabel: "Lãi hiệu dụng (chưa gồm phí)",
+    nominalLabel: "Lãi danh nghĩa niêm yết",
     periodicLabel: "Lãi suất mỗi kỳ",
     periodsLabel: "Số kỳ ghép lãi mỗi năm",
     gainLabel: "Phần tăng do ghép lãi",
@@ -94,19 +110,19 @@ export const EFFECTIVE_RATE = {
       },
       {
         q: "Gửi 6 tháng rồi tái tục có lợi hơn gửi 12 tháng không?",
-        a: "Chỉ khi mức lãi suất bù được. Gửi hai kỳ 6 tháng ở cùng một mức lãi suất danh nghĩa tương đương ghép lãi nửa năm một lần, nên bạn được thêm một chút nhờ ghép lãi. Nhưng lãi suất kỳ hạn 6 tháng thường thấp hơn kỳ hạn 12 tháng, và mức chênh đó lớn hơn nhiều so với phần lợi từ ghép lãi. Hãy quy cả hai về lãi hiệu dụng rồi so.",
+        a: "Chỉ khi mức lãi suất bù được, và đó là con số bạn phải tra từ biểu lãi suất đang áp dụng. Về mặt phép tính: gửi hai kỳ 6 tháng ở CÙNG một mức lãi suất danh nghĩa tương đương ghép lãi nửa năm một lần, nên bạn được thêm một chút nhờ ghép lãi. Nhưng nếu mức lãi kỳ hạn 6 tháng thấp hơn kỳ hạn 12 tháng, phần thiếu đó có thể lớn hơn hẳn phần lợi từ ghép lãi. Cách so đúng là quy CẢ HAI mức lãi thực tế của bạn về lãi hiệu dụng rồi đặt cạnh nhau — công cụ không biết biểu lãi suất của nơi bạn gửi.",
       },
       {
         q: "Vì sao “ghép lãi hằng ngày” lại không hơn nhiều “ghép lãi hằng tháng”?",
-        a: "Vì phần lợi từ ghép lãi tiến rất nhanh tới một giới hạn. Với 8%/năm, ghép hằng tháng cho 8,3000% còn ghép hằng ngày cho 8,3278% — chênh 0,03 điểm phần trăm, tức 30.000 ₫ trên mỗi 100 triệu. Ghép lãi liên tục, tức tần suất tiến tới vô cùng, chỉ đạt 8,3287%. Nên đây thường là một chi tiết quảng cáo hơn là một lợi thế thật.",
+        a: "Vì phần lợi từ ghép lãi tiến rất nhanh tới một giới hạn. Ở mức 8%/năm — con số giả định của ví dụ trên trang này — ghép hằng tháng cho 8,3000% còn ghép hằng ngày cho 8,3278%, chênh 0,03 điểm phần trăm, tức 30.000 ₫ trên mỗi 100 triệu. Ghép lãi liên tục, tức tần suất tiến tới vô cùng, chỉ đạt 8,3287%. Ở mức lãi cao hơn thì khoảng cách rộng hơn, nên hãy nhập chính mức lãi của bạn để thấy con số của mình.",
       },
       {
         q: "Với khoản vay thì nên xem con số nào?",
-        a: "Lãi hiệu dụng, và cùng chiều lo lắng thay vì chiều vui: ghép lãi dày làm bạn trả nhiều hơn. Nhưng với khoản vay, lãi suất chỉ là một phần — phí thu xếp, phí bảo hiểm và phí trả nợ trước hạn thường lớn hơn cả phần chênh do ghép lãi. Công cụ so sánh khoản vay của FinHome tính cả phí vào chi phí vay.",
+        a: "Lãi hiệu dụng, và cùng chiều lo lắng thay vì chiều vui: ghép lãi dày làm bạn trả nhiều hơn. Nhưng với khoản vay, lãi suất chỉ là một phần — còn phí thu xếp, phí bảo hiểm và phí trả nợ trước hạn, mỗi khoản theo hợp đồng của bạn. Con số nào lớn hơn thì tùy hợp đồng, và trang này không biết hợp đồng của bạn: hãy đưa các khoản phí thực tế vào công cụ APR để so trên một mức lãi tương đương.",
       },
       {
         q: "Con số này có trừ thuế và lạm phát không?",
-        a: "Không. Đây là lãi suất danh nghĩa và hiệu dụng, đều trước thuế và trước lạm phát. Lãi tiền gửi của cá nhân tại Việt Nam hiện không chịu thuế thu nhập cá nhân, nhưng lạm phát thì luôn ăn vào sức mua: lãi hiệu dụng 8,3% với lạm phát 4% tương đương lợi nhuận thực khoảng 4,1%.",
+        a: "Không. Đây là lãi suất danh nghĩa và hiệu dụng, cả hai đều trước thuế và trước lạm phát, và công cụ này KHÔNG tính thuế — nó không cho biết khoản lãi của bạn có chịu thuế hay không, ở mức nào; điều đó theo quy định đang áp dụng cho trường hợp của bạn. Về lạm phát thì phép tính đơn giản: lãi hiệu dụng 8,3% với lạm phát 4% tương đương lợi nhuận thực khoảng 4,1%, tính bằng (1,083 ÷ 1,04 − 1). Cả hai con số trong ví dụ là giả định.",
       },
     ],
   },
