@@ -20,6 +20,21 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: "dau-gia-dat-xa-ven-ha-noi-o-dien",
+    title: "Đất xã ven Hà Nội đấu giá trung bình hơn 5 tỷ đồng/lô: Khu vực ngoại thành hút nhà đầu tư",
+    category: "Thị trường",
+    topics: ["gia-cung","khu-vuc-ha-tang"],
+    excerpt: "Xã Ô Diên (Hà Nội) đấu giá thành công 71 lô đất với giá bình quân hơn 5,2 tỷ đồng mỗi thửa, tổng giá trị hơn 374 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dau-gia-dat-xa-ven-ha-noi-o-dien.png",
+    date: "2026-09-16",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/dat-xa-ven-ha-noi-trung-dau-gia-binh-quan-hon-5-ty-dong-moi-lo-5120106.html",
+        "accessed": "2026-09-16"
+      },
+  },
+  {
     slug: "ha-noi-du-kien-bo-gioi-han-5-nam-giay-phep-xay-dung-co-thoi-han",
     title: "Hà Nội đề xuất bỏ giới hạn 5 năm với giấy phép xây dựng có thời hạn",
     category: "Chính sách",
