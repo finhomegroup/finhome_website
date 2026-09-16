@@ -93,7 +93,9 @@ export default function LoanCalculatorPage() {
               <p className="mt-2 text-sm leading-relaxed">
                 <Link
                   href={FLOATING_LOAN.slug}
-                  className="font-medium text-brand-green underline-offset-4 hover:underline"
+                  // `-ink`: this 14px link sits on `bg-soft`, where the raw
+                  // brand green measured 2.91:1 in a browser against 4.5:1.
+                  className="font-medium text-brand-green-ink underline-offset-4 hover:underline"
                 >
                   {C.floatingRateLinkLabel}
                 </Link>
@@ -102,7 +104,7 @@ export default function LoanCalculatorPage() {
                 {C.floatingRateLinkNote}
               </p>
               <details className="mt-2">
-                <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+                <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
                   {C.floatingRateDetailTitle}
                 </summary>
                 <p className="mt-2 text-sm leading-relaxed text-ink-2">

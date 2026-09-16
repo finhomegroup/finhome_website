@@ -118,7 +118,7 @@ export function BlogPostGrid({
             FH_POINTER,
             topic === "all"
               ? "bg-brand-green-ink text-white"
-              : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
+              : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink",
           )}
         >
           Tất cả
@@ -135,7 +135,7 @@ export function BlogPostGrid({
               FH_POINTER,
               topic === t.id
                 ? "bg-brand-green-ink text-white"
-                : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green",
+                : "border border-ink-4/40 text-ink-2 hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink",
             )}
           >
             {t.label}
@@ -215,7 +215,7 @@ export function BlogPostGrid({
             onClick={() => load(topic, page - 1)}
             disabled={page === 1 || loading}
             className={cn(
-              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
+              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink disabled:pointer-events-none disabled:opacity-40",
               FH_POINTER,
             )}
           >
@@ -246,7 +246,7 @@ export function BlogPostGrid({
             onClick={() => load(topic, page + 1)}
             disabled={page === pageCount || loading}
             className={cn(
-              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green disabled:pointer-events-none disabled:opacity-40",
+              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink disabled:pointer-events-none disabled:opacity-40",
               FH_POINTER,
             )}
           >

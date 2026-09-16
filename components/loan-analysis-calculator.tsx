@@ -381,7 +381,9 @@ export function LoanAnalysisCalculator() {
         <p className="text-sm leading-relaxed">
           <Link
             href={LOAN.slug}
-            className="font-medium text-brand-green underline-offset-4 hover:underline"
+            // `-ink`: raw brand green is 3.02:1 on white, below the 4.5:1 this
+            // normal-size link owes.
+            className="font-medium text-brand-green-ink underline-offset-4 hover:underline"
           >
             {C.form.returnRouteLabel}
           </Link>

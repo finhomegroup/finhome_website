@@ -140,7 +140,8 @@ export function DeleteAccountForm() {
         {showSupport ? (
           <a
             href={`mailto:${C.supportEmail}`}
-            className="mt-2 inline-block font-medium text-brand-green underline"
+            // `-ink`: raw brand green is 3.02:1 on white, below 4.5:1.
+            className="mt-2 inline-block font-medium text-brand-green-ink underline"
           >
             {C.supportEmail}
           </a>

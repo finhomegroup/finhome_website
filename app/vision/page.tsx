@@ -120,6 +120,10 @@ export default function BrandIdentityPage() {
                     className="rounded-2xl border-l-4 border-brand-green bg-[#f7f7f6] p-6"
                   >
                     <div className="flex size-11 items-center justify-center rounded-xl bg-white shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
+                      {/* Raw `brand-green` on purpose: a 20px icon is non-text
+                          contrast under WCAG 1.4.11 at 3:1, and #17ab48 is
+                          3.02:1 on this white tile. The 4.5:1 that moved every
+                          green label to `brand-green-ink` governs text only. */}
                       <Icon className="size-5 text-brand-green" />
                     </div>
                     <h3 className="fh-h3 mt-6">{value.title}</h3>

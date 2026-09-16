@@ -40,7 +40,7 @@ export function CalculatorHeading({
           aria-label={CALCULATOR_HUB.backAriaLabel}
           data-calculator-back="true"
           className={cn(
-            "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-ink-4/35 bg-white px-4 text-sm font-medium text-ink-2 shadow-[0_1px_10px_rgba(0,0,0,0.03)] transition-colors hover:border-brand-green/40 hover:text-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+            "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-ink-4/35 bg-white px-4 text-sm font-medium text-ink-2 shadow-[0_1px_10px_rgba(0,0,0,0.03)] transition-colors hover:border-brand-green/40 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
             FH_POINTER,
           )}
         >
@@ -82,7 +82,7 @@ export function CalculatorHeading({
         </p>
         {ledeDetail && ledeDetailTitle ? (
           <details className="mx-auto mt-2 max-w-2xl text-left">
-            <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+            <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
               {ledeDetailTitle}
             </summary>
             <p className="mt-2 text-sm leading-relaxed text-ink-2">

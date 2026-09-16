@@ -7,6 +7,12 @@ function CheckIcon() {
       height="16"
       viewBox="0 0 16 16"
       fill="none"
+      // RAW `brand-green` IS CORRECT HERE, and stays. This is a graphic, not
+      // text: WCAG 1.4.11 asks 3:1 of non-text contrast and #17ab48 is 3.02:1
+      // on white, so it passes the rule that applies to it. The 4.5:1 that
+      // sent every green LABEL to `brand-green-ink` is 1.4.3, which governs
+      // text. `aria-hidden` makes it decorative on top of that. Do not
+      // "finish the sweep" by changing this one.
       className="mt-0.5 shrink-0 text-brand-green"
       aria-hidden
     >
