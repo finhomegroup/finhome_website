@@ -85,6 +85,27 @@ export function Button({
         size === "lg" ? "text-[17px]" : "text-[15px]",
         variant === "primary" &&
           cn(
+            // WHITE TEXT IS THE FIXED POINT HERE; the surface moved to earn it.
+            //
+            // White on the originally sampled gloss (#79ca87 -> #3cb14f ->
+            // #84d86e) measured 2.01:1 in a browser on 2026-09-16 where these
+            // glyphs actually fall, and 1.75:1 for the hover label, against the
+            // 4.5:1 this 17px type needs — it failed even the 3:1 that large
+            // text is allowed, and the gloss's own darkest stop only reached
+            // 2.76:1, so no part of that surface could carry white.
+            //
+            // Dark ink on the unchanged gloss was the other way to comply. It
+            // was rendered side by side and rejected: white-on-green is the
+            // logo's idiom and worth keeping. So `btn-cta-surface` was darkened
+            // instead — see `app/globals.css`, where every stop now sits at or
+            // under a relative luminance of 0.167, putting the surface between
+            // 4.84:1 and 7.84:1.
+            //
+            // THE PAIRING IS WHAT MATTERS, not either half alone. `text-white`
+            // is only correct here as long as that class stays dark, and
+            // re-sampling the gloss from the mirror would quietly return it to
+            // ~2:1 — which is why `components/ui/brand-contrast.test.ts`
+            // recomputes white against every one of its stops on each run.
             "btn-cta-surface text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]",
             !hasSwap &&
               "transition-[filter,background-color] hover:brightness-[0.97]",

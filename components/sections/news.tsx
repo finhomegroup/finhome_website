@@ -14,12 +14,25 @@ import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
 import { PostCardLink } from "@/components/post-card-link";
 
+/**
+ * THE LABEL IS NOT PAINTED WITH THE BRAND GRADIENT, and that is deliberate.
+ *
+ * It used to be: `bg-[radial-gradient(...#17ab48 0%,#a2db46 100%)] bg-clip-text
+ * text-transparent`, which paints the GLYPHS with the gradient. Measured in a
+ * browser on 2026-09-16, the glyphs span 3%-98% of that gradient's range, so
+ * the lime end lands inside the letterforms and the worst contrast against the
+ * `bg-soft` pill is 1.67:1 — against the 4.5:1 that 14px text needs. A gradient
+ * is a decoration; here it was being applied to the one thing on the card that
+ * has to be read.
+ *
+ * `brand-green-ink` is the token that exists for this: the same hue, darkened
+ * until it clears 4.5:1 on every light ground the site uses (5.11 on white,
+ * 4.54 on the rating wash). See the note in `app/globals.css`.
+ */
 function CategoryBadge({ label }: { label: string }) {
   return (
     <span className="inline-flex w-fit shrink-0 rounded-full border border-brand-softgreen bg-bg-soft px-3 py-1 text-sm font-medium shadow-[0_0.42px_1.26px_-0.42px_rgba(28,70,255,0.01),0_1.6px_4.8px_-0.83px_rgba(28,70,255,0.01),0_7px_21px_-1.25px_rgba(28,70,255,0.03)]">
-      <span className="bg-[radial-gradient(207%_50%_at_50%_50%,#17ab48_0%,#a2db46_100%)] bg-clip-text text-transparent">
-        {label}
-      </span>
+      <span className="text-brand-green-ink">{label}</span>
     </span>
   );
 }
@@ -58,7 +71,10 @@ function FeaturedCard({ post }: { post: Post }) {
             className="size-2.5 shrink-0 rounded-full bg-gradient-to-b from-[#95e678] to-[#46c670]"
             aria-hidden="true"
           />
-          <span className="bg-[radial-gradient(96%_50%_at_50%_50%,#17ab48_0%,#a2db46_100%)] bg-clip-text font-display-book text-sm text-transparent">
+          {/* Solid `brand-green-ink`, not the brand gradient: gradient-painted
+              glyphs measured 1.65:1 here against the 4.5:1 this 14px line
+              needs. Same reasoning as `CategoryBadge` above. */}
+          <span className="font-display-book text-sm text-brand-green-ink">
             {post.readingTime}
             {post.source ? ` · Theo ${post.source.name}` : ""}
           </span>
