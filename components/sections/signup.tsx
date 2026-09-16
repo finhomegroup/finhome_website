@@ -45,6 +45,12 @@ export function Signup() {
           <button
             type="submit"
             className={cn(
+              // White stays on the green shown below `lg`; `--color-cta` was
+              // darkened to carry it. At its sampled #40b354 this measured
+              // 2.69:1 against the 4.5:1 this 16px label needs; at #1f7a33 it
+              // is 5.40:1. Only the sub-`lg` branch was ever affected — from
+              // `lg` up the button is the light grey surface below, whose
+              // `rgb(87,87,87)` already passed.
               "inline-flex min-h-[44px] w-full shrink-0 touch-manipulation items-center justify-center rounded-[34px] border border-transparent bg-cta px-8 font-display text-base font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[filter,background-color] [-webkit-tap-highlight-color:transparent] hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[48px] sm:w-auto sm:min-w-[8.5rem] sm:text-[17px] lg:border-[#c7c7c7] lg:bg-[#f7f7f7] lg:text-[rgb(87,87,87)] lg:shadow-none lg:hover:bg-[#efefef] lg:active:bg-[#e8e8e8]",
               FH_POINTER,
             )}

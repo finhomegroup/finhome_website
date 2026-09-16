@@ -47,6 +47,12 @@ export function VisionCompass() {
         <span
           key={label.text}
           className={cn(
+            // White stays; `fh-badge-gradient` was darkened to carry it. On the
+            // original #17ab48 -> #a2db46 radial this measured 2.18:1 against
+            // the 4.5:1 an 11px label needs — the radial reaches about 53% of
+            // its range inside the glyph box, landing on #61c547. See
+            // `app/globals.css` for the new stops and `components/ui/button.tsx`
+            // for why the surface moved rather than the text.
             "fh-badge-gradient absolute whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-medium text-white shadow-[0_2px_10px_rgba(23,171,72,0.25)] sm:px-4 sm:py-2 sm:text-sm",
             label.className,
           )}

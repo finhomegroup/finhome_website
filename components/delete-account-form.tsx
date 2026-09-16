@@ -194,7 +194,12 @@ export function DeleteAccountForm() {
             type="submit"
             disabled={busy}
             className={cn(
-              "inline-flex w-full items-center justify-center rounded-full bg-brand-green px-5 py-3 font-display font-medium text-white transition",
+              // `brand-green-ink`, not `brand-green`: white on the raw brand
+              // green is 3.02:1 and this 16px label needs 4.5:1. The -ink
+              // variant is the same hue darkened until it clears AA, and it is
+              // compliant BOTH as green text on white and as a green surface
+              // under white text, because those are the same ratio.
+              "inline-flex w-full items-center justify-center rounded-full bg-brand-green-ink px-5 py-3 font-display font-medium text-white transition",
               "hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60",
             )}
           >

@@ -32,9 +32,28 @@
    */
   --color-primary-ink: #007acc;
   --color-brand-green-ink: #117f36;
-  /* Green used by the "Thử ngay" CTA pill (sampled from the Framer mirror) */
-  --color-cta: #40b354;
-  --color-cta-hover: #36a449;
+  /*
+   * SURFACE greens that carry WHITE text, so they are set by contrast and not
+   * by the mirror.
+   *
+   * These were #40b354 / #36a449, sampled from the Framer CTA pill. White on
+   * #40b354 measured 2.69:1 in a browser on 2026-09-16, against the 4.5:1 that
+   * the 16px "Đăng ký" label needs — it fails even the 3:1 that large text is
+   * allowed. The arithmetic is unforgiving: white needs its ground at a
+   * relative luminance of 0.183 or less, and every green in this palette is
+   * lighter than that (`brand-green` #17ab48 is 0.298, giving 3.02:1).
+   *
+   * So the green moved rather than the label. That was a deliberate brand
+   * call: white-on-green is the logo's own idiom and worth keeping, and the
+   * alternative — dark ink on the original lime — was rendered side by side
+   * and rejected. #1f7a33 measures 5.40:1 under white and #1a6b2c 6.59:1.
+   *
+   * `--color-brand-green` and `--color-brand-lime` are NOT touched. They are
+   * the logo, icons, borders and focus rings; WCAG 1.4.3 exempts logotypes
+   * from contrast entirely, so the mark stays exactly as drawn.
+   */
+  --color-cta: #1f7a33;
+  --color-cta-hover: #1a6b2c;
   --color-brand-lime: #a2db46;
   --color-brand-softgreen: #90d77b;
   --color-bg-soft: #f7fcf7;
@@ -49,10 +68,24 @@
    * text needs. It carries muted body copy: reading-time and source lines on
    * the blog, field help under calculator inputs, table captions. Every one of
    * those is small text that has to be read, so the token moved rather than
-   * its call sites. #747474 is the value that clears 4.5:1 on BOTH white (4.67) and
-   * the `bg-soft` tint #f7fcf7 (4.50) that several cards use. #777777 was
-   * tried first and measured 4.48 in the browser — one 8-bit step short,
-   * because a bisection that stops at exactly 4.5 rounds down to a failure.
+   * its call sites. #777777 was tried first and measured 4.48 in the browser —
+   * one 8-bit step short, because a bisection that stops at exactly 4.5 rounds
+   * down to a failure.
+   *
+   * DARKENED AGAIN, #747474 -> #727272, once the GRADIENT grounds were
+   * measured. #747474 was chosen from the worst FLAT ground then known (white
+   * 4.67, `bg-soft` #f7fcf7 4.50). The testimonial cards are
+   * `bg-gradient-to-b from-white to-[#f3faf0]`, and a gradient has no single
+   * colour to test — the role lines under each quote sit at 80-88% of that
+   * gradient, on #f4fbf2, where #747474 measures 4.43:1. The worst ground on
+   * this site is therefore not a flat fill at all, and #747474 was one 8-bit
+   * step too light for it in exactly the way #777777 had been for #f7fcf7.
+   *
+   * #727272 is the value that clears 4.5:1 on every ground measured: white
+   * 4.81, `bg-soft` #f7fcf7 4.63, #f4fbf2 4.57, and the gradient's dark end
+   * #f3faf0 4.56. Note the pattern before picking the next value from a
+   * screenshot: a token can only be set from the worst surface it lands on,
+   * and gradients hide their worst surface inside a range.
    *
    * ONE PLACE COULD NOT BE FIXED BY MOVING THIS TOKEN, and it is worth
    * knowing why: the footer sits on #1a1a1a, where `ink-3` is LIGHT text on
@@ -60,7 +93,7 @@
    * neutral token cannot satisfy AA on both a light and a dark surface. The
    * footer's copyright line now uses `ink-4` instead, which is 9.16:1 there.
    */
-  --color-ink-3: #747474;
+  --color-ink-3: #727272;
   --color-ink-4: #bcbcbc;
 
   /* Fonts — the Framer site uses Maison Neue Extended for headings AND body. */
@@ -139,19 +172,33 @@ body {
   }
 }
 
-/* "Thử ngay" CTA pill — glossy green surface sampled from the Framer button image
-   (top bevel highlight, darkest ~25%, then lightening toward the bottom). */
+/* "Thử ngay" CTA pill — glossy green surface, keeping the Framer button image's
+   SHAPE (top bevel highlight, darkest ~25%, then lightening toward the bottom)
+   at a lightness that white text can sit on.
+
+   The sampled original ran #79ca87 -> #3cb14f -> #84d86e. Measured in a browser
+   on 2026-09-16, white on it was 2.01:1 where the "Thử ngay" glyphs actually
+   fall and 1.75:1 for the hover label, against a 4.5:1 requirement; even the
+   darkest stop of that gradient only reached 2.76:1, so no part of the surface
+   was usable. Every stop below is at or under a relative luminance of 0.167,
+   which puts the whole gradient between 4.84:1 (the bevel ends) and 7.84:1
+   (the dark band at 25%).
+
+   The eight stops and their percentages are unchanged in structure on purpose —
+   the gloss is the brand's, only its exposure moved. Do not re-sample this from
+   the mirror without re-checking white against every stop; `components/ui/
+   brand-contrast.test.ts` recomputes exactly that on every run. */
 .btn-cta-surface {
   background-image: linear-gradient(
     180deg,
-    #79ca87 0%,
-    #54bb66 8%,
-    #3cb14f 25%,
-    #46b74f 42%,
-    #51be4f 56%,
-    #66cb4f 74%,
-    #77d458 92%,
-    #84d86e 100%
+    #2a8235 0%,
+    #1e7530 8%,
+    #0c5f23 25%,
+    #116827 42%,
+    #176e29 56%,
+    #1e772d 74%,
+    #257e31 92%,
+    #2a8235 100%
   );
 }
 
@@ -221,9 +268,22 @@ body {
   color: var(--color-ink);
 }
 
-/* Solid radial-green fill for small icon badges (compass, value/principle cards) */
+/* Radial-green fill for the compass labels and the principle icon badges.
+   Both carry WHITE content, so like `btn-cta-surface` this is set by contrast.
+
+   It ran #17ab48 -> #a2db46. Measured on 2026-09-16, white on the compass
+   labels was 2.18:1 against a 4.5:1 requirement — and note the radial geometry
+   matters: `207% 50%` stretches the ending shape to 2.07x the box width but
+   only 50% of its height, so the glyphs reach about 53% of the gradient's
+   range, not 100%. The measurement is taken there, under the text, rather than
+   at the declared stops. #0d7a33 is 5.46:1 under white and #2c8420 is 4.74:1,
+   so the whole range is compliant either way.
+
+   This also fixes the 20px icons in `app/vision/page.tsx`, which are white on
+   the same surface and were at 2.33:1 against the 3:1 that WCAG 1.4.11 asks of
+   non-text contrast. */
 .fh-badge-gradient {
-  background: radial-gradient(207% 50% at 50% 50%, #17ab48 0%, #a2db46 100%);
+  background: radial-gradient(207% 50% at 50% 50%, #0d7a33 0%, #2c8420 100%);
 }
 
 /* Testimonials infinite marquee (two identical sets → translate -50% loops seamlessly) */
