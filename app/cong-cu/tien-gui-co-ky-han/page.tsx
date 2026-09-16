@@ -28,6 +28,10 @@ export default function TermDepositPage() {
       notice={C.earlyWithdrawalNotice}
       prose={C.formula}
       faq={C.faq}
+      // Added once the circular's fulltext was actually read (2026-09-16); see
+      // the provenance note in `content/calculators/term-deposit.ts`, which
+      // records that the source is a commercial database rather than Công báo.
+      sources={C.sources}
       afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <TermDepositCalculator />
