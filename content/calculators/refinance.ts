@@ -1,8 +1,12 @@
 // Hypothetical defaults only. All figures come from compareRefinance.
 export const REFINANCE = {
-  metaTitle: "Chuyển khoản vay: có tiết kiệm sau phí? | FinHome",
+  // KHÔNG tự thêm "| FinHome" ở đây. `app/layout.tsx` đặt
+  // `title.template = "%s — FinHome"`, nên hậu tố brand được ghép tự động; dòng
+  // này từng ghi sẵn "| FinHome" và thẻ <title> thật ra là
+  // "… | FinHome — FinHome". Đây là metaTitle duy nhất trong 75 công cụ làm vậy.
+  metaTitle: "Đổi sang khoản vay mới: có tiết kiệm sau phí?",
   metaDescription: "So chi phí chuyển khoản vay tại cùng một tháng, gồm lãi, phí trả trước và dư nợ. Tách tiết kiệm chi phí với giảm khoản trả hằng tháng.",
-  pageTitle: "Chuyển khoản vay",
+  pageTitle: "Đổi sang khoản vay mới",
   lede: "Chuyển ngân hàng có tiết kiệm thật? So lãi, phí và dư nợ tại cùng thời điểm bạn chọn.",
   trapNotice: "Trả ít mỗi tháng chưa chắc rẻ hơn: khoản vay mới có thể kéo dài và còn nợ nhiều hơn.",
   disclaimer: "Công cụ này chỉ mang tính minh họa, không phải tư vấn tài chính. Đã tính các phí trả ngay bạn nhập; chưa tính thuế, lạm phát, phí định kỳ hay phí tất toán tại tháng so sánh. Lãi suất được giả định không đổi, không chiết khấu dòng tiền. Hãy xác nhận điều khoản hợp đồng trước khi quyết định.",

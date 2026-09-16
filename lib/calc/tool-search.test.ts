@@ -300,3 +300,42 @@ describe("filterTools precision, not just recall", () => {
     expect(slugsFor("lai suat tha noi")).toContain("lai-suat-tha-noi");
   });
 });
+
+/**
+ * A RENAMED TITLE MUST NOT MAKE ITS TOOL UNFINDABLE.
+ *
+ * Four titles were rewritten on 2026-09-16 for plain Vietnamese — "Chuyển
+ * khoản vay" (which reads as a bank transfer) became "Đổi sang khoản vay
+ * mới", and "IRR và NPV", "Margin và markup" and "Mô hình CAPM" gained
+ * Vietnamese wording. The four `huu-tri` rows moved from "dài hạn" to "hưu
+ * trí" to match their own slugs.
+ *
+ * Every one of those removed a word somebody might type. What keeps them
+ * findable is that `haystack()` folds in `slug.replace(/-/g, " ")`, so the
+ * technical name survives in the URL even when it leaves the title — the same
+ * mechanism the `thue-mua` -> `thue tai chinh` rename relied on.
+ *
+ * This is a guard on that mechanism, not on the titles: it fails if a future
+ * rename also changes the slug, or if the slug stops being part of the
+ * haystack. Both would silently cost a returning visitor their search term.
+ */
+describe("a rename does not cost the old search term", () => {
+  for (const [query, slug] of [
+    ["tái cấp vốn", "tai-cap-von"],
+    ["tai cap von", "tai-cap-von"],
+    ["capm", "capm"],
+    ["irr", "irr-npv"],
+    ["npv", "irr-npv"],
+    ["margin", "margin-va-markup"],
+    ["markup", "margin-va-markup"],
+    ["hưu trí", "ke-hoach-huu-tri"],
+    ["huu tri", "tinh-huu-tri"],
+  ] as const) {
+    it(`"${query}" still finds ${slug}`, () => {
+      expect(
+        slugsFor(query),
+        `"${query}" no longer finds ${slug}; check that its slug still carries the term`,
+      ).toContain(slug);
+    });
+  }
+});

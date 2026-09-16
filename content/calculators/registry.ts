@@ -107,7 +107,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "tai-cap-von",
-    title: "Chuyển khoản vay",
+    title: "Đổi sang khoản vay mới",
     summary: "So lãi, phí và dư nợ khoản vay cũ với khoản vay mới tại cùng một tháng.",
     category: "vay-the-chap",
     status: "live",
@@ -257,7 +257,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "irr-npv",
-    title: "IRR và NPV",
+    title: "Hiệu quả dòng tiền dự án (IRR, NPV)",
     summary: "Tỷ suất hoàn vốn nội bộ và giá trị hiện tại thuần của một dòng tiền.",
     category: "tai-chinh-dau-tu",
     status: "live",
@@ -362,7 +362,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "capm",
-    title: "Mô hình CAPM",
+    title: "Lợi nhuận đòi hỏi theo rủi ro (CAPM)",
     summary: "Lợi nhuận yêu cầu của một tài sản theo hệ số beta và phần bù rủi ro.",
     category: "chung-khoan",
     status: "live",
@@ -442,7 +442,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   // Same correction, same reasoning, as `phan-bo-tai-san` below.
   {
     slug: "ke-hoach-huu-tri",
-    title: "Kế hoạch dài hạn: từng năm một",
+    title: "Kế hoạch hưu trí: từng năm một",
     summary:
       "Dự phóng bằng đồng cả hai giai đoạn — tích lũy rồi rút tiền — và nói rõ năm nào tiền cạn.",
     category: "huu-tri",
@@ -450,9 +450,9 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "tinh-huu-tri",
-    title: "Cần dành bao nhiêu cho dài hạn",
+    title: "Cần dành bao nhiêu cho hưu trí",
     summary:
-      "Khoản cần dành thêm mỗi năm để kế hoạch dài hạn đủ đến hết kỳ, tính bằng đồng.",
+      "Khoản cần dành thêm mỗi năm để kế hoạch hưu trí đủ đến hết kỳ, tính bằng đồng.",
     category: "huu-tri",
     status: "live",
   },
@@ -474,7 +474,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "phan-tich-tiet-kiem-huu-tri",
-    title: "Kế hoạch dài hạn còn thiếu bao nhiêu",
+    title: "Kế hoạch hưu trí còn thiếu bao nhiêu",
     summary:
       "Khoảng cách giữa số vốn kế hoạch đạt được và số vốn nó cần, cùng ba cách bù khoảng cách đó.",
     category: "huu-tri",
@@ -490,7 +490,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "thu-nhap-huu-tri",
-    title: "Vốn dài hạn tiêu được bao nhiêu",
+    title: "Vốn hưu trí tiêu được bao nhiêu",
     summary:
       "Mức chi mỗi năm mà số vốn tích lũy duy trì được đến hết kỳ, đặt cạnh mức bạn mong muốn.",
     category: "huu-tri",
@@ -589,7 +589,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "margin-va-markup",
-    title: "Margin và markup",
+    title: "Lãi trên giá bán và trên giá vốn",
     summary: "Chuyển đổi giữa tỷ lệ lợi nhuận trên giá bán và trên giá vốn.",
     category: "khac",
     status: "live",
