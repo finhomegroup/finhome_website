@@ -48,7 +48,7 @@ export const DDM = {
     growthLabel: "Tăng trưởng cổ tức",
     growthUnit: "%/năm",
     growthHelp:
-      "Tốc độ tăng trưởng VĨNH VIỄN. Phải nhỏ hơn lợi nhuận yêu cầu, và trên thực tế không thể vượt tốc độ tăng trưởng của cả nền kinh tế trong dài hạn.",
+      "Tốc độ tăng trưởng vĩnh viễn, không phải mức cho vài năm tới. Phải nhỏ hơn lợi nhuận yêu cầu, và trên thực tế không thể vượt tốc độ tăng trưởng của cả nền kinh tế trong dài hạn.",
     growthInvalid: "Tăng trưởng phải nhỏ hơn lợi nhuận yêu cầu.",
     defaultGrowth: "5",
 
@@ -88,6 +88,17 @@ export const DDM = {
       "Tốc độ tăng trưởng bằng hoặc lớn hơn lợi nhuận yêu cầu, nên mô hình không định giá được: giá trị sẽ tiến ra vô cùng, và công thức cho ra một số âm không phải là giá. Đây là giới hạn đã biết của mô hình Gordon, không phải lỗi của công cụ — với doanh nghiệp đang tăng trưởng nhanh hơn chi phí vốn, hãy dùng công cụ cổ phiếu tăng trưởng không đều.",
   },
 
+  // The advanced mode, as a SLUG rather than an href: the route resolves it
+  // through the registry, so a withdrawn slug fails `next build` instead of
+  // shipping a dead link. Row 35's requirement is to be reachable from this
+  // tool, and until now the only pointer was inside `unpriceableNotice`,
+  // which renders only when growth is at or above the required return.
+  relatedTool: {
+    title: "Khi mô hình này không định giá được",
+    slug: "co-phieu-tang-truong-khong-deu",
+    why: "Gordon đòi tăng trưởng phải thấp hơn lợi nhuận yêu cầu mãi mãi, nên nó loại đúng những doanh nghiệp đang tăng nhanh hơn chi phí vốn. Mô hình hai giai đoạn chia tương lai làm hai — một đoạn tăng trưởng cao có thời hạn, rồi Gordon cho phần còn lại — và nó còn cho biết bao nhiêu phần trăm giá trị đến từ giả định vĩnh viễn ở cuối.",
+  },
+
   denominatorNotice:
     "Cả mô hình nằm ở mẫu số. Tăng trưởng 5% với lợi nhuận yêu cầu 12% cho mẫu số 7% và giá trị 30.000 ₫; nâng tăng trưởng lên 11% thì mẫu số còn 1% và giá trị nhảy lên hơn 220.000 ₫. Vì thế đừng đọc con số giá trị như một kết luận — hãy dùng chiều ngược lại. Với giá thị trường 25.000 ₫, mô hình cho biết thị trường đang ngụ ý tăng trưởng vĩnh viễn 3,704%, hoặc ngụ ý lợi nhuận 13,400% nếu giữ giả định tăng trưởng 5%. Hai câu hỏi đó trả lời được; câu “cổ phiếu này đáng 30.000 ₫ không” thì không.",
 
@@ -100,6 +111,20 @@ export const DDM = {
       "Tăng trưởng ngụ ý được giải từ giá thị trường. Ở quy ước D0, vì D1 phụ thuộc vào chính tăng trưởng: g = (giá × lợi nhuận yêu cầu − D0) ÷ (giá + D0). Với giá 25.000 ₫ cho 3,704%. Đây là công thức đóng, không phải dò tìm.",
       "Lợi nhuận ngụ ý = D1 ÷ giá + tăng trưởng = 2.100 ÷ 25.000 + 5% = 13,400%. Nếu con số này cao hơn mức bạn đòi hỏi thì ở giá hiện tại cổ phiếu đang hấp dẫn theo mô hình.",
       "Công cụ từ chối khi tăng trưởng bằng hoặc vượt lợi nhuận yêu cầu. Không có giá trị hữu hạn cho một dòng cổ tức tăng nhanh hơn tỷ lệ chiết khấu mãi mãi, và công thức khi đó cho ra số âm — trả về “không định giá được” là câu trả lời trung thực.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark the D0/D1 gap, that the inversion is exact rather than searched, and that a refusal is not a zero.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "lệch nhau đúng một lần",
+      "công thức đóng, không phải dò tìm",
+      "không định giá được",
     ],
   },
 

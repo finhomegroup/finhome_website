@@ -3,7 +3,7 @@ UBND TP Đà Nẵng vừa có quyết định quan trọng tháo gỡ vướng m
 ## Điểm chính cần nắm
 
 - Hai khu đô thị có tổng quy mô gần 39 ha tại phường Điện Bàn Đông được UBND TP Đà Nẵng cho phép tiếp tục giao đất, cho thuê đất theo cơ chế đặc thù.
-- Một dự án nhà ở xã hội cùng vị trí cũng được tháo gỏ vướng mắc, góp phần bổ sung nguồn cung nhà ở giá phù hợp cho thị trường địa phương.
+- Một dự án nhà ở xã hội cùng vị trí cũng được tháo gỡ vướng mắc, góp phần bổ sung nguồn cung nhà ở giá phù hợp cho thị trường địa phương.
 - Quyết định này nằm trong nỗ lực của TP Đà Nẵng trong việc đẩy nhanh tiến độ các dự án bất động sản trên địa bàn, khơi thông nguồn vốn và tăng nguồn cung nhà ở.
 
 ## Góc nhìn FinHome

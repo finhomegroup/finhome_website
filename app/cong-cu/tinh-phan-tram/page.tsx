@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { PercentCalculator } from "@/components/percent-calculator";
 import { PERCENT as C } from "@/content/calculators/percent";
 
@@ -27,6 +28,7 @@ export default function PercentPage() {
       notice={C.asymmetryNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug="tinh-phan-tram" />}
     >
       <PercentCalculator />
     </CalculatorPage>

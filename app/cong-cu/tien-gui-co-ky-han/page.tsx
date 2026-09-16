@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { TermDepositCalculator } from "@/components/term-deposit-calculator";
 import { TERM_DEPOSIT as C } from "@/content/calculators/term-deposit";
 
@@ -27,6 +28,7 @@ export default function TermDepositPage() {
       notice={C.earlyWithdrawalNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <TermDepositCalculator />
     </CalculatorPage>

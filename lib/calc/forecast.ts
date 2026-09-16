@@ -34,7 +34,19 @@ export type ForecastInput = {
   years: number;
   /** Label for year one, e.g. 2026. Only used to number the rows. */
   baseYear: number;
-  /** Corporate income tax, in percent. 20 in Vietnam. */
+  /**
+   * Corporate income tax, in percent.
+   *
+   * Not a constant. Since 01/10/2025 Vietnam's rate depends on the company's
+   * annual revenue — 15% up to 3 tỷ, 17% to 50 tỷ, 20% above, and exempt at
+   * or below 1 tỷ from 01/01/2026 — so the caller supplies it and the page
+   * says where the bands come from. This docstring said "20 in Vietnam"
+   * beside a default that is now 17; a superseded default and a stale caveat
+   * are two edits, and one without the other is worse than neither.
+   *
+   * ONE rate is applied to every year. A forecast that grows across a band
+   * boundary mid-horizon needs two runs, which the tax field's help says.
+   */
   taxPercent: number;
 };
 

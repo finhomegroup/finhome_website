@@ -15,7 +15,12 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
-import { computeUsIra, type IraVerdict, type UsIraInput } from "@/lib/calc/us-ira";
+import {
+  CAPITAL_GAINS_RATES,
+  computeUsIra,
+  type IraVerdict,
+  type UsIraInput,
+} from "@/lib/calc/us-ira";
 import { RETIREMENT_LIMIT_YEAR_ORDER } from "@/lib/calc/us-retirement-limits";
 import { US_IRA as C } from "@/content/calculators/us-ira";
 
@@ -29,6 +34,25 @@ const YEAR_OPTIONS = RETIREMENT_LIMIT_YEAR_ORDER.map((year) => ({
 
 /** Statutory bracket rates, which is what a retirement rate will be. */
 const TABLE_RATES = [0, 10, 12, 22, 24, 32, 35, 37];
+
+/**
+ * The three statutory long-term capital-gains rates, as a select.
+ *
+ * A bounded text box accepted an off-schedule 7% here, which the law does not
+ * have. Same constraint, same shape and same reason as the qualified-dividend
+ * rate on `us-dividend-tax-calculator.tsx`: it is the same rate in the same
+ * statute, so the two fields must not disagree about what a valid value is.
+ * Labels come from the content module, values from `CAPITAL_GAINS_RATES`.
+ */
+const CAPITAL_GAINS_OPTIONS = CAPITAL_GAINS_RATES.map((rate) => ({
+  value: String(rate),
+  label:
+    rate === 0
+      ? F.capitalGainsOptions.zero
+      : rate === 15
+        ? F.capitalGainsOptions.fifteen
+        : F.capitalGainsOptions.twenty,
+}));
 
 function usd(value: number): string {
   return `${formatMoney(value)} USD`;
@@ -58,7 +82,9 @@ export function UsIraCalculator() {
   const contribution = parseMoney(v.contribution);
   const currentRate = parseDecimal(v.currentRate);
   const retirementRate = parseDecimal(v.retirementRate);
-  const capitalGains = parseDecimal(v.capitalGains);
+  // A select, so there is no parse to get wrong and no invalid state to show
+  // — the only three values it can hold are the three the statute allows.
+  const capitalGains = Number(v.capitalGains);
   const returnPercent = parseDecimal(v.returnPercent);
 
   const badPercent = (value: number | null) =>
@@ -70,7 +96,6 @@ export function UsIraCalculator() {
     contribution: contribution === null || contribution < 0,
     currentRate: badPercent(currentRate),
     retirementRate: badPercent(retirementRate),
-    capitalGains: badPercent(capitalGains),
     returnPercent:
       returnPercent === null || returnPercent < -100 || returnPercent > 100,
   };
@@ -86,7 +111,7 @@ export function UsIraCalculator() {
         retirementRatePercent: retirementRate!,
         returnPercent: returnPercent!,
         years: years!,
-        capitalGainsRatePercent: capitalGains!,
+        capitalGainsRatePercent: capitalGains,
       };
 
   const result = input === null ? null : computeUsIra(input);
@@ -167,13 +192,11 @@ export function UsIraCalculator() {
           error={F.percentInvalid}
           invalid={invalid.retirementRate}
         />
-        <NumberField
+        <SelectField
           {...fields.bind("capitalGains")}
           label={F.capitalGainsLabel}
-          unit={F.capitalGainsUnit}
           help={F.capitalGainsHelp}
-          error={F.percentInvalid}
-          invalid={invalid.capitalGains}
+          options={CAPITAL_GAINS_OPTIONS}
         />
       </FieldGroup>
 

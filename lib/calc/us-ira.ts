@@ -81,6 +81,23 @@ import {
  */
 export const VERDICT_BAND_PERCENT = 0.5;
 
+/**
+ * The three statutory rates on long-term capital gains.
+ *
+ * THE SAME SET `us-dividend-tax.ts` CONSTRAINS, and constrained the same way,
+ * because it is the same rate in the same statute — qualified dividends and
+ * long-term gains share the 0/15/20 schedule. A rate like 7% does not exist
+ * in the law, so accepting it would let the page report a legal-looking
+ * side-account tax that no filer could ever owe. The field on the page is
+ * correspondingly a select over these three, not a text box bounded 0–100.
+ *
+ * Only the RATE SET is fixed here. The income boundaries that decide WHICH of
+ * the three applies are indexed annually and are deliberately not transcribed
+ * — see `us-dividend-tax.ts` for why a threshold table one year stale is
+ * confidently wrong at exactly the incomes near a boundary.
+ */
+export const CAPITAL_GAINS_RATES = [0, 15, 20] as const;
+
 export type IraVerdict = "traditional" | "roth" | "equal";
 
 export type UsIraInput = {
@@ -97,7 +114,10 @@ export type UsIraInput = {
   returnPercent: number;
   /** Years until withdrawal. */
   years: number;
-  /** Long-term capital gains rate on the side account, in percent. */
+  /**
+   * Long-term capital gains rate on the side account, in percent. One of
+   * `CAPITAL_GAINS_RATES` — anything else is rejected rather than used.
+   */
   capitalGainsRatePercent: number;
 };
 
@@ -165,8 +185,9 @@ export type UsIraResult = {
  * Compare the two accounts.
  *
  * Null on a year the limits table does not cover, an age outside 0–120, a
- * negative contribution, a horizon outside 0–70 whole years, a tax rate
- * outside 0–100%, or a return outside −100–100%.
+ * negative contribution, a horizon outside 0–70 whole years, an income tax
+ * rate outside 0–100%, a capital-gains rate that is not one of the three
+ * statutory rates, or a return outside −100–100%.
  */
 export function computeUsIra(input: UsIraInput): UsIraResult | null {
   const {
@@ -187,12 +208,16 @@ export function computeUsIra(input: UsIraInput): UsIraResult | null {
   if (!Number.isFinite(annualContribution) || annualContribution < 0) return null;
   if (!Number.isFinite(years) || !Number.isInteger(years)) return null;
   if (years < 0 || years > 70) return null;
-  for (const rate of [
-    currentRatePercent,
-    retirementRatePercent,
-    capitalGainsRatePercent,
-  ]) {
+  for (const rate of [currentRatePercent, retirementRatePercent]) {
     if (!Number.isFinite(rate) || rate < 0 || rate > 100) return null;
+  }
+  // The side account's gain is taxed at one of THREE rates, not anywhere in
+  // 0–100. Rejected rather than clamped, for the reason on
+  // `CAPITAL_GAINS_RATES`: an off-schedule rate produces a bill no filer
+  // could owe. `includes` also rejects NaN, so the finiteness check the loop
+  // above performs is covered here too.
+  if (!CAPITAL_GAINS_RATES.includes(capitalGainsRatePercent as 0 | 15 | 20)) {
+    return null;
   }
   if (!Number.isFinite(returnPercent) || returnPercent < -100 || returnPercent > 100) {
     return null;

@@ -10,8 +10,7 @@
  * 1. **The rate is quoted per year but charged per day**, then billed
  *    monthly. A card at 30%/năm charges 30/365 % a day, so a month compounds
  *    to slightly more than 30/12 %. This module works in a monthly period
- *    rate derived from the daily rate — `(1 + r/365)^(days) − 1` — because
- *    that is what the statement does.
+ *    rate derived from the daily rate — `(1 + r/365)^(days) − 1`.
  * 2. **The minimum payment is a PERCENTAGE of the balance with a floor**, so
  *    it shrinks as the balance does. That is why paying the minimum takes so
  *    long: the payment falls almost as fast as the debt. `payFixed` and
@@ -24,10 +23,28 @@
  * Both functions simulate month by month rather than using a closed form.
  * There is no closed form for the minimum-payment case, and simulating both
  * keeps them comparable.
+ *
+ * WHAT THIS MODULE IS AND IS NOT. The daily accrual, the percentage-of-the-
+ * amount-due minimum and the floor are a SIMULATION of a common card-
+ * statement shape, driven entirely by figures the reader enters. They are not
+ * the terms of any named contract and not a universal rule for Vietnamese
+ * cards: the rate, the percentage and the floor all vary by issuer and by
+ * card, which is why all three are inputs. Excluded unless a caller models
+ * them separately: new spending, annual and late fees, instalment-conversion
+ * fees, and whether an interest-free window is restored.
  */
 
-/** Hard stop on the simulation: 100 years of monthly periods. */
-const MAX_MONTHS = 1200;
+/**
+ * Hard stop on the simulation: 100 years of monthly periods.
+ *
+ * Exported so a page can NAME it. A plan that runs past this comes back as
+ * `null`, which is the same shape as "this payment never clears the debt" and
+ * a very different answer — see `monthlyCardRate`.
+ */
+export const MAX_CARD_MONTHS = 1200;
+
+/** Local alias, so the loops below read as they did. */
+const MAX_MONTHS = MAX_CARD_MONTHS;
 
 /**
  * A balance at or below this is settled, not outstanding.
@@ -116,10 +133,50 @@ export type CardPayoffResult = {
   schedule: CardMonth[];
 };
 
-/** The monthly period rate a card's annual rate really implies. */
-function monthlyRate(annualRatePercent: number): number {
+/**
+ * The monthly period rate this model's daily accrual implies.
+ *
+ * Exported because a PAGE has to tell the two refusals apart: a payment that
+ * never covers the interest is a different answer from a plan that runs past
+ * the supported horizon, and both come back as `null` from the simulations
+ * below. A caller can compare a payment against `balance × this` rather than
+ * re-deriving the rate — which would be the same rule written twice.
+ */
+export function monthlyCardRate(annualRatePercent: number): number {
   const daily = annualRatePercent / 100 / 365;
   return (1 + daily) ** DAYS_PER_MONTH - 1;
+}
+
+/** Local alias, so the loops below read as they did. */
+const monthlyRate = monthlyCardRate;
+
+/**
+ * One month of the minimum-payment rule: the interest, the amount due and
+ * what the statement would ask for.
+ *
+ * Extracted so the loop in `payMinimum` and any caller that needs to know
+ * whether the FIRST minimum covers the FIRST interest charge run the same
+ * expression. Writing that rule twice is how the two drift apart.
+ */
+export function minimumPaymentFor(input: {
+  /** Balance at the start of the month. */
+  owed: number;
+  /** The monthly period rate, from `monthlyCardRate`. */
+  rate: number;
+  minimumPercent: number;
+  minimumFloor: number;
+  extraPerMonth: number;
+}): { interest: number; due: number; payment: number } {
+  const { owed, rate, minimumPercent, minimumFloor, extraPerMonth } = input;
+  const interest = owed * rate;
+  const due = owed + interest;
+  // The statement minimum: a share of the amount DUE, never below the floor,
+  // and never more than the whole amount due.
+  const minimum = Math.min(
+    due,
+    Math.max(due * (minimumPercent / 100), minimumFloor),
+  );
+  return { interest, due, payment: Math.min(due, minimum + extraPerMonth) };
 }
 
 /**
@@ -184,11 +241,13 @@ export function payFixed(input: {
  * Pay the card's minimum every month until it is clear.
  *
  * The minimum is `max(amount due × percent, floor)`, capped at the amount
- * due — where the amount due is the balance PLUS that month's interest. That
- * is what a Vietnamese statement does: it computes 5% of "tổng dư nợ cuối
- * kỳ", which already includes the interest charged. Taking the percentage of
- * the pre-interest balance instead would understate the minimum, and at a
- * 100% minimum would leave the interest unpaid and the card open.
+ * due — where the amount due is the balance PLUS that month's interest. A
+ * statement that quotes its minimum as a share of "tổng dư nợ cuối kỳ" is
+ * quoting a share of a figure that already includes the interest charged,
+ * which is the shape modelled here; the percentage itself is an input
+ * because it differs by card. Taking the percentage of the pre-interest
+ * balance instead would understate the minimum, and at a 100% minimum would
+ * leave the interest unpaid and the card open.
  *
  * Because the percentage part shrinks with the balance, the floor is what
  * eventually clears the debt, and on a large balance at a high rate the floor
@@ -205,7 +264,12 @@ export function payMinimum(input: {
   balance: number;
   /** Nominal annual rate in percent. */
   annualRatePercent: number;
-  /** Minimum payment as a percent of the balance. Vietnamese cards use 5. */
+  /**
+   * Minimum payment as a percent of the amount due.
+   *
+   * An input, not a constant: the share and the floor are set by each
+   * issuer's biểu phí, so no figure is assumed here.
+   */
   minimumPercent: number;
   /** Absolute floor on the minimum payment, in đồng. */
   minimumFloor?: number;
@@ -241,15 +305,13 @@ export function payMinimum(input: {
     month <= MAX_MONTHS && owed > SETTLED_BALANCE_DONG;
     month += 1
   ) {
-    const interest = owed * rate;
-    const due = owed + interest;
-    // The statement minimum: a share of the amount DUE, never below the
-    // floor, and never more than the whole amount due.
-    const minimum = Math.min(
-      due,
-      Math.max(due * (minimumPercent / 100), minimumFloor),
-    );
-    const payment = Math.min(due, minimum + extraPerMonth);
+    const { interest, payment } = minimumPaymentFor({
+      owed,
+      rate,
+      minimumPercent,
+      minimumFloor,
+      extraPerMonth,
+    });
     // The minimum does not even cover the interest: this never clears.
     if (payment <= interest) return null;
     const principal = payment - interest;

@@ -61,23 +61,36 @@ export const EXPECTED_RETURN = {
 
     probabilitySumLabel: "Tổng xác suất đã nhập",
     badSumNotice:
-      "Tổng xác suất không bằng 100%, nên đây chưa phải một phân phối và công cụ không tính. Công cụ CỐ Ý không tự chuẩn hóa về 100%: một tổng bằng 90% thường nghĩa là bạn còn thiếu một tình huống, và việc tự chia lại tỷ lệ sẽ trả lời một câu hỏi khác câu bạn đang hỏi.",
+      "Tổng xác suất không bằng 100%, nên đây chưa phải một phân phối và công cụ không tính. Công cụ cố ý không tự chuẩn hóa về 100%: một tổng bằng 90% thường nghĩa là bạn còn thiếu một tình huống, và việc tự chia lại tỷ lệ sẽ trả lời một câu hỏi khác câu bạn đang hỏi.",
     noCoefficientNotice:
       "Hệ số biến thiên chỉ có ý nghĩa khi lợi nhuận kỳ vọng dương. Với kỳ vọng bằng 0 hoặc âm, phép chia cho ra một con số vô nghĩa chứ không phải một con số lớn, nên ô đó để trống.",
   },
 
   spreadNotice:
-    "Đừng dừng ở dòng đầu tiên. Với các tình huống mặc định, lợi nhuận kỳ vọng là 7,5% — nhưng không tình huống nào cho ra 7,5%: bạn được 25%, được 10%, hoặc mất 15%. Độ lệch chuẩn 14,3614% nói rằng mức dao động lớn gần gấp đôi chính con số kỳ vọng. Và hệ số biến thiên 1,9149 là con số duy nhất so sánh được giữa hai khoản đầu tư có kỳ vọng khác nhau: một phương án kỳ vọng 20% với độ lệch 30% (hệ số 1,5) rủi ro ÍT hơn trên mỗi đơn vị lợi nhuận so với một phương án kỳ vọng 10% với độ lệch 20% (hệ số 2,0), dù nghe thì ngược lại.",
+    "Đừng dừng ở dòng đầu tiên. Với các tình huống mặc định, lợi nhuận kỳ vọng là 7,5% — nhưng không tình huống nào cho ra 7,5%: bạn được 25%, được 10%, hoặc mất 15%. Độ lệch chuẩn 14,3614% nói rằng mức dao động lớn gần gấp đôi chính con số kỳ vọng. Và hệ số biến thiên 1,9149 là con số duy nhất so sánh được giữa hai khoản đầu tư có kỳ vọng khác nhau: một phương án kỳ vọng 20% với độ lệch 30% (hệ số 1,5) rủi ro ít hơn trên mỗi đơn vị lợi nhuận so với một phương án kỳ vọng 10% với độ lệch 20% (hệ số 2,0), dù nghe thì ngược lại.",
 
   formula: {
     title: "Cách tính",
     body: [
       "Lợi nhuận kỳ vọng = tổng của (xác suất × lợi nhuận) qua tất cả tình huống. Với mặc định: 0,25 × 25% + 0,5 × 10% + 0,25 × (−15%) = 6,25% + 5% − 3,75% = 7,5%.",
       "Phương sai = tổng của xác suất × (lợi nhuận − kỳ vọng)². Độ lệch chuẩn là căn bậc hai của phương sai, nên nó cùng đơn vị với lợi nhuận và đọc được cạnh nó. Với mặc định, phương sai là 206,25 và độ lệch chuẩn là 14,3614%.",
-      "Đây là thống kê TOÀN BỘ phân phối, không phải thống kê mẫu, nên không có hiệu chỉnh chia cho n − 1. Xác suất đã được bạn khai báo đầy đủ, không phải suy ra từ một mẫu quan sát. Kiểm chứng nhanh: một phân phối 50/50 của +10% và −10% cho độ lệch chuẩn đúng 10%.",
+      "Đây là thống kê toàn bộ phân phối, không phải thống kê mẫu, nên không có hiệu chỉnh chia cho n − 1. Xác suất đã được bạn khai báo đầy đủ, không phải suy ra từ một mẫu quan sát. Kiểm chứng nhanh: một phân phối 50/50 của +10% và −10% cho độ lệch chuẩn đúng 10%.",
       "Hệ số biến thiên = độ lệch chuẩn ÷ lợi nhuận kỳ vọng. Nó chuẩn hóa rủi ro theo quy mô lợi nhuận, nên đây là thước đo để so hai khoản đầu tư khác nhau. Số càng nhỏ càng tốt. Nó không xác định khi kỳ vọng bằng 0 hoặc âm.",
-      "Rủi ro xuống, hay bán độ lệch, chỉ tính các tình huống có lợi nhuận DƯỚI mức kỳ vọng: 11,25% với mặc định, thấp hơn độ lệch chuẩn 14,3614%. Lý do có thước đo này: độ lệch chuẩn coi một bất ngờ tăng giá là rủi ro y như một bất ngờ giảm giá, điều không ai thực sự cảm nhận như vậy.",
+      "Rủi ro xuống, hay bán độ lệch, chỉ tính các tình huống có lợi nhuận dưới mức kỳ vọng: 11,25% với mặc định, thấp hơn độ lệch chuẩn 14,3614%. Lý do có thước đo này: độ lệch chuẩn coi một bất ngờ tăng giá là rủi ro y như một bất ngờ giảm giá, điều không ai thực sự cảm nhận như vậy.",
       "Xác suất lỗ là tổng xác suất của các tình huống có lợi nhuận âm — 25% với mặc định. Lợi nhuận bằng 0 không được tính là lỗ. Đây là con số dễ hiểu nhất trong cả trang và thường là con số hữu ích nhất cho một quyết định thực tế.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark population statistics rather than sample, and the one measure that counts only the downside.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "toàn bộ phân phối",
+      "dưới mức kỳ vọng",
     ],
   },
 

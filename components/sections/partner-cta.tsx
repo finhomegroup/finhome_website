@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { PARTNER_CTA } from "@/content/partners-team";
-import { CTA_HREF } from "@/content/site";
+// "Liên hệ ngay" must not land on the calculators. See CONTACT_HREF's note in
+// content/site.ts.
+import { CONTACT_HREF } from "@/content/site";
 import { Container } from "@/components/ui/container";
 import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
@@ -226,7 +228,7 @@ export function PartnerCta() {
               </p>
               <div className="mt-4 flex justify-center md:mt-5">
                 <Button
-                  href={CTA_HREF}
+                  href={CONTACT_HREF}
                   size="lg"
                   hoverLabel={PARTNER_CTA.hoverCta}
                 >

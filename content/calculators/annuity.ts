@@ -27,7 +27,12 @@
 export const ANNUITY = {
   slug: "/cong-cu/nien-kim",
 
-  pageTitle: "Tính niên kim",
+  // Names the jurisdiction, like the registry title does. "Tính niên kim" was
+  // the barest title in the set and said nothing about the tool being United
+  // States law on USD figures — while the hub badge, the registry title, the
+  // summary and the `usRules` notice all say so. An h1 that is the only string
+  // on the page NOT saying it is the one a reader sees first.
+  pageTitle: "Niên kim Hoa Kỳ: khoản nhận gồm gốc và lãi thế nào?",
   metaTitle: "Tính niên kim — Khoản nhận mỗi tháng và lợi suất báo giá hàm ý",
   metaDescription:
     "Tính khoản nhận định kỳ từ một hợp đồng niên kim kỳ hạn xác định, phần được miễn thuế trong mỗi khoản nhận, và lợi suất mà một báo giá của công ty bảo hiểm hàm ý. Công cụ miễn phí của FinHome.",
@@ -143,9 +148,18 @@ export const ANNUITY = {
       payoutRateColumn: "So với phí",
       totalColumn: "Tổng nhận",
       multipleColumn: "Số lần phí",
-      moneyBackColumn: "Lấy lại đủ gốc sau",
+      // CONSTRAINT, with the geometry rather than the string: this is a real
+      // `<table>` with no `mobileCards`, so at 390 px it has roughly 300 px
+      // and seven columns, six of them numeric and five of them carrying a
+      // "… USD" suffix. A numeric column needs 60–90 px, so the table scrolls
+      // horizontally at that width by construction and a `<th>` beyond about
+      // 13 characters widens its column for no information. "Lấy lại đủ gốc
+      // sau" was 18. The dropped word is "sau", and the unit it implied —
+      // years — moved into `intro` below, where there is room for it; it did
+      // not vanish. `annuity.test.ts` asserts the move.
+      moneyBackColumn: "Thu hồi gốc",
       intro:
-        "Cột “so với phí” đi xuống khi kỳ hạn dài ra, và đó là điều đáng chú ý: một hợp đồng ngắn có “tỷ lệ chi trả” trông cao hơn nhiều chỉ vì nó trả lại gốc của bạn nhanh hơn. Cột tỷ lệ chi trả không phải lợi suất và không so được giữa hai kỳ hạn khác nhau.",
+        "Cột “so với phí” đi xuống khi kỳ hạn dài ra, và đó là điều đáng chú ý: một hợp đồng ngắn có “tỷ lệ chi trả” trông cao hơn nhiều chỉ vì nó trả lại gốc của bạn nhanh hơn. Cột tỷ lệ chi trả không phải lợi suất và không so được giữa hai kỳ hạn khác nhau. Cột “thu hồi gốc” là số năm bạn phải nhận đủ mới lấy lại hết số phí đã đóng.",
     },
 
     quoteWorseNotice:
@@ -197,6 +211,40 @@ export const ANNUITY = {
       {
         q: "Chờ vài năm rồi mới nhận thì lợi hơn bao nhiêu?",
         a: "Với các giá trị mặc định, chờ 10 năm làm số phí lớn lên thành 391.748 USD trước khi bắt đầu chia, nên khoản nhận đi từ 1.575,71 lên 2.469,13 USD mỗi tháng. Nhưng đó là toàn bộ phần “lợi”: bạn không nhận gì trong mười năm đó, và cùng số tiền để trong một tài khoản đầu tư thông thường cũng lớn lên theo cùng lãi suất. Cái bạn thực sự mua khi chờ là một cam kết về khoản trả trong tương lai, chứ không phải một lợi suất cao hơn — và trong mười năm chờ, tiền của bạn nằm trong một hợp đồng thường có phí rút trước hạn rất nặng.",
+      },
+    ],
+  },
+
+  // The exclusion ratio is the one rule on this page that is not arithmetic:
+  // it is United States tax law, it decides the tax-free share of every
+  // payment, and until now the page asserted it with no href — the exact
+  // defect the `sources` slot exists for
+  // (`components/calc/calculator-page.tsx:102-116`). The URLs below were
+  // fetched and confirmed on 2026-09-16: the publication page reports
+  // revision 12/2025 and defines the ratio as the investment in the contract
+  // over the expected return.
+  //
+  // `intro` carries the provenance limit, because two IRS links imply a
+  // completeness this page has not earned: nothing here is a tax opinion, the
+  // General Rule is not the only method the IRS recognises, and the tool
+  // models a period-certain contract rather than a life contract.
+  sources: {
+    title: "Nguồn cho quy định miễn thuế",
+    intro:
+      "Hai liên kết dưới đây là nguồn cho tỷ lệ miễn thuế mà công cụ áp dụng, không phải ý kiến tư vấn thuế. Đây là quy định của Hoa Kỳ, áp cho hợp đồng mua bằng tiền đã chịu thuế, và General Rule không phải phương pháp duy nhất cơ quan thuế Hoa Kỳ công nhận. Công cụ cũng chỉ tính hợp đồng kỳ hạn xác định, nên phần nói về hợp đồng suốt đời trên trang này là giải thích, không phải phép tính.",
+    items: [
+      {
+        url: "https://www.irs.gov/publications/p939",
+        label:
+          "IRS Publication 939, General Rule for Pensions and Annuities",
+        note:
+          "Bản đang hiệu lực ghi 12/2025. Tỷ lệ miễn thuế được định nghĩa là số tiền đã đóng vào hợp đồng chia cho tổng số tiền dự kiến nhận được — đúng phép chia công cụ dùng.",
+      },
+      {
+        url: "https://www.irs.gov/forms-pubs/about-publication-939",
+        label: "Trang giới thiệu Publication 939",
+        note:
+          "Dùng liên kết này để kiểm tra bản mới nhất: nội dung ấn phẩm được cập nhật theo năm, và con số trên trang này không tự cập nhật theo.",
       },
     ],
   },

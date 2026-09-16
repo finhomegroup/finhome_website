@@ -27,6 +27,8 @@ export default function BusinessForecastPage() {
       notice={C.leverageNotice}
       prose={C.formula}
       faq={C.faq}
+      // Primary documents behind the prefilled statutory tax rate.
+      sources={C.sources}
     >
       <BusinessForecastCalculator />
     </CalculatorPage>

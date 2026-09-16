@@ -41,7 +41,7 @@ export const HOLDING_PERIOD = {
     incomeLabel: "Tiền đã nhận trong cả kỳ",
     incomeUnit: "₫",
     incomeHelp:
-      "TỔNG cổ tức, lãi trái phiếu hoặc tiền cho thuê nhận được trong toàn bộ thời gian nắm giữ — không phải mỗi năm.",
+      "Tổng cổ tức, lãi trái phiếu hoặc tiền cho thuê nhận được trong toàn bộ thời gian nắm giữ — không phải mỗi năm.",
     incomeInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultIncome: "12.000.000",
 
@@ -79,10 +79,23 @@ export const HOLDING_PERIOD = {
     title: "Cách tính",
     body: [
       "Lãi vốn = giá trị cuối kỳ − giá trị lúc mua. Lãi vốn tính theo phần trăm = lãi vốn ÷ giá trị lúc mua × 100. Với mặc định: (118 − 100) triệu chia 100 triệu bằng 18%.",
-      "Lợi tức tính theo phần trăm = tiền đã nhận ÷ giá trị lúc mua × 100, tức 12 triệu chia 100 triệu bằng 12%. Chú ý mẫu số là giá trị LÚC MUA, không phải giá trị cuối kỳ — đó là quy ước, và nó giữ cho hai phần cộng lại đúng bằng tổng.",
+      "Lợi tức tính theo phần trăm = tiền đã nhận ÷ giá trị lúc mua × 100, tức 12 triệu chia 100 triệu bằng 12%. Chú ý mẫu số là giá trị lúc mua, không phải giá trị cuối kỳ — đó là quy ước, và nó giữ cho hai phần cộng lại đúng bằng tổng.",
       "Lợi nhuận cả kỳ nắm giữ = lãi vốn + lợi tức = 30%. Đây là lý do cả hai phần đều chia cho cùng một mẫu số.",
       "Lợi nhuận theo năm dùng công thức lũy kép: (tổng tiền thu về ÷ giá trị lúc mua)^(1 ÷ số năm) − 1. Với mặc định là 1,3^(1/3) − 1 = 9,1393%/năm. Không phải 30 ÷ 3 = 10% — cách chia bỏ qua lãi kép và luôn cao hơn thực tế.",
       "Khi tổng tiền thu về bằng 0, công cụ để trống ô lợi nhuận theo năm: không có mức lãi hữu hạn nào đưa một số tiền dương về đúng 0 sau một số năm hữu hạn. Nếu bạn đã nhận được một phần tiền trước khi mất trắng phần còn lại thì vẫn có con số theo năm, và nó âm.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark the denominator convention, and the identity it exists to preserve.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "mẫu số là giá trị lúc mua",
+      "cộng lại đúng bằng tổng",
     ],
   },
 
@@ -99,7 +112,7 @@ export const HOLDING_PERIOD = {
       },
       {
         q: "Vì sao lợi tức chia cho giá lúc mua chứ không phải giá hiện tại?",
-        a: "Vì mục đích là tách lợi nhuận của CHÍNH BẠN, và mẫu số phải là số tiền bạn đã bỏ ra. Chia cho giá hiện tại cho ra “lợi suất cổ tức” — một chỉ tiêu khác, dùng để đánh giá cổ phiếu ở giá hôm nay cho người sắp mua. Với ví dụ mặc định, lợi tức của bạn là 12% trên giá mua, nhưng lợi suất cổ tức ở giá 118 triệu chỉ là 10,17%.",
+        a: "Vì mục đích là tách lợi nhuận của chính bạn, và mẫu số phải là số tiền bạn đã bỏ ra. Chia cho giá hiện tại cho ra “lợi suất cổ tức” — một chỉ tiêu khác, dùng để đánh giá cổ phiếu ở giá hôm nay cho người sắp mua. Với ví dụ mặc định, lợi tức của bạn là 12% trên giá mua, nhưng lợi suất cổ tức ở giá 118 triệu chỉ là 10,17%.",
       },
       {
         q: "Tôi vẫn đang giữ, chưa bán, thì nhập gì?",

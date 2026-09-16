@@ -30,18 +30,24 @@ export function RadioGroupField({
   options,
   value,
   onValueChange,
+  className,
 }: {
   legend: string;
   help?: string;
   options: readonly RadioOption[];
   value: string;
   onValueChange: (next: string) => void;
+  /** Spacing only. Added for groups used outside a `FieldGroup`'s stack. */
+  className?: string;
 }) {
   const id = useId();
   const helpId = `${id}-help`;
 
   return (
-    <fieldset className="min-w-0" aria-describedby={help ? helpId : undefined}>
+    <fieldset
+      className={cn("min-w-0", className)}
+      aria-describedby={help ? helpId : undefined}
+    >
       <legend className="mb-3 font-display text-base font-medium text-ink">
         {legend}
       </legend>

@@ -1,4 +1,4 @@
-Dư nợ vay của các doanh nghiệp bất động sản niêm yết tiếp tục cho thấy xu hướng tăng, với tổng dư nợ vay đạt 360.240 tỷ đồng, tăng 20,3% so với quý trước.
+Dư nợ vay của các doanh nghiệp bất động sản niêm yết tiếp tục cho thấy xu hướng tăng, với tổng dư nợ vay đạt 360.240 tỷ đồng, tăng 20,3% so với quý trước. Dư nợ là phần gốc còn nợ, tức số tiền đã cho vay mà chưa được trả lại.
 
 ## Điểm chính cần nắm
 

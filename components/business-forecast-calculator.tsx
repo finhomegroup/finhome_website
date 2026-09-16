@@ -238,6 +238,25 @@ export function BusinessForecastCalculator() {
         <ResultTable
           className="mt-8"
           caption={T.caption}
+          /*
+           * Eight columns, so cards below `md` — docs §3's rule is five
+           * columns up, and this table was carrying its debt in
+           * `components/calc/wide-table-pending.mjs` until now.
+           *
+           * THE RECORDED REASON FOR DEFERRING IT DOES NOT HOLD, and it is
+           * worth saying why rather than just deleting the line. The reason
+           * given was that "nine forecast periods are read ACROSS a row,
+           * which a per-row card block breaks up". The periods are the ROWS
+           * here — one per forecast year — and the columns are that year's
+           * quantities. So a card is one year's whole P&L under its own
+           * heading, which is exactly how this table is read; the comparison
+           * that runs across periods is the margin trend, and that is already
+           * a headline row above, not something a reader scans sideways in
+           * the table. The pivot table's entry, which this one was said to
+           * share a shape with, is genuinely different: there the columns ARE
+           * the levels being compared.
+           */
+          mobileCards
           columns={[
             { label: T.yearColumn },
             { label: T.revenueColumn, numeric: true },

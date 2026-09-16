@@ -51,7 +51,7 @@ export const BOND = {
     couponLabel: "Lãi suất coupon",
     couponUnit: "%/năm",
     couponHelp:
-      "Tính trên MỆNH GIÁ, không phải trên giá mua. Nhập 0 cho trái phiếu không trả lãi.",
+      "Tính trên mệnh giá, không phải trên giá mua. Nhập 0 cho trái phiếu không trả lãi.",
     couponInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultCoupon: "8",
 
@@ -110,8 +110,18 @@ export const BOND = {
       "Không tìm được lợi suất đáo hạn cho mức giá này. Thường là do giá quá cao so với tổng tiền trái phiếu sẽ trả — hãy kiểm tra lại mệnh giá, lãi suất coupon và số năm còn lại.",
   },
 
+  // WHAT THE VISIBLE SLOT IS FOR. This page's decisive caveat is not which
+  // of the three yields to read — it is that every one of them assumes the
+  // issuer pays. That sentence was written, and well, and sat in FAQ item 2
+  // while this slot explained the three yields; the three-yield distinction
+  // is also in `formula.body` and in FAQ item 3, so it loses nothing by
+  // moving one disclosure away.
+  creditRiskNotice:
+    "Công cụ này không tính rủi ro vỡ nợ: nó giả định mọi khoản lãi và mệnh giá đều được trả đủ, đúng hạn. Vì thế lợi suất 20% chỉ là 20% nếu bạn thực sự nhận được tiền — một lợi suất cao thường là giá của rủi ro chứ không phải một ưu đãi. Lợi suất đo số tiền bạn được hứa; nó không đo khả năng trả nợ của tổ chức phát hành, và trang này không có dữ liệu nào về khả năng đó.",
+
+  threeYieldsNoticeTitle: "Ba con số cùng được gọi là “lợi suất”",
   threeYieldsNotice:
-    "Ba con số dưới đây đều được gọi là “lợi suất” và chúng khác nhau. Lãi suất coupon 8%/năm là con số cố định tính trên MỆNH GIÁ — nó không đổi dù giá trái phiếu lên hay xuống. Lợi suất hiện tại là lãi mỗi năm chia GIÁ MUA, ở ví dụ mặc định là 8,6694%; nó bỏ qua việc bạn còn lãi hay lỗ phần chênh lệch giá khi đáo hạn. Lợi suất đáo hạn 10% là con số duy nhất tính đủ cả tiền lãi lẫn chênh lệch giá, và là con số để so sánh giữa các trái phiếu. Người bán thường nói lợi suất hiện tại vì nó không phản ánh mức chiết khấu.",
+    "Ba con số dưới đây đều được gọi là “lợi suất” và chúng khác nhau. Lãi suất coupon 8%/năm là con số cố định tính trên mệnh giá — nó không đổi dù giá trái phiếu lên hay xuống. Lợi suất hiện tại là lãi mỗi năm chia giá mua, ở ví dụ mặc định là 8,6694%; nó bỏ qua việc bạn còn lãi hay lỗ phần chênh lệch giá khi đáo hạn. Lợi suất đáo hạn 10% là con số duy nhất tính đủ cả tiền lãi lẫn chênh lệch giá, và là con số để so sánh giữa các trái phiếu. Người bán thường nói lợi suất hiện tại vì nó không phản ánh mức chiết khấu.",
 
   formula: {
     title: "Cách tính",
@@ -120,8 +130,22 @@ export const BOND = {
       "Với ví dụ mặc định: 4 triệu mỗi kỳ trong 10 kỳ, chiết khấu ở 5% mỗi kỳ, cộng 100 triệu ở kỳ thứ 10, cho giá 92.278.265 ₫, tức 92,278% mệnh giá. Lợi suất 10% cao hơn coupon 8% nên trái phiếu bán thấp hơn mệnh giá — quan hệ này luôn đúng theo cả hai chiều.",
       "Chiều nghịch không có công thức đóng. Vì giá giảm đơn điệu theo lợi suất, luôn tồn tại đúng một nghiệm khi nó nằm trong dải tìm kiếm, và công cụ giải bằng phương pháp chia đôi khoảng. Nếu không kẹp được nghiệm, ô lợi suất để trống thay vì hiển thị một con số đoán.",
       "Lợi suất hiệu dụng là lợi suất danh nghĩa đã ghép lãi theo số kỳ: với trả lãi hai lần một năm, 10%/năm danh nghĩa tương đương 10,2500% hiệu dụng. Với trái phiếu trả lãi một lần một năm, hai con số trùng nhau.",
-      "Thời gian đáo hạn bình quân là bình quân gia quyền thời điểm nhận tiền, tính theo NĂM — 4,1798 năm với ví dụ mặc định. Nó luôn ngắn hơn kỳ hạn với trái phiếu có coupon, vì bạn nhận một phần tiền trước khi đáo hạn, và đúng bằng kỳ hạn với trái phiếu không trả lãi. Duration điều chỉnh là con số đó chia (1 + lợi suất mỗi kỳ), tức 3,9808 năm.",
+      "Thời gian đáo hạn bình quân là bình quân gia quyền thời điểm nhận tiền, tính theo năm — 4,1798 năm với ví dụ mặc định. Nó luôn ngắn hơn kỳ hạn với trái phiếu có coupon, vì bạn nhận một phần tiền trước khi đáo hạn, và đúng bằng kỳ hạn với trái phiếu không trả lãi. Duration điều chỉnh là con số đó chia (1 + lợi suất mỗi kỳ), tức 3,9808 năm.",
       "Duration điều chỉnh đo độ nhạy giá: giá giảm khoảng duration × giá × 1% khi lợi suất tăng 1 điểm phần trăm, tức khoảng 3.673.373 ₫ ở ví dụ mặc định. Đây là xấp xỉ bậc một và nó hơi phóng đại mức giảm, vì quan hệ giá–lợi suất là đường cong lồi.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark why the per-period rate is not annual compounding, why the inverse has exactly one root, and that duration overstates the fall.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "quy ước của thị trường trái phiếu",
+      "giá giảm đơn điệu theo lợi suất",
+      "xấp xỉ bậc một",
     ],
   },
 
@@ -130,7 +154,7 @@ export const BOND = {
     items: [
       {
         q: "Cá nhân ở Việt Nam có mua được trái phiếu doanh nghiệp không?",
-        a: "Chỉ trong giới hạn. Từ Nghị định 65/2022, cá nhân muốn mua trái phiếu doanh nghiệp phát hành RIÊNG LẺ phải là nhà đầu tư chứng khoán chuyên nghiệp, với các điều kiện về giá trị tài sản hoặc kinh nghiệm. Trái phiếu phát hành ra công chúng và các quỹ trái phiếu thì không bị giới hạn này. Hãy xác định rõ trái phiếu bạn được chào là loại nào trước khi bàn tới lợi suất.",
+        a: "Chỉ trong giới hạn. Từ Nghị định 65/2022, cá nhân muốn mua trái phiếu doanh nghiệp phát hành riêng lẻ phải là nhà đầu tư chứng khoán chuyên nghiệp, với các điều kiện về giá trị tài sản hoặc kinh nghiệm. Trái phiếu phát hành ra công chúng và các quỹ trái phiếu thì không bị giới hạn này. Hãy xác định rõ trái phiếu bạn được chào là loại nào trước khi bàn tới lợi suất.",
       },
       {
         q: "Vì sao lợi suất cao lại là dấu hiệu đáng lo?",

@@ -61,7 +61,7 @@ describe("education-savings copy — figures reproduce from the module", () => {
     expect(C.formula.body[1]).toContain(target);
     expect(C.formula.body[2]).toContain(formatMoney(r.currentSavingsAtStart));
     expect(C.formula.body[2]).toContain(formatMoney(r.shortfallAtStart));
-    expect(C.formula.body[3]).toContain(formatMoney(r.monthlyContribution));
+    expect(C.formula.body[3]).toContain(formatMoney(r.monthlyContribution!));
   });
 
   it("quotes the first and last year's tuition", () => {
@@ -82,8 +82,8 @@ describe("education-savings copy — figures reproduce from the module", () => {
 
   it("quotes the monthly contribution a 5-year wait produces", () => {
     const wait5 = plan({ yearsUntilStart: 5 });
-    expect(formatMoney(wait5.monthlyContribution)).toBe("2.757.284");
-    expect(C.faq.items[3].a).toContain(formatMoney(wait5.monthlyContribution));
+    expect(formatMoney(wait5.monthlyContribution!)).toBe("2.757.284");
+    expect(C.faq.items[3].a).toContain(formatMoney(wait5.monthlyContribution!));
   });
 });
 
@@ -91,11 +91,14 @@ describe("education-savings copy — the interest row's definition", () => {
   it("states the identity that holds in the default, under-funded state", () => {
     const r = plan();
     expect(r.alreadyFunded).toBe(false);
-    // "số cần có trừ đi mọi thứ bạn bỏ vào — cả tiền có sẵn và tổng các khoản
-    // góp". Exact float subtraction, so an exact reference is fair here.
+    // "số kế hoạch SẼ CÓ vào ngày nhập học, trừ mọi đồng bạn bỏ vào". On a
+    // solvable plan `fundedAtStart` is the target, so the figure the copy
+    // quotes is unchanged — what changed is that the definition also holds
+    // on the unfundable and over-funded states.
     expect(r.interestEarned).toBe(
-      r.targetAtStart - DEFAULTS.currentSavings - r.totalContributions,
+      r.fundedAtStart - DEFAULTS.currentSavings - r.totalContributions,
     );
+    expect(r.fundedAtStart).toBeCloseTo(r.targetAtStart, 4);
     expect(INTEREST_PARAGRAPH).toContain(formatMoney(r.interestEarned));
     expect(formatMoney(r.interestEarned)).toBe("285.107.899");
     // "hơn 40% mục tiêu" — 40,69%.
@@ -103,20 +106,40 @@ describe("education-savings copy — the interest row's definition", () => {
     expect(r.interestEarned / r.targetAtStart).toBeLessThan(0.41);
   });
 
-  it("does NOT state that identity unconditionally, because the module floors it", () => {
-    // The floor: today's savings already exceed the target outright, so no
-    // contribution is needed and the raw difference would be a large negative.
-    // This is the case the copy used to describe wrongly.
+  it("needs no exception on a heavily over-funded plan", () => {
+    // The case that used to need a floor. Measured against the TARGET the
+    // raw difference is −2.299.398.621 ₫, which is why the old definition had
+    // to clamp; measured against what the plan HOLDS it is simply the growth
+    // on 3 tỷ, and no clamp exists any more.
     const overfunded = plan({ currentSavings: 3_000_000_000 });
-    const raw =
-      overfunded.targetAtStart - 3_000_000_000 - overfunded.totalContributions;
     expect(overfunded.alreadyFunded).toBe(true);
-    expect(overfunded.interestEarned).toBe(0);
-    expect(formatMoney(raw)).toBe("-2.299.398.621");
-    // So the paragraph must carry the exception, and must not stop at the
-    // identity.
-    expect(INTEREST_PARAGRAPH).toContain("Ngoại lệ");
-    expect(INTEREST_PARAGRAPH).toContain("0 ₫");
+    expect(
+      formatMoney(
+        overfunded.targetAtStart - 3_000_000_000 - overfunded.totalContributions,
+      ),
+    ).toBe("-2.299.398.621");
+    expect(overfunded.interestEarned).toBeCloseTo(
+      3_000_000_000 * 1.07 ** 10 - 3_000_000_000,
+      4,
+    );
+    expect(overfunded.interestEarned).toBeGreaterThan(0);
+    // And the paragraph describes the definition without an exception clause.
+    expect(INTEREST_PARAGRAPH).toContain("SẼ CÓ");
+    expect(INTEREST_PARAGRAPH).not.toContain("Ngoại lệ");
+  });
+
+  it("reports NO interest, and the gap separately, with no time to save", () => {
+    // The live-page defect: 314.513.997 ₫ of unfunded shortfall was rendered
+    // as "Phần do lãi đóng góp" with zero months elapsed.
+    const now = plan({ yearsUntilStart: 0, currentSavings: 10_000_000 });
+    expect(now.noTimeToSave).toBe(true);
+    expect(now.monthlyContribution).toBeNull();
+    expect(now.interestEarned).toBe(0);
+    expect(formatMoney(now.fundingGapAtStart)).toBe("314.513.997");
+    // The copy says both of those things where the reader will be.
+    expect(INTEREST_PARAGRAPH).toContain("chưa tháng nào trôi qua");
+    expect(C.form.noTimeNotice).toContain("để trống");
+    expect(C.form.noTimeNotice).toContain("phần do lãi bằng 0");
   });
 
   it("quotes the negative the copy promises at a −5% return", () => {
@@ -129,33 +152,48 @@ describe("education-savings copy — the interest row's definition", () => {
     );
   });
 
-  it("quotes the still-positive share of a partly over-funded plan", () => {
+  it("quotes the growth a partly over-funded plan actually earns", () => {
     const partly = plan({ currentSavings: 600_000_000 });
     expect(partly.alreadyFunded).toBe(true);
-    // 600 triệu is below the 700.601.379 ₫ target and only passes it after ten
-    // years of growth, so the floor is inactive and the share stays positive.
+    // 600 triệu is below the 700.601.379 ₫ target and only passes it after
+    // ten years of growth. The figure is that growth — 580.290.814 ₫ — not
+    // the 100.601.379 ₫ of the target it happened to cover.
     expect(600_000_000).toBeLessThan(partly.targetAtStart);
     expect(partly.currentSavingsAtStart).toBeGreaterThan(partly.targetAtStart);
-    expect(formatMoney(partly.interestEarned)).toBe("100.601.379");
+    expect(formatMoney(partly.interestEarned)).toBe("580.290.814");
     expect(INTEREST_PARAGRAPH).toContain(formatMoney(partly.interestEarned));
   });
 
-  it("floors the row exactly when already funded AND savings today beat the target", () => {
-    // This is the condition the copy names ("số tiền bạn đã có ngay hôm nay
-    // còn lớn hơn cả mục tiêu, nên không phải góp thêm đồng nào"). Swept so
-    // that "ngoại lệ duy nhất" is a measured claim rather than a guess.
+  it("holds the identity across every state, with no special case left", () => {
+    // Swept, because the old definition needed a clamp whose condition the
+    // copy had to describe. This one is `fundedAtStart − principal in`
+    // everywhere, and its SIGN follows the return rather than the funding
+    // state.
     for (const investmentReturnPercent of [-50, -20, -5, 0, 3, 7, 15]) {
       for (const currentSavings of [
         0, 200_000_000, 600_000_000, 700_601_379, 700_601_380, 900_000_000,
         3_000_000_000,
       ]) {
-        const r = plan({ currentSavings, investmentReturnPercent });
-        const raw = r.targetAtStart - currentSavings - r.totalContributions;
-        const floored = r.interestEarned === 0 && raw < 0;
-        expect(
-          floored,
-          `return ${investmentReturnPercent}%, savings ${currentSavings}`,
-        ).toBe(r.alreadyFunded && currentSavings > r.targetAtStart);
+        for (const yearsUntilStart of [0, 1, 10]) {
+          const r = plan({
+            currentSavings,
+            investmentReturnPercent,
+            yearsUntilStart,
+          });
+          const label = `return ${investmentReturnPercent}%, savings ${currentSavings}, wait ${yearsUntilStart}`;
+          expect(r.interestEarned, label).toBeCloseTo(
+            r.fundedAtStart - currentSavings - r.totalContributions,
+            6,
+          );
+          // Nothing elapsed means nothing earned, whatever the return.
+          if (yearsUntilStart === 0) {
+            expect(r.interestEarned, label).toBe(0);
+          }
+          // A non-negative return can never report negative growth.
+          if (investmentReturnPercent >= 0) {
+            expect(r.interestEarned, label).toBeGreaterThanOrEqual(0);
+          }
+        }
       }
     }
   });
@@ -169,13 +207,13 @@ describe("education-savings copy — provenance header", () => {
       formatMoney(r.totalTuitionNominal),
       formatMoney(r.currentSavingsAtStart),
       formatMoney(r.shortfallAtStart),
-      formatMoney(r.monthlyContribution),
+      formatMoney(r.monthlyContribution!),
       formatMoney(r.interestEarned),
       formatMoney(r.years[0].tuition),
       formatMoney(r.years[3].tuition),
       formatMoney(plan({ investmentReturnPercent: -5 }).interestEarned),
       formatMoney(plan({ currentSavings: 600_000_000 }).interestEarned),
-      formatMoney(plan({ yearsUntilStart: 5 }).monthlyContribution),
+      formatMoney(plan({ yearsUntilStart: 5 }).monthlyContribution!),
     ]) {
       expect(HEADER_COMMENT, `header comment is missing ${figure}`).toContain(
         figure,

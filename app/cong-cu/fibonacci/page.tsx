@@ -22,9 +22,14 @@ export default function FibonacciPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Direction is the input people get backwards, and the wrong answer
-      // looks entirely plausible.
-      notice={C.directionNotice}
+      // A level guarantees nothing — the statement row 42 owes, and which
+      // used to sit in the collapsed FAQ while this slot explained the
+      // direction input. Direction is still the input people get backwards
+      // and the wrong answer still looks plausible, so the worked example
+      // is one disclosure away rather than gone.
+      notice={C.noSignalNotice}
+      noticeDetail={C.directionDetail}
+      noticeDetailTitle={C.directionDetailTitle}
       intro={C.form.retracementTable.intro}
       prose={C.formula}
       faq={C.faq}

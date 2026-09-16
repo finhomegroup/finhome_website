@@ -1,0 +1,219 @@
+// Pages with a wide table that does NOT yet pass `mobileCards`.
+//
+// THE RULE, from docs §3: set `mobileCards` from five columns up; four fit at
+// 390 px compacted. Above that a real `<table>` scrolls sideways inside its
+// `overflow-x-auto` frame instead of being read — measured on
+// `phan-tich-an-sinh-xa-hoi` at a verified 390×844 viewport as 596 px inside a
+// 300 px frame, with three of its SIX columns off-screen, and the three
+// off-screen ones were the columns the paragraph beneath the table was
+// comparing.
+//
+// WHY AN ALLOWLIST RATHER THAN A STRAIGHT ASSERTION. Asserting the rule across
+// the suite today would go red on every entry below at once, across several
+// units' rows plus pages nobody is holding, and a red shared tree is how work
+// gets reverted rather than fixed. The `MULTI_LIVE_ALLOWLIST` shape solves it
+// the way this repo already solves it: assert the PROPERTY, list the known
+// exceptions with a reason each, and let the list shrink. The debt becomes
+// visible instead of silent, and each owner deletes its own line — two entries
+// have already come off this way.
+//
+// So an entry here is a DEBT, not a dispensation — unlike
+// `MULTI_LIVE_ALLOWLIST`, whose single entry is a genuine exception to its
+// convention. `check:markup` fails BOTH ways, so a stale line is as red as a
+// new violation: you cannot delete a line without fixing the table, and you
+// cannot fix the table without deleting the line.
+//
+// HOW TO COUNT, because this list was wrong three separate ways before it was
+// right. Count header cells in `<thead>` ONLY, per `<table>`, on the BUILT
+// export, matching `<th[\s>]`:
+//
+//   - Counting every `<th>` in the table counts one per row for any table
+//     using `<th scope="row">` on its first body cell. That reported 23 "th"
+//     for `cac-chi-so-tai-chinh`, which has THREE columns and twenty labelled
+//     rows.
+//   - Counting `scope="col"` undercounts by one where the leading header
+//     carries no scope.
+//   - Matching the bare prefix `<th` counts the table's own `<thead` opening
+//     tag as a column, inflating every figure by exactly one. That version
+//     shipped, and at a threshold of five it made the effective rule FOUR real
+//     columns — one stricter than docs §3 — putting six four-column pages in
+//     this list for a rule they already satisfied, `vay-mua-nha` among them,
+//     reported at the time as the highest-priority violation in the suite.
+//
+// The tell was available before it was believed: a human had measured row 54
+// in a browser as three of six columns off-screen, and the script said seven.
+// When a derived number disagrees with a measured one, suspect the derivation.
+//
+// And the card fallback's signature is `<ul ... md:hidden>`, never the
+// presence of a `<dl>`: `so-sanh-khoan-vay` ships a `<dl>` for something else
+// entirely and no cards at all, so a `<dl>` test silently cleared the
+// highest-priority page here.
+//
+// A plain .mjs for the same reason as the multi-live list: a Node script can
+// import it with no TypeScript and no build step, and a `.ts` vitest test can
+// import it too.
+//
+// EACH ENTRY NOW CARRIES MEASURED EVIDENCE, and adding it proved the rule wrong
+// in both directions at once.
+//
+// On 2026-09-16 every live route was rendered at a verified 390 px layout
+// viewport — same-origin iframes against the built export, recorded in
+// `docs/visual-evidence.json` — and the column count turned out to be
+// INDEPENDENT of whether the table actually overflows:
+//
+//   - `lai-kep` has FIVE columns, violates docs §3, and does NOT overflow at
+//     390 px. Five short numeric columns compress and fit.
+//   - `vay-thuong-mai` and `lai-suat-thuc-te` have FOUR columns each, satisfy
+//     docs §3, and DO overflow — long Vietnamese header text, not column count.
+//
+// So the threshold is a cheap static PROXY for the symptom, and `measured390`
+// records the symptom itself. The two four-column rows are in
+// `NARROW_OVERFLOW_MEASURED` below rather than in this list, deliberately:
+// `check:markup` checks this list BOTH ways against the five-column rule, so a
+// non-violator listed here would be reported as a stale entry and the fix
+// would look like the bug.
+//
+// `measured390` is pinned against the manifest by
+// `wide-table-pending.test.ts`, so it cannot drift from the measurement it
+// claims to quote — the same pairing as `shipped()`/`verified` in
+// `content/calculators/statutory-parameters.ts`.
+//
+// A NOTE ON THE EARLIER MISTAKE IN THIS FILE'S HISTORY, now that there is
+// evidence: the `<th` prefix bug made the effective rule FOUR columns, and it
+// was corrected as a pure error. Measurement shows the stricter behaviour was
+// catching something real — four-column tables that overflow — for entirely
+// the wrong reason. Right answer, wrong derivation, and only measuring
+// separated the two.
+export const WIDE_TABLE_PENDING = [
+  // ----------------------------------------------------- P1 and P2: fix first
+  // Their readers are the audience this site exists for.
+  {
+    slug: "so-sanh-khoan-vay",
+    columns: 6,
+    measured390: "overflows",
+    owner: "P1 — loan comparison",
+    reason:
+      "THE HIGHEST-PRIORITY ENTRY, and the only P1 page in this list. It is a " +
+      "COMPARISON, so the value is the row read across and a per-row card " +
+      "block breaks that up — a real design question, not a reason to leave " +
+      "it scrolling at six columns. Note it also ships a `<dl>` for something " +
+      "unrelated, which is what made an earlier `<dl>`-based card test clear " +
+      "it wrongly.",
+  },
+  {
+    slug: "lai-co-dinh-hay-tha-noi",
+    columns: 6,
+    measured390: "overflows",
+    owner: "P2 — fixed vs floating",
+    reason: "P2, Vietnamese-facing, two columns clear of the bound.",
+  },
+  {
+    slug: "lai-kep",
+    columns: 5,
+    measured390: "fits",
+    owner: "P2 — compound interest",
+    reason: "P2, Vietnamese-facing, just over the bound.",
+  },
+
+  // ------------------------------------------- Vietnamese-facing, P3/P4 shelf
+  {
+    slug: "diem-pivot",
+    columns: 8,
+    measured390: "overflows",
+    owner: "plan row 41",
+    reason:
+      "The widest table in the suite, and the one least suited to a " +
+      "mechanical conversion. Reading ACROSS a row gives one method's ladder, " +
+      "which cards preserve — but reading DOWN a column compares the four " +
+      "conventions at one level, which is the comparison the page's whole " +
+      "argument rests on, and cards break it. The real options are a " +
+      "transposition (still five columns) or declaring R3/S3 secondary, and " +
+      "both want a viewport measurement. Reasoning recorded in " +
+      "`content/calculators/pivot.test.ts`.",
+  },
+
+  // ------------------------------------------------------- US-law (hoa-ky)
+  // Filed `reference` by the hoa-ky policy, so deliberately not investment
+  // targets. The debt is real but ranks below every Vietnamese-facing entry.
+  {
+    slug: "gop-401k",
+    columns: 7,
+    measured390: "overflows",
+    owner: "plan row 46",
+    reason: "US-law reference page; ranks below any Vietnamese-facing table.",
+  },
+  {
+    slug: "nien-kim",
+    columns: 7,
+    measured390: "overflows",
+    owner: "plan row 57",
+    reason:
+      "Already recorded as a known gap in `content/calculators/annuity.ts`. " +
+      "Per docs §4 a real table treatment wants `lib/calc/table-cell.ts` to " +
+      "carry an explicit currency first, since this table is USD — a " +
+      "suite-primitive change, deliberately deferred.",
+  },
+  {
+    slug: "phan-tich-thu-nhap-huu-tri",
+    columns: 7,
+    measured390: "overflows",
+    owner: "plan row 49",
+    reason:
+      "TWO wide tables on one page. Confirmed to stay a US reference page.",
+  },
+  {
+    slug: "rut-toi-thieu-bat-buoc",
+    columns: 6,
+    measured390: "overflows",
+    owner: "plan row 52",
+    reason:
+      "US-law reference page, shelved hoa-ky and filed `reference`, so no Vietnamese reader is expected to work through this table on a phone — the lowest-priority kind of entry here. The measurement is nonetheless the second worst in the suite: 27 elements exceed 390 px, because the table is a year-by-year withdrawal schedule and every row is six figures wide. Converting it means deciding what a single year's card should show, which is a design question about a page nobody is holding.",
+  },
+  {
+    slug: "ira-truyen-thong-hay-roth",
+    columns: 5,
+    measured390: "overflows",
+    owner: "plan row 51",
+    reason: "US-law reference page, just over the bound.",
+  },
+  {
+    slug: "toi-da-401k",
+    columns: 5,
+    measured390: "overflows",
+    owner: "plan row 47",
+    reason: "US-law reference page, just over the bound.",
+  },
+];
+
+/**
+ * Rows whose table OVERFLOWS 390 px while satisfying the five-column rule.
+ *
+ * Found by measurement, not by the rule, and kept apart from
+ * `WIDE_TABLE_PENDING` for a mechanical reason: that list is the allowlist for
+ * docs §3 and `check:markup` verifies it in both directions, so a row that does
+ * not violate the column rule cannot be listed there without being reported as
+ * stale.
+ *
+ * These are therefore NOT debts against docs §3 — they are evidence that docs
+ * §3 under-detects. Whoever revisits the rule should start here: the cause in
+ * both cases is header text length, not column count, so a threshold on
+ * columns can never catch them and a rendered-width check is the only thing
+ * that will. `check:markup` parses HTML and has no layout engine, so that
+ * check cannot live in the gate; it lives in the measurement sweep instead.
+ */
+export const NARROW_OVERFLOW_MEASURED = [
+  {
+    slug: "vay-thuong-mai",
+    columns: 4,
+    measuredOn: "2026-09-16",
+    reason:
+      "Four columns, so docs §3 asks for nothing, yet twelve elements exceed 390 px at a verified 390 px viewport — the widest being the table and its caption. P2 and Vietnamese-facing, which makes it the higher-value of the two. No page-level overflow: the scroll is contained by the ResultTable frame, so a reader can reach the hidden columns, they just have to know to try.",
+  },
+  {
+    slug: "lai-suat-thuc-te",
+    columns: 4,
+    measuredOn: "2026-09-16",
+    reason:
+      "Four columns and thirteen elements over 390 px, same cause and same containment as the row above. Lower priority: this table compares compounding frequencies, which reads down a column rather than across a row, so a reader who scrolls loses less than one comparing loan offers side by side.",
+  },
+];

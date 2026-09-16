@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { UnitsCalculator } from "@/components/units-calculator";
 import { UNITS_CONTENT as C } from "@/content/calculators/units";
 
@@ -28,6 +29,13 @@ export default function UnitsPage() {
       intro={C.form.table.intro}
       prose={C.formula}
       faq={C.faq}
+      // The shared disclaimer talks about interest rates and returns; this
+      // page has none. Its real caveats are rounding, the named land
+      // conventions, and that it settles no legal area.
+      disclaimer={C.disclaimer}
+      // No property-search step: there is no verified area-aware destination,
+      // so the next questions are the money ones. See next-steps.ts.
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <UnitsCalculator />
     </CalculatorPage>

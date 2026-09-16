@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { WithdrawalCalculator } from "@/components/withdrawal-calculator";
 import { WITHDRAWAL as C } from "@/content/calculators/withdrawal";
 
@@ -27,6 +28,9 @@ export default function WithdrawalPage() {
       notice={C.realReturnNotice}
       prose={C.formula}
       faq={C.faq}
+      // Original row 26's next step: "kế hoạch ngân sách nếu phù hợp". The
+      // entry existed in `next-steps.ts` and this route never rendered it.
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <WithdrawalCalculator />
     </CalculatorPage>

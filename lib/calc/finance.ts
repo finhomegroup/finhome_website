@@ -245,3 +245,53 @@ export function amortize(input: AmortizeInput): ScheduleRow[] | null {
 
   return rows;
 }
+
+/**
+ * Build a schedule that repays a CONSTANT amount of principal each period,
+ * with interest charged on the balance that is left.
+ *
+ * This is the other repayment structure Vietnamese banks actually offer —
+ * "trả gốc đều", or "gốc + lãi trên dư nợ giảm dần" as the contracts usually
+ * word it. It is not a variant of `amortize`: there is no level instalment at
+ * all. The first month is the dearest and every month after it is cheaper,
+ * because the principal slice never changes while the interest slice shrinks.
+ *
+ * Why it matters enough to model rather than to mention: on 2 tỷ at 8,5% over
+ * 240 months the first instalment is 22.500.000 ₫ against the annuity's
+ * 17.356.465 ₫ — nearly 30% more to find in month one — and the lifetime
+ * interest is LOWER, because principal comes down faster. A borrower shown
+ * only the annuity has no way to see either side of that trade.
+ *
+ * Like `amortize`, every figure returned is POSITIVE (presentation-shaped),
+ * the final row's principal is forced to exactly the outstanding balance so
+ * the schedule ends at zero by construction, and `extraPerPeriod` can end it
+ * early. Null on inputs that cannot describe a loan, including a non-integer
+ * `periods`.
+ */
+export function amortizeFlatPrincipal(input: AmortizeInput): ScheduleRow[] | null {
+  const { principal, ratePerPeriod, periods, extraPerPeriod = 0 } = input;
+
+  if (!Number.isFinite(principal) || principal <= 0) return null;
+  if (!Number.isFinite(ratePerPeriod) || ratePerPeriod < 0) return null;
+  if (!Number.isFinite(periods) || periods <= 0 || !Number.isInteger(periods))
+    return null;
+  if (!Number.isFinite(extraPerPeriod) || extraPerPeriod < 0) return null;
+
+  const slice = principal / periods;
+  const rows: ScheduleRow[] = [];
+  let balance = principal;
+
+  for (let period = 1; period <= periods && balance > 0; period += 1) {
+    const interest = balance * ratePerPeriod;
+    let principalPart = slice + extraPerPeriod;
+    // Same two guards as `amortize`, for the same two reasons: never repay
+    // more than is outstanding, and force the payoff on the last scheduled
+    // period so the balance lands on exactly zero rather than on a residue.
+    if (period >= periods || principalPart > balance) principalPart = balance;
+    const payment = interest + principalPart;
+    balance -= principalPart;
+    rows.push({ period, payment, interest, principal: principalPart, balance });
+  }
+
+  return rows;
+}

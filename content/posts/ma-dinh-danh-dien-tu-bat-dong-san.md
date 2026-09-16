@@ -1,4 +1,4 @@
-Từ 1/3/2026, mỗi căn nhà, căn hộ và sản phẩm trong dự án bất động sản sẽ có một mã định danh điện tử riêng, theo nghị định mới của Chính phủ về xây dựng cơ sở dữ liệu nhà ở và thị trường bất động sản. Đây là bước đi tiếp theo trong nỗ lực minh bạch hóa thông tin thị trường, sau nhiều năm người mua nhà phải tự tìm hiểu pháp lý dự án qua nhiều nguồn rời rạc.
+Từ 1/3/2026, mỗi căn nhà, căn hộ và sản phẩm trong dự án bất động sản sẽ có một mã định danh điện tử riêng, theo nghị định mới của Chính phủ về xây dựng cơ sở dữ liệu nhà ở và thị trường bất động sản. Mã này là một mã số riêng, không trùng lặp, dùng để tra cứu hồ sơ của chính căn nhà đó trong một cơ sở dữ liệu chung. Đây là bước đi tiếp theo trong nỗ lực minh bạch hóa thông tin thị trường, sau nhiều năm người mua nhà phải tự tìm hiểu pháp lý dự án qua nhiều nguồn rời rạc.
 
 ## Điểm chính cần nắm
 

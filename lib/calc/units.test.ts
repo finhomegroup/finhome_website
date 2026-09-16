@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { convertUnit, UNITS, type UnitCategory } from "@/lib/calc/units";
+import {
+  AMBIGUOUS_LAND_UNITS,
+  convertUnit,
+  isAmbiguousLandUnit,
+  landRegionComparison,
+  resolveLandUnit,
+  UNITS,
+  type UnitCategory,
+} from "@/lib/calc/units";
 
 const CATEGORIES = Object.keys(UNITS) as UnitCategory[];
 
@@ -278,5 +286,128 @@ describe("convertUnit — rejected inputs", () => {
       const bases = UNITS[category].filter((unit) => unit.factor === 1);
       expect(bases).toHaveLength(1);
     }
+  });
+});
+
+/**
+ * ORIGINAL ROW 71 — a region has to be CONFIRMED, never defaulted.
+ *
+ * The defect this closes: the form opened on "Sào Bắc Bộ", so a Central plot
+ * was converted at 360 m² instead of 499,95 m² — 39% out, with no invalid
+ * state and nothing saying a choice had been made for the reader.
+ */
+describe("ambiguous land units", () => {
+  it("names both regional variants of each ambiguous unit", () => {
+    expect(Object.keys(AMBIGUOUS_LAND_UNITS).sort()).toEqual(["mau", "sao"]);
+    for (const [name, variants] of Object.entries(AMBIGUOUS_LAND_UNITS)) {
+      expect(isAmbiguousLandUnit(name)).toBe(true);
+      // Every variant is a real unit of the area category.
+      for (const id of Object.values(variants)) {
+        expect(
+          UNITS.area.some((unit) => unit.id === id),
+          `${name} -> ${id}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("resolves to nothing at all until a region is chosen", () => {
+    expect(resolveLandUnit("sao", null)).toBeNull();
+    expect(resolveLandUnit("mau", null)).toBeNull();
+    expect(resolveLandUnit("sao", "bac")).toBe("saoBac");
+    expect(resolveLandUnit("sao", "trung")).toBe("saoTrung");
+    expect(resolveLandUnit("mau", "trung")).toBe("mauTrung");
+  });
+
+  it("leaves an unambiguous unit alone, region or not", () => {
+    expect(resolveLandUnit("m2", null)).toBe("m2");
+    expect(resolveLandUnit("ha", "bac")).toBe("ha");
+    expect(isAmbiguousLandUnit("saoBac")).toBe(false);
+  });
+
+  it("compares the two conventions on the reader's own figure", () => {
+    // Two sào in square metres: 720 under one convention, 999,90 under the
+    // other.
+    const comparison = landRegionComparison({
+      fromId: "sao",
+      toId: "m2",
+      value: 2,
+    })!;
+    expect(comparison.side).toBe("from");
+    expect(comparison.targetId).toBe("m2");
+    expect(comparison.targetConventionApplied).toBe(false);
+    const rows = comparison.rows;
+    expect(rows.map((row) => row.region)).toEqual(["bac", "trung"]);
+    expect(rows[0].squareMetres).toBe(360);
+    expect(rows[0].value).toBe(720);
+    expect(rows[1].squareMetres).toBe(499.95);
+    expect(rows[1].value).toBeCloseTo(999.9, 10);
+    // 499,95 / 360 − 1 = 38,875% apart, which is the reason the choice is
+    // not made for the reader.
+    expect(rows[1].value / rows[0].value - 1).toBeCloseTo(0.38875, 6);
+  });
+
+  it("compares in whatever unit the page is converting into", () => {
+    const comparison = landRegionComparison({
+      fromId: "mau",
+      toId: "ha",
+      value: 1,
+    })!;
+    expect(comparison.targetId).toBe("ha");
+    expect(comparison.rows[0].value).toBeCloseTo(0.36, 10);
+    expect(comparison.rows[1].value).toBeCloseTo(0.49995, 10);
+  });
+
+  it("compares when the region decides the TARGET, not the source", () => {
+    // m² → mẫu is the direction a reader with a deed takes, and it used to
+    // produce no short comparison at all.
+    const comparison = landRegionComparison({
+      fromId: "m2",
+      toId: "mau",
+      value: 3_600,
+    })!;
+    expect(comparison.side).toBe("to");
+    // Each row is in its OWN unit here, so there is no single target to name.
+    expect(comparison.targetId).toBeNull();
+    expect(comparison.rows[0].value).toBe(1);
+    expect(comparison.rows[0].id).toBe("mauBac");
+    expect(comparison.rows[1].value).toBeCloseTo(3_600 / 4_999.5, 12);
+    expect(comparison.rows[1].id).toBe("mauTrung");
+  });
+
+  it("fixes and NAMES a target convention when both sides are regional", () => {
+    // sào → mẫu: the figures must be in one unit to be comparable, so the
+    // target's own region is pinned and the page says which.
+    const unset = landRegionComparison({
+      fromId: "sao",
+      toId: "mau",
+      value: 10,
+    })!;
+    expect(unset.targetConventionApplied).toBe(true);
+    expect(unset.targetId).toBe("mauBac");
+    expect(unset.rows[0].value).toBeCloseTo(1, 12);
+    expect(unset.rows[1].value).toBeCloseTo(4_999.5 / 3_600, 12);
+    // The reader's own confirmed convention is used when there is one.
+    const chosen = landRegionComparison({
+      fromId: "sao",
+      toId: "mau",
+      value: 10,
+      region: "trung",
+    })!;
+    expect(chosen.targetId).toBe("mauTrung");
+    expect(chosen.rows[1].value).toBeCloseTo(1, 12);
+  });
+
+  it("has nothing to compare when neither side is regional", () => {
+    expect(
+      landRegionComparison({ fromId: "m2", toId: "ha", value: 1 }),
+    ).toBeNull();
+    expect(
+      landRegionComparison({ fromId: "sao", toId: "m2", value: Number.NaN }),
+    ).toBeNull();
+    // A unit from another category cannot be found in `area`.
+    expect(
+      landRegionComparison({ fromId: "sao", toId: "kg", value: 1 }),
+    ).toBeNull();
   });
 });

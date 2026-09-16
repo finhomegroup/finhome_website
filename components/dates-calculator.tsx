@@ -13,61 +13,21 @@ import { formatDecimal, parseDecimal } from "@/lib/calc/number";
 import {
   computeDateDifference,
   computeDateOffset,
-  isValidDate,
   type CalendarDate,
 } from "@/lib/calc/dates";
+import { readDateFields } from "@/lib/calc/date-input";
 import { DATES as C } from "@/content/calculators/dates";
 
 /**
  * Parse a year/month/day trio out of the raw field strings.
  *
- * Exported for `dates-calculator.test.ts`: the per-field blame below is the
- * whole point of the function and a future refactor would naturally re-couple
- * it to the trio, so it needs a test, and a pure helper is the only thing this
- * repo's runner can test out of a client component (no jsdom).
+ * The implementation moved to `lib/calc/date-input.ts` when the home-fund and
+ * term-deposit tools needed the same step; the per-field blame it keeps is
+ * documented there. Re-exported under this name because
+ * `dates-calculator.test.ts` pins the blame through this page's own entry
+ * point.
  */
-export function readDate(
-  year: string,
-  month: string,
-  day: string,
-): { date: CalendarDate | null; yearBad: boolean; monthBad: boolean; dayBad: boolean } {
-  const y = parseDecimal(year);
-  const m = parseDecimal(month);
-  const dd = parseDecimal(day);
-
-  const yearBad = y === null || !Number.isInteger(y);
-  const monthBad = m === null || !Number.isInteger(m) || m < 1 || m > 12;
-  // The day's OWN validity splits in two, and only one half needs the trio.
-  //
-  // The number itself: a value that is not an integer in 1..31 exists in NO
-  // month at all, so blaming the day is truthful even while Năm or Tháng is
-  // blank. (31 is the narrowest day that does exist somewhere — measured
-  // valid in 7 of the 12 months; every day 1..28 is valid in all 12. So the
-  // 1..31 window is exactly the set worth keeping in the box.)
-  //
-  // The calendar: whether an integer in 1..31 exists depends on the month
-  // (31 tháng 4) and, for 29 February, on the year — so that half waits for
-  // a candidate. `dayBad` drives `invalid` on the DAY input, whose message
-  // reads "Ngày không tồn tại trong tháng đã chọn."; announcing that about a
-  // legitimate 1..31 day merely because Năm is mid-edit reddened two fields
-  // and gave a reason that was not true.
-  const dayNumberBad =
-    dd === null || !Number.isInteger(dd) || dd < 1 || dd > 31;
-  const trioUsable =
-    y !== null && !yearBad && m !== null && !monthBad && !dayNumberBad;
-  const candidate = trioUsable ? { year: y, month: m, day: dd } : null;
-  const dayBad =
-    dayNumberBad || (candidate !== null && !isValidDate(candidate));
-
-  return {
-    // The result still blanks whenever ANY of the trio is bad — only the
-    // per-field blame changed.
-    date: candidate !== null && !dayBad ? candidate : null,
-    yearBad,
-    monthBad,
-    dayBad,
-  };
-}
+export const readDate = readDateFields;
 
 export function DatesCalculator() {
   const fields = useCalcFields({
@@ -152,21 +112,21 @@ export function DatesCalculator() {
         <NumberField
           {...fields.bind("fromDay")}
           label={C.form.fromDayLabel}
-          help={C.form.dayInvalid}
+          help={C.form.dayHelp}
           error={C.form.dayInvalid}
           invalid={from.dayBad}
         />
         <NumberField
           {...fields.bind("fromMonth")}
           label={C.form.fromMonthLabel}
-          help={C.form.monthInvalid}
+          help={C.form.monthHelp}
           error={C.form.monthInvalid}
           invalid={from.monthBad}
         />
         <NumberField
           {...fields.bind("fromYear")}
           label={C.form.fromYearLabel}
-          help={C.form.yearInvalid}
+          help={C.form.yearHelp}
           error={C.form.yearInvalid}
           invalid={from.yearBad}
         />
@@ -193,21 +153,21 @@ export function DatesCalculator() {
           <NumberField
             {...fields.bind("toDay")}
             label={C.form.toDayLabel}
-            help={C.form.dayInvalid}
+            help={C.form.dayHelp}
             error={C.form.dayInvalid}
             invalid={to.dayBad}
           />
           <NumberField
             {...fields.bind("toMonth")}
             label={C.form.toMonthLabel}
-            help={C.form.monthInvalid}
+            help={C.form.monthHelp}
             error={C.form.monthInvalid}
             invalid={to.monthBad}
           />
           <NumberField
             {...fields.bind("toYear")}
             label={C.form.toYearLabel}
-            help={C.form.yearInvalid}
+            help={C.form.yearHelp}
             error={C.form.yearInvalid}
             invalid={to.yearBad}
           />
@@ -273,6 +233,19 @@ export function DatesCalculator() {
             />
           </>
         )}
+        {/* The counting convention sits WITH the figures. A reader who counts
+            by hand and gets one more than the tool needs the rule here, not
+            three sections down — and it is also where the "no holidays, no
+            legal deadline" boundary belongs. */}
+        <ResultRow
+          label={C.form.countingRuleLabel}
+          value={
+            byDifference
+              ? C.form.countingRuleDifference
+              : C.form.countingRuleOffset
+          }
+          prose
+        />
       </ResultGroup>
 
       {byDifference ? (

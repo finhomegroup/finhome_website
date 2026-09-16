@@ -2,6 +2,12 @@ import { describe, it, expect } from "vitest";
 import { computeAutoLease, type AutoLeaseInput } from "@/lib/calc/auto-lease";
 
 // 800 triệu vehicle, 100 triệu down, 55% residual over 3 years at 9%/năm.
+//
+// `taxPercent: 10` here is an ARBITRARY MODEL INPUT, chosen because a non-zero
+// rate exercises the multiplication. It is deliberately NOT the page's shipped
+// default, which is 0 — a finance-lease rental is không chịu thuế GTGT, and
+// `content/calculators/auto-lease.test.ts` is what pins that. Do not read this
+// fixture as a statement about Vietnamese VAT law.
 const BASE: AutoLeaseInput = {
   price: 800_000_000,
   downPayment: 100_000_000,
@@ -128,7 +134,11 @@ describe("computeAutoLease — the residual drives everything", () => {
 });
 
 describe("computeAutoLease — tax and totals", () => {
-  it("charges VAT on the payment, not on the vehicle price", () => {
+  it("applies the supplied rate to the rent, not to the vehicle price", () => {
+    // A statement about this MODULE's arithmetic, not about the law: the rate
+    // the caller passes multiplies the monthly rent. Whether a rate applies to
+    // a lease at all is a legal question answered in the content layer — see
+    // the module docstring.
     const result = lease(BASE);
     expect(result.monthlyTax).toBeCloseTo(
       result.monthlyPaymentBeforeTax * 0.1,

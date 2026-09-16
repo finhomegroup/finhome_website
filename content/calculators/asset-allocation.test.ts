@@ -18,6 +18,7 @@ import {
   type AssetAllocationInput,
   type RiskTolerance,
 } from "@/lib/calc/asset-allocation";
+import { isValidDate } from "@/lib/calc/dates";
 import { ASSET_ALLOCATION as C } from "@/content/calculators/asset-allocation";
 
 const D = C.form.defaults;
@@ -51,6 +52,25 @@ function run(over: Partial<AssetAllocationInput> = {}) {
 
 const usd = (v: number) => formatMoney(v);
 
+/**
+ * A FAQ answer found by a distinctive phrase in its question.
+ *
+ * Positional indexes were how this file used to reach the FAQ, and the review
+ * repair that ordered the list by MODE — allocation questions first, then the
+ * advanced study — moved every one of them. A lookup by content survives the
+ * next reordering too.
+ */
+function faqAnswer(questionFragment: string): string {
+  const match = C.faq.items.find((item) => item.q.includes(questionFragment));
+  if (!match) {
+    throw new Error(
+      `no FAQ question containing "${questionFragment}" — the list was ` +
+        "reordered or reworded; fix the fragment, not the assertion",
+    );
+  }
+  return match.a;
+}
+
 const HEADER_COMMENT = (() => {
   const file = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -63,11 +83,20 @@ const HEADER_COMMENT = (() => {
 describe("phan-bo-tai-san at its shipped defaults", () => {
   it("parses every default with the parser its field kind needs", () => {
     // "0,1" is the correlation and must go through parseDecimal: parseMoney
-    // would read it as 0,1 too, but "500.000" through parseDecimal is 500.
+    // would read it as 0,1 too, but "500.000.000" through parseDecimal is 500.
+    //
+    // The holdings are in ĐỒNG now, not USD — original row 56 dropped the
+    // second currency from this page. They were rescaled by exactly 1.000,
+    // so every WEIGHT, drift, percentage and risk figure below is unchanged;
+    // only the money figures moved by three digits.
     expect(shippedInput()).toEqual({
       age: 45,
       riskTolerance: "moderate",
-      holdings: { equity: 500_000, bond: 150_000, cash: 50_000 },
+      holdings: {
+        equity: 500_000_000,
+        bond: 150_000_000,
+        cash: 50_000_000,
+      },
       returns: { equity: 10, bond: 5, cash: 3 },
       equitySigmaPercent: 16,
       bondSigmaPercent: 6,
@@ -95,7 +124,9 @@ describe("phan-bo-tai-san at its shipped defaults", () => {
 
   it("quotes the target, the current weights and the drift", () => {
     const r = run();
-    expect(usd(r.totalValue)).toBe("700.000");
+    // The weights and drifts below are IDENTICAL to the USD era: rescaling
+    // every holding by the same factor cannot move a share of the total.
+    expect(usd(r.totalValue)).toBe("700.000.000");
     expect(r.target).toEqual({ equity: 65, bond: 30, cash: 5 });
     expect(formatPercent(r.currentWeights!.equity, 1)).toBe("71,4%");
     expect(formatPercent(r.currentWeights!.bond, 1)).toBe("21,4%");
@@ -108,9 +139,9 @@ describe("phan-bo-tai-san at its shipped defaults", () => {
 
   it("quotes the trades, and they net to zero", () => {
     const r = run();
-    expect(usd(r.trades!.equity)).toBe("-45.000");
-    expect(usd(r.trades!.bond)).toBe("60.000");
-    expect(usd(r.trades!.cash)).toBe("-15.000");
+    expect(usd(r.trades!.equity)).toBe("-45.000.000");
+    expect(usd(r.trades!.bond)).toBe("60.000.000");
+    expect(usd(r.trades!.cash)).toBe("-15.000.000");
     const net = ASSET_CLASSES.reduce((sum, key) => sum + r.trades![key], 0);
     expect(net).toBeCloseTo(0, 6);
     expect(C.form.table.intro).toContain("bằng 0");
@@ -163,11 +194,12 @@ describe("phan-bo-tai-san at its shipped defaults", () => {
         figure,
       );
     }
-    expect(C.faq.items[1].a).toContain("2,62");
-    expect(C.faq.items[1].a).toContain("0,84");
+    const correlationAnswer = faqAnswer("hệ số tương quan");
+    expect(correlationAnswer).toContain("2,62");
+    expect(correlationAnswer).toContain("0,84");
     // The residue at a correlation of 1 is the cash sleeve, whose own
-    // correlation stays at zero — which formula.body[3] explains.
-    expect(C.formula.body[3]).toContain("0,05");
+    // correlation stays at zero — which the advanced method explains.
+    expect(C.advancedFormula.body[3]).toContain("0,05");
   });
 
   it("quotes the current portfolio buying return at a worse rate", () => {
@@ -187,9 +219,11 @@ describe("phan-bo-tai-san at its shipped defaults", () => {
     expect(r.currentStats!.returnPerRiskUnit!).toBeLessThan(
       r.targetStats.returnPerRiskUnit!,
     );
-    const a = C.faq.items[2].a;
+    const a = faqAnswer("lợi nhuận cao hơn mục tiêu");
     for (const figure of ["8,43%", "8,15%", "11,63%", "10,73%", "0,760", "0,725"]) {
-      expect(a, `FAQ 3 is missing ${figure}`).toContain(figure);
+      expect(a, `the drifted-portfolio answer is missing ${figure}`).toContain(
+        figure,
+      );
     }
   });
 
@@ -243,13 +277,138 @@ describe("phan-bo-tai-san at its shipped defaults", () => {
   it("names the band in the copy from the module's own constant", () => {
     expect(C.form.rebalanceNotice).toContain(String(REBALANCE_BAND_POINTS));
     expect(C.form.inBandNotice).toContain(String(REBALANCE_BAND_POINTS));
-    expect(C.faq.items[3].a).toContain(String(REBALANCE_BAND_POINTS));
+    expect(faqAnswer("cân lại một lần")).toContain(
+      String(REBALANCE_BAND_POINTS),
+    );
   });
 
   it("says out loud that the age rule is a convention", () => {
     expect(C.form.ageHelp).toContain("quy tắc kinh nghiệm");
-    expect(C.formula.body[4]).toContain("không có cơ sở lý thuyết");
-    expect(C.faq.items[0].q).toContain("110");
+    expect(C.advancedFormula.body[4]).toContain("không có cơ sở lý thuyết");
+    expect(C.faq.items.some((item) => item.q.includes("110"))).toBe(true);
+  });
+});
+
+// The review's first row-56 finding: the page's own explanation belonged to
+// the advanced study while the form asked the allocation question.
+describe("phan-bo-tai-san — the explanation matches the DEFAULT mode", () => {
+  it("opens on the allocation mode, not the portfolio study", () => {
+    expect(C.purpose.defaultMode).toBe("purpose");
+  });
+
+  it("gives the page-level method to the allocation, not the covariance sum", () => {
+    const body = C.formula.body.join(" ");
+    expect(body).toContain("quỹ dự phòng");
+    expect(body).toContain("Chưa phân bổ");
+    // The portfolio study's vocabulary must not be in the default method.
+    expect(body).not.toContain("hiệp phương sai");
+    expect(body).not.toContain("độ lệch chuẩn");
+    expect(C.formula.body.length).toBeGreaterThan(3);
+  });
+
+  it("keeps the covariance method available, under its own title", () => {
+    // Retained, not removed: it renders inside the advanced mode.
+    expect(C.advancedFormula.body.join(" ")).toContain("hiệp phương sai");
+    expect(C.advancedFormula.title).not.toBe(C.formula.title);
+  });
+
+  it("gives the paragraph under the calculator to the allocation too", () => {
+    expect(C.purposeIntro).toContain("Chưa phân bổ");
+    // The volatility figures belong to a portfolio this mode never computes.
+    expect(C.purposeIntro).not.toContain("10,73%");
+  });
+
+  // Both mode-specific paragraphs have now been caught rendering in the OTHER
+  // mode through the page's server-rendered `intro` slot, which cannot see
+  // client state. The route passes no `intro` at all any more: each mode's
+  // guidance is rendered inside that mode by the client component.
+  it("passes no mode-specific paragraph through the page-level intro slot", () => {
+    const page = readFileSync(
+      path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "../../app/cong-cu/phan-bo-tai-san/page.tsx",
+      ),
+      "utf8",
+    );
+    expect(page).not.toMatch(/^\s*intro=/m);
+    // And the two paragraphs that must stay mode-local are referenced by the
+    // client component, not by the route.
+    const component = readFileSync(
+      path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "../../components/asset-allocation-calculator.tsx",
+      ),
+      "utf8",
+    );
+    expect(component).toContain("C.purposeIntro");
+    expect(component).toContain("C.correlationNotice");
+    expect(component).toContain("C.advancedFormula");
+  });
+
+  it("puts the allocation questions first and labels the advanced ones", () => {
+    const questions = C.faq.items.map((item) => item.q);
+    const firstAdvanced = questions.findIndex((q) =>
+      q.includes("Chế độ nâng cao"),
+    );
+    expect(firstAdvanced).toBeGreaterThan(0);
+    // Nothing about the advanced study sits above the allocation questions.
+    for (const q of questions.slice(0, firstAdvanced)) {
+      expect(q).not.toContain("tương quan");
+      expect(q).not.toContain("cân lại");
+    }
+    // And every question after it names the mode it is about.
+    const advanced = questions.slice(firstAdvanced);
+    expect(advanced.length).toBeGreaterThanOrEqual(5);
+    for (const q of advanced) {
+      expect(q, `"${q}" does not name its mode`).toContain("nâng cao");
+    }
+  });
+});
+
+// The review's second and third row-56 findings.
+describe("phan-bo-tai-san — the allocation order and the time anchor", () => {
+  it("never credits the reader with choosing the order", () => {
+    // There is no reordering control on the form, so "theo thứ tự bạn liệt
+    // kê" described a choice the reader was never offered.
+    const strings = [
+      C.purpose.shortfallNotice,
+      C.purpose.orderNotice,
+      C.chart.orderNote,
+      ...C.chart.assumptions,
+      ...C.formula.body,
+    ];
+    for (const text of strings) {
+      expect(text, `"${text}" still credits the reader`).not.toContain(
+        "thứ tự bạn liệt kê",
+      );
+    }
+  });
+
+  it("states the fixed order as the tool's own convention", () => {
+    expect(C.purpose.shortfallNotice).toContain("cố định");
+    expect(C.purpose.shortfallNotice).toContain("không phải mức ưu tiên do bạn chọn");
+    expect(C.chart.assumptions.join(" ")).toContain("quy ước cố định");
+  });
+
+  it("asks for the anchor instead of saying an unshown “hôm nay”", () => {
+    expect(C.purpose.homeMonthsHelp).not.toContain("kể từ hôm nay");
+    expect(C.purpose.homeMonthsHelp).toContain("ngày mốc");
+    expect(C.purpose.anchorGroup).toBeTruthy();
+    expect(C.purpose.anchorNotice).toContain("{date}");
+    expect(C.chart.anchorNote).toContain("{date}");
+  });
+
+  it("prefills the anchor as a valid example date", () => {
+    // A default that fails its own validator would open the page refused.
+    const day = parseCount(C.purpose.defaultAnchorDay)!;
+    const month = parseCount(C.purpose.defaultAnchorMonth)!;
+    const year = parseCount(C.purpose.defaultAnchorYear)!;
+    expect(isValidDate({ year, month, day })).toBe(true);
+  });
+
+  it("keeps an unstated month a valid, named state", () => {
+    expect(C.purpose.anchorUnknownFormat).toContain("{name}");
+    expect(C.purpose.timeUnknownNotice).toContain("chưa ghi thời điểm");
   });
 });
 

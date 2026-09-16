@@ -18,6 +18,49 @@
 import { describe, expect, it } from "vitest";
 
 import { readDate } from "@/components/dates-calculator";
+import { DATES } from "@/content/calculators/dates";
+
+/**
+ * A valid field must not display its own error text.
+ *
+ * All six date boxes passed their ERROR string as `help` as well, so a
+ * perfectly valid 1/1/2026 rendered "Ngày không tồn tại trong tháng đã chọn."
+ * under every field with no `aria-invalid` anywhere. An independent review
+ * found the identical defect on the pay-rise page's new date row; it is fixed
+ * in both, and `NumberField` only swaps the error in while a field is
+ * flagged — so the two strings have to differ for that to mean anything.
+ */
+describe("the date fields' help text", () => {
+  it("never reuses an error string as ordinary help", () => {
+    for (const [help, error] of [
+      [DATES.form.dayHelp, DATES.form.dayInvalid],
+      [DATES.form.monthHelp, DATES.form.monthInvalid],
+      [DATES.form.yearHelp, DATES.form.yearInvalid],
+    ]) {
+      expect(help).not.toBe(error);
+      expect(help.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("keeps the help text free of the error's own wording", () => {
+    expect(DATES.form.dayHelp).not.toContain("không tồn tại");
+    expect(DATES.form.monthHelp).not.toContain("Vui lòng");
+    expect(DATES.form.yearHelp).not.toContain("Vui lòng");
+  });
+
+  it("still has a real error for the genuinely invalid state", () => {
+    // 31 February does not exist, and the error is what a flagged field shows.
+    expect(readDate("2026", "2", "31").dayBad).toBe(true);
+    expect(DATES.form.dayInvalid).toContain("không tồn tại");
+    // ...while the valid default is not flagged at all.
+    const ok = readDate(
+      DATES.form.defaultFromYear,
+      DATES.form.defaultFromMonth,
+      DATES.form.defaultFromDay,
+    );
+    expect([ok.dayBad, ok.monthBad, ok.yearBad]).toEqual([false, false, false]);
+  });
+});
 import { daysInMonth, isValidDate } from "@/lib/calc/dates";
 import { DATES as C } from "@/content/calculators/dates";
 

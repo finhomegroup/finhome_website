@@ -1,4 +1,4 @@
-Theo Bộ Xây dựng, quý II năm 2026, dư nợ kinh doanh bất động sản đạt khoảng 2,5 triệu tỷ đồng, tăng gần 13% so với ba tháng đầu năm. Con số này phản ánh dòng vốn tín dụng tiếp tục đổ mạnh vào thị trường bất động sản trong bối cảnh nhiều ngân hàng thương mại duy trì room tín dụng cho lĩnh vực này.
+Theo Bộ Xây dựng, quý II năm 2026, dư nợ kinh doanh bất động sản đạt khoảng 2,5 triệu tỷ đồng, tăng gần 13% so với ba tháng đầu năm. Con số này phản ánh dòng vốn tín dụng tiếp tục đổ mạnh vào thị trường bất động sản trong bối cảnh nhiều ngân hàng thương mại duy trì room tín dụng cho lĩnh vực này. Dư nợ là phần gốc còn nợ, tức số tiền đã cho vay mà chưa được trả lại. Room tín dụng là phần hạn mức cho vay mà ngân hàng còn được dùng trong năm.
 
 ## Điểm chính cần nắm
 

@@ -1,4 +1,4 @@
-Chiều 2/8/2026, Tập đoàn Sun Group tổ chức Lễ khởi động Chương trình phát triển Nhà ở xã hội và các hạng mục hạ tầng đô thị tại Khu đô thị An Thới, Phú Quốc. Đây được xem là cột mốc quan trọng trong việc hiện thực hóa chủ trơng phát triển nhà ở xã hội và nhà ở cho thuê tại đảo ngọc.
+Chiều 2/8/2026, Tập đoàn Sun Group tổ chức Lễ khởi động Chương trình phát triển Nhà ở xã hội và các hạng mục hạ tầng đô thị tại Khu đô thị An Thới, Phú Quốc. Đây được xem là cột mốc quan trọng trong việc hiện thực hóa chủ trương phát triển nhà ở xã hội và nhà ở cho thuê tại đảo ngọc.
 
 ## Điểm chính cần nắm
 

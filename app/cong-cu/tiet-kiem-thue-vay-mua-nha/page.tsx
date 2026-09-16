@@ -28,6 +28,7 @@ export default function UsMortgageDeductionPage() {
       notice={C.marginalNotice}
       prose={C.formula}
       faq={C.faq}
+      sources={C.sources}
     >
       <UsMortgageDeductionCalculator />
     </CalculatorPage>

@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { CardPayoffCalculator } from "@/components/card-payoff-calculator";
 import { CARD_PAYOFF as C } from "@/content/calculators/card-payoff";
 
@@ -27,8 +28,12 @@ export default function CardPayoffPage() {
       notice={C.dailyInterestNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <CardPayoffCalculator />
+      {/* ORIGINAL ROWS 29/30: one workspace, two routes. This one opens on
+          the fixed-payment strategy; `/cong-cu/tra-toi-thieu-the-tin-dung/`
+          opens the same calculator on the minimum. */}
+      <CardPayoffCalculator strategy="fixed" />
     </CalculatorPage>
   );
 }

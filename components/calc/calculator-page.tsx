@@ -6,6 +6,7 @@ import { Accordion } from "@/components/ui/accordion";
 import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { CalculatorHeading } from "@/components/calc/calculator-heading";
+import { ProseText } from "@/components/ui/prose-text";
 import { getCalculator } from "@/content/calculators/registry";
 import { calculatorPath } from "@/content/calculators/registry";
 import { canonicalPath, calculatorSchema, faqSchema, pageMetadata } from "@/lib/seo";
@@ -30,11 +31,18 @@ import { canonicalPath, calculatorSchema, faqSchema, pageMetadata } from "@/lib/
  * `next build` rather than shipping a page that is missing from the hub and
  * the sitemap.
  *
- * The six calculators built before this shell existed still render their own
- * page bodies. That is deliberate, not an oversight: the built HTML of those
+ * THREE calculators built before this shell existed still render their own
+ * page bodies: `quy-tac-72`, `tra-no-hai-tuan` and `vay-mua-nha`. (This said
+ * "six" long after three of them had migrated. Derive it — strip comments,
+ * then count routes with no `<CalculatorPage` element — because a plain grep
+ * counts `vay-mua-nha`, whose own docstring discusses the element it does not
+ * have. That mistake was made three times in one session before the comments
+ * were stripped.)
+ *
+ * That is deliberate, not an oversight: the built HTML of those
  * routes is a regression gate, and rewriting them through the shell would
  * change rendered markup for no functional gain. New calculators use the
- * shell; those six can be migrated whenever their markup is next allowed to
+ * shell; those three can be migrated whenever their markup is next allowed to
  * move.
  */
 export function CalculatorPage({
@@ -43,10 +51,17 @@ export function CalculatorPage({
   metaDescription,
   title,
   lede,
+  ledeDetail,
+  ledeDetailTitle,
   notice,
+  noticeDetail,
+  noticeDetailTitle,
   intro,
   prose,
   faq,
+  sources,
+  afterCalculator,
+  disclaimer,
   children,
 }: {
   /** Registry slug, without the `/cong-cu/` prefix. */
@@ -60,14 +75,74 @@ export function CalculatorPage({
   lede: string;
   /**
    * A caveat shown ABOVE the calculator, styled to be noticed — for the thing
-   * a user must know before they read a figure off the tool. Optional.
+   * a user must know before they read a figure off the tool.
+   *
+   * Keep it to one or two sentences. A critical limitation has to stay
+   * VISIBLE, but the browser check found long notices pushing the form off
+   * the first screens on a phone; the full version goes in `noticeDetail`.
    */
   notice?: string;
+  /** The longer version of `notice`, behind a disclosure. */
+  noticeDetail?: string;
+  noticeDetailTitle?: string;
+  /** Short purpose line for the heading; the rest collapses. */
+  ledeDetail?: string;
+  ledeDetailTitle?: string;
   /** A paragraph directly below the calculator, usually about its table. */
   intro?: string;
-  /** The "how it is calculated" section. */
-  prose: { title: string; body: readonly string[] };
+  /**
+   * The "how it is calculated" section.
+   *
+   * `emphasis` is the optional list of editor-selected phrases to mark inside
+   * `body`, through the same `lib/prose-emphasis.ts` mechanism the education
+   * articles use — a plain string plus a separate phrase list, never markup in
+   * the content. It is OPTIONAL on purpose: a tip calculator's method needs a
+   * direct answer and nothing else, and `content/calculators/plan-disposition.ts`
+   * records which of the 75 tools are deliberately left plain.
+   */
+  prose: {
+    title: string;
+    body: readonly string[];
+    emphasis?: readonly string[];
+  };
   faq: { title: string; items: readonly { q: string; a: string }[] };
+  /**
+   * Primary references, as links the reader can actually open.
+   *
+   * SAME SHAPE AS AN EDUCATION ARTICLE'S `sources`, deliberately — field for
+   * field — so the two surfaces cannot drift into two house styles for the
+   * same thing. Optional, and it should stay optional: most of the 75 tools
+   * compute arithmetic that has no source to cite, and a "Nguồn" heading over
+   * a link to nothing is worse than no heading.
+   *
+   * A tool that PREFILLS a legal or tax parameter is the case this exists
+   * for. Naming a decree and a date in prose is not a citation a reader can
+   * check; an independent review of original row 24 found dates and the words
+   * "hướng dẫn chính thức" on the page with no href anywhere. `intro` is
+   * where the provenance limit goes, because a link list implies a
+   * completeness no page here has earned.
+   */
+  sources?: {
+    title: string;
+    intro?: string;
+    items: readonly { url: string; label: string; note?: string }[];
+  };
+  /**
+   * Rendered between the calculator and the prose — where `<ToolNextSteps>`
+   * goes on the tools that have next steps.
+   *
+   * A slot rather than something this shell derives from the slug, and
+   * deliberately: seventy of the seventy-five tools have no next step, and a
+   * shell that added one automatically would put a home-buying funnel under a
+   * tip calculator. The pages that want it ask for it.
+   *
+   * Above the formula and the FAQ on purpose: a reader who has their answer
+   * should find the next question without scrolling past two explanatory
+   * sections first.
+   */
+  afterCalculator?: React.ReactNode;
+  /** Accurate model-specific qualification, without removing the disclaimer. */
+  disclaimer?: string;
   /** The client island: the calculator itself. */
   children: React.ReactNode;
 }) {
@@ -95,7 +170,12 @@ export function CalculatorPage({
       <SiteHeader />
       <main className="flex-1 py-16 md:py-24">
         <Container>
-          <CalculatorHeading title={title} lede={lede} />
+          <CalculatorHeading
+            title={title}
+            lede={lede}
+            ledeDetail={ledeDetail}
+            ledeDetailTitle={ledeDetailTitle}
+          />
 
           {/* Both notices sit ABOVE the calculator. A user should learn that a
               tool models United States law, or that it assumes a fixed rate,
@@ -114,9 +194,19 @@ export function CalculatorPage({
                   : "mx-auto mt-8 max-w-3xl"
               }
             >
-              <p className="rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-                {notice}
-              </p>
+              <div className="rounded-xl border border-red-400/40 bg-bg-soft p-4">
+                <p className="text-sm leading-relaxed text-ink-2">{notice}</p>
+                {noticeDetail && noticeDetailTitle ? (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green">
+                      {noticeDetailTitle}
+                    </summary>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-2">
+                      {noticeDetail}
+                    </p>
+                  </details>
+                ) : null}
+              </div>
             </div>
           ) : null}
 
@@ -135,6 +225,8 @@ export function CalculatorPage({
               <p className="text-base leading-relaxed text-ink-2">{intro}</p>
             ) : null}
 
+            {afterCalculator}
+
             <section>
               <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
                 {prose.title}
@@ -145,7 +237,7 @@ export function CalculatorPage({
                     key={paragraph}
                     className="text-base leading-relaxed text-ink-2"
                   >
-                    {paragraph}
+                    <ProseText text={paragraph} emphasis={prose.emphasis} />
                   </p>
                 ))}
               </div>
@@ -160,8 +252,45 @@ export function CalculatorPage({
               </div>
             </section>
 
+            {/* Primary references, where the tool prefills a figure that came
+                from one. Same markup as an education article's source list. */}
+            {sources ? (
+              <section>
+                <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+                  {sources.title}
+                </h2>
+                {sources.intro ? (
+                  <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                    {sources.intro}
+                  </p>
+                ) : null}
+                <ul className="mt-3 space-y-3">
+                  {sources.items.map((item) => (
+                    <li
+                      key={item.url}
+                      className="text-sm leading-relaxed text-ink-2"
+                    >
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
+                      >
+                        {item.label}
+                      </a>
+                      {item.note ? (
+                        <span className="mt-1 block text-ink-3">
+                          {item.note}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
             {/* Not a slot. Every calculator in the suite carries this. */}
-            <CalculatorDisclaimer />
+            <CalculatorDisclaimer text={disclaimer} />
           </div>
         </Container>
       </main>

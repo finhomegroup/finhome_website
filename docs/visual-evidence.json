@@ -1,0 +1,238 @@
+{
+  "generatedAt": "2026-09-16",
+  "what": "Rendered-layout evidence for every live calculator route, at two measured viewports. This is the artifact behind criterion B of `pnpm check:done`: AGENTS.md states that nothing in the test suite checks appearance, so a green suite says nothing about layout, and 'someone looked at it' does not survive a session ending.",
+  "method": {
+    "tool": "in-app browser, same-origin iframes at an explicit width against the BUILT export served from out/",
+    "why": "An iframe with width=390 gives the document a real 390px layout viewport, so the page's own media queries apply. Measurements are taken from the iframe's contentDocument after two animation frames.",
+    "rejectedApproach": "chrome --headless --screenshot --window-size=390,844 . On this machine the headless window clamps to a minimum somewhere between 500 and 560 CSS px: captures at 390 and at 500 came back PIXEL-IDENTICAL in their left 390 columns, while 560 and above reflowed. So a 390-wide file from that path is a wider layout CROPPED, not a phone layout. It looks like valid evidence and is not. Any future harness must verify the layout width it claims, not just the image width.",
+    "verified": "Every row's iframe reported contentWindow.innerWidth exactly equal to the requested viewport; that assertion is recorded per viewport below as viewportVerifiedForAll."
+  },
+  "findings": {
+    "noPageLevelOverflow": "At 390 and at 1280, no route produced documentElement.scrollWidth greater than the viewport. Where a table is wider than the screen, the horizontal scroll is contained by the ResultTable wrapper, which is the intended behaviour.",
+    "ruleVersusSymptom": "docs section 3 requires mobileCards from five columns up. Measurement shows column count and rendered overflow are independent: lai-kep has 5 columns and does NOT overflow at 390, while vay-thuong-mai and lai-suat-thuc-te have 4 columns each and DO overflow. The threshold is a proxy for the symptom and is wrong in both directions. The two 4-column rows are deliberately NOT added to WIDE_TABLE_PENDING, because that list is the allowlist for the RULE and is checked both ways — a non-violator listed there would be reported as a stale entry.",
+    "emphasisStableAcrossViewports": "The same 30 rows ship at least one <strong> at both viewports, with identical counts, so reading emphasis does not vary with layout."
+  },
+  "viewports": [
+    {
+      "viewport": 390,
+      "rowsMeasured": 75,
+      "viewportVerifiedForAll": true,
+      "noPageOverflowForAll": true,
+      "elementsWiderThanViewport": [
+        {
+          "slug": "so-sanh-khoan-vay",
+          "count": 6
+        },
+        {
+          "slug": "vay-thuong-mai",
+          "count": 12
+        },
+        {
+          "slug": "lai-co-dinh-hay-tha-noi",
+          "count": 12
+        },
+        {
+          "slug": "diem-pivot",
+          "count": 9
+        },
+        {
+          "slug": "gop-401k",
+          "count": 13
+        },
+        {
+          "slug": "toi-da-401k",
+          "count": 31
+        },
+        {
+          "slug": "phan-tich-thu-nhap-huu-tri",
+          "count": 25
+        },
+        {
+          "slug": "ira-truyen-thong-hay-roth",
+          "count": 13
+        },
+        {
+          "slug": "rut-toi-thieu-bat-buoc",
+          "count": 27
+        },
+        {
+          "slug": "nien-kim",
+          "count": 10
+        },
+        {
+          "slug": "lai-suat-thuc-te",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "rowsMeasured": 75,
+      "viewportVerifiedForAll": true,
+      "noPageOverflowForAll": true,
+      "elementsWiderThanViewport": []
+    }
+  ],
+  "strongCountsByRow": [
+    {
+      "slug": "vay-mua-nha",
+      "count": 1
+    },
+    {
+      "slug": "so-sanh-khoan-vay",
+      "count": 3
+    },
+    {
+      "slug": "tai-cap-von",
+      "count": 2
+    },
+    {
+      "slug": "apr",
+      "count": 2
+    },
+    {
+      "slug": "apr-nang-cao",
+      "count": 2
+    },
+    {
+      "slug": "vay-thuong-mai",
+      "count": 5
+    },
+    {
+      "slug": "kha-nang-mua-nha",
+      "count": 3
+    },
+    {
+      "slug": "thue-hay-mua",
+      "count": 3
+    },
+    {
+      "slug": "lai-suat-tha-noi",
+      "count": 2
+    },
+    {
+      "slug": "tra-no-hai-tuan",
+      "count": 5
+    },
+    {
+      "slug": "muc-tieu-tiet-kiem",
+      "count": 2
+    },
+    {
+      "slug": "irr-npv",
+      "count": 3
+    },
+    {
+      "slug": "trai-phieu",
+      "count": 3
+    },
+    {
+      "slug": "loi-nhuan-co-phieu",
+      "count": 2
+    },
+    {
+      "slug": "co-phieu-tang-truong-deu",
+      "count": 3
+    },
+    {
+      "slug": "co-phieu-tang-truong-khong-deu",
+      "count": 3
+    },
+    {
+      "slug": "capm",
+      "count": 2
+    },
+    {
+      "slug": "loi-nhuan-ky-vong",
+      "count": 2
+    },
+    {
+      "slug": "loi-nhuan-ky-nam-giu",
+      "count": 2
+    },
+    {
+      "slug": "wacc",
+      "count": 6
+    },
+    {
+      "slug": "quyen-chon-black-scholes",
+      "count": 3
+    },
+    {
+      "slug": "diem-pivot",
+      "count": 3
+    },
+    {
+      "slug": "fibonacci",
+      "count": 3
+    },
+    {
+      "slug": "ke-hoach-huu-tri",
+      "count": 8
+    },
+    {
+      "slug": "tinh-huu-tri",
+      "count": 7
+    },
+    {
+      "slug": "phan-tich-tiet-kiem-huu-tri",
+      "count": 12
+    },
+    {
+      "slug": "thu-nhap-huu-tri",
+      "count": 10
+    },
+    {
+      "slug": "du-bao-kinh-doanh",
+      "count": 6
+    },
+    {
+      "slug": "cac-chi-so-tai-chinh",
+      "count": 6
+    },
+    {
+      "slug": "phan-tich-bao-cao-tai-chinh",
+      "count": 6
+    }
+  ],
+  "rows": [
+    "apr",
+    "apr-nang-cao",
+    "cac-chi-so-tai-chinh",
+    "capm",
+    "co-phieu-tang-truong-deu",
+    "co-phieu-tang-truong-khong-deu",
+    "diem-pivot",
+    "du-bao-kinh-doanh",
+    "fibonacci",
+    "gop-401k",
+    "ira-truyen-thong-hay-roth",
+    "irr-npv",
+    "ke-hoach-huu-tri",
+    "kha-nang-mua-nha",
+    "lai-co-dinh-hay-tha-noi",
+    "lai-suat-tha-noi",
+    "lai-suat-thuc-te",
+    "loi-nhuan-co-phieu",
+    "loi-nhuan-ky-nam-giu",
+    "loi-nhuan-ky-vong",
+    "muc-tieu-tiet-kiem",
+    "nien-kim",
+    "phan-tich-bao-cao-tai-chinh",
+    "phan-tich-thu-nhap-huu-tri",
+    "phan-tich-tiet-kiem-huu-tri",
+    "quyen-chon-black-scholes",
+    "rut-toi-thieu-bat-buoc",
+    "so-sanh-khoan-vay",
+    "tai-cap-von",
+    "thu-nhap-huu-tri",
+    "thue-hay-mua",
+    "tinh-huu-tri",
+    "toi-da-401k",
+    "tra-no-hai-tuan",
+    "trai-phieu",
+    "vay-mua-nha",
+    "vay-thuong-mai",
+    "wacc"
+  ]
+}

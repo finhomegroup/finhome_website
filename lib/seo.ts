@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { SITE } from "@/content/site";
 import { img } from "@/lib/images";
-import type { Post } from "@/content/posts";
+import { postCover, type Post } from "@/content/posts";
 
 /** Absolute URL from a site-relative path, e.g. "/blog/" -> "https://finhome.group/blog/". */
 export function absUrl(path: string): string {
@@ -33,7 +33,7 @@ export function articleSchema(post: Post): Record<string, unknown> {
     "@type": "Article",
     headline: post.title,
     description: post.excerpt,
-    image: absUrl(img(post.cover)),
+    image: absUrl(img(postCover(post))),
     inLanguage: "vi-VN",
     ...(post.date
       ? { datePublished: post.date, dateModified: post.date }

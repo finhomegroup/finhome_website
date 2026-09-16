@@ -17,7 +17,11 @@
  * calculator prints. All returned figures are positive.
  */
 
-import { computeLoan, type LoanResult } from "@/lib/calc/loan";
+import {
+  computeLoan,
+  type LoanResult,
+  type RepaymentMethod,
+} from "@/lib/calc/loan";
 import type { ScheduleRow } from "@/lib/calc/finance";
 
 export type LoanAnalysisInput = {
@@ -27,6 +31,55 @@ export type LoanAnalysisInput = {
   annualRatePercent: number;
   /** Term in months. */
   termMonths: number;
+  /**
+   * Which repayment structure, with the SAME meaning as on the mortgage page.
+   *
+   * Original row 6 asks this page to share the mortgage's result and its
+   * repayment-method semantics. It does so by passing this straight to
+   * `computeLoan`: there is one definition of trả góp đều and trả gốc đều in
+   * this suite, and both pages read it. Defaults to `"annuity"`, which is what
+   * the page answered before this existed.
+   */
+  method?: RepaymentMethod;
+  /**
+   * A month to examine, 1-based, anywhere in the term.
+   *
+   * Optional. When supplied it must be a whole month inside the schedule —
+   * `analyseLoan` returns null for anything else rather than clamping, because
+   * a tool that silently moved a typed 300 to 240 would answer a question
+   * nobody asked.
+   */
+  selectedMonth?: number;
+};
+
+/**
+ * One month of the schedule, with the running totals up to it.
+ *
+ * `year` and `monthOfYear` are the same month said the way a borrower thinks
+ * about it: "tháng 8 của năm thứ 13", not "tháng 152".
+ */
+export type SelectedMonth = {
+  /** 1-based month over the whole term. */
+  month: number;
+  /** 1-based year the month falls in. */
+  year: number;
+  /** 1–12 within that year. */
+  monthOfYear: number;
+  payment: number;
+  interest: number;
+  principal: number;
+  /** Balance outstanding at the END of the month. */
+  balance: number;
+  /** Interest as a share of this month's payment, in percent. */
+  interestSharePercent: number;
+  /** Interest paid from month 1 through this month, inclusive. */
+  cumulativeInterest: number;
+  /** Principal repaid from month 1 through this month, inclusive. */
+  cumulativePrincipal: number;
+  /** `cumulativePrincipal` as a share of the sum borrowed, in percent. */
+  principalRepaidSharePercent: number;
+  /** Months still to run after this one. */
+  remainingMonths: number;
 };
 
 /** One quarter of the term, as a block of the schedule. */
@@ -74,6 +127,13 @@ export type LoanAnalysis = {
   halfInterestTermSharePercent: number | null;
   /** The term split into four equal blocks of months. */
   segments: LoanSegment[];
+  /**
+   * The month the reader asked about, or null when they asked about none.
+   *
+   * Read out of the same schedule as everything else above, so the examined
+   * month cannot disagree with the quarters or the crossover.
+   */
+  selected: SelectedMonth | null;
 };
 
 /**
@@ -132,18 +192,64 @@ function quarters(schedule: ScheduleRow[]): LoanSegment[] {
   return segments;
 }
 
+/** The examined month, from the schedule rather than from a formula. */
+function examine(
+  schedule: ScheduleRow[],
+  amount: number,
+  month: number,
+): SelectedMonth {
+  let cumulativeInterest = 0;
+  let cumulativePrincipal = 0;
+  for (const row of schedule) {
+    if (row.period > month) break;
+    cumulativeInterest += row.interest;
+    cumulativePrincipal += row.principal;
+  }
+  const row = schedule[month - 1];
+
+  return {
+    month,
+    year: Math.ceil(month / 12),
+    monthOfYear: ((month - 1) % 12) + 1,
+    payment: row.payment,
+    interest: row.interest,
+    principal: row.principal,
+    balance: row.balance,
+    // A zero payment cannot occur in a valid schedule, but guarding keeps a
+    // 0/0 out of the percentage.
+    interestSharePercent: row.payment > 0 ? (row.interest / row.payment) * 100 : 0,
+    cumulativeInterest,
+    cumulativePrincipal,
+    principalRepaidSharePercent:
+      amount > 0 ? (cumulativePrincipal / amount) * 100 : 0,
+    remainingMonths: schedule.length - month,
+  };
+}
+
 /**
  * Analyse a loan's cost structure.
  *
- * Null exactly when `computeLoan` rejects the inputs — a non-positive amount
- * or term, a negative rate, a non-integer number of months, or any non-finite
- * number.
+ * Null when `computeLoan` rejects the inputs — a non-positive amount or term, a
+ * negative rate, a non-integer number of months, or any non-finite number —
+ * and also when a supplied `selectedMonth` is not a whole month inside the
+ * resulting schedule. The second case is a refusal, not a clamp: see the
+ * field's own comment.
  */
 export function analyseLoan(input: LoanAnalysisInput): LoanAnalysis | null {
-  const { amount, annualRatePercent, termMonths } = input;
+  const { amount, annualRatePercent, termMonths, method, selectedMonth } = input;
 
-  const loan = computeLoan({ amount, annualRatePercent, termMonths });
+  const loan = computeLoan({
+    amount,
+    annualRatePercent,
+    termMonths,
+    method,
+  });
   if (loan === null) return null;
+
+  if (selectedMonth !== undefined) {
+    if (!Number.isInteger(selectedMonth)) return null;
+    if (selectedMonth < 1 || selectedMonth > loan.schedule.length) return null;
+  }
 
   const { schedule } = loan;
   const first = schedule[0];
@@ -170,5 +276,9 @@ export function analyseLoan(input: LoanAnalysisInput): LoanAnalysis | null {
     halfInterestMonth,
     halfInterestTermSharePercent: shareOfTerm(halfInterestMonth),
     segments: quarters(schedule),
+    selected:
+      selectedMonth === undefined
+        ? null
+        : examine(schedule, amount, selectedMonth),
   };
 }

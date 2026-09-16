@@ -126,9 +126,126 @@ describe("computePercent — change from a to b", () => {
   });
 });
 
+/**
+ * Original row 59: percentage POINTS beside relative percent.
+ *
+ * The lesson the plan states verbatim is "tăng từ 7% lên 9% là 2 điểm phần
+ * trăm". The trap is that the same move is also "+28,57%", and a reader shown
+ * only one of the two numbers has been told half the story. Reference values
+ * are one subtraction and one division, computed by hand.
+ */
+describe("computePercent — two rates compared", () => {
+  it("gives the plan's own example both ways at once", () => {
+    const result = computePercent({ mode: "points", a: 7, b: 9 });
+    expect(result).toEqual({
+      mode: "points",
+      differencePoints: 2,
+      relativePercent: (2 / 7) * 100,
+    });
+    expect(result?.mode === "points" ? result.relativePercent : null)
+      .toBeCloseTo(28.571428571428573, 9);
+  });
+
+  it("gives the FAQ's 8% → 10% example as 2 points and 25%", () => {
+    const result = computePercent({ mode: "points", a: 8, b: 10 });
+    expect(result).toEqual({
+      mode: "points",
+      differencePoints: 2,
+      relativePercent: 25,
+    });
+  });
+
+  it("is signed on a cut, in both figures", () => {
+    const result = computePercent({ mode: "points", a: 9, b: 7 });
+    expect(result).toEqual({
+      mode: "points",
+      differencePoints: -2,
+      relativePercent: (-2 / 9) * 100,
+    });
+  });
+
+  it("is zero points and zero percent when the rate does not move", () => {
+    expect(computePercent({ mode: "points", a: 8, b: 8 })).toEqual({
+      mode: "points",
+      differencePoints: 0,
+      relativePercent: 0,
+    });
+  });
+
+  it("does NOT scale the point difference by a hundred", () => {
+    // A percentage point is a difference of two percentages, full stop. The
+    // defect this guards is treating 0,02 as the answer, or 200.
+    const result = computePercent({ mode: "points", a: 7, b: 9 })!;
+    expect(result.mode === "points" && result.differencePoints).toBe(2);
+    expect(result.mode === "points" && result.differencePoints).not.toBe(0.02);
+    expect(result.mode === "points" && result.differencePoints).not.toBe(200);
+  });
+
+  it("keeps the POINT difference from a 0% rate, and only nulls the relative", () => {
+    // A 0% introductory rate rising to 7% is a real quote, and 7 − 0 = 7
+    // points is the figure a reader needs. Only "7 chia 0" is undefined.
+    // An earlier version refused the whole answer and a review found it.
+    expect(computePercent({ mode: "points", a: 0, b: 7 })).toEqual({
+      mode: "points",
+      differencePoints: 7,
+      relativePercent: null,
+    });
+    // And going back down to 0 is also a valid point difference.
+    expect(computePercent({ mode: "points", a: 0, b: 0 })).toEqual({
+      mode: "points",
+      differencePoints: 0,
+      relativePercent: null,
+    });
+  });
+
+  it("nulls the relative change ONLY at a zero old rate", () => {
+    for (const [a, b] of [
+      [7, 9],
+      [9, 7],
+      [8, 8],
+      [-2, -1],
+    ] as const) {
+      const result = computePercent({ mode: "points", a, b })!;
+      expect(
+        result.mode === "points" && result.relativePercent,
+        `${a} -> ${b}`,
+      ).not.toBeNull();
+    }
+  });
+
+  it("reports the direction through the SIGN, for all three cases", () => {
+    // The page picks the word from this sign. Its label used to read "tăng"
+    // unconditionally, which asserted an increase on every rate cut.
+    const up = computePercent({ mode: "points", a: 7, b: 9 })!;
+    const down = computePercent({ mode: "points", a: 9, b: 7 })!;
+    const flat = computePercent({ mode: "points", a: 8, b: 8 })!;
+    expect(up.mode === "points" && up.differencePoints).toBeGreaterThan(0);
+    expect(up.mode === "points" && up.relativePercent!).toBeGreaterThan(0);
+    expect(down.mode === "points" && down.differencePoints).toBeLessThan(0);
+    expect(down.mode === "points" && down.relativePercent!).toBeLessThan(0);
+    expect(flat.mode === "points" && flat.differencePoints).toBe(0);
+    expect(flat.mode === "points" && flat.relativePercent).toBe(0);
+    // The 9 → 7 case the review named, to four places: −2 / 9 × 100.
+    expect(down.mode === "points" && down.relativePercent).toBeCloseTo(
+      -22.222222222222221,
+      9,
+    );
+  });
+
+  it("divides by the magnitude, so a negative starting rate still reads", () => {
+    // A negative real rate is a genuine figure. −2% → −1% is +1 point and a
+    // 50% improvement on the magnitude, not −50%.
+    expect(computePercent({ mode: "points", a: -2, b: -1 })).toEqual({
+      mode: "points",
+      differencePoints: 1,
+      relativePercent: 50,
+    });
+  });
+});
+
 describe("computePercent — rejected inputs", () => {
   it("returns null rather than a guess on a non-finite input", () => {
-    const modes = ["of", "share", "change"] as const;
+    const modes = ["of", "share", "change", "points"] as const;
     for (const mode of modes) {
       expect(computePercent({ mode, a: Number.NaN, b: 100 })).toBeNull();
       expect(computePercent({ mode, a: 100, b: Number.NaN })).toBeNull();

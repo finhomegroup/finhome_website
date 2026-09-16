@@ -27,6 +27,11 @@ export default function UsSocialSecurityEstimatePage() {
       notice={C.regressiveNotice}
       prose={C.formula}
       faq={C.faq}
+      // The 90/32/15 factors are hard-coded with no field, so the reader
+      // cannot check or correct them from the page — the links are the only
+      // way. Shared with the other two Social Security rows; see the
+      // `sources` docstring in `calculator-page.tsx`.
+      sources={C.sources}
     >
       <UsSocialSecurityEstimateCalculator />
     </CalculatorPage>

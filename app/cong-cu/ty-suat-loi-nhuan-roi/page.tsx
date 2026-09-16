@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { RoiCalculator } from "@/components/roi-calculator";
 import { ROI as C } from "@/content/calculators/roi";
 
@@ -27,6 +28,8 @@ export default function RoiPage() {
       notice={C.leadNotice}
       prose={C.formula}
       faq={C.faq}
+      // Original row 21's next step: "quay về kế hoạch vốn tự có".
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <RoiCalculator />
     </CalculatorPage>

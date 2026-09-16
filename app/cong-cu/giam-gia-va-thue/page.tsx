@@ -22,11 +22,22 @@ export default function PriceAdjustPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // The tax-included default is the one thing that makes this tool right
-      // for a Vietnamese price tag, and it changes the answer by the tax rate.
-      notice={C.taxIncludedNotice}
+      // The SCOPE comes first. A reader who takes "giá cuối phải trả" for the
+      // cost of a property transaction has been misled by the page, and
+      // original row 60 asks for exactly that boundary to be explicit. The
+      // tax-included default — which changes the answer by the tax rate and
+      // is what makes this tool right for a Vietnamese price tag — is the
+      // paragraph directly below the tool.
+      notice={C.scopeNotice}
+      noticeDetailTitle={C.scopeNoticeDetailTitle}
+      noticeDetail={C.scopeNoticeDetail}
+      intro={C.taxIncludedNotice}
       prose={C.formula}
       faq={C.faq}
+      // The tax box prefills 8, which is a dated legal parameter rather than
+      // an example, so the page owes the reader a link rather than a decree
+      // named in prose. See the `sources` docstring in `calculator-page.tsx`.
+      sources={C.sources}
     >
       <PriceAdjustCalculator />
     </CalculatorPage>

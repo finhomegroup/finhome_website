@@ -28,6 +28,10 @@ export default function UsHsaPage() {
       notice={C.ficaNotice}
       prose={C.formula}
       faq={C.faq}
+      // The contribution ceilings, the age-55 catch-up and the 20% penalty
+      // are all prefilled or hard-coded, and two of them have no field at
+      // all. Without this prop the block renders nowhere.
+      sources={C.sources}
     >
       <UsHsaCalculator />
     </CalculatorPage>

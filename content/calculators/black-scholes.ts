@@ -41,7 +41,7 @@ export const BLACK_SCHOLES = {
     "Tính giá quyền chọn mua và bán theo mô hình Black–Scholes, kèm delta, gamma, vega, theta, rho và giá trị thời gian. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Mô hình Black–Scholes cho quyền chọn kiểu châu Âu, kèm toàn bộ hệ số greek. Mọi lãi suất và độ biến động ở đây là mức HẰNG NĂM GHÉP LIÊN TỤC — đó là hệ mà mô hình được xây trên, và nhập theo hệ khác sẽ ra một con số trông hợp lý nhưng sai.",
+    "Mô hình Black–Scholes cho quyền chọn kiểu châu Âu, kèm toàn bộ hệ số greek. Mọi lãi suất và độ biến động ở đây là mức hằng năm ghép liên tục — đó là hệ mà mô hình được xây trên, và nhập theo hệ khác sẽ ra một con số trông hợp lý nhưng sai.",
 
   form: {
     optionGroup: "Quyền chọn",
@@ -60,7 +60,7 @@ export const BLACK_SCHOLES = {
     timeLabel: "Thời gian đến khi đáo hạn",
     timeUnit: "năm",
     timeHelp:
-      "Tính theo NĂM: ba tháng là 0,25, sáu tháng là 0,5. Nhập 0 để xem giá trị nội tại tại thời điểm đáo hạn.",
+      "Tính theo năm: ba tháng là 0,25, sáu tháng là 0,5. Nhập 0 để xem giá trị nội tại tại thời điểm đáo hạn.",
     timeInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultTime: "1",
 
@@ -75,7 +75,7 @@ export const BLACK_SCHOLES = {
     rateLabel: "Lãi suất phi rủi ro",
     rateUnit: "%/năm",
     rateHelp:
-      "Ghép LIÊN TỤC, không phải ghép năm. Mức 5% ở đây tương đương 5,127% hiệu dụng.",
+      "Ghép liên tục, không phải ghép năm. Mức 5% ở đây tương đương 5,127% hiệu dụng.",
     rateInvalid: "Vui lòng nhập một số.",
     defaultRate: "5",
 
@@ -101,7 +101,7 @@ export const BLACK_SCHOLES = {
     putColumn: "Quyền bán",
     greekColumn: "Hệ số",
     greeksIntro:
-      "Gamma và vega giống nhau cho quyền mua và quyền bán; delta, theta và rho thì không. Vega được tính theo mỗi ĐIỂM PHẦN TRĂM biến động và theta theo mỗi NGÀY, vì đó là đơn vị chúng thực sự được dùng — chứ không phải theo mỗi đơn vị biến động và mỗi năm như trong công thức gốc. Hãy đọc kỹ đơn vị ở đầu mỗi dòng, vì cột giá trị không đồng nhất: vega, theta và rho là số TIỀN, tính bằng đồng; delta không có đơn vị; còn gamma là mức thay đổi của delta TRÊN MỖI đồng giá tài sản cơ sở, nên con số của nó rất nhỏ khi giá tài sản tính bằng đồng — đó là hệ quả của đơn vị, không phải dấu hiệu gamma không đáng kể. Gamma lớn nhất khi giá tài sản ở quanh giá thực hiện và nhỏ dần về cả hai phía, chứ không giảm đơn điệu theo giá tài sản: với các con số mặc định, hạ giá tài sản từ 85.000 xuống 50.000 làm gamma giảm gần 70 lần.",
+      "Gamma và vega giống nhau cho quyền mua và quyền bán; delta, theta và rho thì không. Vega được tính theo mỗi điểm phần trăm biến động và theta theo mỗi ngày, vì đó là đơn vị chúng thực sự được dùng — chứ không phải theo mỗi đơn vị biến động và mỗi năm như trong công thức gốc. Hãy đọc kỹ đơn vị ở đầu mỗi dòng, vì cột giá trị không đồng nhất: vega, theta và rho là số tiền, tính bằng đồng; delta không có đơn vị; còn gamma là mức thay đổi của delta trên mỗi đồng giá tài sản cơ sở, nên con số của nó rất nhỏ khi giá tài sản tính bằng đồng — đó là hệ quả của đơn vị, không phải dấu hiệu gamma không đáng kể. Gamma lớn nhất khi giá tài sản ở quanh giá thực hiện và nhỏ dần về cả hai phía, chứ không giảm đơn điệu theo giá tài sản: với các con số mặc định, hạ giá tài sản từ 85.000 xuống 50.000 làm gamma giảm gần 70 lần.",
 
     detailTitle: "Chi tiết",
     d1Label: "d₁",
@@ -119,8 +119,18 @@ export const BLACK_SCHOLES = {
       "Độ biến động bằng 0, nên khoản chi trả là chắc chắn và quyền chọn bằng giá trị nội tại của giá kỳ hạn, đã chiết khấu. Đây cũng là một trường hợp biên được xử lý riêng vì cùng lý do chia cho 0.",
   },
 
+  // THE SENTENCE THAT WAS MISSING. The risk-neutral half of this row's
+  // lesson was already in the notice; the other half — that the number on
+  // this page is not the price the option trades at — was only implied, in
+  // the last FAQ answer, as "the model underprices far-from-the-money
+  // options". Said plainly it belongs above the calculator, because it is
+  // what stops a reader treating the output as a quote.
+  modelPriceNotice:
+    "Con số trang này đưa ra là giá theo mô hình, không phải giá đang giao dịch. Thị trường có thể trả cao hơn hoặc thấp hơn, và chênh lệch không tự động nghĩa là bên nào sai: mô hình giả định biến động không đổi và lợi suất phân phối chuẩn theo log, nên nó định giá thấp các quyền chọn xa giá. Cùng lý do đó, N(d₂) là xác suất trung tính rủi ro, không phải xác suất thực tế — một con số dùng để định giá, không phải một dự báo về việc quyền chọn có lãi hay không.",
+
+  contextNoticeTitle: "Dùng mô hình này ở Việt Nam",
   contextNotice:
-    "Việt Nam chưa có thị trường quyền chọn cổ phiếu niêm yết. Công cụ này hữu ích nhất cho hai việc: định giá CHỨNG QUYỀN CÓ BẢO ĐẢM đang giao dịch trên HOSE — vốn được các công ty chứng khoán định giá bằng đúng mô hình này — và hiểu cơ chế quyền chọn khi bạn đọc tài liệu nước ngoài. Ngoài ra, hãy chú ý một điều dễ hiểu sai nhất trong toàn bộ kết quả: N(d₂) là xác suất TRUNG TÍNH RỦI RO, không phải xác suất thực tế. Nó là một con số dùng để định giá, không phải một dự báo về việc quyền chọn có lãi hay không.",
+    "Việt Nam chưa có thị trường quyền chọn cổ phiếu niêm yết. Công cụ này hữu ích nhất cho hai việc: định giá chứng quyền có bảo đảm đang giao dịch trên HOSE — vốn được các công ty chứng khoán định giá bằng đúng mô hình này — và hiểu cơ chế quyền chọn khi bạn đọc tài liệu nước ngoài.",
 
   formula: {
     title: "Cách tính",
@@ -131,6 +141,20 @@ export const BLACK_SCHOLES = {
       "Hàm N được cài trong một module riêng và kiểm thử độc lập với phần định giá, dựa trên bảng giá trị đã công bố. Đây là chủ ý: một sai số trong N sẽ hiện ra ở đây dưới dạng một giá quyền chọn trông hoàn toàn hợp lý.",
       "Hai trường hợp biên được xử lý riêng thay vì để công thức tự chạy, vì cả hai đều chia cho 0 ở d₁ và cả hai đều đến được từ ô nhập. Tại đáo hạn (t = 0), quyền chọn bằng đúng giá trị nội tại. Với biến động bằng 0, khoản chi trả là chắc chắn nên quyền chọn bằng giá trị nội tại của giá kỳ hạn, đã chiết khấu.",
       "Vega được quy về mỗi điểm phần trăm biến động và theta về mỗi ngày, vì đó là đơn vị thực dùng. Công thức gốc cho vega theo mỗi đơn vị biến động (tức 100 điểm phần trăm) và theta theo mỗi năm.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark that the prices scale with the units, and the invariant trusted more than any single figure.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "tỷ lệ thuận với giá",
+      "ngang giá quyền chọn",
+      "trên cả một lưới",
     ],
   },
 
@@ -147,15 +171,15 @@ export const BLACK_SCHOLES = {
       },
       {
         q: "N(d₂) có phải xác suất quyền chọn có lãi không?",
-        a: "Không, và đây là chỗ bị hiểu sai nhiều nhất. N(d₂) là xác suất trong một thế giới TRUNG TÍNH RỦI RO — một cấu trúc toán học trong đó mọi tài sản tăng trưởng bằng lãi suất phi rủi ro. Xác suất thực tế phụ thuộc vào lợi suất kỳ vọng thật của tài sản, thường cao hơn lãi suất phi rủi ro, nên xác suất thật của một quyền mua có lãi thường lớn hơn N(d₂). Con số này dùng để định giá, không dùng để dự báo.",
+        a: "Không, và đây là chỗ bị hiểu sai nhiều nhất. N(d₂) là xác suất trong một thế giới trung tính rủi ro — một cấu trúc toán học trong đó mọi tài sản tăng trưởng bằng lãi suất phi rủi ro. Xác suất thực tế phụ thuộc vào lợi suất kỳ vọng thật của tài sản, thường cao hơn lãi suất phi rủi ro, nên xác suất thật của một quyền mua có lãi thường lớn hơn N(d₂). Con số này dùng để định giá, không dùng để dự báo.",
       },
       {
         q: "Mô hình có dùng được cho quyền chọn kiểu Mỹ không?",
-        a: "Không chính xác. Black–Scholes định giá quyền chọn kiểu châu Âu, chỉ thực hiện được tại đáo hạn. Quyền chọn kiểu Mỹ cho phép thực hiện sớm nên đáng giá bằng hoặc hơn, và cần mô hình khác như cây nhị thức. Một ngoại lệ hữu ích: với quyền chọn MUA trên tài sản không trả cổ tức, thực hiện sớm không bao giờ tối ưu, nên hai giá trùng nhau.",
+        a: "Không chính xác. Black–Scholes định giá quyền chọn kiểu châu Âu, chỉ thực hiện được tại đáo hạn. Quyền chọn kiểu Mỹ cho phép thực hiện sớm nên đáng giá bằng hoặc hơn, và cần mô hình khác như cây nhị thức. Một ngoại lệ hữu ích: với quyền chọn mua trên tài sản không trả cổ tức, thực hiện sớm không bao giờ tối ưu, nên hai giá trùng nhau.",
       },
       {
         q: "Cổ tức trả theo đợt thì nhập thế nào?",
-        a: "Ô tỷ suất cổ tức là tỷ suất LIÊN TỤC, phù hợp với chỉ số hơn là với một cổ phiếu trả cổ tức theo đợt. Với cổ phiếu đơn lẻ, cách xấp xỉ thông dụng là lấy tổng cổ tức dự kiến trong thời gian còn lại chia giá hiện tại rồi quy về mức năm. Đây là xấp xỉ, và nó kém chính xác khi thời gian còn lại ngắn và ngày trả cổ tức gần đáo hạn.",
+        a: "Ô tỷ suất cổ tức là tỷ suất liên tục, phù hợp với chỉ số hơn là với một cổ phiếu trả cổ tức theo đợt. Với cổ phiếu đơn lẻ, cách xấp xỉ thông dụng là lấy tổng cổ tức dự kiến trong thời gian còn lại chia giá hiện tại rồi quy về mức năm. Đây là xấp xỉ, và nó kém chính xác khi thời gian còn lại ngắn và ngày trả cổ tức gần đáo hạn.",
       },
       {
         q: "Vì sao giả định của mô hình lại quan trọng?",

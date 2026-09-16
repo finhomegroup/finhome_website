@@ -1,4 +1,4 @@
-Bắt đầu từ năm 2026, mỗi căn nhà, căn hộ và sản phẩm trong các dự án bất động sản sẽ được gắn một mã định danh điện tử riêng biệt, không trùng lặp. Đây được xem là bước chuyển quan trọng nhằm minh bạch hóa thông tin thị trường và giúp người mua tiếp cận dữ liệu pháp lý dễ dàng hơn.
+Bắt đầu từ năm 2026, mỗi căn nhà, căn hộ và sản phẩm trong các dự án bất động sản sẽ được gắn một mã định danh điện tử riêng biệt, không trùng lặp. Nói gọn, đó là một mã số riêng để tra cứu hồ sơ của chính căn nhà đó trong một cơ sở dữ liệu chung. Đây được xem là bước chuyển quan trọng nhằm minh bạch hóa thông tin thị trường và giúp người mua tiếp cận dữ liệu pháp lý dễ dàng hơn.
 
 ## Điểm chính cần nắm
 

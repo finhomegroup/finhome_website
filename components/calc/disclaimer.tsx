@@ -17,9 +17,12 @@ import { CALCULATOR_COPY } from "@/content/calculators/shared";
 export function CalculatorDisclaimer({
   variant = "default",
   className,
+  text,
 }: {
   variant?: "default" | "us-rules";
   className?: string;
+  /** Tool-owned qualification; the mandatory disclaimer cannot disappear. */
+  text?: string;
 }) {
   const isUsRules = variant === "us-rules";
 
@@ -33,7 +36,7 @@ export function CalculatorDisclaimer({
         className,
       )}
     >
-      {isUsRules ? CALCULATOR_COPY.usRulesNotice : CALCULATOR_COPY.disclaimer}
+      {isUsRules ? CALCULATOR_COPY.usRulesNotice : text || CALCULATOR_COPY.disclaimer}
     </p>
   );
 }

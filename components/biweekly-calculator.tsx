@@ -86,6 +86,11 @@ export function BiweeklyCalculator() {
         />
       </FieldGroup>
 
+      {/* ONE live group, and it holds the four rows the reader came for. It
+          used to hold all eight, which docs §4 names as the same failure mode
+          a live table is — eight rows re-announced on every keystroke. The
+          other two groups are `live={false}`, which is the shape
+          `live-region.test.ts`'s own header comment says to copy. */}
       <ResultGroup title={C.form.resultTitle} className="mt-8">
         <ResultRow
           label={C.form.monthlyPaymentLabel}
@@ -96,6 +101,52 @@ export function BiweeklyCalculator() {
           value={money(result?.biweeklyPayment)}
         />
         <ResultRow
+          label={C.form.savingLabel}
+          value={money(result?.interestSaving)}
+        />
+        <ResultRow
+          label={C.form.monthsSavedLabel}
+          value={
+            result
+              ? `${formatDecimal(result.monthsSaved, 0)} ${C.form.monthsUnit}`
+              : null
+          }
+        />
+      </ResultGroup>
+
+      {/* The decomposition. This is the page's actual answer: the saving is
+          overwhelmingly the extra instalment, not the fortnightly schedule.
+          Not live — it is an explanation of the figure above, not a second
+          figure the reader is typing towards. */}
+      <ResultGroup title={C.form.splitTitle} live={false} className="mt-6">
+        <ResultRow
+          label={C.form.extraPaymentSavingLabel}
+          value={money(result?.split?.extraPaymentSaving)}
+        />
+        <ResultRow
+          label={C.form.frequencySavingLabel}
+          value={money(result?.split?.frequencySaving)}
+        />
+        <ResultRow
+          label={C.form.samePaymentLabel}
+          value={money(result?.split?.samePayment)}
+        />
+        <ResultRow
+          label={C.form.sameInterestLabel}
+          value={money(result?.split?.sameTotalInterest)}
+        />
+        {/* A null split is "could not be computed", never "both causes are
+            worth zero" — so the reason is on the page rather than left as
+            four dashes. Only shown when there IS a result to split. */}
+        {result !== null && result.split === null ? (
+          <p className="border-t border-ink-4/20 pt-3 text-sm leading-relaxed text-ink-2">
+            {C.form.splitUnavailable}
+          </p>
+        ) : null}
+      </ResultGroup>
+
+      <ResultGroup title={C.form.detailTitle} live={false} className="mt-6">
+        <ResultRow
           label={C.form.monthlyInterestLabel}
           value={money(result?.monthlyTotalInterest)}
         />
@@ -104,22 +155,10 @@ export function BiweeklyCalculator() {
           value={money(result?.biweeklyTotalInterest)}
         />
         <ResultRow
-          label={C.form.savingLabel}
-          value={money(result?.interestSaving)}
-        />
-        <ResultRow
           label={C.form.payoffLabel}
           value={
             result
               ? `${formatDecimal(result.biweeklyYears, 1)} ${C.form.payoffUnit}`
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.monthsSavedLabel}
-          value={
-            result
-              ? `${formatDecimal(result.monthsSaved, 0)} ${C.form.monthsUnit}`
               : null
           }
         />

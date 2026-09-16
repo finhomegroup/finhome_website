@@ -48,7 +48,7 @@ function Card({
               <div className="text-sm text-ink-3">{item.role}</div>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1 rounded-full bg-[#e7f6e2] px-3 py-1.5 text-sm font-medium text-brand-green">
+          <div className="flex shrink-0 items-center gap-1 rounded-full bg-[#e7f6e2] px-3 py-1.5 text-sm font-medium text-brand-green-ink">
             <span>5.0</span>
             <svg
               viewBox="0 0 24 24"

@@ -1,4 +1,4 @@
-Từ ngày 1/9/2025, mỗi thửa đất và công trình xây dựng trên toàn quốc chính thức được gắn mã định danh điện tử duy nhất gồm 12 chữ số. Đây là bước tiến quan trọng trong việc số hóa dữ liệu đất đai và nâng cao tính minh bạch của thị trường bất động sản.
+Từ ngày 1/9/2025, mỗi thửa đất và công trình xây dựng trên toàn quốc chính thức được gắn mã định danh điện tử duy nhất gồm 12 chữ số. Đây là một mã số riêng, không trùng lặp, gắn với từng thửa đất và dùng để tra cứu hồ sơ của chính thửa đất đó. Đây là bước tiến quan trọng trong việc số hóa dữ liệu đất đai và nâng cao tính minh bạch của thị trường bất động sản.
 
 ## Điểm chính cần nắm
 

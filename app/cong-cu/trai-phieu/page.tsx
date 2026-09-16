@@ -24,7 +24,13 @@ export default function BondPage() {
       lede={C.lede}
       // Three numbers are all called "lợi suất" and a seller will quote the
       // flattering one. Which is which, before any of them is read.
-      notice={C.threeYieldsNotice}
+      // Every yield on this page assumes the issuer pays. That is the thing
+      // a reader must know before reading a figure off the tool, so it is
+      // the notice; the three-yield distinction is one disclosure below it
+      // and also in the method section and the FAQ.
+      notice={C.creditRiskNotice}
+      noticeDetail={C.threeYieldsNotice}
+      noticeDetailTitle={C.threeYieldsNoticeTitle}
       prose={C.formula}
       faq={C.faq}
     >

@@ -1,11 +1,11 @@
-Sau thời gian hưởng lãi suất ưu đãi, nhiều khách hàng vay mua ô tô đối mặt với mức lãi suất thả nổi tăng đột biến, khiến gánh nặng trả nợ tăng mạnh so với kỳ vọng ban đầu.
+Sau thời gian hưởng lãi suất ưu đãi, nhiều khách hàng vay mua ô tô đối mặt với mức lãi suất thả nổi tăng đột biến, khiến gánh nặng trả nợ tăng mạnh so với kỳ vọng ban đầu. Lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 
 ## Điểm chính cần nắm
 
 - Lãi suất ưu đãi ban đầu cho vay mua ô tô thường dao động 7-8%/năm trong 12-24 tháng đầu.
 - Sau kỳ ưu đãi, lãi suất chuyển sang cơ chế thả nổi, có thể lên đến 15-18%/năm tùy ngân hàng và thời điểm vay.
 - Mức tăng lãi suất đột ngột khiến nhiều người vay gặp khó khăn trong việc cân đối tài chính, thậm chí phải cân nhắc bán tài sản để thoát nợ.
-- Một số ngân hàng điều chỉnh biên lãi suất thả nổi theo lãi suất thị trường, khiến chi phí vay khó dự đoán trước.
+- Một số ngân hàng điều chỉnh biên lãi suất thả nổi theo lãi suất thị trường, khiến chi phí vay khó dự đoán trước. Biên lãi suất là phần ngân hàng cộng thêm vào lãi suất tham chiếu để ra lãi suất người vay phải trả.
 
 ## Góc nhìn FinHome
 

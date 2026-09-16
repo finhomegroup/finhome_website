@@ -22,9 +22,14 @@ export default function FinancialRatiosPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Which balance the ratios divide by. A reader comparing against a
-      // published figure needs to know it is closing, not average.
-      notice={C.closingBalanceNotice}
+      // The row's lesson, in the one slot above the calculator: a single
+      // ratio does not conclude a company's health. It replaced the
+      // closing-balance caveat here, which is five sentences of technical
+      // qualification and now sits behind the disclosure instead — docs §3
+      // asks a notice to be one or two sentences for exactly that reason.
+      notice={C.oneRatioNotice}
+      noticeDetailTitle={C.closingBalanceTitle}
+      noticeDetail={C.closingBalanceNotice}
       intro={C.form.ratioTable.intro}
       prose={C.formula}
       faq={C.faq}

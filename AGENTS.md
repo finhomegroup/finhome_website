@@ -6,15 +6,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Calculator suite
 
-There is an in-progress suite of financial calculators at `/cong-cu/` (5 of 75 built).
+There is a suite of financial calculators at `/cong-cu/`. All 75 planned tools are built.
 **Before touching `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`,
 read `docs/calculator-suite-status.md`.** It has the recipe for adding a calculator, the
 number-formatting and sign conventions that will otherwise produce wrong figures, the
 accessibility rules the shared components already own, and what to build next.
 
-Two things from that document that apply repo-wide:
+**Never quote a count from prose, including this file.** Derive it from
+`content/calculators/registry.ts` (`liveCalculators()` / `plannedCalculators()`). This
+line said "5 of 75 built" for long enough that four agents in one session had to be told
+it was wrong; the page and test counts in the status document have gone stale the same way.
+
+Three things from that document that apply repo-wide:
 
 - **`pnpm lint` fails at baseline** with exactly 3 pre-existing problems in
   `components/site-header.tsx` and `scripts/header-cmp.mjs`. Pass condition is "no new
-  problems beyond those 3", never "clean". Do not fix those two files.
-- **`vercel.json` runs `vitest run && next build`**, so a failing test blocks deployment.
+  problems beyond those 3", never "clean". Do not fix those two files. The real pass/fail
+  is `pnpm check:lint`, which reports "0 new".
+- **`vercel.json` runs `pnpm gate`, which is five steps**, not two:
+  `vitest run && tsc --noEmit && pnpm check:lint && next build && pnpm check:markup`.
+  A failure in ANY of them blocks deployment, and `.github/workflows/ci.yml` runs the same
+  command, so the deploy gate and the PR gate cannot drift apart. `check:markup` reads the
+  built export and must run after `next build`. Run the steps separately while working, so
+  a failure is attributable.
+- **Nothing in the test suite checks appearance.** Layout, contrast, touch targets and
+  overflow are unverified by every green run. Do not report a visual item as verified
+  unless it was actually observed in a browser at a stated, measured viewport.

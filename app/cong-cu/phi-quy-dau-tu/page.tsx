@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { FundFeesCalculator } from "@/components/fund-fees-calculator";
 import { FUND_FEES as C } from "@/content/calculators/fund-fees";
 
@@ -27,6 +28,8 @@ export default function FundFeesPage() {
       notice={C.compoundNotice}
       prose={C.formula}
       faq={C.faq}
+      // Original row 27's next step: "quay về mục tiêu tiết kiệm".
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <FundFeesCalculator />
     </CalculatorPage>

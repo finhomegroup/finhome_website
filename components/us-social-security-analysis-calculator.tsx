@@ -194,6 +194,19 @@ export function UsSocialSecurityAnalysisCalculator() {
       {rows.length > 0 ? (
         <>
           <p className="mt-8 text-sm leading-relaxed text-ink-3">{T.intro}</p>
+          {/* Six columns, so `mobileCards` — docs §3 sets that from five up.
+              An independent browser review at a verified 390x844 viewport
+              measured this table at 596 px inside the 300 px scroll frame:
+              a ratio of 1,99, so two screens of sideways travel, with only
+              "Tuổi nhận", "Mỗi tháng" and "Số tháng nhận" on screen. The
+              three columns this page exists to compare — nominal total,
+              present value and break-even — were entirely off to the right,
+              while the paragraph below the table explains the comparison
+              between two of them as though both were visible. The headers
+              are NOT the fix: six numeric columns do not fit 300 px at any
+              label length, and shortening "Tổng danh nghĩa" or "Giá trị hiện
+              tại" would cost the nominal-versus-present-value distinction
+              that is the page's whole lesson. */}
           <ResultTable
             className="mt-4"
             caption={T.caption}
@@ -206,6 +219,7 @@ export function UsSocialSecurityAnalysisCalculator() {
               { label: T.breakEvenColumn, numeric: true },
             ]}
             rows={rows}
+            mobileCards
           />
         </>
       ) : null}

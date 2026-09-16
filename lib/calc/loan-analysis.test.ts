@@ -264,3 +264,160 @@ describe("analyseLoan — realistic terms and rejection", () => {
     expect(analyseLoan({ ...BASE, annualRatePercent: Number.NaN })).toBeNull();
   });
 });
+
+/**
+ * ORIGINAL ROW 6 — an arbitrary month, and the mortgage's repayment method.
+ *
+ * "Dùng chung kết quả với công cụ vay mua nhà … cho chọn một tháng/năm", with
+ * the lesson "lãi tính trên dư nợ; phân biệt trả góp đều và gốc đều".
+ */
+describe("analyseLoan — examining one month", () => {
+  it("reads the month out of the schedule, not out of a formula", () => {
+    const result = analyse({ ...BASE, selectedMonth: 152 });
+    const selected = result.selected;
+    expect(selected).not.toBeNull();
+    if (selected === null) return;
+
+    const row = result.loan.schedule[151];
+    expect(selected.month).toBe(152);
+    expect(selected.payment).toBe(row.payment);
+    expect(selected.interest).toBe(row.interest);
+    expect(selected.principal).toBe(row.principal);
+    expect(selected.balance).toBe(row.balance);
+    expect(selected.interestSharePercent).toBeCloseTo(
+      (row.interest / row.payment) * 100,
+      9,
+    );
+  });
+
+  it("says the month the way a borrower holds it", () => {
+    // Month 152 of a 240-month loan is month 8 of year 13.
+    const selected = analyse({ ...BASE, selectedMonth: 152 }).selected;
+    expect(selected?.year).toBe(13);
+    expect(selected?.monthOfYear).toBe(8);
+    expect(selected?.remainingMonths).toBe(88);
+
+    // The boundaries, which are where an off-by-one would show.
+    for (const [month, year, monthOfYear] of [
+      [1, 1, 1],
+      [12, 1, 12],
+      [13, 2, 1],
+      [24, 2, 12],
+      [240, 20, 12],
+    ] as const) {
+      const at = analyse({ ...BASE, selectedMonth: month }).selected;
+      expect(at?.year, `month ${month}`).toBe(year);
+      expect(at?.monthOfYear, `month ${month}`).toBe(monthOfYear);
+    }
+  });
+
+  it("accumulates from month 1 through the selected month, inclusive", () => {
+    const result = analyse({ ...BASE, selectedMonth: 152 });
+    const selected = result.selected;
+    if (selected === null) return;
+
+    const rows = result.loan.schedule.slice(0, 152);
+    const interest = rows.reduce((sum, row) => sum + row.interest, 0);
+    const principal = rows.reduce((sum, row) => sum + row.principal, 0);
+    expect(selected.cumulativeInterest).toBeCloseTo(interest, 6);
+    expect(selected.cumulativePrincipal).toBeCloseTo(principal, 6);
+    // Inclusive, not exclusive: the balance identity proves it.
+    expect(AMOUNT - selected.cumulativePrincipal).toBeCloseTo(
+      selected.balance,
+      6,
+    );
+    expect(selected.principalRepaidSharePercent).toBeCloseTo(
+      (principal / AMOUNT) * 100,
+      9,
+    );
+  });
+
+  it("reaches the LAST month, not only the first twenty-four", () => {
+    // The whole point of the row: month 240 is examinable.
+    const last = analyse({ ...BASE, selectedMonth: 240 }).selected;
+    expect(last?.month).toBe(240);
+    expect(last?.balance).toBe(0);
+    expect(last?.remainingMonths).toBe(0);
+    expect(last?.cumulativePrincipal).toBeCloseTo(AMOUNT, 2);
+    expect(last?.principalRepaidSharePercent).toBeCloseTo(100, 6);
+  });
+
+  it("refuses a month outside the schedule rather than clamping it", () => {
+    // A tool that moved a typed 300 to 240 would answer a question nobody
+    // asked.
+    for (const selectedMonth of [0, -1, 241, 300, 12.5, Number.NaN]) {
+      expect(
+        analyseLoan({ ...BASE, selectedMonth }),
+        String(selectedMonth),
+      ).toBeNull();
+    }
+  });
+
+  it("reports no examined month when none was asked for", () => {
+    expect(analyse(BASE).selected).toBeNull();
+  });
+});
+
+describe("analyseLoan — the mortgage's repayment methods", () => {
+  it("defaults to the annuity the page always answered", () => {
+    const implicit = analyse(BASE);
+    const explicit = analyse({ ...BASE, method: "annuity" });
+    expect(implicit.loan.totalInterest).toBe(explicit.loan.totalInterest);
+    expect(implicit.loan.method).toBe("annuity");
+  });
+
+  it("analyses trả gốc đều with the same meaning as the mortgage page", () => {
+    const flat = analyse({ ...BASE, method: "flatPrincipal" });
+    expect(flat.loan.method).toBe("flatPrincipal");
+
+    // The closed forms docs §W03 records for this structure: first instalment
+    // s + rP, and total interest r·P·(n+1)/2.
+    const monthlyRate = 8.5 / 100 / 12;
+    const flatPrincipal = AMOUNT / 240;
+    expect(flat.loan.schedule[0].payment).toBeCloseTo(
+      flatPrincipal + AMOUNT * monthlyRate,
+      4,
+    );
+    expect(flat.loan.totalInterest).toBeCloseTo(
+      monthlyRate * AMOUNT * (241 / 2),
+      2,
+    );
+
+    // And it is genuinely a different cost structure, which is why the control
+    // belongs on this page. Equal principal repays half the debt at exactly
+    // the halfway point, where the annuity takes 166 of 240 months.
+    expect(flat.halfPrincipalMonth).toBe(120);
+    const annuity = analyse(BASE);
+    expect(annuity.halfPrincipalMonth).toBe(166);
+    expect(flat.loan.totalInterest).toBeLessThan(annuity.loan.totalInterest);
+
+    // The crossover still is not month 1: the first instalment's interest
+    // (14.166.667 ₫ on 2 tỷ at 8,5%) is larger than the flat principal
+    // (8.333.333 ₫), so the balance has to fall below 1.176.470.588 ₫ first —
+    // which happens in month 100. It is still much earlier than the annuity's
+    // month 143, which is the comparison that matters to a reader.
+    expect(flat.crossoverMonth).toBe(100);
+    expect(annuity.crossoverMonth).toBe(143);
+  });
+
+  it("examines a month of a flat-principal schedule too", () => {
+    const flat = analyse({
+      ...BASE,
+      method: "flatPrincipal",
+      selectedMonth: 152,
+    });
+    const selected = flat.selected;
+    if (selected === null) return;
+    // Equal principal: every month repays exactly the same principal.
+    expect(selected.principal).toBeCloseTo(AMOUNT / 240, 6);
+    expect(selected.interest).toBeCloseTo(
+      flat.loan.schedule[151].interest,
+      9,
+    );
+    // Which makes the repaid share exactly proportional to the month.
+    expect(selected.principalRepaidSharePercent).toBeCloseTo(
+      (152 / 240) * 100,
+      6,
+    );
+  });
+});

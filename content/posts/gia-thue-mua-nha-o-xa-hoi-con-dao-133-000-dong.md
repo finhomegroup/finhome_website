@@ -1,9 +1,11 @@
 Dự án nhà ở xã hội tại huyện Côn Đảo (thuộc TP.HCM) vừa công bố mức giá thuê mua với mức giá sau thuế dao động từ 133.000 đến 354.000 đồng mỗi m² mỗi tháng, tùy phương án thanh toán được lựa chọn.
 
+Thuê mua không phải là vừa thuê vừa mua cùng lúc: người thuê mua trả trước một phần giá trị căn nhà, phần còn lại được tính thành tiền thuê trả dần hằng tháng, và chỉ có quyền sở hữu căn nhà sau khi hết hạn hợp đồng và đã trả hết phần còn lại. Vì vậy con số dưới đây là tiền phải trả mỗi tháng, không phải giá bán căn nhà.
+
 ## Điểm chính cần nắm
 
 - Dự án nhà ở xã hội Côn Đảo có giá thuê mua sau thuế từ 133.000 đến 354.000 đồng/m²/tháng.
-- Người mua thuê được chọn phương án thanh toán linh hoạt từ 5 đến 20 năm.
+- Người thuê mua được chọn phương án thanh toán linh hoạt từ 5 đến 20 năm.
 - Đây là mức giá thuê mua thuộc nhóm thấp nhất trong các dự án nhà ở xã hội được công bố gần đây tại TP.HCM.
 - Dự án hướng đến đối tượng người có thu nhập thấp, công nhân và người lao động tại địa phương.
 

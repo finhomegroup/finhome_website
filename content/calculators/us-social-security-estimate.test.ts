@@ -10,9 +10,11 @@ import {
 } from "@/lib/calc/number";
 import {
   aimeFromEarnings,
+  BEND_POINT_YEAR_ORDER,
   BEND_POINTS,
   claimingSchedule,
   fullRetirementAgeMonths,
+  PIA_RATES,
   piaFromAime,
 } from "@/lib/calc/us-social-security";
 import { US_SOCIAL_SECURITY_ESTIMATE as C } from "@/content/calculators/us-social-security-estimate";
@@ -174,7 +176,19 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(mid.pia.replacementRatePercent!).toBeGreaterThan(
       high.pia.replacementRatePercent!,
     );
-    for (const figure of ["61,83%", "28,42%", "184.500", "5,13", "1,55"]) {
+    // The taxable maximum is DERIVED here, not typed. As a literal this
+    // assertion would keep demanding the old figure after the constant was
+    // bumped — a test defending a stale sentence, which docs §8 lists as a
+    // finding in its own right. The percentages and ratios below stay
+    // literal: they are pinned against the model three tests above, and
+    // their whole purpose here is to catch a silent copy edit.
+    for (const figure of [
+      "61,83%",
+      "28,42%",
+      usd(BEND_POINTS[2026].taxableMaximum),
+      "5,13",
+      "1,55",
+    ]) {
       expect(C.regressiveNotice, `notice is missing ${figure}`).toContain(
         figure,
       );
@@ -196,6 +210,23 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(r.schedule.some((option) => option.isFullRetirementAge)).toBe(false);
   });
 
+  it("does not claim equivalence with the SSA Quick Calculator", () => {
+    // Source-review finding 3 (artifacts/.../us-reference-source-review.md:41).
+    // The FAQ said this page works "đúng cách mà công cụ ước tính nhanh của
+    // chính SSA hoạt động". It does not. The Quick Calculator takes a date
+    // of birth and current earnings, RECONSTRUCTS an assumed year-by-year
+    // earnings history, and lets the reader review and change it; this page
+    // takes one average and divides by 35. The today's-money property the
+    // paragraph explains is real and is kept — the equivalence claim on the
+    // end of it was not verified and is not verifiable from here.
+    const a = C.faq.items[0].a;
+    expect(a).not.toContain("đúng cách mà công cụ ước tính nhanh");
+    // The distinction is stated rather than merely left out, so the reader
+    // who came for the comparison still gets an answer.
+    expect(a).toContain("SSA");
+    expect(a).toContain("lịch sử thu nhập");
+  });
+
   it("says out loud that it is an estimate, as a standing notice", () => {
     // The one place this page could mislead, so the disclosure is not
     // conditional on any input.
@@ -204,10 +235,135 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(C.faq.items[4].q).toContain("my Social Security");
   });
 
+  it("names the United States in the H1 and in the first paragraph", () => {
+    // The registry title carries "Hoa Kỳ" and plan-disposition.test.ts fails
+    // the build if it does not. That guard stops at the hub: it never looks
+    // at the page's own H1, which is what a reader arriving from search
+    // actually reads first. "An sinh xã hội" is what BHXH is called here, so
+    // an H1 without the country reads as a Vietnamese social-insurance tool.
+    // The us-rules notice only reaches them after they start filling it in.
+    expect(C.pageTitle).toContain("Hoa Kỳ");
+    expect(C.metaTitle).toContain("Hoa Kỳ");
+    expect(C.lede).toContain("Hoa Kỳ");
+  });
+
   it("explains why the formula year is not the eligibility year", () => {
     expect(C.form.formulaYearHelp).toContain("giá hôm nay");
     expect(C.faq.items[0].q).toContain("62");
     expect(C.formula.body[3]).toContain("300 USD");
+  });
+});
+
+/**
+ * THE CITATION IS THE ONLY CHECK A READER HAS ON THESE RATES.
+ *
+ * `PIA_RATES` is hard-coded in `lib/calc/us-social-security.ts` with no field,
+ * no year selector and, by its own comment, no indexation. So the page states
+ * 90/32/15 and offers the reader nothing to disagree with: no box to correct,
+ * nothing to recompute, and — before this block — no link to open either. That
+ * is the state the `sources` block exists to end, and it is why these
+ * assertions pin the rate against the MODULE rather than against a literal: a
+ * silent edit to a number the reader cannot see would otherwise pass every
+ * other test in this file, because every expected figure here is derived from
+ * the same constant.
+ *
+ * The block itself is shared with the other two Social Security rows, in
+ * `content/calculators/us-social-security-sources.ts` — one statute, one list.
+ * `content/calculators/sources-wiring.test.ts` separately proves the block
+ * reaches this page instead of merely being declared.
+ */
+describe("uoc-tinh-an-sinh-xa-hoi cites the rates it will not let you change", () => {
+  const S = C.sources;
+  const item = (tail: string) => {
+    const found = S.items.find((entry) => entry.url.endsWith(tail));
+    if (!found) throw new Error(`no cited source ends with ${tail}`);
+    return found;
+  };
+
+  it("gives the reader links, every one of them a primary SSA page", () => {
+    expect(S.items.length).toBeGreaterThanOrEqual(5);
+    for (const entry of S.items) {
+      // ssa.gov ONLY. A rate this page will not let the reader edit must not
+      // be underwritten by a blog or an aggregator's summary of the statute.
+      expect(
+        entry.url.startsWith("https://www.ssa.gov/"),
+        `${entry.url} is not an https www.ssa.gov URL`,
+      ).toBe(true);
+      // A "Nguồn" heading over a bare URL is not a citation either.
+      expect(entry.label.length).toBeGreaterThan(20);
+      expect(entry.note, `${entry.label} has no note`).toBeDefined();
+      expect(entry.note.length).toBeGreaterThan(40);
+    }
+    expect(new Set(S.items.map((entry) => entry.url)).size).toBe(S.items.length);
+  });
+
+  it("names the issuing body, rather than “theo quy định Hoa Kỳ”", () => {
+    expect(S.title).toContain("Cơ quan An sinh Xã hội Hoa Kỳ");
+    expect(S.title).toContain("SSA");
+  });
+
+  it("states the provenance limit AND that the rates are not editable", () => {
+    // The limit the shell's docstring puts in `intro`: read once, in a
+    // review, on a stated date — not at the moment the reader opens the page.
+    expect(S.intro).toContain("rà soát");
+    expect(S.intro).toContain("16/09/2026");
+    expect(S.intro).toContain("không phải danh sách đầy đủ");
+    expect(S.intro).toContain("không phải tư vấn");
+    // And the disclosure this row owes a reader with no field to touch.
+    expect(S.intro).toContain("KHÔNG có ô nhập nào để bạn sửa");
+  });
+
+  it("pins the three PIA factors to the module the page actually runs", () => {
+    expect(PIA_RATES).toEqual({ first: 90, second: 32, third: 15 });
+    const formula = item("piaformula.html");
+    for (const rate of [PIA_RATES.first, PIA_RATES.second, PIA_RATES.third]) {
+      expect(
+        formula.note,
+        `the cited PIA formula quotes no ${rate}% tier`,
+      ).toContain(`${rate}%`);
+    }
+    // The same note carries the year's own bend points, read from the module
+    // rather than typed, so the citation cannot describe a formula the page
+    // does not run.
+    const current = BEND_POINTS[Number(D.formulaYear)];
+    expect(formula.note).toContain(usd(current.firstBendPoint));
+    expect(formula.note).toContain(usd(current.secondBendPoint));
+  });
+
+  it("covers every formula year the field offers, bend points and trần", () => {
+    // The indexed half. A year in the selector with no published figures in
+    // the citation is a year the reader cannot check.
+    const bend = item("bendpoints.html");
+    const base = item("cbb.html");
+    for (const year of BEND_POINT_YEAR_ORDER) {
+      const params = BEND_POINTS[year];
+      expect(bend.note, `no ${year} first bend point`).toContain(
+        usd(params.firstBendPoint),
+      );
+      expect(bend.note, `no ${year} second bend point`).toContain(
+        usd(params.secondBendPoint),
+      );
+      expect(base.note, `no ${year} taxable maximum`).toContain(
+        usd(params.taxableMaximum),
+      );
+    }
+  });
+
+  it("writes the claiming factors as fractions, never as rounded decimals", () => {
+    // 5/9 of ONE PERCENT a month is not "0,55% a month", and a citation that
+    // rounds the statute is no longer quoting it. The factor multiplies one
+    // percentage point, not the benefit.
+    const copy = [S.intro, ...S.items.map((entry) => entry.note)].join(" ");
+    expect(copy).toContain("5/9 của 1%");
+    expect(copy).toContain("5/12 của 1%");
+    expect(copy).toContain("2/3 của 1%");
+    expect(copy).toContain("25/36 của 1%");
+    for (const rounded of ["0,55", "0,56", "0,41", "0,42", "0,67", "0,69"]) {
+      expect(
+        copy,
+        `a statutory fraction is rounded to ${rounded} somewhere in the block`,
+      ).not.toContain(rounded);
+    }
   });
 });
 

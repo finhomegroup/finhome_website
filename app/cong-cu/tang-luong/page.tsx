@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { RaiseCalculator } from "@/components/raise-calculator";
 import { RAISE as C } from "@/content/calculators/raise";
 
@@ -27,6 +28,7 @@ export default function RaisePage() {
       notice={C.grossNotice}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <RaiseCalculator />
     </CalculatorPage>

@@ -69,7 +69,7 @@ export const PIVOT = {
       s2Column: "S2",
       s3Column: "S3",
       intro:
-        "Bốn hàng, bốn bộ số. Với dữ liệu mặc định, mức kháng cự gần nhất của phương pháp cổ điển và của Camarilla lệch nhau đáng kể, vì Camarilla tính từ giá ĐÓNG còn ba phương pháp kia tính từ pivot. Đó không phải lỗi của phương pháp nào — chúng là bốn quy ước khác nhau, và khoảng cách giữa chúng chính là mức độ không chắc chắn của cả cách tiếp cận này.",
+        "Bốn hàng, bốn bộ số. Với dữ liệu mặc định, mức kháng cự gần nhất của phương pháp cổ điển và của Camarilla lệch nhau đáng kể, vì Camarilla tính từ giá đóng còn ba phương pháp kia tính từ pivot. Đó không phải lỗi của phương pháp nào — chúng là bốn quy ước khác nhau, và khoảng cách giữa chúng chính là mức độ không chắc chắn của cả cách tiếp cận này.",
     },
 
     methodNames: {
@@ -91,9 +91,23 @@ export const PIVOT = {
     body: [
       "Cổ điển: pivot = (cao + thấp + đóng) ÷ 3. R1 = 2 × pivot − thấp, S1 = 2 × pivot − cao, R2 = pivot + biên độ, S2 = pivot − biên độ, R3 = cao + 2 × (pivot − thấp), S3 = thấp − 2 × (cao − pivot). Với mặc định, pivot là 50.333,33 ₫ và biên độ là 4.000 ₫.",
       "Fibonacci: cùng pivot cổ điển, nhưng các mức là pivot cộng hoặc trừ 0,382, 0,618 và 1,000 lần biên độ. Khác với cổ điển, các mức này đối xứng hoàn toàn quanh pivot — R1 cách pivot đúng bằng khoảng S1 cách pivot.",
-      "Camarilla tính từ giá ĐÓNG, không từ pivot: đóng cộng hoặc trừ 1,1 lần biên độ chia 12, chia 6 và chia 4. Vì thế các mức của nó nằm sát nhau hơn, và nếu giá đóng gần đỉnh phiên thì cả sáu mức có thể đều nằm trên pivot — đó là phương pháp hoạt động đúng, không phải lỗi.",
+      "Camarilla tính từ giá đóng, không từ pivot: đóng cộng hoặc trừ 1,1 lần biên độ chia 12, chia 6 và chia 4. Vì thế các mức của nó nằm sát nhau hơn, và nếu giá đóng gần đỉnh phiên thì cả sáu mức có thể đều nằm trên pivot — đó là phương pháp hoạt động đúng, không phải lỗi.",
       "Woodie: pivot = (cao + thấp + 2 × mở hôm nay) ÷ 4, rồi dùng các công thức mức giống cổ điển. Nó là phương pháp duy nhất cần giá mở cửa của phiên hiện tại, và vì giá mở được nhân đôi trọng số, pivot Woodie khác pivot cổ điển kể cả khi giá mở bằng đúng giá đóng — với mặc định là 50.250 ₫ so với 50.333,33 ₫.",
       "Một phiên bị khóa giá, tức giá cao bằng giá thấp, cho biên độ bằng 0 và toàn bộ các mức trùng vào một điểm. Công cụ vẫn tính chứ không báo lỗi, vì đó là một phiên thật.",
+    ],
+    // Editor-selected phrases, rendered as <strong> by `ProseText`.
+    // Never markup inside the string: the paragraph stays one plain
+    // string so the search index, the JSON-LD and what a reader copies
+    // cannot drift from what they see. These mark what distinguishes each convention from the classic one, and the degenerate session that is still computed.
+    //
+    // Each phrase occurs in exactly ONE paragraph of `body`, so
+    // `missingPhrases` is empty and no phrase is marked twice. They are
+    // in sentence case on purpose: they REPLACE the mid-sentence capitals
+    // this file used to carry, rather than wrapping <strong> around them.
+    emphasis: [
+      "đối xứng hoàn toàn quanh pivot",
+      "phương pháp duy nhất cần giá mở cửa",
+      "biên độ bằng 0",
     ],
   },
 

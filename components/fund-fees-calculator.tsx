@@ -13,7 +13,10 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import { ChartFigure } from "@/components/calc/chart/chart-figure";
+import { LineChart } from "@/components/calc/chart/line-chart";
 import { computeFundFees } from "@/lib/calc/fund-fees";
+import { fundFeesChartModel } from "@/lib/calc/charts/fund-fees-chart";
 import { FUND_FEES as C } from "@/content/calculators/fund-fees";
 
 export function FundFeesCalculator() {
@@ -69,6 +72,8 @@ export function FundFeesCalculator() {
   // Every field parses but nothing was paid in at all — the module's only
   // rejection on otherwise-valid input.
   const nothingInvested = fieldsUsable && result === null;
+
+  const chart = fundFeesChartModel(result, C.chart);
 
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
@@ -136,17 +141,13 @@ export function FundFeesCalculator() {
         />
       </FieldGroup>
 
-      {/* The share of PROFIT lost leads, because that is the number that
-          turns "2% a year" into something worth acting on. */}
+      {/* MONEY FIRST, then the percentage. Original row 27's words are "đặt
+          chênh lệch sau phí trước thuật ngữ": this group used to open with
+          the share of forgone PROFIT, which is the more dramatic figure and
+          the harder one to act on. The đồng lost and the đồng received now
+          come first, and the percentage keeps its place as the third row —
+          it is still the number that makes "2% một năm" feel real. */}
       <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.profitLostLabel}
-          value={
-            result?.profitLostPercent == null
-              ? null
-              : formatPercent(result.profitLostPercent, 2)
-          }
-        />
         <ResultRow
           label={C.form.valueLostLabel}
           value={money(result?.valueLost)}
@@ -154,6 +155,14 @@ export function FundFeesCalculator() {
         <ResultRow
           label={C.form.netValueLabel}
           value={money(result?.netValue)}
+        />
+        <ResultRow
+          label={C.form.profitLostLabel}
+          value={
+            result?.profitLostPercent == null
+              ? null
+              : formatPercent(result.profitLostPercent, 2)
+          }
         />
       </ResultGroup>
 
@@ -249,6 +258,14 @@ export function FundFeesCalculator() {
           {C.form.nothingInvestedNotice}
         </p>
       ) : null}
+
+      {/* Original row 27's visual. Both paths come from the engine's own
+          monthly series, so the picture cannot disagree with the rows above
+          it. The drawn line stops at the balance BEFORE the exit fee and the
+          marker names that charge — see `fund-fees-chart.ts`. */}
+      <ChartFigure model={chart}>
+        <LineChart model={chart} />
+      </ChartFigure>
     </CalculatorCard>
   );
 }

@@ -27,7 +27,9 @@ export const PARTNER_CTA = {
   title: "Trở thành đối tác của FinHome",
   subtitle: "Cùng FinHome kết nối cơ hội, kiến tạo giá trị bền vững",
   cta: "Liên hệ ngay",
-  hoverCta: "Tải xuống",
+  // Not "Tải xuống": there is nothing to download yet, and this control goes
+  // to the support section. See CONTACT_HREF in content/site.ts.
+  hoverCta: "Gửi yêu cầu",
   tablesCta: "Xem chi tiết hành trình & điểm chạm",
 } as const;
 

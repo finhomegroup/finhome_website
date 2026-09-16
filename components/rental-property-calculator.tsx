@@ -3,9 +3,13 @@
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
+import { ResultTable } from "@/components/calc/result-table";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { ChartFigure } from "@/components/calc/chart/chart-figure";
+import { BarChart } from "@/components/calc/chart/bar-chart";
 import {
   formatDecimal,
   formatMoney,
@@ -13,8 +17,14 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import { moneyCell } from "@/lib/calc/table-cell";
 import { computeRentalProperty } from "@/lib/calc/rental-property";
+import { compareRentalScenarios } from "@/lib/calc/rental-scenarios";
+import { rentalWaterfallModel } from "@/lib/calc/charts/rental-waterfall-chart";
 import { RENTAL_PROPERTY as C } from "@/content/calculators/rental-property";
+
+/** The NQ43 reduction, applied only when the reader declares eligibility. */
+const DECLARED_PIT_RELIEF_PERCENT = 30;
 
 export function RentalPropertyCalculator() {
   const fields = useCalcFields({
@@ -29,6 +39,8 @@ export function RentalPropertyCalculator() {
     vatRate: C.form.defaultVatRate,
     pitRate: C.form.defaultPitRate,
     threshold: C.form.defaultThreshold,
+    pitThreshold: C.form.defaultPitThreshold,
+    relief: C.form.defaultRelief,
   });
 
   const price = parseMoney(fields.values.price);
@@ -42,6 +54,11 @@ export function RentalPropertyCalculator() {
   const vatRate = parseDecimal(fields.values.vatRate);
   const pitRate = parseDecimal(fields.values.pitRate);
   const threshold = parseMoney(fields.values.threshold);
+  const pitThreshold = parseMoney(fields.values.pitThreshold);
+  // The reader's DECLARATION, not a determination: the 10 tỷ condition is on
+  // their whole business revenue and this page cannot see it.
+  const reliefPercent =
+    fields.values.relief === "yes" ? DECLARED_PIT_RELIEF_PERCENT : 0;
 
   const priceInvalid = price === null || price <= 0;
   const downInvalid =
@@ -54,6 +71,7 @@ export function RentalPropertyCalculator() {
   const vatRateInvalid = vatRate === null || vatRate < 0 || vatRate > 100;
   const pitRateInvalid = pitRate === null || pitRate < 0 || pitRate > 100;
   const thresholdInvalid = threshold === null || threshold < 0;
+  const pitThresholdInvalid = pitThreshold === null || pitThreshold < 0;
 
   // A cash purchase needs no term, so the term is only required when there
   // is something to borrow.
@@ -61,7 +79,7 @@ export function RentalPropertyCalculator() {
   const termInvalid =
     borrowing && (term === null || term <= 0 || !Number.isInteger(term));
 
-  const result =
+  const usable = !(
     priceInvalid ||
     downInvalid ||
     purchaseCostsInvalid ||
@@ -72,24 +90,48 @@ export function RentalPropertyCalculator() {
     expensesInvalid ||
     vatRateInvalid ||
     pitRateInvalid ||
-    thresholdInvalid
-      ? null
-      : computeRentalProperty({
-          price,
-          downPayment: down,
-          purchaseCosts,
-          annualRatePercent: rate,
-          termMonths: term ?? 0,
-          monthlyRent: rent,
-          vacancyPercent: vacancy,
-          monthlyExpenses: expenses,
-          vatPercent: vatRate,
-          pitPercent: pitRate,
-          taxThresholdPerYear: threshold,
-        });
+    thresholdInvalid ||
+    pitThresholdInvalid
+  );
+
+  // ONE set of inputs, read by the headline figures, the scenario table and
+  // the waterfall — so none of the three can disagree with the others.
+  const input = {
+    price: price!,
+    downPayment: down!,
+    purchaseCosts: purchaseCosts!,
+    annualRatePercent: rate!,
+    termMonths: term ?? 0,
+    monthlyRent: rent!,
+    vacancyPercent: vacancy!,
+    monthlyExpenses: expenses!,
+    vatPercent: vatRate!,
+    pitPercent: pitRate!,
+    taxThresholdPerYear: threshold!,
+    pitThresholdPerYear: pitThreshold!,
+    pitReliefPercent: reliefPercent,
+  };
+
+  const result = usable ? computeRentalProperty(input) : null;
+  const scenarios = usable ? compareRentalScenarios(input) : null;
+  const waterfall = rentalWaterfallModel(result, C.chart);
 
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
+
+  /** The scenario table's own label for each row. */
+  const scenarioName = (key: string) => {
+    switch (key) {
+      case "vacancy":
+        return C.scenarios.vacancyName;
+      case "expenses":
+        return C.scenarios.expensesName;
+      case "both":
+        return C.scenarios.bothName;
+      default:
+        return C.scenarios.baseName;
+    }
+  };
 
   return (
     <CalculatorCard>
@@ -190,6 +232,29 @@ export function RentalPropertyCalculator() {
           error={C.form.thresholdInvalid}
           invalid={thresholdInvalid}
         />
+        {/* Its own field, not the VAT one reused: two taxes, two documents,
+            and an official answer putting the PIT deduction at 1 tỷ for
+            non-lodging letting. See the model's header. */}
+        <NumberField
+          {...fields.bind("pitThreshold")}
+          label={C.form.pitThresholdLabel}
+          unit={C.form.pitThresholdUnit}
+          help={C.form.pitThresholdHelp}
+          error={C.form.pitThresholdInvalid}
+          invalid={pitThresholdInvalid}
+        />
+        {/* Default NO. The condition is on the reader's whole business
+            revenue, which this page cannot see, so the relief is a
+            declaration and the copy says what it is and is not. */}
+        <RadioGroupField
+          {...fields.bind("relief")}
+          legend={C.form.reliefLegend}
+          help={C.form.reliefHelp}
+          options={[
+            { value: "no", label: C.form.reliefNo },
+            { value: "yes", label: C.form.reliefYes },
+          ]}
+        />
       </FieldGroup>
 
       {/* The owner's own position, live. The four yields and the year's
@@ -251,6 +316,25 @@ export function RentalPropertyCalculator() {
         />
         <ResultRow label={C.form.vatLabel} value={money(result?.vatPerYear)} />
         <ResultRow label={C.form.pitLabel} value={money(result?.pitPerYear)} />
+        {/* Mounted only when a relief was DECLARED: three rows of dashes
+            would imply a reduction nobody claimed (docs §6's "an optional
+            result row is not mounted, not nulled"). */}
+        {reliefPercent > 0 ? (
+          <>
+            <ResultRow
+              label={C.form.pitReliefLabel}
+              value={money(result?.pitReliefPerYear)}
+            />
+            <ResultRow
+              label={C.form.pitAfterReliefLabel}
+              value={money(result?.pitAfterReliefPerYear)}
+            />
+            <ResultRow
+              label={C.form.taxBeforeReliefLabel}
+              value={money(result?.rentalTaxBeforeReliefPerYear)}
+            />
+          </>
+        ) : null}
         <ResultRow
           label={C.form.taxLabel}
           value={money(result?.rentalTaxPerYear)}
@@ -259,6 +343,14 @@ export function RentalPropertyCalculator() {
           label={C.form.taxableLabel}
           value={
             result === null ? null : result.taxable ? C.form.yes : C.form.no
+          }
+        />
+        {/* Its own row: the two taxes can now cross their thresholds at
+            different revenues, which is the point of splitting them. */}
+        <ResultRow
+          label={C.form.pitAppliesLabel}
+          value={
+            result === null ? null : result.pitApplies ? C.form.yes : C.form.no
           }
         />
         <ResultRow
@@ -290,6 +382,75 @@ export function RentalPropertyCalculator() {
           {C.taxVintageNotice}
         </p>
       </ResultGroup>
+
+      {/* ORIGINAL ROW 15's scenario view. Outside every ResultGroup, because
+          docs §4 forbids a table inside a live region — and this one has four
+          rows that would re-announce on every keystroke. */}
+      <section className="mt-8">
+        <h3 className="font-display text-base font-medium text-ink">
+          {C.scenarios.title}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-ink-2">
+          {C.scenarios.intro}
+        </p>
+        {scenarios === null ? (
+          <p className="mt-3 text-sm leading-relaxed text-ink-3">
+            {C.scenarios.unavailableNotice}
+          </p>
+        ) : (
+          <>
+            {/* `ResultTable` has no hint prop — only a chart's own table
+                does, through `ChartFigure` — so the reading note is a
+                paragraph above it. */}
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.scenarios.hint}
+            </p>
+            <ResultTable
+              className="mt-3"
+              caption={C.scenarios.caption}
+              // Five columns, so the block falls back to one card per
+              // scenario below `md` (docs §3).
+              mobileCards
+              columns={[
+                { label: C.scenarios.scenarioColumn },
+                { label: C.scenarios.assumptionColumn },
+                { label: C.scenarios.cashFlowColumn, numeric: true },
+                { label: C.scenarios.deltaColumn, numeric: true },
+                { label: C.scenarios.dscrColumn, numeric: true },
+              ]}
+              rows={scenarios.scenarios.map((scenario) => [
+                scenarioName(scenario.key),
+                `${formatPercent(scenario.vacancyPercent, 2)} · ${formatMoney(scenario.monthlyExpenses)} ₫`,
+                // Typed cells: one stated money unit for the block, with the
+                // exact đồng behind the same checkbox (docs §3). A rate and a
+                // ratio are never divided.
+                moneyCell(scenario.result.cashFlowPerMonth),
+                scenario.key === "base"
+                  ? ""
+                  : moneyCell(scenario.cashFlowPerMonthDelta),
+                scenario.result.dscr === null
+                  ? ""
+                  : formatDecimal(scenario.result.dscr),
+              ])}
+            />
+            {scenarios.baseNegativeCashFlow ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.scenarios.alreadyNegativeNotice}
+              </p>
+            ) : scenarios.anyNegativeCashFlow ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.scenarios.flipsNegativeNotice}
+              </p>
+            ) : null}
+          </>
+        )}
+      </section>
+
+      {/* ORIGINAL ROW 15's waterfall: rent → cost → debt, on the same ledger
+          the rows above report. */}
+      <ChartFigure model={waterfall}>
+        <BarChart model={waterfall} />
+      </ChartFigure>
     </CalculatorCard>
   );
 }

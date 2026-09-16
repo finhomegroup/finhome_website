@@ -5,6 +5,7 @@ import {
 } from "@/components/calc/calculator-page";
 import { AprAdvancedCalculator } from "@/components/apr-advanced-calculator";
 import { APR_ADVANCED as C } from "@/content/calculators/apr-advanced";
+import { APR } from "@/content/calculators/apr";
 
 const SLUG = "apr-nang-cao";
 
@@ -25,6 +26,9 @@ export default function AprAdvancedPage() {
       // APR assumes the loan runs to term, and Vietnamese mortgages usually
       // do not. Which of the two APR rows applies to the reader.
       notice={C.payoffNotice}
+      // Same tool, same accurate qualification: this page's fees are IN the
+      // APR, so the shared "fees excluded" disclaimer would contradict it.
+      disclaimer={APR.disclaimer}
       prose={C.formula}
       faq={C.faq}
     >

@@ -1,10 +1,10 @@
-Thị trường tín dụng bất động sản đang chứng kiến mức lãi suất vay mua nhà leo thang, tạo áp lực tài chính lớn lên người vay. Một số ngân hàng áp dụng lãi suất ưu đãi ban đầu trên 10%/năm trong giai đoạn khuyến mãi, sau đó chuyển sang lãi suất thả nổi có thể đẩy chi phí vốn lên ngưỡng 16%/năm khi hết ưu đãi.
+Thị trường tín dụng bất động sản đang chứng kiến mức lãi suất vay mua nhà leo thang, tạo áp lực tài chính lớn lên người vay. Một số ngân hàng áp dụng lãi suất ưu đãi ban đầu trên 10%/năm trong giai đoạn khuyến mãi, sau đó chuyển sang lãi suất thả nổi có thể đẩy chi phí vốn lên ngưỡng 16%/năm khi hết ưu đãi. Lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 
 ## Điểm chính cần nắm
 
 - Lãi suất vay mua nhà trong giai đoạn ưu đãi tại một số ngân hàng đã vượt 10%/năm, cao hơn đáng kể so với mức 7-8%/năm của một năm trước.
 - Lãi suất thả nổi sau giai đoạn ưu đãi tại nhiều nhà băng hiện dao động 13-16%/năm, tùy theo hồ sơ và tài sản thế chấp.
-- Người vay mua nhà để ở lẫn đầu tư đều chịu tác động, trong đó nhóm vay trung và dài hạn (từ 10 năm trở lên) chịu áp lực lớn nhất khi biên lãi suất được điều chỉnh.
+- Người vay mua nhà để ở lẫn đầu tư đều chịu tác động, trong đó nhóm vay trung và dài hạn (từ 10 năm trở lên) chịu áp lực lớn nhất khi biên lãi suất được điều chỉnh. Biên lãi suất là phần ngân hàng cộng thêm vào lãi suất tham chiếu để ra lãi suất người vay phải trả.
 - Một số người vay cân nhắc bán tài sản để giảm gánh nợ hoặc chuyển sang giải pháp vay tái cấp vốn với lãi suất thấp hơn.
 
 ## Góc nhìn FinHome

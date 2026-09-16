@@ -9,7 +9,7 @@ Bộ Xây dựng vừa công bố định hướng chiến lược phát triển
 
 ## Góc nhìn FinHome
 
-Việc đưa nhà ở cho thuê vào chiến lược phát triển nhà ở quốc gia là tín hiệu tích cực cho những người chưa sẵn sàng mua nhà hoặc có nhu cầu linh hoạt về chỗ ở. Tuy nhiên, để phân khúc này thực sự phát triển, cần có khung pháp lý rõ ràng về quyền sở hữu, quyền cho thuê và cơ chế ưu đãi đủ hấp dẫn để thu hút đầu tư từ cả chủ đầu tư lẫn người dân có nhà cho thuê. Người mua nhà để cho thuê cũng cần cân nhắc kỹ khả năng sinh lời thực tế trong bối cảnh thị trường cho thuê vẫn đang trong giai đoàn hình thành cơ chế hỗ trợ.
+Việc đưa nhà ở cho thuê vào chiến lược phát triển nhà ở quốc gia là tín hiệu tích cực cho những người chưa sẵn sàng mua nhà hoặc có nhu cầu linh hoạt về chỗ ở. Tuy nhiên, để phân khúc này thực sự phát triển, cần có khung pháp lý rõ ràng về quyền sở hữu, quyền cho thuê và cơ chế ưu đãi đủ hấp dẫn để thu hút đầu tư từ cả chủ đầu tư lẫn người dân có nhà cho thuê. Người mua nhà để cho thuê cũng cần cân nhắc kỹ khả năng sinh lời thực tế trong bối cảnh thị trường cho thuê vẫn đang trong giai đoạn hình thành cơ chế hỗ trợ.
 
 ## Đọc thêm
 

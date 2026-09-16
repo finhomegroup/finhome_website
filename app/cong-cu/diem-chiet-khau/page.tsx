@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { PointsCalculator } from "@/components/points-calculator";
 import { POINTS as C } from "@/content/calculators/points";
 
@@ -22,11 +23,16 @@ export default function PointsPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Why this page's verdict differs from the break-even every other
-      // calculator prints, and which of the two to believe.
-      notice={C.methodNotice}
+      // Visible: whether this offer structure exists for the reader at all,
+      // which decides whether the tool applies. The methodology — why this
+      // page's verdict differs from the break-even every other calculator
+      // prints — is the disclosure under it; see `points.ts`.
+      notice={C.scopeNotice}
+      noticeDetail={C.methodNotice}
+      noticeDetailTitle={C.methodNoticeTitle}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <PointsCalculator />
     </CalculatorPage>

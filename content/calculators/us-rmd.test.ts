@@ -9,6 +9,10 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import {
+  dispositionFor,
+  readingDispositionFor,
+} from "@/content/calculators/plan-disposition";
 import { computeRmd, UNIFORM_LIFETIME, type RmdInput } from "@/lib/calc/us-rmd";
 import { US_RMD as C } from "@/content/calculators/us-rmd";
 
@@ -217,5 +221,200 @@ describe("rut-toi-thieu-bat-buoc — provenance header", () => {
         figure,
       );
     }
+  });
+});
+
+/**
+ * ---------------------------------------------------------------------------
+ * Added 2026-09-16 with this row's `sources` list. Three guards that did not
+ * exist on this file: a copy sweep, a shouting sweep, and the reading-
+ * disposition chain.
+ * ---------------------------------------------------------------------------
+ */
+
+/**
+ * Proper nouns a reader cannot mistake for shouting.
+ *
+ * "III" earned its place the honest way: the first run of the sweep below
+ * reported it, from the source label naming Appendix B, Table III. That is
+ * the detector working on real copy rather than on its fixtures, so it is
+ * recorded here rather than quietly widened.
+ */
+const PROPER_NOUNS = ["USD", "IRS", "IRA", "RMD", "SECURE", "Roth", "III"];
+
+/**
+ * Every user-facing string in the module, by WALKING the exported object.
+ *
+ * Not a hand-written field list and not a regex over the source text. A
+ * field list goes stale the moment a field is added — `sources` arrived on
+ * this module today — and extracting the literals with a regex first is
+ * what made an earlier sweep of a sibling report zero shouted words on a
+ * file that had ten.
+ */
+function userFacingStrings(value: unknown, out: string[] = []): string[] {
+  if (typeof value === "string") out.push(value);
+  else if (Array.isArray(value)) for (const v of value) userFacingStrings(v, out);
+  else if (value !== null && typeof value === "object")
+    for (const v of Object.values(value)) userFacingStrings(v, out);
+  return out;
+}
+
+/** Runs of three or more capitals, once the proper nouns are removed. */
+function shoutedRuns(strings: readonly string[]): string[] {
+  const found: string[] = [];
+  for (const original of strings) {
+    // A URL is not prose. Strip hrefs BEFORE the proper-noun pass: the
+    // govinfo href on a sibling US row is
+    // ".../USCODE-2023-title42-..." and reported "USCODE" as shouting,
+    // which is a false positive no allowlist should have to absorb. Doing
+    // it here rather than per-file means the next agent who adds a
+    // capitalised href does not have to rediscover this.
+    let text = original.replace(/https?:\/\/\S+/g, " ");
+    // split/join, not a regex: these tokens can contain regex metacharacters.
+    for (const noun of PROPER_NOUNS) text = text.split(noun).join(" ");
+    // `\p{Lu}`, never a range like `Ạ-Ỹ` — that range spans the LOWERCASE
+    // accented block, so `[Ạ-Ỹ]` matches "ạ" and the sweep reads as clean.
+    for (const match of text.matchAll(/\p{Lu}{3,}/gu)) found.push(match[0]);
+  }
+  return [...new Set(found)];
+}
+
+describe("rut-toi-thieu-bat-buoc's copy", () => {
+  it("quotes no invented statistical range", () => {
+    // Same list as `apr-advanced.test.ts` and `loan.test.ts`, deliberately
+    // reused rather than rewritten: an invented range survived in the one
+    // sibling module that had no test of its own, and a fresh list here
+    // would be a list that can drift from theirs.
+    const copy = userFacingStrings(C).join(" ");
+    for (const range of ["1–3%", "1-3%", "35–40", "45–55", "70–80", "3–6 tháng"]) {
+      expect(copy, `copy quotes "${range}"`).not.toContain(range);
+    }
+  });
+
+  it("shouts nowhere mid-sentence", () => {
+    // VACUITY GUARD FIRST, because a sweep that matches nothing passes on
+    // every file. All three fixtures are lines this module REALLY shipped
+    // before 2026-09-16.
+    expect(
+      shoutedRuns(["Mức dự định rút của bạn THẤP HƠN mức bắt buộc."]),
+    ).toEqual(["THẤP", "HƠN"]);
+    expect(
+      shoutedRuns(["Số tiền phạt tính trên PHẦN THIẾU, không phải trên"]),
+    ).toEqual(["PHẦN", "THIẾU"]);
+    // And the allowlist must not swallow a real shout beside an allowed one.
+    expect(
+      shoutedRuns(["Roth IRA thì KHÔNG phải rút, theo SECURE 2.0"]),
+    ).toEqual(["KHÔNG"]);
+    expect(
+      shoutedRuns(["Khoản rút chịu thuế, khai với IRS bằng USD"]),
+    ).toEqual([]);
+
+    expect(shoutedRuns(userFacingStrings(C))).toEqual([]);
+  });
+});
+
+describe("rut-toi-thieu-bat-buoc — the correction window is quantified", () => {
+  it("states two years wherever it states the reduced penalty", () => {
+    // "trong thời hạn quy định" was true and unactionable, on the one figure
+    // a reader in this situation would move on. IRS states the window as two
+    // years; all three surfaces that mention the 10% rate now say so.
+    expect(C.form.correctedLabel).toContain("2 năm");
+    expect(C.form.shortfallNotice).toContain("2 năm");
+    expect(C.formula.body[5]).toContain("2 năm");
+  });
+
+  it("keeps the penalty on the shortfall, not on the whole withdrawal", () => {
+    // The claim the two rates hang off. Asserted against the model so the
+    // sentence cannot outlive the arithmetic.
+    const r = run();
+    expect(r.shortfall).toBeGreaterThan(0);
+    expect(r.penalty).toBeCloseTo(r.shortfall * 0.25, 8);
+    expect(r.penaltyIfCorrected).toBeCloseTo(r.shortfall * 0.1, 8);
+    expect(r.penalty).toBeLessThan(r.required * 0.25);
+    expect(C.formula.body[5]).toContain("phần thiếu");
+  });
+});
+
+/**
+ * This row adds NO emphasis, and that is enforced here.
+ *
+ * The chain is `library: "hoa-ky"` => filed `reference` => this pass added
+ * nothing. `plan-disposition.test.ts` enforces the FIRST arrow for all 75
+ * rows. Nothing enforced the second: `reference` is documented as asserting
+ * that nothing was added, and no test checked that a `reference` row had in
+ * fact added nothing — which is how a sibling US row shipped seven
+ * `<strong>` per page while still filed `reference`, with the suite green.
+ *
+ * P4's standing instruction is "maintain or move to a library until audience
+ * evidence justifies more", and `emphasis` is an investment in a page as
+ * reading. If that evidence arrives, the disposition moves FIRST and this
+ * test moves with it.
+ */
+describe("rut-toi-thieu-bat-buoc — reading disposition adds nothing", () => {
+  it("is a hoa-ky row, filed reference, declaring no emphasis", () => {
+    expect(dispositionFor("rut-toi-thieu-bat-buoc")?.library).toBe("hoa-ky");
+    expect(readingDispositionFor("rut-toi-thieu-bat-buoc")).toBe("reference");
+    // `in`, not a property read: the content object is `as const`, so once
+    // the key is gone `C.formula.emphasis` is a TYPE error rather than
+    // `undefined`, and a test that cannot compile guards nothing.
+    expect(
+      "emphasis" in C.formula,
+      "rut-toi-thieu-bat-buoc is filed `reference` but declares emphasis phrases",
+    ).toBe(false);
+  });
+});
+
+describe("rut-toi-thieu-bat-buoc — sources", () => {
+  it("cites an openable source for every item", () => {
+    expect(C.sources.items.length).toBeGreaterThan(0);
+    for (const item of C.sources.items) {
+      expect(item.url, "a source item has an empty url").not.toBe("");
+      expect(item.url).toMatch(/^https:\/\//);
+      expect(item.label.trim()).not.toBe("");
+    }
+  });
+
+  it("states the provenance limit rather than implying completeness", () => {
+    expect(C.sources.intro).toBeDefined();
+    expect(C.sources.intro.length).toBeGreaterThan(40);
+  });
+
+  it("cites the publication the vendored table comes from", () => {
+    // The divisor table is the ONLY data on this page that does not come
+    // from the reader's own inputs, which is what makes it the figure that
+    // must be checkable. It was named in four places with no href.
+    const urls = C.sources.items.map((item) => item.url);
+    expect(
+      urls.some((url) => url.includes("p590b")),
+      "the Uniform Lifetime Table source is missing",
+    ).toBe(true);
+    expect(
+      urls.every((url) => url.includes("irs.gov")),
+      "a source is not on an official IRS host",
+    ).toBe(true);
+  });
+
+  it("agrees with the cited publication at the one divisor both state", () => {
+    // Pub 590-B's worked example uses 24,6 for age 75. The vendored table
+    // must return the same, or the citation is decoration. This is the cheap
+    // cross-check the docs recommend wherever two sources of one published
+    // figure overlap.
+    expect(UNIFORM_LIFETIME[75]).toBe(24.6);
+    const notes = C.sources.items.map((i) => i.note ?? "").join(" ");
+    expect(notes).toContain("24,6");
+    // And the figure in the source note is the module's, not a literal that
+    // could drift from it.
+    expect(notes).toContain(
+      String(UNIFORM_LIFETIME[75]).replace(".", ","),
+    );
+  });
+
+  it("does not claim a source for what the page says it never models", () => {
+    // `intro` must not imply the list covers inherited accounts or the Joint
+    // Life table, because formula.body[6] says those are out of scope. A
+    // citation implying otherwise is the completeness claim `intro` exists
+    // to prevent.
+    expect(C.sources.intro).toContain("thừa kế");
+    expect(C.sources.intro).toContain("Tuổi thọ Chung");
   });
 });

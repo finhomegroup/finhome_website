@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { RuleOf72Calculator } from "@/components/rule-of-72-calculator";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { CalculatorHeading } from "@/components/calc/calculator-heading";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { RULE_OF_72 as C } from "@/content/calculators/rule-of-72";
 import { calculatorMetadata } from "@/components/calc/calculator-page";
 import { calculatorSchema, faqSchema } from "@/lib/seo";
@@ -59,6 +60,12 @@ export default function RuleOf72Page() {
           </div>
 
           <div className="mx-auto mt-12 max-w-3xl space-y-10">
+            {/* Above the explanatory prose on purpose: a reader who has their
+                answer should find the next question without scrolling past
+                two essays first. Original row 17's own next step is the
+                compound-interest tool. */}
+            <ToolNextSteps slug="quy-tac-72" />
+
             <Prose title={C.formula.title} body={C.formula.body} />
             <Prose title={C.example.title} body={C.example.body} />
 

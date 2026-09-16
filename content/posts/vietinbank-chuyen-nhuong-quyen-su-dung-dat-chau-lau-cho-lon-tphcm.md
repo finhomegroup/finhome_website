@@ -8,7 +8,7 @@ Ngân hàng TMCP Công thương Việt Nam (Vietinbank) đã ủy quyền cho C�
 
 ## Góc nhìn FinHome
 
-Đấu giá quyền sửu dụng đất do ngân hàng ủy quyền phản ánh một kênh cung ứng bất động sản từ tài sản bảo đảm trong bối cảnh tín dụng bất động sản đang chịu áp lực trích lập dự phòng nợ xấu. Người mua quan tâm cần lưu ý kiểm tra kỹ pháp lý tài sản, hiện trạng sử dụng và các khoản nợ còn tồn đọng trước khi tham gia đấu giá. Giá khởi điểm và quy trình đấu giá được công khai qua công ty đấu giá được cấp phép, tạo minh bạch hơn so với các giao dịch chuyển nhượng riêng lẻ.
+Đấu giá quyền sử dụng đất do ngân hàng ủy quyền phản ánh một kênh cung ứng bất động sản từ tài sản bảo đảm trong bối cảnh tín dụng bất động sản đang chịu áp lực trích lập dự phòng nợ xấu — tức ngân hàng phải trừ trước vào lợi nhuận một khoản để bù cho các khoản vay có nguy cơ không thu hồi được. Người mua quan tâm cần lưu ý kiểm tra kỹ pháp lý tài sản, hiện trạng sử dụng và các khoản nợ còn tồn đọng trước khi tham gia đấu giá. Giá khởi điểm và quy trình đấu giá được công khai qua công ty đấu giá được cấp phép, tạo minh bạch hơn so với các giao dịch chuyển nhượng riêng lẻ.
 
 ## Đọc thêm
 

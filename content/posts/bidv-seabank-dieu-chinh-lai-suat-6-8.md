@@ -3,13 +3,13 @@ Ngày 6/8, hai ngân hàng thương mại lớn là BIDV và SeABank đồng lo�
 ## Điểm chính cần nắm
 
 - BIDV điều chỉnh giảm 0,1-0,3%/năm đối với một số kỳ hạn tiết kiệm và gói cho vay ưu đãi.
-- SeABank cũng giảm lãi suất huy động tại nhiều kỳ hạn, đồng thời điều chỉnh biên lãi suất cho vay.
+- SeABank cũng giảm lãi suất huy động tại nhiều kỳ hạn, đồng thời điều chỉnh biên lãi suất cho vay — phần ngân hàng cộng thêm vào lãi suất tham chiếu để ra lãi suất người vay phải trả.
 - Động thái này phản ánh cạnh tranh huy động vốn giữa các ngân hàng và áp lực từ thị trường liên ngân hàng.
 - Lãi suất cho vay mua nhà tại các ngân hàng quy đổi dao động quanh mức 7-9%/năm kỳ hạn ưu đãi.
 
 ## Góc nhìn FinHome
 
-Việc BIDV và SeABank đồng loạt giảm lãi suất trong cùng ngày cho thấy xu hướng cạnh tranh huy động vốn đang diễn ra mạnh giữa các ngân hàng. Tuy nhiên, người mua nhà cần lưu ý rằng mức lãi suất công bố thường là lãi suất ưu đãi ban đầu, trong khi chi phí vay thực tế còn phụ thuộc vào biên lãi suất thả nổi sau kỳ ưu đãi.
+Việc BIDV và SeABank đồng loạt giảm lãi suất trong cùng ngày cho thấy xu hướng cạnh tranh huy động vốn đang diễn ra mạnh giữa các ngân hàng. Tuy nhiên, người mua nhà cần lưu ý rằng mức lãi suất công bố thường là lãi suất ưu đãi ban đầu, trong khi chi phí vay thực tế còn phụ thuộc vào biên lãi suất thả nổi sau kỳ ưu đãi. Lãi thả nổi là lãi ngân hàng đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 
 Với những ngân hàng vừa điều chỉnh giảm, người vay nên theo dõi sát biên độ điều chỉnh sau ưu đãi để đánh giá đúng tổng chi phí vay trong toàn bộ thời hạn hợp đồng, không chỉ nhìn vào con số lãi suất ban đầu.
 

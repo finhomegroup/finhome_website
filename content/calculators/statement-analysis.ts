@@ -25,6 +25,8 @@
 // leverage gives 13,55%. That is what licenses the claim that margin does
 // most of the work here and leverage does little.
 
+import { FINANCIAL_RATIOS } from "@/content/calculators/financial-ratios";
+
 export const STATEMENT_ANALYSIS = {
   slug: "/cong-cu/phan-tich-bao-cao-tai-chinh",
 
@@ -34,80 +36,49 @@ export const STATEMENT_ANALYSIS = {
     "So hai kỳ báo cáo: tăng trưởng từng dòng, tỷ trọng trên doanh thu, và tách ROE thành biên lợi nhuận, vòng quay tài sản và đòn bẩy. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Một kỳ báo cáo cho bạn các chỉ số. Hai kỳ cho bạn biết điều gì đã thay đổi — và phép tách DuPont cho biết TẠI SAO lợi nhuận trên vốn chủ thay đổi: do biên lợi nhuận, do vòng quay tài sản, hay chỉ do vay thêm.",
+    "Một kỳ báo cáo cho bạn các chỉ số. Hai kỳ cho bạn biết điều gì đã thay đổi — và phép tách DuPont cho biết tại sao lợi nhuận trên vốn chủ thay đổi: do biên lợi nhuận, do vòng quay tài sản, hay chỉ do vay thêm.",
 
-  statement: {
-    unit: "₫",
-    invalid: "Vui lòng nhập một số từ 0 trở lên.",
-    incomeGroup: "Kết quả kinh doanh",
-    assetGroup: "Tài sản",
-    liabilityGroup: "Nợ phải trả",
-    lines: {
-      revenue: { label: "Doanh thu thuần", help: "Doanh thu sau giảm trừ." },
-      costOfGoodsSold: {
-        label: "Giá vốn hàng bán",
-        help: "Chi phí trực tiếp tạo ra doanh thu.",
-      },
-      operatingExpenses: {
-        label: "Chi phí hoạt động",
-        help: "Chi phí bán hàng và quản lý. Không gồm lãi vay.",
-      },
-      interestExpense: {
-        label: "Chi phí lãi vay",
-        help: "Tách riêng khỏi chi phí hoạt động.",
-      },
-      taxExpense: {
-        label: "Chi phí thuế thu nhập",
-        help: "Thuế thu nhập doanh nghiệp của kỳ.",
-      },
-      cash: {
-        label: "Tiền và tương đương tiền",
-        help: "Số dư cuối kỳ.",
-      },
-      receivables: { label: "Phải thu khách hàng", help: "Số dư cuối kỳ." },
-      inventory: { label: "Hàng tồn kho", help: "Số dư cuối kỳ." },
-      otherCurrentAssets: {
-        label: "Tài sản ngắn hạn khác",
-        help: "Phần còn lại của tài sản ngắn hạn.",
-      },
-      nonCurrentAssets: {
-        label: "Tài sản dài hạn",
-        help: "Tài sản cố định, đầu tư dài hạn, tài sản vô hình.",
-      },
-      currentLiabilities: {
-        label: "Nợ ngắn hạn",
-        help: "Nợ phải trả trong vòng một năm.",
-      },
-      longTermDebt: {
-        label: "Nợ dài hạn có lãi",
-        help: "Vay và trái phiếu dài hạn.",
-      },
-      otherNonCurrentLiabilities: {
-        label: "Nợ dài hạn khác",
-        help: "Nợ dài hạn không chịu lãi.",
-      },
-    },
-  },
+  /**
+   * The thirteen statement lines — THE SAME OBJECT the ratio page defines.
+   *
+   * Not a copy and not a spread: `FINANCIAL_RATIOS.statement` itself, so the
+   * two pages cannot disagree about what a line item is called. This is the
+   * consolidation row 66 asks for, at the level where the duplication
+   * actually was.
+   *
+   * WHAT WAS ALREADY SHARED, and why it was not enough. The engine has been
+   * shared since both pages shipped — `computeAnalysis` calls `computeRatios`
+   * twice — and so has the FIELD SHAPE, through
+   * `components/calc/financials-fields.tsx`, whose docstring warns that
+   * duplicating thirteen labelled money fields twice over "would be 26
+   * chances for the two pages to disagree about what 'chi phí hoạt động'
+   * means". The copy was the half still duplicated, and it had already
+   * drifted on all thirteen lines.
+   *
+   * WHAT THIS PAGE GIVES UP, and where it went. The superseded local copy
+   * reduced every balance-sheet help string to "Số dư cuối kỳ.", where the
+   * ratio page gives substantive help. That qualification is not lost: it is
+   * stated once, for both periods at once, in `formula.body`'s closing
+   * paragraph — which is the honest place for it, because it is a property of
+   * how the tool reads a balance sheet and not of any one field. The period a
+   * group belongs to is carried by the group title's own suffix.
+   */
+  statement: FINANCIAL_RATIOS.statement,
 
   form: {
-    currentSuffix: " — kỳ này",
-    priorSuffix: " — kỳ trước",
+    // Parenthetical, not a second em-dash. The shared group titles now name
+    // their source statement — "Bảng cân đối kế toán — tài sản" — so an
+    // appended " — kỳ này" would have put two em-dashes in one heading.
+    currentSuffix: " (kỳ này)",
+    priorSuffix: " (kỳ trước)",
 
-    currentDefaults: {
-      revenue: "1.000.000.000.000",
-      costOfGoodsSold: "600.000.000.000",
-      operatingExpenses: "250.000.000.000",
-      interestExpense: "30.000.000.000",
-      taxExpense: "24.000.000.000",
-      cash: "100.000.000.000",
-      receivables: "150.000.000.000",
-      inventory: "200.000.000.000",
-      otherCurrentAssets: "50.000.000.000",
-      nonCurrentAssets: "400.000.000.000",
-      currentLiabilities: "250.000.000.000",
-      longTermDebt: "100.000.000.000",
-      otherNonCurrentLiabilities: "50.000.000.000",
-    },
+    // THE SAME OBJECT the ratio page prefills, not a second copy of it.
+    // These thirteen strings were byte-identical to `FINANCIAL_RATIOS.form
+    // .defaults` already, and both pages quote figures derived from them in
+    // prose — so a divergence would have falsified copy on whichever page was
+    // not edited. `priorDefaults` stays local: it is this page's own second
+    // period and has no counterpart on the ratio page.
+    currentDefaults: FINANCIAL_RATIOS.form.defaults,
     priorDefaults: {
       revenue: "900.000.000.000",
       costOfGoodsSold: "560.000.000.000",
@@ -158,7 +129,7 @@ export const STATEMENT_ANALYSIS = {
       currentShareColumn: "% doanh thu kỳ này",
       priorShareColumn: "% doanh thu kỳ trước",
       intro:
-        "Hai cột cuối là phân tích theo tỷ trọng: mỗi dòng tính trên doanh thu CỦA CHÍNH KỲ ĐÓ. Đây là cách thấy được biên lợi nhuận thay đổi mà cột tăng trưởng không cho thấy — doanh thu và chi phí có thể cùng tăng, nhưng nếu chi phí tăng chậm hơn thì tỷ trọng của nó giảm và biên lợi nhuận nở ra.",
+        "Hai cột cuối là phân tích theo tỷ trọng: mỗi dòng tính trên doanh thu của chính kỳ đó. Đây là cách thấy được biên lợi nhuận thay đổi mà cột tăng trưởng không cho thấy — doanh thu và chi phí có thể cùng tăng, nhưng nếu chi phí tăng chậm hơn thì tỷ trọng của nó giảm và biên lợi nhuận nở ra.",
       names: {
         revenue: "Doanh thu thuần",
         costOfGoodsSold: "Giá vốn hàng bán",
@@ -184,15 +155,39 @@ export const STATEMENT_ANALYSIS = {
   duPontNotice:
     "Với hai kỳ mặc định, ROE tăng từ 13,06% lên 19,20% — thêm 6,14 điểm phần trăm. Cách kiểm tra xem mức tăng đến từ đâu là giữ hai thành phần ở giá trị kỳ trước và cho một thành phần thay đổi: nếu chỉ biên lợi nhuận thuần đổi, ROE đã là 17,63%; nếu chỉ đòn bẩy đổi, ROE chỉ là 13,55%. Nghĩa là phần lớn mức tăng đến từ việc bán hàng có lãi hơn, còn việc vay thêm gần như không đóng góp. Nếu kết quả ngược lại — ROE tăng nhưng gần hết mức tăng nằm ở hệ số nhân vốn chủ — thì đó không phải tin tốt, chỉ là cổ đông gánh thêm rủi ro tài chính để có một con số đẹp hơn. Đó là lý do trang này tồn tại thay vì chỉ hiển thị ROE của hai kỳ cạnh nhau.",
 
+  /**
+   * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.
+   *
+   * Same reason as `commercial-loan.ts`'s key of the same name: this row is
+   * filed `reference` in `content/calculators/plan-disposition.ts`, and
+   * `check:markup` fails a `reference` page that ships a `<strong>`. The
+   * phrases are held here, tested against the prose, and are one line away
+   * from being `formula.emphasis` once the disposition is filed.
+   */
+
   formula: {
     title: "Ba cách đọc",
     body: [
       "Phân tích theo chiều ngang so từng dòng giữa hai kỳ, cả bằng số tiền và bằng phần trăm. Với mặc định, doanh thu tăng 11,11% trong khi lợi nhuận thuần tăng 50,00% — chênh lệch đó là dấu hiệu biên lợi nhuận đã nở ra, và nó không hiện ra nếu chỉ nhìn doanh thu.",
-      "Phân tích theo tỷ trọng tính mỗi dòng trên doanh thu CỦA CHÍNH KỲ ĐÓ, không phải trên doanh thu kỳ này cho cả hai. Đó là điểm quan trọng: chỉ khi mỗi kỳ được chuẩn hóa theo doanh thu của nó thì hai tỷ trọng mới so được với nhau. Với mặc định, giá vốn giảm tỷ trọng từ 62,22% xuống 60,00% doanh thu, nên biên gộp đi từ 37,78% lên 40,00%.",
+      "Phân tích theo tỷ trọng tính mỗi dòng trên doanh thu của chính kỳ đó, không phải trên doanh thu kỳ này cho cả hai. Đó là điểm quan trọng: chỉ khi mỗi kỳ được chuẩn hóa theo doanh thu của nó thì hai tỷ trọng mới so được với nhau. Với mặc định, giá vốn giảm tỷ trọng từ 62,22% xuống 60,00% doanh thu, nên biên gộp đi từ 37,78% lên 40,00%.",
       "Phép tách DuPont viết ROE thành ba thừa số: biên lợi nhuận thuần × vòng quay tổng tài sản × hệ số nhân vốn chủ. Ba con số trả lời ba câu khác nhau — bán có lãi hơn, dùng tài sản hiệu quả hơn, hay vay thêm. Với mặc định, cả ba đều tăng: 7,11% lên 9,60%, 1,06 lên 1,11 và 1,73 lên 1,80.",
       "Công cụ tính ROE theo hai đường độc lập: trực tiếp bằng lợi nhuận thuần chia vốn chủ, và bằng cách nhân ba thừa số DuPont. Bộ kiểm thử của module assert hai đường phải khớp nhau. Đó là điều làm cho phép tách đáng tin cậy như một cách quy trách nhiệm, thay vì chỉ là một cách trình bày.",
       "Cột tăng trưởng để trống khi con số kỳ trước bằng 0 — không có phần trăm nào diễn tả được mức tăng từ 0. Số tiền thay đổi vẫn được hiển thị bình thường.",
-      "Cả hai kỳ dùng số dư CUỐI KỲ cho các chỉ số bảng cân đối, giống công cụ chỉ số tài chính. Với hai kỳ liền nhau, bạn có thể tự lấy bình quân nếu muốn khớp với cách một báo cáo phân tích trình bày.",
+      "Mọi dòng bảng cân đối ở cả hai kỳ là số dư cuối kỳ, giống công cụ chỉ số tài chính — không phải số dư bình quân trong kỳ. Điều đó áp cho cả mười ba dòng và cho cả hai kỳ, nên nó được nói một lần ở đây thay vì nhắc lại trong phần trợ giúp của từng ô. Với hai kỳ liền nhau, bạn có thể tự lấy bình quân đầu kỳ và cuối kỳ nếu muốn khớp với cách một báo cáo phân tích trình bày.",
+    ],
+    emphasis: [
+      // body[0] — the whole point of reading two periods side by side.
+      "biên lợi nhuận đã nở ra",
+      // body[1] — the normalisation that makes two periods comparable at all.
+      "doanh thu của chính kỳ đó",
+      // body[2] — three drivers, three different stories, only two of them good.
+      "ba câu khác nhau",
+      // body[3] — why the attribution is trustworthy rather than decorative.
+      "hai đường độc lập",
+      // body[4] — a blank is a refusal, not a zero.
+      "mức tăng từ 0",
+      // body[5] — which balance every ratio on this page divides by.
+      "số dư cuối kỳ",
     ],
   },
 

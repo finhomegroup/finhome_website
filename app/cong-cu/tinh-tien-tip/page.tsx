@@ -28,6 +28,10 @@ export default function TipPage() {
       notice={C.tippingNotice}
       prose={C.formula}
       faq={C.faq}
+      // The VAT box prefills 8, which is a legal parameter with an end date,
+      // so the page owes the reader a link rather than a decree named in
+      // prose. See the `sources` docstring in `calculator-page.tsx`.
+      sources={C.sources}
     >
       <TipCalculator />
     </CalculatorPage>

@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { EducationSavingsCalculator } from "@/components/education-savings-calculator";
 import { EDUCATION_SAVINGS as C } from "@/content/calculators/education-savings";
 
@@ -28,6 +29,10 @@ export default function EducationSavingsPage() {
       intro={C.form.table.intro}
       prose={C.formula}
       faq={C.faq}
+      // Original row 25 frames this as a goal PARALLEL to buying a home, so
+      // its next steps are the two home tools — with the contribution typed
+      // in again, because nothing travels with a link.
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <EducationSavingsCalculator />
     </CalculatorPage>

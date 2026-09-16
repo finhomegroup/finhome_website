@@ -11,6 +11,7 @@ import {
   formatDecimal,
   formatMoney,
   formatPercent,
+  parseCount,
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
@@ -28,14 +29,17 @@ export function DdmMultiCalculator() {
 
   const dividend = parseMoney(fields.values.dividend);
   const highGrowth = parseDecimal(fields.values.highGrowth);
-  const years = parseDecimal(fields.values.years);
+  // A whole count of years, so `parseCount` — docs §4, same unreachable
+  // arrangement as `irr-npv`: `parseDecimal("1.000")` is 1, an integer
+  // inside [1, 20], so a grouped entry silently became a one-year first
+  // stage while the field's own error promised "số nguyên từ 1 đến 20".
+  const years = parseCount(fields.values.years);
   const terminalGrowth = parseDecimal(fields.values.terminalGrowth);
   const required = parseDecimal(fields.values.required);
 
   const dividendInvalid = dividend === null || dividend <= 0;
   const highGrowthInvalid = highGrowth === null;
-  const yearsInvalid =
-    years === null || years < 1 || years > 20 || !Number.isInteger(years);
+  const yearsInvalid = years === null || years < 1 || years > 20;
   const requiredInvalid = required === null;
   // Only the TERMINAL rate is bounded by the required return. The first stage
   // being allowed to exceed it is the reason this model exists.

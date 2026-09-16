@@ -57,7 +57,7 @@ export const CATEGORY_LABELS: Record<CalculatorCategory, string> = {
   "vay-the-chap": "Vay & Thế chấp",
   "huu-tri": "Hưu trí",
   "the-tin-dung": "Thẻ tín dụng",
-  "vay-mua-xe": "Vay & Thuê mua xe",
+  "vay-mua-xe": "Vay & thuê tài chính xe",
   "chung-khoan": "Chứng khoán",
   khac: "Khác",
 };
@@ -107,8 +107,8 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "tai-cap-von",
-    title: "Tính tái cấp vốn",
-    summary: "So sánh khoản vay hiện tại với khoản vay mới và tìm điểm hoàn vốn.",
+    title: "Chuyển khoản vay",
+    summary: "So lãi, phí và dư nợ khoản vay cũ với khoản vay mới tại cùng một tháng.",
     category: "vay-the-chap",
     status: "live",
   },
@@ -156,7 +156,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "tiet-kiem-thue-vay-mua-nha",
-    title: "Tiết kiệm thuế từ lãi vay",
+    title: "Tiết kiệm thuế từ lãi vay (Hoa Kỳ)",
     summary: "Phần thuế được giảm nhờ khấu trừ lãi vay, theo quy định Hoa Kỳ.",
     category: "vay-the-chap",
     status: "live",
@@ -186,7 +186,13 @@ export const CALCULATORS: CalculatorEntry[] = [
   {
     slug: "tra-no-hai-tuan",
     title: "Trả nợ hai tuần một lần",
-    summary: "Trả nửa kỳ mỗi hai tuần rút ngắn kỳ hạn và giảm lãi bao nhiêu.",
+    // The old summary asserted the misconception the page now refutes. The
+    // decomposition in `lib/calc/loan-variants.ts` measures the saving on the
+    // shipped defaults as 434.935.373 ₫ from paying MORE and 7.902.140 ₫ from
+    // paying more OFTEN — 98,2% against 1,8%. The schedule is almost not the
+    // mechanism, so the hub must not promise that it is.
+    summary:
+      "Khoản tiết kiệm đến từ tiền trả thêm mỗi năm, không từ lịch trả hai tuần.",
     category: "vay-the-chap",
     status: "live",
   },
@@ -316,7 +322,7 @@ export const CALCULATORS: CalculatorEntry[] = [
     status: "live",
   },
 
-  // ------------------------------------------------------------ Vay & Thuê mua xe
+  // ------------------------------------------------------------ Vay & thuê tài chính xe
   {
     slug: "vay-mua-xe",
     title: "Tính khoản vay mua xe",
@@ -326,8 +332,8 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "thue-mua-xe",
-    title: "Tính thuê mua xe",
-    summary: "Chi phí thuê mua xe và so sánh với phương án vay để mua.",
+    title: "Tính thuê tài chính ô tô",
+    summary: "Chi phí thuê tài chính ô tô và so sánh với phương án vay để mua.",
     category: "vay-mua-xe",
     status: "live",
   },
@@ -405,7 +411,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "thue-co-tuc",
-    title: "Thuế cổ tức",
+    title: "Thuế cổ tức Hoa Kỳ",
     summary: "Thuế phải nộp trên cổ tức, theo quy định Hoa Kỳ.",
     category: "chung-khoan",
     status: "live",
@@ -413,21 +419,42 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
 
   // --------------------------------------------------------------------- Hưu trí
+  //
+  // THE FOUR LONG-TERM PLAN ROWS BELOW NO LONGER CARRY `usRules`, and that is
+  // a correction rather than a reclassification. Original plan rows 44, 45, 48
+  // and 50 are four questions about ONE household plan, merged in
+  // `lib/calc/long-term-plan.ts` and localised in
+  // `content/calculators/long-term-plan.ts`. The engine under them,
+  // `lib/calc/retirement.ts`, models no country's law at all: it is arithmetic
+  // on a balance, a contribution, two returns and an inflation rate. So the
+  // notice this flag rendered — "Công cụ này mô phỏng quy định về thuế và hưu
+  // trí của Hoa Kỳ" — described a model that does not exist, and above đồng
+  // figures it was actively misleading. What was American was the
+  // denomination, and that is what changed.
+  //
+  // `content/calculators/plan-disposition.ts` already filed all four under
+  // `library: "dai-han"` rather than `"hoa-ky"`, so the flag was inconsistent
+  // with their own shelf; `plan-disposition.test.ts` enforces `hoa-ky` ->
+  // `usRules` and is unaffected. The genuinely United States rows in this
+  // category keep the flag: `gop-401k`, `toi-da-401k`,
+  // `ira-truyen-thong-hay-roth`, `phan-tich-thu-nhap-huu-tri`,
+  // `rut-toi-thieu-bat-buoc`, the three an-sinh-xa-hoi rows and `nien-kim`.
+  // Same correction, same reasoning, as `phan-bo-tai-san` below.
   {
     slug: "ke-hoach-huu-tri",
-    title: "Kế hoạch hưu trí",
-    summary: "Lập kế hoạch tích lũy và rút tiền cho tuổi nghỉ hưu, theo quy định Hoa Kỳ.",
+    title: "Kế hoạch dài hạn: từng năm một",
+    summary:
+      "Dự phóng bằng đồng cả hai giai đoạn — tích lũy rồi rút tiền — và nói rõ năm nào tiền cạn.",
     category: "huu-tri",
     status: "live",
-    usRules: true,
   },
   {
     slug: "tinh-huu-tri",
-    title: "Tính hưu trí",
-    summary: "Số tiền cần có khi nghỉ hưu và mức tích lũy mỗi tháng, theo quy định Hoa Kỳ.",
+    title: "Cần dành bao nhiêu cho dài hạn",
+    summary:
+      "Khoản cần dành thêm mỗi năm để kế hoạch dài hạn đủ đến hết kỳ, tính bằng đồng.",
     category: "huu-tri",
     status: "live",
-    usRules: true,
   },
   {
     slug: "gop-401k",
@@ -447,15 +474,15 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "phan-tich-tiet-kiem-huu-tri",
-    title: "Phân tích tiết kiệm hưu trí",
-    summary: "Khoản tiết kiệm hiện tại có đủ cho tuổi nghỉ hưu hay không, theo quy định Hoa Kỳ.",
+    title: "Kế hoạch dài hạn còn thiếu bao nhiêu",
+    summary:
+      "Khoảng cách giữa số vốn kế hoạch đạt được và số vốn nó cần, cùng ba cách bù khoảng cách đó.",
     category: "huu-tri",
     status: "live",
-    usRules: true,
   },
   {
     slug: "phan-tich-thu-nhap-huu-tri",
-    title: "Phân tích thu nhập hưu trí",
+    title: "Phân tích thu nhập hưu trí Hoa Kỳ",
     summary: "Các nguồn thu nhập sau khi nghỉ hưu, theo quy định Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
@@ -463,11 +490,11 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "thu-nhap-huu-tri",
-    title: "Thu nhập hưu trí",
-    summary: "Mức rút hằng tháng mà khoản tích lũy có thể duy trì, theo quy định Hoa Kỳ.",
+    title: "Vốn dài hạn tiêu được bao nhiêu",
+    summary:
+      "Mức chi mỗi năm mà số vốn tích lũy duy trì được đến hết kỳ, đặt cạnh mức bạn mong muốn.",
     category: "huu-tri",
     status: "live",
-    usRules: true,
   },
   {
     slug: "ira-truyen-thong-hay-roth",
@@ -479,7 +506,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "rut-toi-thieu-bat-buoc",
-    title: "Mức rút tối thiểu bắt buộc",
+    title: "Mức rút tối thiểu bắt buộc (Hoa Kỳ)",
     summary: "Số tiền bắt buộc phải rút mỗi năm sau một độ tuổi, theo quy định Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
@@ -487,7 +514,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "uoc-tinh-an-sinh-xa-hoi",
-    title: "Ước tính an sinh xã hội",
+    title: "Ước tính an sinh xã hội Hoa Kỳ",
     summary: "Ước tính khoản trợ cấp an sinh xã hội Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
@@ -495,7 +522,7 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "phan-tich-an-sinh-xa-hoi",
-    title: "Phân tích an sinh xã hội",
+    title: "Phân tích an sinh xã hội Hoa Kỳ",
     summary: "Ảnh hưởng của tuổi bắt đầu nhận tới tổng trợ cấp, theo quy định Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
@@ -503,24 +530,32 @@ export const CALCULATORS: CalculatorEntry[] = [
   },
   {
     slug: "chi-tra-an-sinh-xa-hoi",
-    title: "Chi trả an sinh xã hội",
+    title: "Chi trả an sinh xã hội Hoa Kỳ",
     summary:
-      "Số tiền hộ gia đình thực nhận mỗi tháng theo tuổi bắt đầu nhận, gồm trợ cấp vợ/chồng.",
+      "Số tiền hộ gia đình thực nhận mỗi tháng theo tuổi bắt đầu nhận, gồm trợ cấp vợ/chồng, theo quy định Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
     usRules: true,
   },
   {
     slug: "phan-bo-tai-san",
-    title: "Phân bổ tài sản",
-    summary: "Tỷ lệ phân bổ giữa các nhóm tài sản theo mức chấp nhận rủi ro.",
+    // Original row 56 changed this tool's default question from a generic
+    // age/risk portfolio mix to purpose/time allocation of one pot.
+    title: "Tách tiền theo mục đích và thời điểm cần dùng",
+    summary:
+      "Chia một khoản tiền theo quỹ dự phòng, tiền mua nhà và thời điểm cần dùng. Kèm bài học nâng cao về danh mục theo tuổi.",
     category: "huu-tri",
     status: "live",
-    usRules: true,
+    // `usRules` REMOVED. It rendered "Công cụ này mô phỏng quy định về thuế và
+    // hưu trí của Hoa Kỳ" above the calculator, and this tool models neither
+    // tax nor retirement law — the notice was already inaccurate, and above a
+    // đồng-denominated home-fund allocation it would be actively misleading.
+    // The page's own `scopeNotice` states the real boundary: it allocates
+    // money the reader has and recommends no product.
   },
   {
     slug: "nien-kim",
-    title: "Tính niên kim",
+    title: "Tính niên kim Hoa Kỳ",
     summary: "Dòng tiền nhận được từ một hợp đồng niên kim, theo quy định Hoa Kỳ.",
     category: "huu-tri",
     status: "live",
@@ -530,8 +565,11 @@ export const CALCULATORS: CalculatorEntry[] = [
     // ------------------------------------------------------------------------ Khác
   {
     slug: "lai-suat-thuc-te",
-    title: "Lãi suất thực tế",
-    summary: "Quy lãi suất danh nghĩa về lãi suất thực tế theo kỳ ghép lãi.",
+    // Original row 58: the visible name distinguishes this from a
+    // fee-inclusive APR. The slug is unchanged.
+    title: "Lãi suất hiệu dụng",
+    summary:
+      "Quy lãi suất danh nghĩa về lãi hiệu dụng theo kỳ ghép lãi. Không gồm phí — đó là việc của APR.",
     category: "khac",
     status: "live",
   },
@@ -645,7 +683,14 @@ export const CALCULATORS: CalculatorEntry[] = [
   {
     slug: "thue-luong-hoa-ky",
     title: "Thuế lương Hoa Kỳ",
-    summary: "Thuế và các khoản trừ trên phiếu lương, theo quy định Hoa Kỳ.",
+    // "Các khoản trừ trên phiếu lương" promised take-home pay. The tool
+    // computes FICA only — Social Security, Medicare and the surtaxes, plus
+    // the employer share — and has no net-pay output, no federal and no state
+    // income tax. On the row whose whole stated risk is a Vietnamese reader
+    // mistaking it for their own payslip, the summary was the last surface
+    // still inviting exactly that, and it is what the hub and search show.
+    summary:
+      "Thuế FICA trên tiền lương, theo quy định Hoa Kỳ. Không tính lương thực nhận.",
     category: "khac",
     status: "live",
     usRules: true,

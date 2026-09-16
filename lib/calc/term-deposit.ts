@@ -23,17 +23,43 @@
  *
  * The early-withdrawal figures are the reason this module is worth more than
  * a multiplication. Break a Vietnamese term deposit early and you do not get
- * a reduced term rate — you get the DEMAND rate (lãi suất không kỳ hạn),
- * typically 0,1–0,2%/năm, on the whole of the UNFINISHED term. That turns a
- * 6%/năm deposit into near-nothing, and it is the single most expensive
- * surprise in the product.
+ * a reduced term rate — you get a DEMAND-deposit rate (lãi suất không kỳ hạn)
+ * on the whole of the UNFINISHED term, which turns a 6%/năm deposit into
+ * near-nothing and is the single most expensive surprise in the product.
+ * `demandRatePercent` is the READER'S figure, not a level this module
+ * assumes: the consolidated SBV document on early withdrawal
+ * (34/VBHN-NHNN, 2024, Art. 4–5) caps the rate on the withdrawn part at the
+ * institution's own LOWEST applicable demand-deposit rate at the time of
+ * withdrawal, and leaves an unwithdrawn part on its existing rate — so the
+ * number depends on one bank at one moment and on the contract. Note that
+ * 47/2024/TT-NHNN amended Article 3(3) of the 2022 circular with effect from
+ * 2024-11-20; do not cite the 2022 text as unchanged.
  *
  * A term that has already reached maturity is a different matter: it is
  * settled money and keeps its term interest, even if the proceeds were rolled
- * into the next term (SBV Thông tư 04/2022/TT-NHNN Art. 5). So breaking a
- * three-cycle deposit at month 30 of 36 loses only the six months run inside
- * the third term — and breaking it exactly on a maturity date loses nothing.
+ * into the next term. So breaking a three-cycle deposit at month 30 of 36
+ * loses only the six months run inside the third term — and breaking it
+ * exactly on a maturity date loses nothing.
+ *
+ * THIS MODULE IS THE MONTHS/12 VIEW, and that is an approximation by
+ * construction: `termMonths / 12` treats every month as a twelfth of a year.
+ * `deposit-plan.ts` is the DATE-AWARE view for the same product, counting
+ * actual days over 365, and the page states which view each figure comes
+ * from. Neither reproduces a specific contract's rounding, its treatment of
+ * the first and last day, or what happens when a maturity falls on a holiday.
  */
+
+/**
+ * Most consecutive terms either deposit view will model, and the longest
+ * total horizon in months — 100 years, the suite's one supported horizon.
+ *
+ * BOUNDED BEFORE THE CYCLE LOOP. This module used to loop once per cycle with
+ * no ceiling at all, so `cycles: 1e9` was a finite input that asked for a
+ * billion iterations. Shared with `deposit-plan.ts` so the product has ONE
+ * disclosed limit rather than two.
+ */
+export const MAX_DEPOSIT_CYCLES = 120;
+export const MAX_DEPOSIT_TOTAL_MONTHS = 1200;
 
 export type DepositPayout =
   /** All interest at the end of the term. */
@@ -56,7 +82,10 @@ export type TermDepositInput = {
   cycles?: number;
   /** Roll interest into the principal at each rollover. Maturity payout only. */
   compoundOnRollover?: boolean;
-  /** Demand rate applied if the deposit is broken early, in percent per year. */
+  /**
+   * Rate applied to the unfinished term if the deposit is broken early, in
+   * percent per year. The reader's own figure — see the module docstring.
+   */
   demandRatePercent?: number;
   /** Months held before breaking, for the early-withdrawal comparison. */
   breakAfterMonths?: number;
@@ -135,6 +164,9 @@ export function computeTermDeposit(
   if (principal <= 0 || termMonths <= 0) return null;
   if (!Number.isInteger(termMonths)) return null;
   if (cycles < 1 || !Number.isInteger(cycles)) return null;
+  // Before the cycle loop below allocates anything. See `MAX_DEPOSIT_CYCLES`.
+  if (cycles > MAX_DEPOSIT_CYCLES) return null;
+  if (termMonths * cycles > MAX_DEPOSIT_TOTAL_MONTHS) return null;
 
   const payoutMonths =
     payout === "monthly" ? 1 : payout === "quarterly" ? 3 : termMonths;

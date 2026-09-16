@@ -27,6 +27,10 @@ export default function UsSocialSecurityAnalysisPage() {
       notice={C.twoAnswersNotice}
       prose={C.formula}
       faq={C.faq}
+      // Every figure in the claiming table is the reader's own PIA times a
+      // statutory factor this page does not expose. Same block as the other
+      // two Social Security rows, on purpose.
+      sources={C.sources}
     >
       <UsSocialSecurityAnalysisCalculator />
     </CalculatorPage>

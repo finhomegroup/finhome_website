@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { LoanAnalysisCalculator } from "@/components/loan-analysis-calculator";
 import { LOAN_ANALYSIS as C } from "@/content/calculators/loan-analysis";
 
@@ -28,6 +29,7 @@ export default function LoanAnalysisPage() {
       intro={C.table.intro}
       prose={C.formula}
       faq={C.faq}
+      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
       <LoanAnalysisCalculator />
     </CalculatorPage>

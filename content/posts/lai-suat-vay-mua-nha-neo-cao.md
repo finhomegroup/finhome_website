@@ -2,7 +2,7 @@ Sau giai đoạn lãi suất cho vay mua nhà duy trì ở mức thấp, mặt b
 
 ## Điểm chính cần nắm
 
-- Lãi suất ưu đãi cho vay mua nhà hiện phổ biến 8-10%/năm trong 6-36 tháng đầu, sau đó chuyển sang thả nổi và có thể lên tới 11-15%/năm.
+- Lãi suất ưu đãi cho vay mua nhà hiện phổ biến 8-10%/năm trong 6-36 tháng đầu, sau đó chuyển sang thả nổi và có thể lên tới 11-15%/năm. Thả nổi nghĩa là ngân hàng đặt lại lãi theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới.
 - Nhóm ngân hàng quốc doanh (Big 4) đã tăng mạnh lãi suất huy động để hút vốn, khiến lãi vay mua nhà của nhóm này ngang bằng, thậm chí vượt một số ngân hàng tư nhân — điều hiếm gặp trước đây.
 - Theo dữ liệu khảo sát thị trường, tỷ lệ khách hàng có kế hoạch mua bất động sản trong ngắn hạn giảm mạnh, trong khi tỷ lệ người tạm gác nhu cầu mua nhà tăng từ 13% lên gần 40% chỉ trong một quý.
 - Đơn vị xếp hạng tín nhiệm dự báo lãi suất vay mua nhà bình quân năm 2026 có thể cao hơn 3-4 điểm % so với năm trước, phản ánh xu hướng thắt chặt kéo dài.

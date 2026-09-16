@@ -27,6 +27,9 @@ export default function AnnuityPage() {
       notice={C.payoutRateNotice}
       prose={C.formula}
       faq={C.faq}
+      // The exclusion ratio is United States tax law, not arithmetic, and the
+      // page stated it with no link a reader could open.
+      sources={C.sources}
     >
       <AnnuityCalculator />
     </CalculatorPage>

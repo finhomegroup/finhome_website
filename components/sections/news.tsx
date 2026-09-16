@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NEWS_SECTION } from "@/content/home";
-import { POSTS, type Post } from "@/content/posts";
+import { newsPosts, postCover, type Post } from "@/content/posts";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import {
@@ -35,7 +35,7 @@ function FeaturedCard({ post }: { post: Post }) {
     >
       <div className="min-h-0 shrink-0 overflow-hidden rounded-xl md:w-1/2">
         <img
-          src={img(post.cover)}
+          src={img(postCover(post))}
           alt={post.title}
           className={cn(
             "aspect-[3/2] h-full w-full object-cover md:aspect-auto md:min-h-0 md:max-h-[240px] lg:max-h-[280px]",
@@ -82,7 +82,7 @@ function PostCard({ post }: { post: Post }) {
           <CategoryBadge label={post.category} />
         </div>
         <img
-          src={img(post.cover)}
+          src={img(postCover(post))}
           alt={post.title}
           className={cn("aspect-[3/2] w-full object-cover", FH_CARD_IMAGE_ZOOM)}
         />
@@ -121,7 +121,8 @@ function ViewMoreLink() {
 }
 
 export function News() {
-  const [featured, ...rest] = POSTS;
+  // News section shows news only; the education collection has its own index.
+  const [featured, ...rest] = newsPosts();
 
   return (
     <SectionFrame id="tintuc">

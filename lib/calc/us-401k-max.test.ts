@@ -99,14 +99,26 @@ describe("computeUs401kMax — the per-paycheck answer", () => {
     expect(over.remainingRoom).toBe(0);
   });
 
-  it("uses capped compensation for the paycheck, not the salary", () => {
+  it("takes the paycheck from actual pay and the match threshold from capped pay", () => {
+    // Two different bases, and this test asserted the wrong one until
+    // 2026-09-16. A 500.000 earner on 26 periods really receives 19.230,77
+    // a period, which is what a deferral comes out of; 402(g) is the only
+    // thing limiting what they may defer out of it. The MATCH threshold is
+    // the figure 401(a)(17) touches — 6% of 360.000, spread over the
+    // periods — and reporting 13.846,15 under a label reading "lương mỗi
+    // kỳ" stated their pay wrongly as well as their room.
     const r = run({ annualSalary: 500_000 });
     expect(r.planCompensation).toBe(P.compensation);
-    expect(r.payPerPeriod).toBeCloseTo(P.compensation / 26, 10);
+    expect(r.payPerPeriod).toBeCloseTo(500_000 / 26, 10);
     expect(r.matchThresholdPerPeriod).toBeCloseTo(
       (P.compensation / 26) * 0.06,
       10,
     );
+    expect(r.matchThresholdAnnual).toBeCloseTo(P.compensation * 0.06, 10);
+    // The ceiling does not shrink what may still go in: the whole annual
+    // limit is reachable out of real paychecks.
+    expect(r.maxStillPossible).toBe(r.remainingRoom);
+    expect(r.exceedsPay).toBe(false);
   });
 });
 

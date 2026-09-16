@@ -14,6 +14,15 @@
  * each transaction, charged on the way in and again on the way out; cash
  * dividends carry 5% PIT, usually withheld at source.
  *
+ * WHERE THE TWO STATUTORY DEFAULTS COME FROM, because this docstring used to
+ * state them in the present tense with nothing behind it: the 0,1% is Điều 13
+ * khoản 2 and the 5% is Điều 12 khoản 1 và khoản 2 of Luật Thuế thu nhập cá
+ * nhân số 109/2025/QH15, in force 01/07/2026, detailed at Điều 54 and Điều 52
+ * of Nghị định 253/2026/NĐ-CP. The reader-facing side of that — the effective
+ * date, the exemptions the rates do NOT reach, and the links — lives in
+ * `content/calculators/stock-return.ts`, whose header records the provenance
+ * limit on the decree. Do not restate a rate here without it.
+ *
  * All three are inputs with Vietnamese defaults rather than constants — rates
  * change, brokers compete on commission, and a static page should not pretend
  * to know today's schedule.

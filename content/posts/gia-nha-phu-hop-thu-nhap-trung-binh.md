@@ -13,6 +13,10 @@ Sự chênh lệch này rất đáng để người mua nhà tham khảo trướ
 
 Sự khác biệt giữa "giá đề xuất chính sách" và "giá theo khả năng trả nợ thực tế" chính xác là điều FinHome muốn người mua nhà luôn tự kiểm tra trước khi quyết định. Thay vì lấy mức giá/m² làm chuẩn, hãy bắt đầu từ thu nhập thực của gia đình, áp dụng ngưỡng trả nợ an toàn và vốn tự có tối thiểu, để suy ra ngân sách căn hộ phù hợp — đây cũng chính là cách tiếp cận của công cụ tính khả năng mua nhà trên FinHome.
 
+**Hai tỷ lệ trong bản tin là con số của nghiên cứu được dẫn, không phải quy tắc an toàn áp dụng cho mọi hộ.** Mức trả nợ chịu được phụ thuộc thu nhập thực nhận, chi phí sinh hoạt và các khoản nợ đang có của từng gia đình — cùng một tỷ lệ 40% để lại số tiền sống rất khác nhau ở hai mức thu nhập khác nhau. FinHome không đề xuất một tỷ lệ chung.
+
+Muốn tự kiểm tra bằng số của mình: [Có 600 triệu, nên tìm nhà trong tầm giá nào?](/blog/co-600-trieu-nen-tim-nha-tam-gia-nao/) đi qua phép tính từ khoản trả hằng tháng ra tầm giá, và [Được vay tới mức đó có nghĩa là nên vay hết không?](/blog/duoc-vay-khong-co-nghia-nen-vay-het/) chỉ ra khoảng cách giữa trần theo tỷ lệ và ngân sách thật của hộ.
+
 ## Đọc thêm
 
 Nội dung tính toán chi tiết theo từng nhóm thu nhập nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.

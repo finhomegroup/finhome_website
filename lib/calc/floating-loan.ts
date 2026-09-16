@@ -30,6 +30,20 @@
 import { pmt, type ScheduleRow } from "@/lib/calc/finance";
 import { computeLoan } from "@/lib/calc/loan";
 
+/**
+ * The longest schedule this module will build, in months.
+ *
+ * The same disclosed horizon the rest of the suite uses — `MAX_APR_MONTHS`,
+ * `MAX_COMPARE_MONTHS` and `MAX_PROJECTION_MONTHS` are all 1.200. A hundred
+ * years is past any mortgage a reader has, and a bound stated in one place is
+ * what stops a typed figure from allocating a row per month before anything
+ * gets a chance to reject it.
+ *
+ * It is checked BEFORE the schedule loop, not sampled afterwards: a chart that
+ * draws 361 points off a 400-million-row schedule has already done the work.
+ */
+export const MAX_FLOATING_MONTHS = 1200;
+
 /** A stretch of months at one rate. */
 export type LoanPhase = {
   /** How many months this rate applies for. */
@@ -81,8 +95,9 @@ export type FloatingLoanResult = {
  *
  * Null when the inputs cannot describe a loan: a non-positive amount, no
  * phases, a phase with a non-positive or non-integer month count, a negative
- * rate, or any non-finite number. The phases' months must sum to the whole
- * term — there is no implicit tail.
+ * rate, any non-finite number, or a total duration beyond
+ * `MAX_FLOATING_MONTHS`. The phases' months must sum to the whole term — there
+ * is no implicit tail.
  */
 export function computeFloatingLoan(input: {
   /** Principal borrowed, in đồng. */
@@ -101,7 +116,15 @@ export function computeFloatingLoan(input: {
     if (phase.annualRatePercent < 0) return null;
   }
 
+  // BOUNDED BEFORE ALLOCATION. Every phase is a validated positive integer
+  // above, so the sum is finite — but a term of ten million months is still a
+  // ten-million-row array, and the loop below would build it before any caller
+  // could sample it. The bound is checked here, once, for every consumer of
+  // this engine: the floating tool, the fixed/floating comparison, the loan
+  // comparison's promotional offers and the education visuals.
   const totalMonths = phases.reduce((sum, phase) => sum + phase.months, 0);
+  if (!Number.isFinite(totalMonths) || totalMonths < 1) return null;
+  if (totalMonths > MAX_FLOATING_MONTHS) return null;
 
   const schedule: ScheduleRow[] = [];
   const summaries: PhaseSummary[] = [];
@@ -161,6 +184,13 @@ export function computeFloatingLoan(input: {
   const lowestPayment = Math.min(...payments);
   const totalInterest = schedule.reduce((sum, row) => sum + row.interest, 0);
   const totalPaid = schedule.reduce((sum, row) => sum + row.payment, 0);
+  // Finite inputs do not prove finite outputs: a 1e308-scale rate accrues its
+  // way to Infinity over the term. A result carrying a non-finite total is not
+  // a valid projection, so refuse it rather than render "Infinity ₫".
+  if (!Number.isFinite(totalInterest) || !Number.isFinite(totalPaid)) {
+    return null;
+  }
+  if (payments.some((payment) => !Number.isFinite(payment))) return null;
 
   return {
     months: schedule.length,
@@ -188,8 +218,9 @@ export function computeFloatingLoan(input: {
  * adjustment windows; the last one absorbs any leftover months.
  *
  * Null when the inputs cannot describe a schedule: a non-positive or
- * non-integer term, a promo stretch at least as long as the term, a negative
- * rate or step, a non-positive adjustment interval, or any non-finite number.
+ * non-integer term, a term beyond `MAX_FLOATING_MONTHS`, a promo stretch at
+ * least as long as the term, a negative rate or step, a non-positive
+ * adjustment interval, or any non-finite number.
  *
  * A promo length of 0 is allowed and means "no promotional rate" — the whole
  * term runs on the post-promotional path.
@@ -230,11 +261,16 @@ export function buildPhases(input: {
   ];
   if (numbers.some((value) => !Number.isFinite(value) || value < 0)) return null;
   if (termMonths <= 0 || !Number.isInteger(termMonths)) return null;
+  // The supported horizon, checked before the step loop below allocates one
+  // phase per review cycle. With the term bounded, that loop runs at most
+  // `MAX_FLOATING_MONTHS` times.
+  if (termMonths > MAX_FLOATING_MONTHS) return null;
   if (!Number.isInteger(promoMonths)) return null;
   if (promoMonths >= termMonths) return null;
   if (adjustEveryMonths <= 0 || !Number.isInteger(adjustEveryMonths)) {
     return null;
   }
+  if (adjustEveryMonths > MAX_FLOATING_MONTHS) return null;
   if (rateCapPercent !== undefined) {
     if (!Number.isFinite(rateCapPercent) || rateCapPercent < 0) return null;
   }
@@ -260,6 +296,9 @@ export function buildPhases(input: {
   while (remaining > 0) {
     const capped =
       rateCapPercent === undefined ? rate : Math.min(rate, rateCapPercent);
+    // A step large enough to overflow float64 would put a non-finite rate into
+    // a phase. Refuse the scenario rather than describe a loan at Infinity%.
+    if (!Number.isFinite(capped)) return null;
     // The last window absorbs whatever is left of the term.
     const months = Math.min(adjustEveryMonths, remaining);
     phases.push({ months, annualRatePercent: capped });
@@ -268,6 +307,193 @@ export function buildPhases(input: {
   }
 
   return phases;
+}
+
+/**
+ * The named hypothetical shifts original row 11 asks for.
+ *
+ * PERCENTAGE POINTS, not a percentage growth: +1 on 11%/năm is 12%/năm, never
+ * 11,11%. The audit is explicit about that distinction because the two differ
+ * by 303 triệu of interest on the reference loan.
+ *
+ * 0 is in the list on purpose: the baseline is one of the scenarios, so
+ * returning to it is a selection like any other rather than a reset the reader
+ * has to find.
+ */
+export const RATE_STRESS_POINTS = [0, 1, 2, 3] as const;
+
+/** One scenario's schedule and the rate it actually ran at. */
+export type RateStressScenario = {
+  /** Percentage points added to the post-promotional rate. 0 is the baseline. */
+  shiftPoints: number;
+  /**
+   * The post-promotional rate this scenario asked for — before any cap.
+   *
+   * Reported separately from `postRatePercent` so a reader can see that a cap
+   * they set is what stopped the shift, rather than the shift not applying.
+   */
+  requestedPostRatePercent: number;
+  /** The post-promotional rate the schedule ran at, after any cap. */
+  postRatePercent: number;
+  /** True when the reader's own rate cap absorbed part or all of the shift. */
+  cappedByRateCap: boolean;
+  loan: FloatingLoanResult;
+  /**
+   * The instalment of the first phase AFTER the promotion.
+   *
+   * Not `highestPayment`: with a recurring step active the highest instalment
+   * is the last one, years later, and the question on this page is what the
+   * payment becomes when the promotion ends. Null when the loan never reaches
+   * a post-promotional phase — a schedule that clears inside the promotion.
+   */
+  postPromoPayment: number | null;
+  /** The month `postPromoPayment` starts. Null in the same case. */
+  postPromoMonth: number | null;
+  /**
+   * `monthlyBudget − postPromoPayment`, SIGNED. Negative does not fit.
+   *
+   * SCOPED TO THE FIRST POST-PROMOTIONAL MONTH, deliberately. With a recurring
+   * step the instalment keeps rising afterwards, so this figure answers "can I
+   * carry the payment at the reset" and NOT "does the whole scenario fit" —
+   * `budgetGapAtPeak` answers that. A single gap presented as scenario-wide
+   * headroom was the defect: at a 22 triệu budget, a stepped scenario fits the
+   * reset by 192.691 ₫ and misses the peak by 7.707.822 ₫.
+   *
+   * Null whenever the reader supplied no budget — the page draws no budget
+   * line and states no gap from a figure it invented. A ratio of income would
+   * be advice presented as a measurement.
+   */
+  budgetGap: number | null;
+  /** The month the HIGHEST instalment of the schedule starts. */
+  peakMonth: number;
+  /** `monthlyBudget − highestPayment`, SIGNED. Null with no budget. */
+  budgetGapAtPeak: number | null;
+};
+
+export type RateStressComparison = {
+  /** The reader's own figures, untouched. */
+  baseline: RateStressScenario;
+  /** The scenario currently chosen. Equal to `baseline` at 0 points. */
+  selected: RateStressScenario;
+  /**
+   * `selected.postPromoPayment − baseline.postPromoPayment`.
+   *
+   * Null when either side has no post-promotional phase. Exactly 0 at the
+   * baseline, and 0 as well when a cap absorbed the whole shift — which is the
+   * case the `cappedByRateCap` flag exists to explain.
+   */
+  paymentIncrease: number | null;
+  /** `selected.loan.totalInterest − baseline.loan.totalInterest`. */
+  interestIncrease: number;
+};
+
+type RateStressInput = {
+  amount: number;
+  termMonths: number;
+  promoMonths: number;
+  promoRatePercent: number;
+  postRatePercent: number;
+  adjustEveryMonths?: number;
+  adjustStepPoints?: number;
+  rateCapPercent?: number;
+  /**
+   * What the reader says they can carry each month. Optional, and unset means
+   * unset — never a ratio of an income the tool guessed.
+   */
+  monthlyBudget?: number;
+};
+
+/** Build and amortize one named hypothetical shift. */
+function stressScenario(
+  input: RateStressInput,
+  shiftPoints: number,
+): RateStressScenario | null {
+  if (!Number.isFinite(shiftPoints) || shiftPoints < 0) return null;
+
+  const requested = input.postRatePercent + shiftPoints;
+  if (!Number.isFinite(requested)) return null;
+
+  // The shift moves the post-promotional rate and NOTHING else. The promotional
+  // stretch, the recurring step and the cap are the reader's own assumptions
+  // and are passed through unchanged — `buildPhases` applies the step on top of
+  // whichever post rate it is given and caps every phase, so the stress is
+  // counted once, in one place.
+  const phases = buildPhases({ ...input, postRatePercent: requested });
+  if (phases === null) return null;
+
+  const loan = computeFloatingLoan({ amount: input.amount, phases });
+  if (loan === null) return null;
+
+  const cap = input.rateCapPercent;
+  const effective = cap === undefined ? requested : Math.min(requested, cap);
+
+  // Index 1 when there is a promotional phase, 0 when there is not: that is
+  // exactly how `buildPhases` orders them.
+  const postIndex = input.promoMonths > 0 ? 1 : 0;
+  const postPhase = loan.phases[postIndex];
+
+  const budget = input.monthlyBudget;
+  const budgetUsable =
+    budget !== undefined && Number.isFinite(budget) && budget >= 0;
+
+  // The phase carrying the highest instalment. With no recurring step that is
+  // the post-promotional phase itself; with one it is the last.
+  const peakPhase = loan.phases.reduce((highest, phase) =>
+    phase.payment > highest.payment ? phase : highest,
+  );
+
+  return {
+    shiftPoints,
+    requestedPostRatePercent: requested,
+    postRatePercent: effective,
+    cappedByRateCap: effective < requested,
+    loan,
+    postPromoPayment: postPhase ? postPhase.payment : null,
+    postPromoMonth: postPhase ? postPhase.fromMonth : null,
+    budgetGap:
+      budgetUsable && postPhase ? (budget as number) - postPhase.payment : null,
+    peakMonth: peakPhase.fromMonth,
+    budgetGapAtPeak: budgetUsable
+      ? (budget as number) - loan.highestPayment
+      : null,
+  };
+}
+
+/**
+ * The reader's own schedule beside one named hypothetical shift.
+ *
+ * WHY BOTH SIDES COME FROM ONE CALL. The page has to show the baseline and the
+ * chosen scenario together, and a selection that silently became the new
+ * baseline would make the next selection compound — "+1" clicked twice would
+ * be +2. Here the baseline is always rebuilt from the same inputs, so
+ * selecting the same preset any number of times gives the same answer and
+ * returning to 0 recovers the original figures exactly.
+ *
+ * Null when the inputs cannot describe a schedule, on either side.
+ */
+export function compareRateStress(
+  input: RateStressInput & { shiftPoints: number },
+): RateStressComparison | null {
+  const { shiftPoints, ...loanInput } = input;
+
+  const baseline = stressScenario(loanInput, 0);
+  if (baseline === null) return null;
+  const selected =
+    shiftPoints === 0 ? baseline : stressScenario(loanInput, shiftPoints);
+  if (selected === null) return null;
+
+  const paymentIncrease =
+    selected.postPromoPayment === null || baseline.postPromoPayment === null
+      ? null
+      : selected.postPromoPayment - baseline.postPromoPayment;
+
+  return {
+    baseline,
+    selected,
+    paymentIncrease,
+    interestIncrease:
+      selected.loan.totalInterest - baseline.loan.totalInterest,
+  };
 }
 
 export type FixedFloatingComparison = {

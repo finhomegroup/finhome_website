@@ -3,11 +3,21 @@
 // Original FinHome copy. The arithmetic is elementary.
 //
 // The fuel price has NO default baked into the math and the copy does not
-// quote a current price as if it were fixed: petrol prices in Vietnam are set
-// by a joint MOIT/MOF announcement and are revised every ten days. The
-// prefilled 21.000 ₫ is a starting point the user is told to replace, not a
-// figure the page asserts. The site is a static export and cannot fetch a
-// live price, so an honest empty-ish default beats a stale confident one.
+// quote a current price as if it were fixed. The prefilled figure is a
+// starting point the user is told to replace, not a figure the page asserts.
+// The site is a static export and cannot fetch a live price, so an honest
+// example beats a stale confident one.
+//
+// A CLAIM WAS REMOVED HERE. Two strings asserted that domestic fuel prices are
+// revised on a ten-day cycle. Nobody here has verified that against a current
+// instrument, the P3 scope audit flagged it as stale and unsupported, and the
+// arithmetic never depended on it — the reader types the price they paid. The
+// replacement says to use the price on the pump receipt and asserts no
+// schedule.
+//
+// ORIGINAL ROW 68 added the two-commute comparison: the tool answers "ở xa
+// hơn tốn thêm bao nhiêu" for two candidate homes the reader types in. No
+// location is read and none is stored; see `compareCommutes`.
 
 export const FUEL = {
   slug: "/cong-cu/chi-phi-nhien-lieu",
@@ -51,10 +61,11 @@ export const FUEL = {
 
     priceLabel: "Giá nhiên liệu",
     priceUnit: "₫/lít",
+    // No claim about how often the price changes — see the file header.
     priceHelp:
-      "Giá xăng dầu trong nước được điều chỉnh 10 ngày một lần, nên hãy nhập giá tại thời điểm bạn đổ.",
+      "Nhập giá trên hóa đơn lần đổ gần nhất của bạn. Ô này đang điền sẵn một con số làm ví dụ, không phải giá hiện hành.",
     priceInvalid: "Vui lòng nhập giá từ 0 trở lên.",
-    defaultPrice: "21.000",
+    defaultPrice: "25.000",
 
     shareGroup: "Chia sẻ và tần suất",
     peopleLabel: "Số người chia tiền",
@@ -83,10 +94,112 @@ export const FUEL = {
     monthlyCostLabel: "Chi phí mỗi tháng",
     monthlyPerPersonLabel: "Mỗi người mỗi tháng",
     monthlyLitresLabel: "Số lít mỗi tháng",
+
+    // ------------------------------------- original row 68: two candidate homes
+    commuteGroup: "So hai nơi ở (đi làm)",
+    commuteIntro:
+      "Nhập khoảng cách MỘT CHIỀU từ hai nơi ở bạn đang cân nhắc đến chỗ làm. Cả hai dùng chung mức tiêu thụ, giá nhiên liệu, số ngày đi làm và số người ở trên — vì câu hỏi là nơi ở khác nhau tốn khác nhau bao nhiêu. Phần so sánh cũng dùng ô “Kiểu chuyến” ở trên: chọn khứ hồi thì mọi con số dưới đây gấp đôi, nên dòng “cơ sở tính” trong kết quả luôn ghi rõ đang tính chiều nào. Bạn tự nhập khoảng cách; công cụ không đọc vị trí của bạn.",
+
+    homeALabel: "Nhà A — khoảng cách một chiều",
+    homeAName: "Nhà A",
+    homeAHelp: "Ví dụ 8 km. Chỉ nhập một chiều.",
+    defaultHomeA: "8",
+
+    homeBLabel: "Nhà B — khoảng cách một chiều",
+    homeBName: "Nhà B",
+    homeBHelp: "Ví dụ 25 km. Chỉ nhập một chiều.",
+    defaultHomeB: "25",
+
+    distanceUnitShort: "km",
+    homeInvalid: "Vui lòng nhập khoảng cách lớn hơn 0.",
+
+    workdaysLabel: "Số ngày đi làm mỗi tháng",
+    workdaysHelp:
+      "Số ngày bạn thực sự đi lại trong một tháng, là số nguyên. Làm 5 ngày một tuần thì khoảng 22. Để trống nếu chưa biết — công cụ sẽ nói là chưa biết, chứ không coi bằng 0.",
+    workdaysInvalid: "Vui lòng nhập một số nguyên từ 0 trở lên, hoặc để trống.",
+    defaultWorkdays: "22",
+
+    commuteResultTitle: "Đi làm mỗi tháng",
+    // The basis, beside the figures rather than only in the intro: the same
+    // two distances cost twice as much under khứ hồi, and the distance fields
+    // say "một chiều" in both states.
+    commuteBasisLabel: "Cơ sở tính",
+    /** `{direction}`, `{days}`, `{litres}`, `{price}` substituted. */
+    commuteBasisFormat:
+      "{direction}, {days} ngày mỗi tháng, {litres} lít/100 km, {price} mỗi lít.",
+    commuteDirectionOneWay: "Tính một chiều mỗi ngày",
+    commuteDirectionRoundTrip: "Tính khứ hồi mỗi ngày (khoảng cách nhân đôi)",
+    commuteHouseholdLabel: "Cả xe — chênh lệch mỗi tháng",
+    commutePerPersonLabel: "Mỗi người — chênh lệch mỗi tháng",
+    commuteKmLabel: "Chênh lệch số km mỗi tháng",
+    /** `{name}` substituted. */
+    commuteLegFormat: "{name} — cả xe mỗi tháng",
+
+    commuteUnknownNotice:
+      "Chưa nhập số ngày đi làm mỗi tháng, nên phần so hai nơi ở đang để trống thay vì hiển thị 0 — “chưa biết” không phải “không đi làm”. Hãy nhập số ngày, hoặc nhập 0 nếu bạn thật sự không đi lại.",
+    commuteInvalidNotice:
+      "Một trong hai khoảng cách hoặc số ngày đi làm chưa hợp lệ, nên phần so hai nơi ở chưa có kết quả. Khoảng cách phải lớn hơn 0 và số ngày phải là số nguyên.",
   },
 
+  // A TOOL-SPECIFIC DISCLAIMER, because the shared one is false here. The
+  // site-wide text says the result assumes an unchanging INTEREST RATE and is
+  // not a promise of investment RETURN — this page computes neither, and an
+  // independent reading review flagged the boilerplate as irrelevant noise at
+  // the end of a fuel calculation. It keeps the opening clause that
+  // `check:markup` counts and replaces only what follows it.
+  disclaimer:
+    "Công cụ này chỉ mang tính minh họa: nó nhân quãng đường với mức tiêu thụ và giá nhiên liệu do bạn tự nhập. Giá nhiên liệu thay đổi theo thời gian và mức tiêu thụ thực tế phụ thuộc cách lái, tải trọng và điều kiện đường, nên con số ở đây là ước lượng chứ không phải chi phí đã xảy ra. Kết quả KHÔNG gồm phí đường bộ, phí đỗ xe, bảo dưỡng, khấu hao hay thời gian đi lại, và không phải lời khuyên về việc nên ở đâu hay đi bằng gì.",
+
   scopeNotice:
-    "Đây là chi phí nhiên liệu, không phải chi phí đi lại. Một chiếc xe hơi còn tốn khấu hao, bảo hiểm, bảo dưỡng, lốp, phí đường bộ và phí đỗ xe; cộng đủ các khoản đó, chi phí thực mỗi km thường gấp hai đến ba lần riêng tiền nhiên liệu. Con số ở đây hữu ích khi so sánh hai lộ trình hoặc khi chia tiền với bạn đồng hành, chứ không phải khi so xe riêng với xe khách hay tàu.",
+    "Đây là chi phí NHIÊN LIỆU, không phải chi phí đi lại. Một chiếc xe còn tốn khấu hao, bảo hiểm, bảo dưỡng, lốp, phí đường bộ, phí đỗ xe — và thời gian của bạn. Con số ở đây hữu ích khi so hai lộ trình hoặc hai nơi ở trên cùng một cơ sở, chứ không phải khi so xe riêng với xe khách hay tàu.",
+
+  chart: {
+    currency: "₫",
+    million: "triệu",
+    billion: "tỷ",
+    title: "Chi phí nhiên liệu đi làm mỗi tháng, theo hai nơi ở",
+    axis: "Chi phí mỗi tháng ({unit})",
+    assumptions: [
+      "Khoảng cách của cả hai nơi ở do bạn tự nhập. Công cụ không đọc vị trí, không lưu địa chỉ.",
+      "Hai nơi ở dùng CÙNG mức tiêu thụ, cùng giá nhiên liệu, cùng số ngày đi làm và cùng số người.",
+      "Chiều đi lấy theo ô “Kiểu chuyến” ở trên. Hai ô khoảng cách luôn là một chiều, nên chọn khứ hồi làm toàn bộ con số gấp đôi — câu tóm tắt dưới đây ghi rõ đang tính chiều nào.",
+      "Các ô đang điền sẵn một ví dụ; hãy thay bằng số của bạn.",
+      "Chỉ tính nhiên liệu đi làm. Không có phí đường bộ, phí đỗ xe, bảo dưỡng, khấu hao hay thời gian đi lại.",
+    ],
+    tableCaption: "Hai nơi ở, cùng một cơ sở tính",
+    itemColumn: "Nơi ở",
+    amountColumn: "Mỗi tháng",
+    tableHint:
+      "Hai cột cuối là HAI CƠ SỞ khác nhau: “cả xe” là toàn bộ tiền nhiên liệu của chuyến đi, “mỗi người” là số đó chia cho số người cùng đi. Đừng so cột này của một nhà với cột kia của nhà còn lại.",
+    unavailableReason:
+      "Chưa so được hai nơi ở: cần khoảng cách của cả hai và số ngày đi làm mỗi tháng.",
+    unavailableRecovery:
+      "Hãy nhập khoảng cách một chiều cho cả Nhà A và Nhà B, cùng số ngày đi làm mỗi tháng.",
+    fuelSegment: "Tiền nhiên liệu",
+    barFormat: "{name} — {km} km một chiều",
+    summary:
+      "{cheap} rẻ hơn {costly} khoảng {difference} tiền nhiên liệu mỗi tháng, tính cho cả xe.",
+    summaryEqual:
+      "Hai nơi ở tốn nhiên liệu như nhau: {cost} mỗi tháng cho cả xe.",
+    perPersonNote: "Nếu chia đều cho số người đã nhập, mỗi người chênh {difference}.",
+    // The direction is the first thing in the sentence: it is the input that
+    // changes the figures the most and the one the distance labels cannot show.
+    basisFormat:
+      "Cơ sở tính của cả hai thanh: {direction}, {days} ngày mỗi tháng, mức tiêu thụ {litres} lít/100 km và giá {price} mỗi lít.",
+    directionOneWay: "tính một chiều mỗi ngày",
+    directionRoundTrip: "tính khứ hồi mỗi ngày, nên khoảng cách được nhân đôi",
+    fuelOnlyNote:
+      "Đây là tiền nhiên liệu, không phải toàn bộ chi phí đi lại — chưa có phí đường bộ, phí đỗ xe, bảo dưỡng, khấu hao và thời gian.",
+    manualEntryNote:
+      "Khoảng cách do bạn tự nhập; công cụ không xác định vị trí và không lưu địa chỉ.",
+    zeroDaysNote:
+      "Bạn đang nhập 0 ngày đi làm, nên cả hai nơi ở đều tốn 0 ₫ nhiên liệu đi làm.",
+    distanceColumn: "Một chiều (km)",
+    monthlyKmColumn: "Km mỗi tháng",
+    householdColumn: "Cả xe",
+    perPersonColumn: "Mỗi người",
+    differenceRow: "Chênh lệch",
+  },
 
   formula: {
     title: "Cách tính",

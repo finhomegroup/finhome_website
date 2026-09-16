@@ -11,7 +11,7 @@ Phiên giao dịch ngày 4/8, thị trường chứng khoán Việt Nam tiếp t
 
 Diễn biến phiên 4/8 cho thấy cổ phiếu BĐS vẫn là tâm điểm thu hút dòng tiền trên thị trường chứng khoán, bất chấp thanh khoản chung của thị trường có phần suy giảm. Đáng chú ý, lực mua ròng mạnh từ nhà đầu tư nước ngoài tập trung vào các mã BĐS lớn như VIC (Vingroup) và VHM (Vinhomes) cho thấy kỳ vọng của khối ngoại về triển vọng phục hồi của phân khúc này.
 
-Tuy nhiên, người mua nhà ở thực tế cần phân biệt giữa đà tăng của cổ phiếu BĐS trên sàn và diễn biến giá bất động sản trên thị trường giao dịch thực — hai thị trường này có động lực riêng biệt. Trong khi chứng kộng hưởng lợi từ kỳ vọng hồi phục, giá nhà đất thực tế tại nhiều khu vực vẫn đang trong giai đoạn điều chỉnh.
+Tuy nhiên, người mua nhà ở thực tế cần phân biệt giữa đà tăng của cổ phiếu BĐS trên sàn và diễn biến giá bất động sản trên thị trường giao dịch thực — hai thị trường này có động lực riêng biệt. Trong khi chứng khoán hưởng lợi từ kỳ vọng hồi phục, giá nhà đất thực tế tại nhiều khu vực vẫn đang trong giai đoạn điều chỉnh.
 
 ## Đọc thêm
 
