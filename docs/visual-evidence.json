@@ -11,7 +11,8 @@
     "noPageLevelOverflow": "At 390 and at 1280, no route produced documentElement.scrollWidth greater than the viewport. Where a table is wider than the screen, the horizontal scroll is contained by the ResultTable wrapper, which is the intended behaviour.",
     "ruleVersusSymptom": "docs section 3 requires mobileCards from five columns up. Measurement shows column count and rendered overflow are independent: lai-kep has 5 columns and does NOT overflow at 390, while vay-thuong-mai and lai-suat-thuc-te have 4 columns each and DO overflow. The threshold is a proxy for the symptom and is wrong in both directions. The two 4-column rows are deliberately NOT added to WIDE_TABLE_PENDING, because that list is the allowlist for the RULE and is checked both ways — a non-violator listed there would be reported as a stale entry. RE-MEASURED 2026-09-16 AFTER THE FIX: both 4-column rows now report ZERO elements over 390 and are removed from elementsWiderThanViewport above (11 rows -> 9). vay-thuong-mai went 485px -> 300px inside its 300px frame; lai-suat-thuc-te moved to mobileCards, so below md it renders no table at all. NARROW_OVERFLOW_MEASURED is now empty. The finding itself still stands and should NOT be deleted: the column threshold remains a proxy that is wrong in both directions, and lai-kep still has 5 columns without overflowing.",
     "emphasisStableAcrossViewports": "The same 30 rows ship at least one <strong> at both viewports, with identical counts, so reading emphasis does not vary with layout.",
-    "causeWasHalfWrong": "The earlier record said the cause on both 4-column rows was Vietnamese header length. Per-column measurement showed that held only for lai-suat-thuc-te. On vay-thuong-mai the headers merely matched the width of the cells beside them; the binding constraints were an 8.5rem prose label floor misapplied to a column of 1,2,3 (136px for content needing 32px) and untyped money cells, which opted the table out of the compact reading and pinned each amount column at the width of 5.000.000.000 (125px). Shortening its headers alone moved the table 380px -> 380px, i.e. no gain. Widest-text-in-column is not the same as the reason the column is that wide."
+    "causeWasHalfWrong": "The earlier record said the cause on both 4-column rows was Vietnamese header length. Per-column measurement showed that held only for lai-suat-thuc-te. On vay-thuong-mai the headers merely matched the width of the cells beside them; the binding constraints were an 8.5rem prose label floor misapplied to a column of 1,2,3 (136px for content needing 32px) and untyped money cells, which opted the table out of the compact reading and pinned each amount column at the width of 5.000.000.000 (125px). Shortening its headers alone moved the table 380px -> 380px, i.e. no gain. Widest-text-in-column is not the same as the reason the column is that wide.",
+    "loanCompareRoutesFixed": "so-sanh-khoan-vay and lai-co-dinh-hay-tha-noi are two routes over one component (LoanCompareCalculator), so one change to costBarsModel cleared the six-column docs-section-3 violation on both. Re-measured at a verified 390px viewport on 2026-09-16: both report ZERO elements over 390 and are removed from elementsWiderThanViewport (9 rows -> 7). The recorded design objection to carding the comparison table did not survive measurement: its rows are OFFERS and its columns are metrics, so a card per row is a per-offer cost summary, and the metric-across-offers view a comparison wants already exists on the same page as the 281px So sanh tung chi tieu table. Fixing that table then exposed a second overflow on the fixed-vs-floating route only: a FOUR-column payment table at 427px, caused by a composed option label held on one line by nowrap. Letting it wrap puts it at exactly 300px on both routes."
   },
   "viewports": [
     {
@@ -20,14 +21,6 @@
       "viewportVerifiedForAll": true,
       "noPageOverflowForAll": true,
       "elementsWiderThanViewport": [
-        {
-          "slug": "so-sanh-khoan-vay",
-          "count": 6
-        },
-        {
-          "slug": "lai-co-dinh-hay-tha-noi",
-          "count": 12
-        },
         {
           "slug": "diem-pivot",
           "count": 9

@@ -781,6 +781,29 @@ export function LoanCompareCalculator({
               })),
             ]}
             rows={tableRows}
+            /*
+             * `mobileCards`, and here it is the IDEAL shape rather than a
+             * compromise — the opposite of the cost table above.
+             *
+             * This table's rows are METRICS and its columns are OFFERS, so a
+             * card per row is a card per metric with every offer inside it:
+             * "Trả hằng tháng — Phương án A …, B …, C …". That is precisely
+             * the comparison a reader opened this page for, kept intact.
+             *
+             * Needed because the column count GROWS WITH THE DATA. The
+             * prefilled example has two offers and the table measured 281 px
+             * in its 266 px frame — a 15 px overhang easy to miss. Fill in the
+             * third offer, which the page's own title invites ("Đặt ba phương
+             * án cạnh nhau"), and it becomes four columns at 354 px: 88 px
+             * hidden, enough to take part of an offer column off-frame. Both
+             * measured at a verified 390 px viewport on 2026-09-16.
+             *
+             * It stays under 390 px, so the layout manifest's
+             * wider-than-viewport criterion never flagged it. That criterion
+             * cannot see a table that overflows its own scroll frame, which is
+             * why this one survived two sweeps.
+             */
+            mobileCards
           />
 
           {/* The fee-aware rate view, nested under the same disclosure as the
