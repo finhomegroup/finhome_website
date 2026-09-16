@@ -87,10 +87,10 @@ export const RETIREMENT_INCOME = {
   pageTitle: "Vốn hưu trí tiêu được bao nhiêu mỗi năm",
   metaTitle: "Vốn hưu trí tiêu được bao nhiêu — Mức chi giữ được đến hết kỳ",
   metaDescription:
-    "Từ số vốn kế hoạch dài hạn của bạn tích lũy được, công cụ tính mức chi mỗi năm giữ được đến hết kỳ dự phóng — bằng đồng, theo giá hôm nay — rồi đặt nó cạnh mức bạn mong muốn. Công cụ miễn phí của FinHome.",
+    "Từ số vốn kế hoạch hưu trí của bạn tích lũy được, công cụ tính mức chi mỗi năm giữ được đến hết kỳ dự phóng — bằng đồng, theo giá hôm nay — rồi đặt nó cạnh mức bạn mong muốn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Câu hỏi ngược của một kế hoạch dài hạn: với số vốn bạn sẽ có, mỗi năm tiêu được bao nhiêu? Con số chính được tính theo giá hôm nay, vì đó là đơn vị duy nhất bạn so được với chi phí sinh hoạt hiện tại. Và nó là một lựa chọn chứ không phải một con số duy nhất, nên trang này vẽ nó cạnh hai nhánh khác: mức bạn mong muốn, và cùng mức đó nếu bạn sống lâu hơn dự tính.",
+    "Câu hỏi ngược của một kế hoạch hưu trí: với số vốn bạn sẽ có, mỗi năm tiêu được bao nhiêu? Con số chính được tính theo giá hôm nay, vì đó là đơn vị duy nhất bạn so được với chi phí sinh hoạt hiện tại. Và nó là một lựa chọn chứ không phải một con số duy nhất, nên trang này vẽ nó cạnh hai nhánh khác: mức bạn mong muốn, và cùng mức đó nếu bạn sống lâu hơn dự tính.",
 
   form: {
     resultTitle: "Mức chi giữ được đến hết kỳ",
@@ -115,7 +115,7 @@ export const RETIREMENT_INCOME = {
      * where it comes from.
      */
     desiredNote:
-      "Mức chi mong muốn ở trên là giả định dùng chung của kế hoạch dài hạn, không phải một ô trên trang này: trang này giải ra mức chi giữ được, nên nó hỏi mọi thứ khác và không hỏi con số đó. Ba trang còn lại của kế hoạch đều có ô đó, và cả bốn trang dùng chung một bộ giả định.",
+      "Mức chi mong muốn ở trên là giả định dùng chung của kế hoạch hưu trí, không phải một ô trên trang này: trang này giải ra mức chi giữ được, nên nó hỏi mọi thứ khác và không hỏi con số đó. Ba trang còn lại của kế hoạch đều có ô đó, và cả bốn trang dùng chung một bộ giả định.",
 
     pathsTitle: "Ba nhánh của cùng một số vốn",
     /**
@@ -274,7 +274,7 @@ export const RETIREMENT_INCOME = {
   formula: {
     title: "Cách tính",
     body: [
-      "Số vốn tại ngày nghỉ được lấy từ đúng phép dự phóng mà cả bốn trang của kế hoạch dài hạn dùng chung, rồi quy về giá hôm nay. Mức chi giữ được đến hết kỳ là mức chi đều theo giá hôm nay làm cạn đúng số vốn đó ở tuổi kết thúc — cộng thêm phần thu nhập khác, thứ không phụ thuộc vào số vốn.",
+      "Số vốn tại ngày nghỉ được lấy từ đúng phép dự phóng mà cả bốn trang của kế hoạch hưu trí dùng chung, rồi quy về giá hôm nay. Mức chi giữ được đến hết kỳ là mức chi đều theo giá hôm nay làm cạn đúng số vốn đó ở tuổi kết thúc — cộng thêm phần thu nhập khác, thứ không phụ thuộc vào số vốn.",
       "Phép giải chạy trên lợi suất thực, tức (1 + lợi suất sau khi nghỉ) / (1 + lạm phát) − 1. Với 5% và 4%, lợi suất thực là 0,96%/năm chứ không phải 1%: hiệu của hai tỷ lệ chỉ là một phép gần đúng, và trên một kỳ hai mươi lăm năm nó đủ sai để lệch câu trả lời.",
       "Hệ số dùng ở đây là một niên kim đầu kỳ, vì phép dự phóng lấy tiền ra vào đầu năm rồi mới tính lợi nhuận trên phần còn lại. Dùng công thức niên kim cuối kỳ sẽ phóng đại mức chi an toàn theo đúng tỷ lệ (1 + lợi suất thực): trên các giả định mặc định là 221.163.724 ₫/năm thay cho 219.057.403 ₫/năm, cao hơn 2.106.321 ₫. Đưa con số cao hơn đó trở lại phép dự phóng thì vốn cạn ở tuổi 84 và năm cuối còn 404.578.947 ₫ không được chi trả — một mức chi được báo là giữ được đến hết kỳ nhưng không giữ được.",
       "Khoản rút được báo theo hai cách đếm cùng một khoản tiền. Ở mức chi giữ được, khoản rút danh nghĩa là 488.001.075 ₫ ở tuổi 60 và 1.250.895.188 ₫ ở tuổi 84, trong khi khoản rút theo giá hôm nay đứng yên ở 183.057.403 ₫ suốt cả kỳ. Đó không phải hai khoản tiền khác nhau, và chỉ con số thứ hai nói cho bạn biết mình mua được gì.",
@@ -339,7 +339,7 @@ export const RETIREMENT_INCOME = {
         a: "Chưa. Phép tính không trừ thuế và không trừ phí quản lý danh mục, nên mức chi ở đây là số gộp, và công cụ không mô phỏng quy định thuế của bất kỳ nước nào. Nếu những khoản bạn đang đầu tư có chịu thuế hay phí khi bán hoặc khi nhận lãi, mức chi thực tế của bạn sẽ thấp hơn con số hiển thị. Cách xử lý đơn giản là hạ mức lợi suất sau khi nghỉ mà bạn giả định, hoặc coi con số ở trên là mức trước thuế và tự trừ đi phần bạn biết mình phải nộp.",
       },
       {
-        q: "Bốn trang kế hoạch dài hạn khác nhau ở đâu?",
+        q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
         a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; còn trang này tính mức chi mà số vốn duy trì được và đặt nó cạnh mức bạn mong muốn. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
       },
     ],
