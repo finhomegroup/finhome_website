@@ -141,12 +141,107 @@ describe("a plan with no time to save that IS funded", () => {
 
   it("uses the funded sentence and pays every year in full", () => {
     expect(r.fundingGapAtStart).toBe(0);
-    expect(r.totalTuitionUnpaid).toBeCloseTo(0, 6);
+    // WAS `toBeCloseTo(0, 6)`, and that tolerance is how the residue bug
+    // survived: 5,96e-8 is close to zero to six places AND greater than zero,
+    // so this assertion passed while the sentence-picking `unpaid > 0` next
+    // door read the same number as a shortfall. A covered year now reports a
+    // hard zero, so the two agree — see `education-savings.ts`'s docstring.
+    expect(r.totalTuitionUnpaid).toBe(0);
     expect(model.summary).toContain("Mức góp cần thiết");
     expect(model.summary).not.toContain("thiếu");
     // 0 ₫ is the honest contribution here: none is NEEDED.
     expect(r.monthlyContribution).toBe(0);
     expect(model.summary).not.toContain(LABELS.noContributionNote);
+  });
+});
+
+/**
+ * THE SENTENCE MUST FOLLOW FROM THE FIGURES, which is the property the
+ * residue broke.
+ *
+ * `underfunded` is `gap > 0 || unpaid > 0`, and the summary it selects claims
+ * a shortfall and withholds the monthly contribution. On a solved plan the
+ * fund and the tuition stream are the same quantity computed two ways, so
+ * `unpaid` came back 5,96e-8 ₫ on Node 20.18.0 and exactly 0 on Node 25.1.0
+ * — `**` is not required to be bit-identical across V8 versions. The reader
+ * of a fully funded plan was shown "Cần 700.601.379 ₫ nhưng chỉ có
+ * 700.601.379 ₫ — thiếu 0 ₫", with the contribution figure suppressed.
+ *
+ * WRITTEN AS AN IMPLICATION over both fixtures rather than as a pinned
+ * figure, because the residue is the platform's to choose and the invariant
+ * is not: whichever branch the FIGURES put the plan in, the SENTENCE must
+ * agree. That holds on a Node where the residue is zero and on one where it
+ * is not, which a `toBe(5.96e-8)` would not. The two directions are checked
+ * together because a one-way guard here is what the repo has had to repair
+ * four times: "no shortfall implies the funded sentence" alone is satisfied
+ * by a page that never reports a shortfall at all.
+ */
+describe("the summary agrees with the shortfall figures, both ways", () => {
+  const CASES = [
+    {
+      name: "funded by contributions — the case the residue broke",
+      input: INPUT,
+      short: false,
+    },
+    {
+      name: "funded outright, nothing to contribute",
+      input: { ...INPUT, yearsUntilStart: 0, currentSavings: 400_000_000 },
+      short: false,
+    },
+    {
+      name: "genuinely short: no time to save and 10 triệu held",
+      input: { ...INPUT, yearsUntilStart: 0, currentSavings: 10_000_000 },
+      short: true,
+    },
+  ];
+
+  for (const c of CASES) {
+    it(c.name, () => {
+      const r = computeEducationSavings(c.input)!;
+      const model = educationFundChartModel(r, LABELS);
+      const claimsShortfall = model.summary.includes("thiếu");
+
+      // The figures, stated as a boolean the same way the model states it.
+      const figuresShort = r.fundingGapAtStart > 0 || r.totalTuitionUnpaid > 0;
+      expect(figuresShort, `${c.name}: figures disagree with the fixture`).toBe(
+        c.short,
+      );
+
+      // The implication, in both directions.
+      expect(
+        claimsShortfall,
+        claimsShortfall
+          ? "the summary claims a shortfall the figures do not show"
+          : "the figures show a shortfall the summary does not state",
+      ).toBe(figuresShort);
+
+      if (!c.short) {
+        // A covered plan reports HARD zeros, not a residue that rounds to one.
+        // This is the assertion that fails without the `fundedSlack` forgiveness
+        // in `education-savings.ts`, on any Node whose `**` leaves a residue.
+        expect(r.fundingGapAtStart).toBe(0);
+        expect(r.totalTuitionUnpaid).toBe(0);
+        // And the funded sentence keeps what the underfunded one drops: the
+        // contribution figure, which is the page's actual answer.
+        expect(model.summary).toContain("Mức góp cần thiết");
+      } else {
+        expect(model.summary).not.toContain("Mức góp cần thiết");
+      }
+    });
+  }
+
+  it("never prints a shortfall figure that rounds to zero", () => {
+    // The failure mode in one line, independent of which branch is right: if
+    // the sentence says "thiếu", the amount after it must be a figure the
+    // reader can see. "thiếu 0 ₫" is the defect, whatever produced it.
+    for (const c of CASES) {
+      const r = computeEducationSavings(c.input)!;
+      const model = educationFundChartModel(r, LABELS);
+      expect(
+        model.summary,
+        `${c.name} reports a shortfall of zero`,
+      ).not.toContain("thiếu 0 ₫");
+    }
   });
 });
 
