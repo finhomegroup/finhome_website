@@ -267,8 +267,14 @@ describe("every article's visual computes from its own hypothetical", () => {
       floatingTimeline: ["lai-suat-tha-noi"],
       savingsCurve: ["muc-tieu-tiet-kiem"],
       savingsComparePaths: ["muc-tieu-tiet-kiem"],
-      affordabilityPrice: ["kha-nang-mua-nha"],
-      affordabilityMonthly: ["kha-nang-mua-nha"],
+      // TWO ROUTES, ONE ENGINE. `nha-o-xa-hoi` renders the same
+      // `AffordabilityCalculator` at the social-housing programme's opening
+      // parameters, so an `affordabilityPrice` visual pairs correctly with
+      // either route — the invariant this map guards is "the chart's engine is
+      // the tool's engine", and here it is the same engine. C16's exercise
+      // opens the NOXH route because its figures are the NOXH programme's.
+      affordabilityPrice: ["kha-nang-mua-nha", "nha-o-xa-hoi"],
+      affordabilityMonthly: ["kha-nang-mua-nha", "nha-o-xa-hoi"],
       compareCost: ["so-sanh-khoan-vay"],
       comparePayments: ["so-sanh-khoan-vay"],
       rentBuyScenarios: ["thue-hay-mua"],

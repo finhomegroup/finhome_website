@@ -5,7 +5,7 @@ import {
   paletteIndexByKey,
   paletteSlot,
 } from "@/lib/calc/charts/palette";
-import type { ChartModel } from "@/lib/calc/charts/types";
+import type { ChartModel, ChartSeries } from "@/lib/calc/charts/types";
 
 /**
  * The frame every calculator chart sits in.
@@ -78,12 +78,25 @@ export function ChartFigure({
           ];
   // Line charts label their series rather than their segments, so the legend
   // is built from the series themselves.
+  //
+  // `stroke` IS CARRIED, and that is the point. It used to be dropped here, so
+  // the plot told two series apart by colour AND dash while the legend told
+  // them apart by colour alone. See the swatch below for what that cost.
   const seriesLegend =
     model.kind === "lines"
-      ? model.series.map((s) => ({ key: s.key, label: s.label }))
+      ? model.series.map((s) => ({
+          key: s.key,
+          label: s.label,
+          stroke: s.stroke,
+        }))
       : [];
 
-  const entries = [...legend, ...seriesLegend].filter(
+  const entries: {
+    key: string;
+    label: string;
+    /** Set for a LINE series only; a bar/area segment is a fill, not a stroke. */
+    stroke?: ChartSeries["stroke"];
+  }[] = [...legend, ...seriesLegend].filter(
     // A legend key can repeat across a stacked model (the fee segment is not
     // on every bar); the first occurrence is the one that carries the label.
     (entry, index, all) => all.findIndex((e) => e.key === entry.key) === index,
@@ -146,17 +159,64 @@ export function ChartFigure({
                     key={entry.key}
                     className="flex items-center gap-1.5 text-sm text-ink-2"
                   >
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "size-2.5 shrink-0 rounded-sm",
-                        // By KEY, from the shared map — not by position here.
-                        // The two happen to coincide for the legend (it is
-                        // what defines the order), and going through the map
-                        // is what guarantees the plot agrees.
-                        SWATCHES[paletteSlot(paletteSlots, entry.key, index)],
-                      )}
-                    />
+                    {entry.stroke ? (
+                      /*
+                       * A LINE SERIES IS A STROKE, SO ITS MARK IS A STROKE.
+                       *
+                       * The plot distinguishes line series on two channels —
+                       * colour and `STROKE_DASH` — and this swatch used to be
+                       * a solid block, which threw the second one away. That
+                       * is the "colour is never the only channel" rule holding
+                       * on the drawing and breaking in the key that explains
+                       * it, which is the worse of the two places to break it.
+                       *
+                       * Measured on `/blog/lai-co-dinh-hay-tha-noi/` at a
+                       * verified 390 px: three series drew as ink-3 solid,
+                       * brand-green dashed and brand-softgreen dotted, and the
+                       * legend showed three solid dots — two of them greens
+                       * 1,75:1 apart from each other. A reader who cannot
+                       * separate those hues could tell the LINES apart and
+                       * still not know which line each label named.
+                       *
+                       * Dash values are reused from `STROKE_DASH` rather than
+                       * restated for this size, for the same reason the fills
+                       * are: two lists cannot drift when there is one list.
+                       * The viewBox is 1 unit per rendered px, so "6 4" and
+                       * "1.5 3" read as a dash and a dot at 18 px.
+                       */
+                      <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        viewBox="0 0 18 10"
+                        className="h-2.5 w-[18px] shrink-0"
+                      >
+                        <line
+                          x1="0"
+                          y1="5"
+                          x2="18"
+                          y2="5"
+                          strokeDasharray={STROKE_DASH[entry.stroke]}
+                          strokeWidth={2}
+                          className={
+                            SERIES_STROKE[
+                              paletteSlot(paletteSlots, entry.key, index)
+                            ]
+                          }
+                        />
+                      </svg>
+                    ) : (
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "size-2.5 shrink-0 rounded-sm",
+                          // By KEY, from the shared map — not by position here.
+                          // The two happen to coincide for the legend (it is
+                          // what defines the order), and going through the map
+                          // is what guarantees the plot agrees.
+                          SWATCHES[paletteSlot(paletteSlots, entry.key, index)],
+                        )}
+                      />
+                    )}
                     {entry.label}
                   </li>
                 ))}

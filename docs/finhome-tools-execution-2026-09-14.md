@@ -3782,3 +3782,271 @@ and the requirement-by-requirement 75/12 audit remain.
   which says the same. Both are now false.
 - **No P4 row was touched**, and nothing in this unit is a professional
   sign-off on anything. Row 15's tax gate is unchanged and still open.
+
+## Twenty-third unit — the social-housing track, and three gaps an editorial review found
+
+Not a plan row. This unit came out of a **content review of the education
+collection from the reader's side**, which found four things the 75 tools and 15
+articles did not do for the audience the collection names in its own subtitle.
+Three of the four were about coverage rather than correctness, and the fourth
+was a hole between two halves of the product.
+
+### The finding that drove it
+
+**`nhà ở xã hội` appeared in 34 news posts under `content/posts/` and in ZERO
+education articles and ZERO calculators.** The news half of the site tracks the
+subject constantly, including named projects at named prices; the tools half
+modelled a commercial loan at 8,5%/năm and nothing else. A reader who learned
+from a news post that a 1,1 tỷ project had opened nearby had nowhere on the site
+to find out whether they qualified or what it would cost them.
+
+Three narrower findings, all derived rather than asserted: `2 tỷ` appears **28
+times** across the articles and `8,5%/năm` **18 times**, all on ONE household
+with 50 triệu/tháng gross — roughly top-decile urban income; `bảo hiểm khoản
+vay` was named only inside lists of costs the tools do NOT include; and nothing
+helped a renter total the NEW monthly costs that ownership adds, even though
+`computeAffordability` subtracts today's essentials.
+
+### What shipped
+
+| | |
+|---|---|
+| `lib/calc/social-housing.ts` | The dated statutory chain + the one test that is arithmetic. New. |
+| `/cong-cu/nha-o-xa-hoi/` | Second route onto the EXISTING affordability calculator. Registry 75 → **76**. |
+| C16 `thu-nhap-bao-nhieu-thi-mua-duoc-nha-o-xa-hoi` | The eligibility article. |
+| C17 `thu-nhap-30-trieu-mua-nha-duoc-khong` | The second worked household. |
+| C18 `mua-can-ho-2-ty-can-bao-nhieu-tien-mat` | Cash at closing. |
+| C19 `o-chung-cu-ton-them-bao-nhieu-moi-thang` | Monthly ownership cost. |
+
+Design spec: `docs/superpowers/specs/2026-09-17-social-housing-track-design.md`.
+
+### The statutory parameters, and why memory was not admissible
+
+**A from-memory draft would have cited 15 triệu/tháng for a single applicant.
+The current ceiling is 25 triệu.** That is two amendments stale and wrong in the
+direction that tells a qualifying household it does not qualify — so every
+figure was researched from a government source on 2026-09-17 and carries its
+instrument.
+
+```
+NĐ 100/2024 (26/7/2024)
+  → NĐ 261/2025 (10/10/2025)  20 / 40 / 30 triệu · rate 5,4% · LTV 80% · 25 năm
+  → NĐ 54/2026                (housing condition: < 15 m² sàn/người)
+  → NĐ 136/2026 (07/04/2026)  25 / 50 / 35 triệu
+```
+
+**Two deliberate non-claims, both load-bearing.** NĐ 100/2024's original income
+figures were not verified, so `noxhCeilingsAt` returns `undefined` before
+10/10/2025 rather than borrowing the next row — `us-retirement-limits.ts`'s rule
+#1. And NĐ 54/2026's effective date was not verified, so the floor-area
+condition is cited WITHOUT a date; a test asserts that string contains no date.
+
+**Secondary legal sites disagree and go stale silently.** A `luatvietnam.vn`
+page *titled* "Điều kiện mua nhà ở xã hội 2026" was still serving the superseded
+20/40/30 while this was written. Hence: cite the instrument, never a site; ship
+the whole chain so a missing update is visible; render the effective date.
+
+### The finding that made C16 worth writing
+
+Run the collection's own flagship household through the subsidised programme and
+the result is **counterintuitive, and the engine's not the prose's**:
+
+| | Commercial | NOXH |
+|---|---|---|
+| Tầm giá | 2.499.179.725 ₫ | **2.173.913.043 ₫** |
+| Gốc + lãi / tháng | 18.000.000 ₫ | **10.576.172 ₫** |
+| Binding constraint | the monthly payment | **the cash** |
+
+The subsidised rate does NOT raise the ceiling for this household — the 80% cap
+binds their cash where the commercial loan's payment bound their month. It makes
+the house 41% cheaper to carry. Verified: 20% of 2.173.913.043 is 434.782.609
+and 3% is 65.217.391, summing to exactly the 500 triệu of usable cash.
+
+On C17's 30 triệu household the same comparison reads 36,7% of take-home against
+17,6% — and its 1,09 tỷ NOXH range is the one that matches real NOXH unit prices,
+where its 1,47 tỷ commercial range buys very little in either city.
+
+### P1 membership turned out to be enforced across five surfaces
+
+Promoting `nha-o-xa-hoi` to P1 (PRIORITY_COUNTS.P1 **5 → 6**) failed six tests
+at once, and every one was a real invariant rather than a stale pin: the hub's
+question cards must be exactly the P1 set; `next-steps.ts` must cover every P1
+tool; the education seam must link P1 tool → article → back; every P1 row must
+carry the `emphasis` reading disposition AND ship real `<strong>`; and the
+coverage map must exercise it. **The article was therefore required, not
+optional.** Good design, and worth knowing before promoting anything again.
+
+**Only one test was changed, and it was made stricter-by-derivation rather than
+looser:** `hub.test.ts` pinned the card steps to `["1".."5"]`, so a sixth card
+failed for the wrong reason. It now derives `[1..n]` from the array and still
+catches a gap or a repeat.
+
+### Three guards that caught real defects in this unit's own work
+
+- **`check:built-markup`'s registry parser** drops an entry whose comment sits
+  between `{` and `slug:`, because the anchor is `\{\s*slug:`. The script's own
+  total-count guard caught it — "matched 75 of 76". The comment moved outside
+  the brace; the regex was not touched.
+- **The glossary's first-use guard** required `thuê mua`, `giải ngân` and
+  `dư nợ` to be glossed where each first appears, and supplied the gloss text.
+- **The paragraph-length guard** then rejected the paragraph the gloss had
+  bloated, which is the correct outcome: it was split.
+- **`articles.test.ts` bans predicting a rise.** An exercise line saying a price
+  range "sẽ tăng" was rewritten to describe what the tool reports.
+
+### Gate
+
+All five steps, separately, on this tree: `vitest` **5117 tests / 236 files**;
+`tsc --noEmit` clean; `check:lint` **0 new** (3 at baseline); `next build`
+**272 static pages**; `check:markup` **76 live / 0 planned / 186
+non-calculator**, all rendered contracts hold. Re-derive rather than quoting.
+
+### Browser evidence, at a verified viewport
+
+`window.innerWidth` read at capture time on every check, per §5's standing rule.
+At **390**: the route opens at 5,4 / 300 / 80 with the LTV help reading "đây là
+quy định, không phải giả định"; it reports "Điều đang chặn tầm giá: Tiền tự có
+và giả định vay được"; all four articles render their figures with no
+page-level overflow; the collection index reports **19 bài**; the hub shows the
+sixth card and links to the route. At **1280**: the route and hub hold, and the
+commercial route still opens at 8,5 / 240 / 100 with no decree text — the
+second route did not disturb the first.
+
+### Not done, and not claimed
+
+- **~~C17 is ONE article, not five.~~ CLOSED LATER THE SAME DAY.** That entry
+  was written before C20–C23 shipped. The 30 triệu household now has an article
+  in **all five groups** — C17 `BUDGET`, C20 `SAVING`, C21 `PAYMENT`,
+  C22 `CHOICE`, C23 `RESILIENCE` — because `types.ts` requires exactly one group
+  per article, so covering five groups means five articles rather than one
+  article that crosses their stated exclusions. The collection is **23 bài**.
+
+  **C23 is the one to read.** On the commercial path with a 12-month
+  promotional rate, this household's post-promo instalment is **12.979.188 ₫
+  against a housing budget of 11.000.000 ₫** — the plan fails by 1.979.188 ₫ a
+  month, at month 13, by the contract's own terms rather than by any external
+  shock. Its `floatingTimeline` figure draws the budget as a horizontal rule
+  and the payment step lands above it, which is the whole article in one
+  picture. That is also the concrete case behind the affordability chart's
+  standing instruction to enter the POST-promotional rate.
+
+  Two findings from C21 worth carrying: the subsidised loan's principal first
+  exceeds its interest at **month 147 of 300** — a low rate does not change the
+  shape of a schedule, only its slope — and the same loan at 8,5% would cost
+  **514.166.520 ₫** more interest, **59,1% of the principal**.
+- **The 3–6% loan-insurance and 14.500–31.000 ₫/m² figures are market
+  observations, not instruments**, and the copy says so at every use. Only
+  2% (Điều 152 Luật Nhà ở 2023), 0,5%, the NOXH ceilings, 5,4%, 80%, 300 months
+  and the two HĐND framework bands are cited figures.
+- **No professional sign-off.** This is a legal-parameter surface drafted with
+  AI assistance and verified against government sources on one date. It has not
+  been reviewed by a lawyer, and the standing gate on row 15's tax model applies
+  here with more force.
+- **Nothing about supply.** Whether a project exists near the reader, is cleared
+  to sell, or has units left is the binding constraint in practice, and no page
+  here touches it.
+- **No province rate table.** Hà Nội's 4,8% is named in copy as the example of
+  why the national 5,4% is a default to confirm; a 34-province table was
+  rejected for lack of a maintenance owner.
+
+## Twenty-fourth unit — a reader-perspective review of all 23 education articles
+
+Not a build. A review of the whole collection **from the reader's side**, and
+then the enhancements it justified. The method matters more than any single
+finding: the collection is high quality, so the useful work was finding the
+things a green suite and a careful author both miss.
+
+### What the review checked, and what it cleared
+
+Audited programmatically across all 23: figure anatomy against prose claims,
+legend entries against palette slots, heading style, comprehension checks,
+mobile-card thresholds on tables, the cross-link graph, group balance, and
+reading time against length.
+
+**Cleared, and worth recording so it is not re-litigated:** every heading is a
+claim or a question rather than a label — the convention `types.ts` states —
+and every `exercise.check` is a question the reader can actually answer. No
+table of five or more columns is missing `mobileCards`. Group balance is
+5/5/4/5/4. No article resolves to an `unavailable` figure.
+
+**One audit finding was a FALSE POSITIVE, caught by reading before editing.**
+A regex flagged C05, C14 and C15 for not stating their figure's bar count —
+they all do, using `cột` rather than `thanh`. Good copy was nearly "fixed".
+
+### Four defects, all of them prose-vs-reality
+
+1. **C19's `visualReading` described ONE stacked bar; the figure draws TWO**,
+   and never explained the second. C06 renders the identical model and handles
+   it properly, so the standard already existed in the collection — C19 was
+   simply worse. A reader saw a bar labelled "Trần theo giả định của bạn =
+   20.000.000 ₫" with no explanation and could take it as the answer. Rewritten
+   against C06.
+
+2. **C17's `visualReading` described THREE bars where the figure draws TWO**,
+   naming a "thanh dưới" that does not exist: on that household the
+   budget-carried loan equals the loan used, so the adapter drops the redundant
+   bar. This is the mirror image of the error C01's own code comment records.
+   Fixed, and C01's convention of STATING THE COUNT first was applied to C16,
+   C18 and C22 so "thanh dưới" cannot be mapped onto the middle bar.
+
+3. **C20's prose quoted only the algebraic 27,35 periods while the figure's
+   marker says month 28.** Both are correct and the repo already has the rule —
+   `tvm-questions.ts`: "an algebraic period is not a contribution schedule …
+   both are reported and never substituted for each other." Now both are.
+
+4. **`readingTime` had collapsed into a near-constant.** Every one of the 23
+   said 6 or 7 minutes while prose ranged 928–1.486 words, a 60% spread. C12
+   and C21 both said 6 for a 49% length difference, and the four SHORTEST
+   articles all said 7 — the same as the longest. Eleven entries corrected
+   against `round(prose / 200)`, floored at 4, excluding the household table,
+   source notes and provenance line as reference material.
+
+### The seam I had built myself
+
+**Zero original articles (C01–C15) linked to any of the eight new ones, and
+zero mentioned `nhà ở xã hội`.** The new material was reachable only from
+itself and from the hub — which is the identical "the news half talks about it,
+the tools half does not" gap that motivated the twenty-third unit, reproduced
+one layer up. A reader on C01, the most-linked article in the collection, got a
+2,5 tỷ answer with no signal that a 5,4% programme existed they might qualify
+for.
+
+`nextSlugs` has no count constraint, so links were ADDED rather than displacing
+existing routes. Five originals now point forward — C01→C16, C02→C19, C03→C23,
+C04→C18, C06→C19 — each chosen because the target completes the source's own
+argument rather than to fill a graph. C05→C13 and C15→C14 also close two
+PRE-EXISTING orphans. **Orphan count across the collection is now zero**, and
+the 30 triệu household is walkable as a sequence through its five groups.
+
+### Two guards added, both verified red
+
+- `content/education/reading-time.test.ts` derives the expected figure and
+  allows ±1 minute — tolerance on purpose, since a reworded paragraph moves the
+  count and an exact test would be deleted the first time it got annoying. It
+  also asserts at the COLLECTION level that lengths varying by more than 1,2×
+  cannot advertise fewer than three distinct times, which is the defect that
+  actually happened. Verified: collapsing all 23 back to 7 fails 7 per-article
+  cases plus the constant check.
+- The slot-exhaustion ratchet from the previous pass now has its second
+  confirmed instance: C06 and C19 both render `monthlyAllocation`, whose legend
+  has six entries for four colours. Unable to fix the palette (a brand
+  decision, docs §6), BOTH readings now tell the reader to use the table rather
+  than match by colour — which is the relief the contrast WARN demands.
+
+### Gate
+
+`vitest` **5207 tests / 237 files**; `tsc` clean; `check:lint` 0 new;
+`next build` 276 pages; `check:markup` 76 + 190, contracts hold. Re-derive.
+
+### Not done
+
+- **The 1280 viewport remains DOM-verified only** for this work; the preview
+  pane scales the emulation and screenshot capture returns blank at that width.
+- **C21's figure carries a shared assumption that contradicts its subject** —
+  the loan-chart string says Vietnamese home loans are promotional for 6–24
+  months then float, which is true commercially and wrong for a social-housing
+  article where 5,4% is the programme rate. Left alone because that string is
+  shared by every loan figure and correct for the rest; it needs a per-figure
+  override, which is its own change.
+- **No copy was rewritten for style.** The review found the prose strong and
+  changed it only where it disagreed with a figure, a statute or itself.

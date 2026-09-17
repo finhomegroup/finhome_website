@@ -7,7 +7,7 @@ import {
   dispositionsByPriority,
 } from "@/content/calculators/plan-disposition";
 
-describe("the hub's five question cards", () => {
+describe("the hub's question cards, one per P1 tool", () => {
   it("has one card per P1 tool, and no others", () => {
     // The cards ARE the P1 tier made visible. If the two lists could drift, a
     // tool could be promoted in the plan and never appear on the page, or a
@@ -25,8 +25,17 @@ describe("the hub's five question cards", () => {
     }
   });
 
-  it("numbers the cards 1..5 with no gap or repeat", () => {
-    expect(HUB_JOURNEYS.map((j) => j.step)).toEqual(["1", "2", "3", "4", "5"]);
+  it("numbers the cards 1..n with no gap or repeat", () => {
+    // DERIVED from the array's own length rather than hardcoded. This used to
+    // pin ["1".."5"], which meant adding the sixth P1 (`nha-o-xa-hoi`,
+    // 2026-09-17) failed here for the wrong reason — not "the steps have a gap"
+    // but "there are more steps than there were". The invariant worth guarding
+    // is the gap and the repeat, and the count belongs to the P1 tier, which
+    // the first test in this file already ties the cards to.
+    const expected = HUB_JOURNEYS.map((_, i) => String(i + 1));
+    expect(HUB_JOURNEYS.map((j) => j.step)).toEqual(expected);
+    // And it must be a real sequence, not a single card trivially passing.
+    expect(HUB_JOURNEYS.length).toBeGreaterThan(1);
   });
 
   it("asks a question and answers it without promising an approval", () => {

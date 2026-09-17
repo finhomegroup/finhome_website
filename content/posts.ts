@@ -76,6 +76,26 @@ export type Post = {
  * anyone; each article's own `provenance` states what has and has not been
  * checked.
  */
+/*
+ * READING TIME IS DERIVED, NOT DECORATIVE — recalculated 2026-09-17.
+ *
+ * It had collapsed into a near-constant: every one of the 23 education entries
+ * said 6 or 7 minutes while their prose ranged from 928 to 1.486 words, a 60%
+ * spread. C12 and C21 both said 6 for a 49% difference in length, and the four
+ * SHORTEST articles all said 7 — the same as the longest. A reader budgeting
+ * their time by that number was being told nothing by it.
+ *
+ * The basis now: `round(prose words / 200)`, floored at 4, where "prose" is
+ * what a reader reads straight through — question, short answer, section
+ * headings and paragraphs, the figure's reading sentence, the exercise and the
+ * limits. It EXCLUDES the household table, the source notes and the provenance
+ * line, which are reference material people scan rather than read.
+ *
+ * 200 wpm is a deliberate choice for Vietnamese prose carrying this many
+ * figures; it is slower than a plain-text rate because these paragraphs stop
+ * the reader on numbers. Re-derive with that formula rather than nudging a
+ * single entry, and if the formula changes, change it for all 23 at once.
+ */
 const EDUCATION_ENTRIES: Post[] = [
   {
     slug: "co-600-trieu-nen-tim-nha-tam-gia-nao",
@@ -96,7 +116,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Khoản ngân hàng thu, tiền thực ra khỏi ví và tháng cuối cùng là ba con số khác nhau. Bài tính cả ba trên một khoản vay giả lập.",
-    readingTime: "7 phút đọc",
+    readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
   {
@@ -107,7 +127,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Lãi tăng 3,5 điểm phần trăm và khoản trả tăng 27% là hai con số khác nhau. Bài giải thích vì sao, và cách tự thử kịch bản của mình.",
-    readingTime: "7 phút đọc",
+    readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
   {
@@ -118,7 +138,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Mục tiêu, thời hạn và mức góp luôn đi cùng nhau: cố định hai cái thì cái thứ ba là kết quả, không phải lựa chọn.",
-    readingTime: "6 phút đọc",
+    readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
   {
@@ -140,7 +160,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Trần theo tỷ lệ và ngân sách thật của hộ được tính từ hai thứ khác nhau, và khoảng cách giữa chúng nghiêng về phía bạn vay được nhiều hơn mức sống thoải mái.",
-    readingTime: "7 phút đọc",
+    readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
   {
@@ -206,7 +226,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Ba phần của phép tính: khoản giảm mỗi tháng, chi phí chuyển đổi, và số tháng để bù. Con số quyết định là thời gian bạn còn giữ khoản vay.",
-    readingTime: "6 phút đọc",
+    readingTime: "7 phút đọc",
     date: "2026-09-14",
   },
 
@@ -233,7 +253,7 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Hai năm chỉ trả lãi thì dư nợ không nhích một đồng, và khoản trả đi lên qua hai mốc không trùng nhau. Con số cần hỏi trước khi ký là con số thứ ba.",
-    readingTime: "7 phút đọc",
+    readingTime: "6 phút đọc",
     date: "2026-09-16",
   },
   {
@@ -244,8 +264,96 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Tháng đầu tiên trả gốc nhiều hơn lãi là tháng 143 của một kỳ hạn 240 tháng. Bài chỉ ra con số người định bán nhà cần nhìn là dư nợ, không phải tổng đã trả.",
-    readingTime: "7 phút đọc",
+    readingTime: "6 phút đọc",
     date: "2026-09-16",
+  },
+  {
+    slug: "thu-nhap-bao-nhieu-thi-mua-duoc-nha-o-xa-hoi",
+    title: "Thu nhập bao nhiêu thì mua được nhà ở xã hội?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Trần thu nhập tính trên thực nhận, không phải thu nhập gộp. Và trên hộ giả lập của bài, lãi suất ưu đãi làm khoản trả nhẹ đi 41% mà tầm giá lại thấp hơn — vì giới hạn đang chặn đã đổi.",
+    readingTime: "7 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "thu-nhap-30-trieu-mua-nha-duoc-khong",
+    title: "Thu nhập 30 triệu/tháng, mua nhà được không?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Hộ giả lập thứ hai của bộ bài, ở mức thu nhập phổ biến hơn. Cùng một hộ, khoản trả chiếm 36,7% thu nhập thực nhận ở đường thương mại và 17,6% ở chương trình ưu đãi.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "mua-can-ho-2-ty-can-bao-nhieu-tien-mat",
+    title: "Mua căn hộ 2 tỷ, cần bao nhiêu tiền mặt?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Phần tự có 20% không phải số tiền mặt căn nhà đòi. Bài cộng từng khoản, và nêu rõ khoản lớn nhất trong số đó là một sản phẩm không bắt buộc.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "o-chung-cu-ton-them-bao-nhieu-moi-thang",
+    title: "Ở chung cư tốn thêm bao nhiêu mỗi tháng?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Khung phí quản lý rộng gần mười bốn lần, và khoản này thuộc ô chi phí sinh hoạt của công cụ. Bỏ qua nó làm tầm giá cao lên 69 đến 267 triệu.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "thu-nhap-30-trieu-con-thieu-bao-nhieu-von",
+    title: "Thu nhập 30 triệu, còn thiếu bao nhiêu vốn và bao lâu thì đủ?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Mục tiêu vốn phụ thuộc chương trình bạn nhắm. Với hộ trong bài, mức góp cần thiết còn thấp hơn mức họ đang góp.",
+    readingTime: "5 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "vay-870-trieu-lai-uu-dai-tra-the-nao",
+    title: "Vay 870 triệu lãi ưu đãi, mỗi tháng trả thế nào?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Lãi suất thấp không đổi hình dạng lịch trả — phần gốc chỉ vượt phần lãi ở tháng 147. Nó đổi tổng lãi: 514 triệu, bằng 59% số tiền vay.",
+    readingTime: "5 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "hai-chuong-trinh-vay-ho-30-trieu-chon-nao",
+    title: "Hộ 30 triệu nên chọn vay thương mại hay nhà ở xã hội?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "So tầm giá là cách so sai. Hai chương trình chặn ở hai chỗ khác nhau, và khoản trả so với ngân sách mới là phép so quyết định.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-17",
+  },
+  {
+    slug: "ho-30-trieu-het-uu-dai-co-con-tra-duoc",
+    title: "Hộ 30 triệu hết ưu đãi thì có còn trả được không?",
+    category: "Mua nhà bằng con số",
+    topics: [],
+    kind: "education",
+    excerpt:
+      "Khoản trả sau ưu đãi vượt ngân sách của hộ 1.979.188 ₫ mỗi tháng. Kế hoạch không trụ được qua chính lần đặt lại lãi đầu tiên của nó.",
+    readingTime: "5 phút đọc",
+    date: "2026-09-17",
   },
 ];
 

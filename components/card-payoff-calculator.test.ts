@@ -216,9 +216,18 @@ describe("the figures both routes show", () => {
   it("draws both debt paths in one figure", async () => {
     const html = await render("fixed");
     expect(count(html, "<figure")).toBe(1);
-    expect(count(html, "viewBox=")).toBe(1);
-    // Two series: one solid, one dashed.
+    // ONE PLOT — counted by excluding the legend's own marks rather than by a
+    // bare `viewBox=` count, which is no longer a proxy for "one drawing":
+    // `ChartFigure` emits one 18x10 `<svg>` per LINE-series legend entry so the
+    // key carries the same dash the plot does. docs §3 already warns against
+    // asserting one `<svg>` per chart; this is that warning arriving.
+    const legendMarks = count(html, 'viewBox="0 0 18 10"');
+    expect(legendMarks).toBe(2);
+    expect(count(html, "viewBox=") - legendMarks).toBe(1);
+    // Two series: one solid, one dashed — and the dash is in BOTH places, so a
+    // reader who cannot separate the two hues can still match label to line.
     expect(count(html, /<path[^>]*stroke-dasharray="6 4"/g)).toBeGreaterThan(0);
+    expect(count(html, /<line[^>]*stroke-dasharray="6 4"/g)).toBe(1);
     expect(html).toContain(CARD_PAYOFF.chart.tableCaption);
   });
 
