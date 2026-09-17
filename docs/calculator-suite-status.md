@@ -696,6 +696,37 @@ comment. A failing step anywhere in `pnpm gate` blocks deployment. Accepted trad
 test also blocks deploys of unrelated content changes, and now so does a rendered-markup
 contract breach.
 
+**`verify:commits`' build step was silently dead from the Next 16 move until
+2026-09-17, and what that cost is the lesson.** The script gave its worktree a
+SYMLINK to the repo's `node_modules`; Turbopack computes a filesystem root at
+the project directory and rejects any symlink leaving it — `Symlink
+[project]/node_modules is invalid, it points out of the filesystem root`. So
+full mode reported **0/N pass for every range**, including commits far older
+than the bundler. `--tests-only` never builds, so the fast path everyone
+actually used stayed green and nothing looked wrong. **A tool that fails on
+everything is worse than one that does not exist**: the only two available
+readings are "ignore this tool" and "chase a regression that is not there."
+
+Fixed by copying `node_modules` into the worktree instead (`cp -Rc`, an APFS
+clone, falling back to `cp -R`). Two faster options were measured and rejected,
+and the reasons are in the script's header: `pnpm install --offline` is 3×
+faster but cannot resolve rolldown's native binding, so **vitest** dies while
+tsc and build pass; and `next build --webpack` would verify a bundler the
+deploy gate does not use. Cost is now a one-off ~22s per run, not per commit.
+
+Two things to carry from it:
+
+- **A copy is taken once per RUN from the current checkout**, so a range
+  spanning a `pnpm-lock.yaml` change is verified against one commit's
+  dependencies rather than each commit's own. The old symlink had the same
+  flaw. Do not trust this script across a dependency bump.
+- **The failure detail used to show the wrong six lines.** `tailOf` tailed the
+  output, and vitest prints its failure summary and THEN a performance hint —
+  so a genuinely failing commit reported "Duration 7.83s … learn more" where
+  the assertion should have been. It now prefers lines that look like a
+  diagnosis. If you add a step, check what its failure output actually ends
+  with before trusting a tail.
+
 **The build needs about 1,3 GB of free disk** for `.next` plus 125 MB for `out`. This machine ran out of space mid-session at 127 MiB free, which broke every tool call until `.next` and `out` were cleared. Both are gitignored and regenerable, so deleting them is the fix. If a verification step fails oddly, check `df -h /` first.
 
 **None of the commands above checks appearance.** Every one of them is a test, a
