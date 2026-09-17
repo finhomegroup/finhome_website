@@ -103,6 +103,34 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
     },
   },
 
+  // The sixth P1, added 2026-09-17. Permitted an entry because the row has no
+  // `library` — the guard below forbids one only on library-shelved rows — and
+  // required one because the education seam guard asserts every P1 tool links
+  // to an article whose exercise links back.
+  "nha-o-xa-hoi": {
+    intro:
+      "Tầm giá ở trên là ngân sách theo các trần của chương trình, chưa phải suất mua. Ba câu hỏi thường đến ngay sau đó:",
+    tools: [
+      {
+        slug: "kha-nang-mua-nha",
+        why: "Nếu không đủ điều kiện, cùng số tiền này mua được nhà thương mại ở tầm giá nào?",
+      },
+      {
+        slug: "muc-tieu-tiet-kiem",
+        why: "Trần vay 80% nghĩa là phải tự có 20% — mỗi tháng cần để dành bao nhiêu để đủ?",
+      },
+      {
+        slug: "vay-mua-nha",
+        why: "Với khoản vay ưu đãi này, lịch trả từng tháng và phần trả thêm ra sao?",
+      },
+    ],
+    education: {
+      href: "/blog/thu-nhap-bao-nhieu-thi-mua-duoc-nha-o-xa-hoi/",
+      label: "Thu nhập bao nhiêu thì mua được nhà ở xã hội?",
+      why: "Bài tập đi qua trần thu nhập trên một hộ giả lập, và chỉ ra vì sao lãi suất ưu đãi có thể làm khoản trả nhẹ đi 41% mà tầm giá lại thấp hơn.",
+    },
+  },
+
   "vay-mua-nha": {
     intro:
       "Khoản trả ở trên tính theo giả định lãi suất không đổi. Ba điều làm con số đó thay đổi:",

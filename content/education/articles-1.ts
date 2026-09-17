@@ -180,6 +180,7 @@ export const ARTICLES_1: EducationArticle[] = [
     nextSlugs: [
       "duoc-vay-khong-co-nghia-nen-vay-het",
       "vay-2-ty-moi-thang-tra-bao-nhieu",
+      "thu-nhap-bao-nhieu-thi-mua-duoc-nha-o-xa-hoi",
     ],
   },
 
@@ -308,6 +309,7 @@ export const ARTICLES_1: EducationArticle[] = [
     nextSlugs: [
       "het-uu-dai-khoan-tra-tang-bao-nhieu",
       "vay-20-nam-hay-25-nam",
+      "o-chung-cu-ton-them-bao-nhieu-moi-thang",
     ],
   },
 
@@ -432,6 +434,7 @@ export const ARTICLES_1: EducationArticle[] = [
     nextSlugs: [
       "lai-co-dinh-hay-tha-noi",
       "hai-goi-vay-thang-thap-co-re-hon",
+      "ho-30-trieu-het-uu-dai-co-con-tra-duoc",
     ],
   },
 
@@ -573,6 +576,7 @@ export const ARTICLES_1: EducationArticle[] = [
     nextSlugs: [
       "gop-them-2-trieu-dat-muc-tieu-som-bao-lau",
       "co-600-trieu-nen-tim-nha-tam-gia-nao",
+      "mua-can-ho-2-ty-can-bao-nhieu-tien-mat",
     ],
   },
 
@@ -709,7 +713,7 @@ export const ARTICLES_1: EducationArticle[] = [
     },
     provenance:
       "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
-    nextSlugs: ["vay-20-nam-hay-25-nam", "lai-co-dinh-hay-tha-noi"],
+    nextSlugs: ["vay-20-nam-hay-25-nam", "lai-co-dinh-hay-tha-noi", "lai-suat-quang-cao-va-chi-phi-vay-that"],
   },
 
   // ------------------------------------------------------------------ C06
@@ -798,7 +802,7 @@ export const ARTICLES_1: EducationArticle[] = [
       },
     },
     visualReading:
-      "Hai thanh cạnh nhau, và chúng được tính từ hai thứ khác nhau. Thanh “Thu nhập thực nhận” chia hết 44 triệu thành sinh hoạt, nợ đang trả, phần để dành và khoản trả nhà, nên tổng luôn khớp thu nhập và không khoản nào bị trừ hai lần. Thanh “Trần theo giả định của bạn” suy ra từ hai tỷ lệ áp lên thu nhập GỘP, và nó không biết hộ tiêu bao nhiêu. Ở ví dụ này ngân sách hộ 18 triệu thấp hơn trần 20 triệu, nên chính hộ là giới hạn đang chặn — và không thanh nào là mức ngân hàng đã đồng ý.",
+      "Hai thanh cạnh nhau, và chúng được tính từ hai thứ khác nhau. Thanh “Thu nhập thực nhận” chia hết 44 triệu thành sinh hoạt, nợ đang trả, phần để dành và khoản trả nhà, nên tổng luôn khớp thu nhập và không khoản nào bị trừ hai lần. Thanh “Trần theo giả định của bạn” suy ra từ hai tỷ lệ áp lên thu nhập GỘP, và nó không biết hộ tiêu bao nhiêu. Ở ví dụ này ngân sách hộ 18 triệu thấp hơn trần 20 triệu, nên chính hộ là giới hạn đang chặn — và không thanh nào là mức ngân hàng đã đồng ý. Lưu ý khi đọc: sáu mục trong ký hiệu chỉ có bốn màu, nên hai cặp mục dùng chung màu; bảng số liệu dưới hình là chỗ đọc chắc chắn.",
     exercise: {
       title: "Thử với số của bạn",
       intro:
@@ -833,6 +837,7 @@ export const ARTICLES_1: EducationArticle[] = [
     nextSlugs: [
       "co-600-trieu-nen-tim-nha-tam-gia-nao",
       "tiep-tuc-thue-hay-mua-nha",
+      "o-chung-cu-ton-them-bao-nhieu-moi-thang",
     ],
   },
 ];

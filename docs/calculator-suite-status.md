@@ -410,6 +410,34 @@ matching a colour to the legend read the wrong quantity. Four slots, so colour
 is never the only channel: segments stay ordered and labelled and every model
 still ships a table.
 
+**A LINE series' legend mark is a line, and it carries that series' own dash.**
+Fixed 2026-09-17 after the defect was measured on the live site. `ChartFigure`
+built its line legend with `model.series.map((s) => ({ key, label }))` and
+dropped `s.stroke`, so the plot separated series on two channels — colour and
+`STROKE_DASH` — while the key that explains the plot separated them on one.
+That is "colour is never the only channel" holding on the drawing and breaking
+in the legend, which is the worse of the two places to break it: the legend is
+the only thing mapping a label to a line. On
+`/blog/lai-co-dinh-hay-tha-noi/` at a verified 390 px that meant three solid
+dots for `ink-3` solid / `brand-green` dashed / `brand-softgreen` dotted, and
+slots 1 and 2 are two greens measured 1,75:1 apart from each other. A line
+series now renders an 18×10 `<svg>` whose `<line>` reads the SAME
+`STROKE_DASH` entry the plot does; a bar or area segment keeps its solid
+`bg-*` block, because a fill's mark should look like a fill. Two consequences:
+
+- **Do not assert a `viewBox=` count as a proxy for "one plot".** A line chart
+  now emits one legend `<svg>` per series on top of its plot. That is the
+  warning under `BarChart` below arriving —
+  `components/card-payoff-calculator.test.ts` pinned `viewBox=` at 1 and had to
+  be rewritten to exclude `viewBox="0 0 18 10"`. Assert `aria-hidden` and
+  `focusable="false"` over EVERY `<svg>`, which is the real contract.
+- **The invariant is in `components/calc/chart/legend-render.test.ts`**, not
+  just the markup: no two series may share BOTH slot and dash. That test needs
+  its vacuity guard — `legendMarks` returns `[]` when the legend renders solid
+  blocks, and `new Set([]).size === [].length`, so the invariant held
+  truthfully over nothing until a length assertion was added. §8 defect 22 is
+  the same shape, and it caught this one.
+
 **A bar chart's labels are HTML, not svg text.** `BarChart` renders each bar's
 name and total above its own track and emits one small SVG per bar plus one
 for the tick row. A fixed 10-unit `<text>` in a 360-unit viewBox renders around
@@ -1077,6 +1105,14 @@ observation, and do not promote an inference from JSX or built markup into one.
   file was being edited while this entry was written, so treat it as a lead and
   check the three selection sites rather than trusting the description.
 
+  **CLOSED — re-derived 2026-09-17.** That instruction to re-derive is what
+  closed it. `longTermTrajectoryModel` now reads
+  `fundedAtBoundary(result, plan.input.endAge).funded` and drives the depletion
+  marker, the summary sentence and the mandatory checkpoints from it; the file
+  carries its own comment recording the superseded `result.depletionAge` branch
+  and the "funded to within four millionths of one đồng" case it misread. Both
+  long-term adapters ask the model now.
+
 - **Two containment assertions still bound a region by the next closing tag with
   no `-1` guard.** §8 records the lesson and two of the four call sites were
   fixed in this unit; these two were not.
@@ -1088,6 +1124,9 @@ observation, and do not promote an inference from JSX or built markup into one.
   assertion passes for the wrong reason — which is the same failure the fixed
   sites had, not a smaller version of it.
 
+  **CLOSED — re-derived 2026-09-17.** Both call sites use the depth-counting
+  `markupRegion` now, and each carries a comment naming the bound it replaced.
+
 - **The four long-horizon routes have no `content/calculators/next-steps.ts`
   entry.** Derived on this tree: that file holds 31 entries and none of the four
   slugs is among them, so `ToolNextSteps` renders nothing on any of them. Item 5
@@ -1096,9 +1135,155 @@ observation, and do not promote an inference from JSX or built markup into one.
   gap, not a decision — most of the 75 legitimately have no entry, but these four
   are a connected set of views where "where do I go next" has an obvious answer.
 
+  **NOT A GAP — it is a GUARDED DECISION, re-derived 2026-09-17.**
+  `next-steps.ts` forbids an entry on any row filed with a `library`; all four
+  are `library: "dai-han"`; and the file's own comment records both the rule
+  ("never as a reading funnel" onto a library or utility tool) and the
+  arithmetic — 34 of the 36 P4 rows are shelved, and the two that are not
+  (`diem-chiet-khau`, `tra-no-hai-tuan`) do carry entries. So `ToolNextSteps`
+  rendering nothing on these four is the contract holding, not an omission.
+  **Do not close this by adding the four entries: a test forbids them.** The
+  entry count also moved, 31 → 34, which is the usual reason not to quote one.
+
+- **Two of the four chart palette slots are below the 3:1 non-text contrast
+  floor, and slots 2↔3 are below the normal-vision separation floor.** Measured
+  in a browser on 2026-09-17 at a verified 390 px, and re-derived with a
+  palette validator rather than by eye. `SERIES_FILL` / `SERIES_STROKE` /
+  `SWATCHES` in `components/calc/chart/chart-figure.tsx` are
+  `ink-3` / `brand-green` / `brand-softgreen` / `ink-4`, against a white plot:
+
+  | Slot | Token | Hex | vs white |
+  |---|---|---|---|
+  | 0 | `ink-3` | `#727272` | 4,81:1 |
+  | 1 | `brand-green` | `#17ab48` | 3,02:1 |
+  | 2 | `brand-softgreen` | `#90d77b` | **1,72:1** |
+  | 3 | `ink-4` | `#bcbcbc` | **1,90:1** |
+
+  Slot 2 ↔ slot 3 measures ΔE 14,4 for NORMAL colour vision — under the ~15
+  that tells an adjacent pair apart at all — and slot 1 ↔ slot 2 (the two
+  greens) measures 1,75:1 against each other.
+
+  **This is a call site the 2026-09-16 a11y pass did not consider, not a
+  reversal of it.** That pass reasoned about `brand-green`/`brand-softgreen` as
+  "the logo, icons, borders and focus rings", which WCAG 1.4.3 exempts, and
+  about `ink-4` as the footer's LIGHT-on-dark token (9,16:1 there). Both are
+  true. What the chart layer does is different: it reuses them as
+  **data-bearing marks on a light ground**, where 1.4.11 asks 3:1 and no
+  logotype exemption applies. `app/globals.css` is right that moving a brand
+  green is a brand decision — which is why this is filed open rather than
+  changed. The chart layer could instead SELECT compliant tokens without
+  moving any brand token; `brand-green-ink` `#117f36` already exists at 5,11:1.
+
+  **Where this is and is not already relieved.** The validator's contrast check
+  is a WARN that "obligates visible labels or a table view", and the plot has
+  that relief by construction — every model ships a `ChartTable`, the legend is
+  textual, and the markers block names each series in prose. Two places have no
+  such relief: the legend SWATCH, where the colour block IS the identity mark,
+  and two ADJACENT stacked fills, where ΔE 14,4 is the whole separation.
+  `/cong-cu/kha-nang-mua-nha/` reaches all four slots (nine swatches, observed
+  at 1280 px on 2026-09-17), so slot 3 is live rather than theoretical.
+  Reproduce with the `dataviz` skill's validator:
+  `node scripts/validate_palette.js "#727272,#17ab48,#90d77b,#bcbcbc" --mode light`.
+  Ignore its lightness-band and chroma-floor FAILs — those encode "use a
+  categorical hue scheme", and two greens plus two neutrals is a deliberate
+  brand choice `chart-figure.tsx` states in its own docstring.
+
+- **A legend with more than four entries identifies two of them by the same
+  colour, and `monthlyAllocation` has six.** Found by LOOKING on 2026-09-17, at
+  a measured 390 px, on `/cong-cu/kha-nang-mua-nha/`'s "Mỗi tháng tiền đi đâu"
+  figure — and it is pre-existing, not introduced by that day's unit, which only
+  added a second surface rendering the same model
+  (`/blog/o-chung-cu-ton-them-bao-nhieu-moi-thang/`). Measured: **6 legend
+  entries, 4 distinct swatch colours, 2 collisions.**
+
+  | Colliding pair | Colour |
+  |---|---|
+  | "Sinh hoạt thiết yếu" / "Chi phí nhà ở khác" | `rgb(114,114,114)` |
+  | "Nợ đang trả" / "Còn lại chưa dùng" | `rgb(23,171,72)` |
+
+  **This is the defect `lib/calc/charts/palette.ts` exists to prevent, arriving
+  by a different route.** That module fixed a slot MISMATCH between plot and
+  legend; this is slot EXHAUSTION, where the two agree perfectly and both are
+  ambiguous because `paletteSlot` takes `% PALETTE_SLOTS`. Its own docstring
+  anticipated the guard and it had never been wired — "`paletteSlots` reports
+  the count so a caller can assert it has not quietly grown past what the
+  palette can distinguish."
+
+  **A ratchet is now wired** in `components/calc/chart/legend-render.test.ts`:
+  `monthlyAllocation` is recorded as known debt so the gate stays green on a
+  pre-existing defect, and a NEW model that exhausts the palette fails
+  immediately. Verified to go red when a second entry is added to that list.
+
+  **No fix was attempted, deliberately.** Unlike a line series, a bar segment
+  has no second channel available — `STROKE_DASH` applies to strokes, not fills
+  — so the options are fewer segments, a texture fill, or a wider palette, and
+  all three are product or brand decisions. It is the same decision as the
+  palette-contrast entry above and should be taken with it.
+
+  **Nothing in the test suite could have caught this.** Every assertion about
+  that figure passed: the labels are all present, the plot and legend agree, the
+  slots are assigned from the shared map. What is wrong is only visible as
+  colour, at which point only an eye or a colour measurement will do.
+
+- **`readingTime` on the education collection is DERIVED, and guarded.**
+  `content/education/reading-time.test.ts` asserts it tracks
+  `round(prose / 200)` within ±1 minute, and separately asserts the collection
+  cannot advertise fewer than three distinct times while its lengths vary by
+  more than 1,2×. That second assertion is the defect that actually happened:
+  all 23 entries said 6 or 7 minutes across a 60% spread in length. Do not
+  nudge one entry — re-derive all of them, and if the formula changes, change
+  it for the whole collection at once.
+
+- **The education cross-link graph has no orphans, and that is now a property
+  worth preserving.** Checked 2026-09-17: every article has at least one
+  inbound `nextSlugs` link. Before that pass, C13 and C14 had none (original),
+  and none of C19–C23 did. `nextSlugs` has no count constraint, so prefer
+  ADDING a link to displacing one — displacing silently removes a route through
+  the collection.
+
 **Deferred minors** are recorded in `.superpowers/sdd/2026-09-06-sp0-calculator-foundation/progress.md` if that directory still exists (it is git-ignored scratch).
 
 ## 7. What to build next
+
+**A 76th tool shipped on 2026-09-17, and the suite is no longer 75.** `/cong-cu/nha-o-xa-hoi/`
+is a SECOND ROUTE onto the affordability calculator at the social-housing
+programme's statutory parameters, plus four education articles (C16–C19).
+Read the twenty-third unit in `docs/finhome-tools-execution-2026-09-14.md`
+before touching `lib/calc/social-housing.ts`,
+`content/calculators/social-housing.ts`, `components/social-housing-conditions.tsx`,
+the `programme` prop on `components/affordability-calculator.tsx`, or any of the
+four new article slugs. The design spec is
+`docs/superpowers/specs/2026-09-17-social-housing-track-design.md`.
+
+Four things from it that apply repo-wide:
+
+- **`PRIORITY_COUNTS.P1` is 6, not the plan's 5**, and P1 membership is
+  ENFORCED ACROSS FIVE SURFACES — the hub's question cards, `next-steps.ts`,
+  the education seam in both directions, the `emphasis` reading disposition
+  (which must ship real `<strong>`), and the education coverage map. Promoting
+  a row to P1 fails six tests until all five are wired. Budget for that.
+- **A registry entry's comment must sit OUTSIDE its brace.**
+  `scripts/check-built-markup.mjs` anchors on `\{\s*slug:`, so a comment
+  between `{` and `slug:` silently drops the entry from the parse. Its own
+  total-count guard is what catches this ("matched 75 of 76").
+- **A statutory figure carries its instrument, and an unverified period
+  returns `undefined` rather than a neighbour's number.**
+  `lib/calc/social-housing.ts` ships the whole NĐ 100/2024 → 261/2025 → 54/2026
+  → 136/2026 amendment chain for that reason: the ceiling moved three times in
+  24 months, and a `luatvietnam.vn` page titled "2026" was still serving the
+  superseded figures while the module was written. Cite the instrument, never a
+  site.
+- **`assumedMaxLtvPercent` means two different things on two routes.** Its
+  docstring says "a user assumption, not a bank's limit and not a regulation";
+  under the social-housing programme 80% is exactly a regulation. The `programme`
+  prop overrides that field's help text, and that override is the point of the
+  prop rather than a detail of it.
+
+**All four review items shipped on 2026-09-17.** The 30 triệu household has an
+article in every one of the five groups (C17 `BUDGET`, C20 `SAVING`,
+C21 `PAYMENT`, C22 `CHOICE`, C23 `RESILIENCE`), and the collection is **23
+bài** — derive that from `EDUCATION_ARTICLES`, never from this line.
+
 
 **The four long-horizon household rows shipped on 2026-09-15 — original rows
 44, 45, 48 and 50.** This is the unit §7 used to predict as "the long-horizon

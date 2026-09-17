@@ -19,17 +19,19 @@
   "viewports": [
     {
       "viewport": 390,
-      "rowsMeasured": 75,
+      "rowsMeasured": 76,
       "viewportVerifiedForAll": true,
       "noPageOverflowForAll": true,
-      "elementsWiderThanViewport": []
+      "elementsWiderThanViewport": [],
+      "rowsMeasuredNote": "75 from the 2026-09-16 sweep plus `nha-o-xa-hoi`, measured separately on 2026-09-17 — see `measuredSeparately` for its own method and date. The count is the number of live routes measured, not a claim that one sweep covered them all."
     },
     {
       "viewport": 1280,
-      "rowsMeasured": 75,
+      "rowsMeasured": 76,
       "viewportVerifiedForAll": true,
       "noPageOverflowForAll": true,
-      "elementsWiderThanViewport": []
+      "elementsWiderThanViewport": [],
+      "rowsMeasuredNote": "75 from the 2026-09-16 sweep plus `nha-o-xa-hoi`, measured separately on 2026-09-17 — see `measuredSeparately` for its own method and date. The count is the number of live routes measured, not a claim that one sweep covered them all."
     }
   ],
   "strongCountsByRow": [
@@ -152,6 +154,10 @@
     {
       "slug": "phan-tich-bao-cao-tai-chinh",
       "count": 6
+    },
+    {
+      "slug": "nha-o-xa-hoi",
+      "count": 3
     }
   ],
   "rows": [
@@ -193,5 +199,29 @@
     "vay-mua-nha",
     "vay-thuong-mai",
     "wacc"
+  ],
+  "measuredSeparately": [
+    {
+      "slug": "nha-o-xa-hoi",
+      "measuredAt": "2026-09-17",
+      "viewports": [
+        390,
+        1280
+      ],
+      "method": "Real viewport emulation in the Claude in-app browser against the built export on localhost, with window.innerWidth read at capture time rather than assumed. NOT the iframe method the 2026-09-16 sweep used. AT 390 THE PANE RENDERS 1:1 AND THE OBSERVATIONS BELOW ARE FROM SCREENSHOTS. At 1280 the pane scales the emulation down and screenshot capture returned blank, so the 1280 evidence for this row is DOM-derived only (innerWidth 1280, no page-level overflow, condition cards 628 px) and is not a visual observation. Recorded that way on purpose.",
+      "innerWidthMatchedRequest": true,
+      "noPageLevelOverflow": true,
+      "observed": [
+        "390, from screenshots: title, lede and the three-condition notice render legibly; the calculator opens at 5,4 / 300 / 80; the LTV help reads “đây là quy định, không phải giả định”; all three condition cards in `SocialHousingConditions` render as readable bg-soft blocks; the five limits render as a bulleted list; the FAQ accordion shows five items; and both decree links render as underlined brand-green-ink (rgb(17,127,54)) anchors with their notes beneath.",
+        "A DEFECT WAS FOUND AND FIXED IN THIS PASS: the limits list shipped as `space-y-1` with no markers and read as one run-on block at 390 px. It now uses `list-disc space-y-1.5 pl-5`, matching `EducationArticleBody`. Every test passed both before and after, because the text was present either way.",
+        "A SECOND, PRE-EXISTING DEFECT WAS FOUND AND NOT FIXED: `monthlyAllocation`'s legend has 6 entries and 4 distinct colours. See docs §6; a ratchet now guards against a new model doing the same.",
+        "ALL EIGHT new article figures were then seen in screenshots at 390 px (2026-09-17, second pass). Two further defects were found and fixed: C17's `visualReading` described THREE bars where the figure draws TWO — the budget-carried loan equals the loan used on that household, so the adapter drops the redundant bar — and C20's prose quoted only the algebraic 27,35 periods while the figure's marker says month 28. Both are prose-vs-figure disagreements that no test could see."
+      ],
+      "notObserved": [
+        "1280 as a visual observation — see `method`. DOM evidence only at that width.",
+        "Colour contrast and focus order through the eleven-field form.",
+        "OPEN, NOT A DEFECT FOUND: C21's figure carries the shared loan-chart assumption that Vietnamese home loans are promotional for 6–24 months then float. That is true of commercial loans and misleading on a social-housing article, where 5,4% is the programme rate. Left alone because that string is shared by every loan figure and is correct for the rest; it needs a per-figure override, which is its own change."
+      ]
+    }
   ]
 }

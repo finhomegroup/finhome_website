@@ -9,12 +9,21 @@
 // `category:`/`status:` being adjacent — is not disturbed by product
 // decisions that will keep moving.
 //
-// `planIndex` is the row number in the audit's `plan-data.mjs`
-// (`artifacts/finhome-tools-audit-2026-09-14/`), which is ordered exactly as
+// `planIndex` is the positional index of this row, which for indices 0–74 is
+// also the row number in the audit's `plan-data.mjs`
+// (`artifacts/finhome-tools-audit-2026-09-14/`), ordered exactly as
 // `CALCULATORS` is. It is recorded so a completion audit can walk the original
 // 75 rows and find the disposition for each, rather than re-deriving the
-// mapping from titles. A test asserts the two orders still agree, so the
-// mapping cannot rot silently.
+// mapping from titles.
+//
+// INDICES 75 AND ABOVE ARE POST-AUDIT ADDITIONS and have NO audit row. The
+// audit held exactly 75 rows; `nha-o-xa-hoi` (index 75) was added on
+// 2026-09-17. So what the guard in `plan-disposition.test.ts` actually asserts
+// is a POSITIONAL IDENTITY with the registry — `indices` equals `[0..n-1]` and
+// `TOOL_DISPOSITIONS[i].slug === CALCULATORS[i].slug` — rather than a mapping
+// into the audit file. Appending satisfies it unchanged, which is why no test
+// was edited to admit the new row: a test relaxed to let a row through is how
+// an invariant quietly stops being one.
 //
 // `question` is the user question the audit assigned to that row, in the
 // buyer's own words. It is NOT decoration: the hub's search matches it, so a
@@ -72,7 +81,11 @@ export const PRIORITY_ORDER: ToolPriority[] = ["P1", "P2", "P3", "P4"];
  * otherwise move the boundary of a whole work package.
  */
 export const PRIORITY_COUNTS: Record<ToolPriority, number> = {
-  P1: 5,
+  // 6, not the plan's original 5: `nha-o-xa-hoi` was added on 2026-09-17 as a
+  // post-audit P1. The audit's own split was 5/12/22/36 = 75, and that figure
+  // appears throughout docs/ as a plan commitment — so it is worth stating
+  // plainly that this tier grew by a deliberate decision rather than drift.
+  P1: 6,
   P2: 12,
   P3: 22,
   P4: 36,
@@ -586,6 +599,24 @@ export const TOOL_DISPOSITIONS: ToolDisposition[] = [
     question: "Thuế lương FICA ở Hoa Kỳ gồm những gì?",
     library: "hoa-ky",
   },
+  {
+    // POST-AUDIT ADDITION (2026-09-17). planIndex 75 has no row in the audit's
+    // plan-data.mjs, which held 75 rows indexed 0–74; see the field's docstring
+    // above. Appended rather than inserted, for the renumbering reason the spec
+    // records.
+    //
+    // P1 on merit rather than by courtesy: `nhà ở xã hội` is the primary
+    // affordable route for a first-home buyer under the income ceiling, and
+    // this row is why PRIORITY_COUNTS.P1 is 6 rather than the plan's original
+    // 5. NO `library`: `library` marks a tool as being OFF the
+    // first-home-buyer path, and this one is on it — which also means
+    // `next-steps.ts` permits an entry here, where it forbids one on the 34
+    // shelved P4 rows.
+    planIndex: 75,
+    slug: "nha-o-xa-hoi",
+    priority: "P1",
+    question: "Tôi có mua được nhà ở xã hội không, và giá bao nhiêu?",
+  },
 ];
 
 /**
@@ -644,12 +675,17 @@ export type ReadingDisposition =
   | "reference";
 
 export const READING_DISPOSITIONS: Record<string, ReadingDisposition> = {
-  // ---- emphasis: the five P1 tools, plus the four P2 rows an article teaches
+  // ---- emphasis: the six P1 tools, plus the four P2 rows an article teaches
   "vay-mua-nha": "emphasis",
   "so-sanh-khoan-vay": "emphasis",
   "kha-nang-mua-nha": "emphasis",
   "lai-suat-tha-noi": "emphasis",
   "muc-tieu-tiet-kiem": "emphasis",
+  // The sixth P1, added 2026-09-17. Its three emphasised phrases are in
+  // `content/calculators/social-housing.ts`'s `prose.emphasis`, and
+  // `check:markup` fails if a row filed `emphasis` ships no `<strong>` — which
+  // is the only check that can tell "declared" from "rendered".
+  "nha-o-xa-hoi": "emphasis",
   apr: "emphasis",
   "apr-nang-cao": "emphasis",
   "thue-hay-mua": "emphasis",

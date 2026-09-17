@@ -18,6 +18,7 @@ import {
 } from "@/content/calculators/plan-disposition";
 import { emphasisShare, missingPhrases } from "@/lib/prose-emphasis";
 import { AFFORDABILITY } from "@/content/calculators/affordability";
+import { SOCIAL_HOUSING } from "@/content/calculators/social-housing";
 import { APR } from "@/content/calculators/apr";
 import { APR_ADVANCED } from "@/content/calculators/apr-advanced";
 import { AUTO_LEASE } from "@/content/calculators/auto-lease";
@@ -71,6 +72,10 @@ const CALCULATOR_PROSE: Record<
   "vay-mua-nha": LOAN.formula,
   "so-sanh-khoan-vay": LOAN_COMPARE.formula,
   "kha-nang-mua-nha": AFFORDABILITY.formula,
+  // The sixth P1, added 2026-09-17. Its prose is the NOXH route's own, not the
+  // commercial route's, which is what makes the two routes distinguishable to
+  // this guard at all.
+  "nha-o-xa-hoi": SOCIAL_HOUSING.formula,
   "lai-suat-tha-noi": FLOATING_LOAN.formula,
   "muc-tieu-tiet-kiem": SAVINGS_GOAL.formula,
   apr: APR.formula,

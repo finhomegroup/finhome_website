@@ -695,6 +695,27 @@ export const CALCULATORS: CalculatorEntry[] = [
     status: "live",
     usRules: true,
   },
+  // APPENDED, not inserted next to `kha-nang-mua-nha`, and the reason is in the
+  // spec (docs/superpowers/specs/2026-09-17-social-housing-track-design.md
+  // §8.1): inserting would renumber `planIndex` on ~60 following rows, and every
+  // one of those numbers is cited as "original row N" throughout
+  // docs/finhome-tools-execution-2026-09-14.md. The hub groups by category and a
+  // filter preserves array order, so this appears at the end of the
+  // `vay-the-chap` group.
+  //
+  // THIS COMMENT IS OUTSIDE THE BRACE ON PURPOSE. `scripts/check-built-markup.mjs`
+  // anchors on `\{\s*slug:`, so a comment between `{` and `slug:` drops the
+  // entry from the parse — which is what happened on the first draft of this
+  // row, and the script's own total-count guard is what caught it. A comment
+  // after `slug:` is fine; this one cannot be.
+  {
+    slug: "nha-o-xa-hoi",
+    title: "Mua nhà ở xã hội",
+    summary:
+      "Tính tầm giá theo lãi suất ưu đãi và các trần của chương trình nhà ở xã hội, kèm phép so thu nhập với trần quy định.",
+    category: "vay-the-chap",
+    status: "live",
+  },
 ];
 
 /** Site-relative path for a calculator, without the trailing slash. */

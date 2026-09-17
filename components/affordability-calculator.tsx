@@ -19,6 +19,10 @@ import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
 import { CHART_UI } from "@/content/calculators/chart-ui";
+// The NOXH route's three overridden help strings, and the statutory figures
+// they describe. Only reached when `programme === "social-housing"`.
+import { SOCIAL_HOUSING as N } from "@/content/calculators/social-housing";
+import { NOXH_LOAN } from "@/lib/calc/social-housing";
 import {
   monthlyAllocationModel,
   priceCompositionModel,
@@ -273,7 +277,31 @@ export function AffordabilityScenarioComparison({
  * Everything else, including which limit is binding, is a second view of the
  * same computation and sits in a `live={false}` group.
  */
-export function AffordabilityCalculator() {
+/**
+ * Which lending programme the form opens on.
+ *
+ * `"social-housing"` is the SECOND ROUTE, `/cong-cu/nha-o-xa-hoi/`, not a
+ * second form — the thirteenth unit's "two routes onto one tool" convention.
+ * It changes three opening values and the three help strings that describe
+ * them, and nothing else: the engine, the modes and every other field are the
+ * commercial route's.
+ *
+ * THE THREE HELP STRINGS ARE NOT COSMETIC. `assumedMaxLtvPercent` is
+ * documented in `lib/calc/affordability.ts` as "a user assumption, NOT a
+ * bank's limit and not a regulation", and under this programme 80% is exactly
+ * a regulation (khoản 4 Điều 48). Same field, opposite epistemic status. docs
+ * §3 records the shared disclaimer being wrong twice in this same way — by
+ * inferring the MODEL from the FORM — so the override is the point of the prop
+ * rather than a detail of it.
+ */
+export type AffordabilityProgramme = "commercial" | "social-housing";
+
+export function AffordabilityCalculator({
+  programme = "commercial",
+}: {
+  programme?: AffordabilityProgramme;
+} = {}) {
+  const noxh = programme === "social-housing";
   const initial = {
     mode: C.form.defaultMode,
     netIncome: C.form.defaultNetIncome,
@@ -284,9 +312,16 @@ export function AffordabilityCalculator() {
     down: C.form.defaultDown,
     reserve: C.form.defaultReserve,
     purchaseCost: C.form.defaultPurchaseCost,
-    ltv: C.form.defaultLtv,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
+    // The three statutory openings. `NOXH_LOAN` holds them with their
+    // instruments; the rate is formatted with a comma because every figure in
+    // this suite is hand-formatted to Vietnamese grammar (docs §4: never
+    // `Intl`, never `toLocaleString`, because the server prerenders these and
+    // the client must hydrate byte-identically).
+    ltv: noxh ? String(NOXH_LOAN.maxLtvPercent) : C.form.defaultLtv,
+    rate: noxh
+      ? String(NOXH_LOAN.annualRatePercent).replace(".", ",")
+      : C.form.defaultRate,
+    term: noxh ? String(NOXH_LOAN.maxTermMonths) : C.form.defaultTerm,
     housingCosts: C.form.defaultHousingCosts,
     housingRatio: C.form.defaultHousingRatio,
     totalRatio: C.form.defaultTotalRatio,
@@ -564,14 +599,17 @@ export function AffordabilityCalculator() {
           {...fields.bind("rate")}
           label={C.form.rateLabel}
           unit={C.form.rateUnit}
-          help={C.form.rateHelp}
+          // Still overridable on the NOXH route, and the help says why: the
+          // national figure is a DEFAULT TO CONFIRM, because local HĐND
+          // resolutions override it downwards (Hà Nội is 4,8%/năm).
+          help={noxh ? N.rateHelp : C.form.rateHelp}
           error={C.form.rateInvalid}
           invalid={rateInvalid}
         />
         <NumberField
           {...fields.bind("term")}
           label={C.form.termLabel}
-          help={C.form.termHelp}
+          help={noxh ? N.termHelp : C.form.termHelp}
           error={C.form.termInvalid}
           invalid={termInvalid}
         />
@@ -618,7 +656,11 @@ export function AffordabilityCalculator() {
           {...fields.bind("ltv")}
           label={C.form.ltvLabel}
           unit={C.form.ltvUnit}
-          help={C.form.ltvHelp}
+          // THE ONE THAT MATTERS. On the commercial route this is the reader's
+          // own assumption about what a bank might lend; here it is a statutory
+          // ceiling. Rendering the commercial help text on this route would
+          // describe a regulation as a guess.
+          help={noxh ? N.ltvHelp : C.form.ltvHelp}
           error={C.form.ltvInvalid}
           invalid={ltvInvalid}
         />

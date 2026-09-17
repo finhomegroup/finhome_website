@@ -119,29 +119,40 @@ export const HUB_JOURNEYS = [
       "Từ thu nhập, nợ đang trả và tiền đã có, xem mức giá để đi xem nhà — và giới hạn nào đang chặn bạn.",
   },
   {
-    slug: "vay-mua-nha",
+    // SECOND, not last, and the position is the point. The four cards below
+    // model a commercial loan; a reader who is under the income ceiling should
+    // learn that before spending the rest of the journey on a rate three
+    // points higher than the one available to them.
+    slug: "nha-o-xa-hoi",
     step: "2",
+    question: "Có chương trình nào rẻ hơn mà tôi đủ điều kiện?",
+    answer:
+      "So thu nhập với trần quy định, rồi tính lại tầm giá theo lãi suất ưu đãi và các trần của chương trình nhà ở xã hội.",
+  },
+  {
+    slug: "vay-mua-nha",
+    step: "3",
     question: "Mỗi tháng tôi phải chuẩn bị bao nhiêu?",
     answer:
       "Khoản trả theo lịch, phần trả thêm và tổng tiền thực sự rời khỏi ví mỗi tháng.",
   },
   {
     slug: "lai-suat-tha-noi",
-    step: "3",
+    step: "4",
     question: "Hết ưu đãi thì khoản trả tăng bao nhiêu?",
     answer:
       "Tháng lãi suất đổi, khoản trả trước và sau đó, theo giả định lãi suất bạn tự nhập.",
   },
   {
     slug: "muc-tieu-tiet-kiem",
-    step: "4",
+    step: "5",
     question: "Cần để dành bao nhiêu để đủ tiền trả trước?",
     answer:
       "Mức góp mỗi tháng, thời điểm đạt mục tiêu, và phần nào là tiền bạn góp chứ không phải lãi.",
   },
   {
     slug: "so-sanh-khoan-vay",
-    step: "5",
+    step: "6",
     question: "Gói vay nào hợp với khả năng trả của tôi?",
     answer:
       "So chi phí vay thật của từng gói, không chỉ so khoản trả hằng tháng.",
