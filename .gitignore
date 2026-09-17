@@ -43,3 +43,8 @@ next-env.d.ts
 
 # superpowers SDD scratch workspace (ledger, briefs, review packages)
 /.superpowers/
+
+# Local agent tooling config. `launch.json` names an absolute path to the
+# static server on one developer's machine, so it is per-machine setup rather
+# than project config and would break for anyone else who checked it in.
+/.claude/
