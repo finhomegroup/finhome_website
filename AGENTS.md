@@ -32,3 +32,20 @@ Three things from that document that apply repo-wide:
 - **Nothing in the test suite checks appearance.** Layout, contrast, touch targets and
   overflow are unverified by every green run. Do not report a visual item as verified
   unless it was actually observed in a browser at a stated, measured viewport.
+
+# Money engine — `lib/calc/` has two owners, not one
+
+The modules in `lib/calc/` are not one library. They split by who owns the formula.
+
+- **Affordability, capacity, amortization, annuity, APR** duplicate the canonical FinHome
+  financial engine, which lives in the mobile app at
+  `finhome_reactnative/features/shared/utils/`. Target state: replaced by an imported
+  `@finhome/finance-core`. Do not add a new variant of these. Do not "fix" one of these formulas
+  without reading the canonical implementation first — **if the two disagree, that is a finding to
+  report, not a number to choose between.**
+- **Generic instruments** — `black-scholes`, `capm`, `bond`, `auto-lease`, `card-debt` and the
+  rest — have no canonical counterpart and are owned here. Add these freely per
+  `docs/calculator-suite-status.md`.
+
+The static export is deliberate, not incidental: a calculator must keep working with no API and no
+server. Never introduce a network dependency into a calculation path.
