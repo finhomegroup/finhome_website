@@ -358,6 +358,21 @@ const EDUCATION_ENTRIES: Post[] = [
 ];
 
 export const POSTS: Post[] = [
+  {
+    slug: "nguoi-mua-nha-tp-hcm-roi-trung-tam-vung-ven",
+    title: "Người mua nhà TP.HCM chấp nhận rời xa trung tâm: Bài toán giá và không gian sống thay đổi thị trường thế nào",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","khu-vuc-ha-tang"],
+    excerpt: "Trước mức giá cao ngất ngưởng tại khu trung tâm TP.HCM, ngày càng nhiều người mua chấp nhận dịch chuyển ra vùng ven để đổi lấy không gian rộng rãi hơn và mức giá phù hợp hơn với tài chính.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-nha-tp-hcm-roi-trung-tam-vung-ven.jpg",
+    date: "2026-09-22",
+    source: {
+        "name": "24hmoney.vn",
+        "url": "https://24hmoney.vn/news/nhieu-nguoi-mua-nha-tp-hcm-chap-nhan-roi-trung-tam-c3a2835236.html",
+        "accessed": "2026-09-22"
+      },
+  },
   ...EDUCATION_ENTRIES,
   {
     slug: "gia-dat-dong-anh-vuot-100-trieu-dong-m2",
