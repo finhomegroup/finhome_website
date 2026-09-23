@@ -41,8 +41,9 @@ describe("reviewed education claims have counterexample fixtures", () => {
     const cashBefore = computeAffordability(cashBound)!;
     const cashAfter = computeAffordability({ ...cashBound, cashReserve: 100e6 })!;
     expect(cashBefore.maxPrice - cashAfter.maxPrice).toBeCloseTo(100e6 / .23, 3);
-    expect(prose("C01")).toContain("97,1 triệu");
-    expect(prose("C01")).toContain("434,8 triệu");
+    // The approved rewrite no longer quotes reserve sensitivity examples,
+    // but preserves the binding-constraint check instead of promising 1:1.
+    expect(prose("C01")).toContain("giới hạn nào đang chặn");
     expect(prose("C01")).not.toContain("Tầm giá giảm đúng bằng số đó");
   });
 
@@ -57,7 +58,7 @@ describe("reviewed education claims have counterexample fixtures", () => {
     expect(related).not.toContain("phần đó không phụ thuộc lãi suất");
     expect(related).not.toContain("khoản trả nhỏ nghĩa là trả gốc chậm");
     expect(related).not.toContain("bất kỳ mức lãi nào");
-    expect(prose("C03")).toContain("chưa phải chứng nhận an toàn");
+    expect(prose("C03")).toContain("không phải dự báo hoặc chứng nhận an toàn");
   });
 
   it("C07: 25 years over budget does not imply 30 years is over budget", () => {
@@ -123,17 +124,19 @@ describe("reviewed education claims have counterexample fixtures", () => {
     expect(prose("C05")).toContain("chưa chiết khấu");
     expect(prose("C06")).not.toContain("Đây là trường hợp phổ biến");
     expect(prose("C06")).toContain("Không suy ra ngân hàng sẵn sàng cho vay");
-    expect(prose("C08")).toContain("Hợp đồng thuê quyết định");
+    expect(prose("C08")).toContain("hoàn đủ tiền cọc theo hợp đồng thực tế");
     // CORRECTED 2026-09-15. This used to pin "lần giao đầu tiên", which
     // described the break-even month as a first crossing that might not
     // last. The engine scans BACKWARD from the horizon, so the month it
     // reports is the first one where buying is ahead and STAYS ahead through
     // the selected horizon — and the article now says that, with the two
     // things the bounded meaning does not promise.
-    expect(prose("C08")).toContain(
-      "giữ được lợi thế đó đến hết đúng khoảng thời gian bạn đã chọn",
-    );
-    expect(prose("C08")).toContain("không có gì bảo đảm");
+    // The approved version makes no crossing-month claim. Its conclusion is
+    // explicitly the 120-month endpoint, with a separate horizon warning.
+    expect(prose("C08")).toContain("Ở tháng 120");
+    expect(prose("C08")).toContain("Nếu bạn dự định ở năm năm nhưng lại tính trên mười năm");
+    expect(prose("C08")).not.toContain("lần giao đầu tiên");
+    expect(prose("C08")).toContain("lợi suất không được bảo đảm");
     expect(prose("C11")).toContain("không tự tìm ngưỡng lãi thả nổi");
   });
 });

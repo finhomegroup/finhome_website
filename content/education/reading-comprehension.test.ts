@@ -249,8 +249,8 @@ describe("a heading never teaches the wrong unit", () => {
     expect(headings).not.toContain("Lãi tăng 3,5%");
     // And the paragraph's own two framings are still both there.
     const prose = c03.sections.flatMap((s) => s.paragraphs).join(" ");
-    expect(prose).toContain("3,5 ĐIỂM PHẦN TRĂM");
-    expect(prose).toContain("46,67%");
+    expect(prose).toContain("3,5 điểm phần trăm");
+    expect(prose).toContain("27,11%");
   });
 
   it("every heading is a claim or a question, not a bare label", () => {
@@ -285,24 +285,18 @@ describe("dense explanations are broken up rather than trimmed", () => {
     }
   });
 
-  it("C08 split the bounded-crossing explanation without losing any of it", () => {
+  it("C08 scopes the comparison to the reader's horizon without claiming a first crossing", () => {
     const c08 = EDUCATION_ARTICLES.find((a) => a.planId === "C08")!;
     const section = c08.sections.find((s) =>
-      s.heading.includes("Thời gian ở là biến quan trọng nhất"),
+      s.heading.includes("Chỉ đổi một ô"),
     )!;
     const prose = section.paragraphs.join(" ");
-    // All three facts the old single paragraph carried are still here.
-    expect(prose).toContain("giữ được lợi thế đó đến hết đúng khoảng thời gian bạn đã chọn");
-    expect(prose).toContain("Công cụ dò từ cuối kỳ về đầu");
-    expect(prose).toContain("có thể biến mất");
-    expect(prose).toContain("rồi bị đảo lại trước cuối kỳ");
-    // And the field-name confusion the split inherited is gone: the nullable
-    // thing is the RESULT row, not the required horizon input — clearing
-    // that input withholds every result and both charts.
-    expect(prose).toContain("“Mua bắt đầu có lợi từ tháng” để trống");
+    // Approved editorial version reports endpoints, not a crossing month.
+    expect(prose).toContain("Nếu bạn dự định ở năm năm nhưng lại tính trên mười năm");
+    expect(prose).toContain("Kết luận đổi vì giả định đã đổi");
+    expect(c08.visualReading).toContain("Ở tháng 120");
+    expect(c08.visualReading).not.toContain("lần giao đầu tiên");
     expect(prose).not.toContain("ô “So sánh trong” để trống");
-    // And the heading now carries the scope, not just the claim.
-    expect(section.heading).toContain("chỉ đúng trong khoảng bạn chọn");
   });
 });
 

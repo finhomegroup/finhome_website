@@ -63,7 +63,7 @@ export type EducationArticle = {
   };
 
   /**
-   * The body. Two to four sections, each with a real heading.
+   * The body. Substantive sections, each with a real heading.
    *
    * A HEADING IS A CLAIM OR A QUESTION, not a label. A reader who scans only
    * the headings should come away with the article's argument rather than a
@@ -75,6 +75,16 @@ export type EducationArticle = {
     paragraphs: readonly string[];
     /** Phrases inside this section's paragraphs to emphasise. */
     emphasis?: readonly string[];
+    /** Observed tool capture, supplementary to the computed accessible visual. */
+    media?: {
+      src: string;
+      alt: string;
+      width: number;
+      height: number;
+      caption: string;
+    };
+    /** Short reader-facing results, also readable without the screenshot. */
+    results?: { caption: string; rows: readonly { label: string; value: string }[] };
   }[];
 
   /** Computed by the production engine from the hypothetical above. */
