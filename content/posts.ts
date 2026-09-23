@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-nha-tp-hcm-chap-nhan-roi-trung-tam-bai-toan-tai-chinh",
+    title: "Người mua nhà TP.HCM chấp nhận rời trung tâm: Tính toán chi phí thực để không mắc bẫy giá rẻ ảo",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan","khu-vuc-ha-tang"],
+    excerpt: "Người mua nhà TP.HCM ngày càng dịch chuyển ra vùng ven để đổi lấy không gian rộng hơn, nhưng cần cân nhắc tổng chi phí thực tế bao gồm di chuyển và tiện ích.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/nguoi-mua-nha-tp-hcm-chap-nhan-roi-trung-tam-bai-toan-tai-chinh.jpg",
+    date: "2026-09-23",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nhieu-nguoi-mua-nha-tp-hcm-chap-nhan-roi-trung-tam-5122999.html?utm_source=facebook&utm_medium=vne_kinhdoanh&utm_term=mix&utm_campaign=phuonguyen&fbclid=IwZnRzaAUgtWFwZG9mBWZkaWQWUO_fCdsR9bMlRPgZ_pJ_SJ6BIcCi5mV4dG4DYWVtAjExAHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR4r1POVoeQi8TDjeYki-CHyiVvgaBlkAO0FmEz4Fn9BA9g-wsgv-7HkRe5lUw_aem_dW9L3Gw_4UsYxAFVs3PXrA",
+        "accessed": "2026-09-23"
+      },
+  },
+  {
     slug: "gia-chung-cu-binh-duong-cu-vuot-60-trieu-m2-nhung-nguoi-mua-can-biet-gi",
     title: "Giá chung cư Bình Dương cũ vượt 60 triệu/m²: Người mua cần biết những gì?",
     category: "Thị trường",
