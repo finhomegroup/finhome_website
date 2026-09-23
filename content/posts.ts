@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "gia-chung-cu-binh-duong-cu-vuot-60-trieu-m2-nhung-nguoi-mua-can-biet-gi",
+    title: "Giá chung cư Bình Dương cũ vượt 60 triệu/m²: Người mua cần biết những gì?",
+    category: "Thị trường",
+    topics: ["gia-cung","cau-thanh-khoan"],
+    excerpt: "Mặt bằng giá căn hộ Bình Dương cũ tăng mạnh khiến người mua khó tìm căn dưới 45 triệu đồng/m², trong khi nguồn cung mới hạn chế và thanh khoản thị trường suy giảm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/gia-chung-cu-binh-duong-cu-vuot-60-trieu-m2-nhung-nguoi-mua-can-biet-gi.jpg",
+    date: "2026-09-23",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/kho-kiem-chung-cu-duoi-45-trieu-dong-moi-m2-tai-binh-duong-cu-5122953.html",
+        "accessed": "2026-09-23"
+      },
+  },
+  {
     slug: "chung-cu-binh-duong-gia-60-trieu-moi-m2",
     title: "Giá chung cư Bình Dương cũ lập đỉnh 60 triệu/m2, người mua khó tìm căn dưới 45 triệu",
     category: "Thị trường",
