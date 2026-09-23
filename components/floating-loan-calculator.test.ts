@@ -380,6 +380,63 @@ describe("the page's own disclaimer matches the model", () => {
   });
 });
 
+describe("§8 row 4: the payment after ưu đãi, and the month it changes", () => {
+  it("leads with the post-promotional instalment and names its month", async () => {
+    const C = await copy();
+    const html = await render();
+    // 2 tỷ, 240 tháng, 12 tháng ưu đãi: the reset is month 13.
+    expect(html).toContain("Từ tháng 13, khi hết ưu đãi");
+    // It is the ONE emphasised row, and it sits above the shock it causes.
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    expect(html.indexOf("Từ tháng 13")).toBeLessThan(
+      html.indexOf(C.form.shockLabel),
+    );
+    // The promo instalment still comes first: the row asks for both sides.
+    expect(html.indexOf(C.form.firstPaymentLabel)).toBeLessThan(
+      html.indexOf("Từ tháng 13"),
+    );
+  });
+
+  it("does not print one amount under two names", async () => {
+    // With no recurring step the peak IS the post-promotional instalment, and
+    // "mức cao nhất phải chịu" beside an identical figure reads as a third,
+    // higher payment.
+    const C = await copy();
+    const html = await render();
+    expect(html).not.toContain(C.form.highestPaymentLabel);
+
+    // With a step of 0,5 điểm % every 12 months the peak is genuinely later,
+    // and the row returns.
+    const stepped = await render({ patch: { defaultAdjustStep: "0,5" } });
+    expect(stepped).toContain(C.form.highestPaymentLabel);
+  });
+
+  it("points the CTA at that comparison", async () => {
+    const html = await render();
+    expect(html).toContain('aria-controls="lai-suat-tha-noi-ket-qua"');
+    expect(html).toContain('id="lai-suat-tha-noi-ket-qua"');
+    const form = html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+    expect(form).toContain('data-calc-cta="true"');
+  });
+
+  it("moved the balance-column paragraph next to the balance column", async () => {
+    const html = await render();
+    // The static copy, not `copy()`: nothing is patched here, and the patch
+    // type widens every form value to `string`, which loses `table`'s shape.
+    const intro = FLOATING_LOAN.form.table.intro;
+    // Inside the tool's detail region, after the table's caption region rather
+    // than ahead of the form.
+    const detail = html.slice(html.indexOf('data-calc-region="detail"'));
+    expect(detail).toContain(intro);
+    expect(html.indexOf(intro)).toBeGreaterThan(
+      html.indexOf(FLOATING_LOAN.form.amountLabel),
+    );
+  });
+});
+
 describe("invalid input clears the scenario too", () => {
   it("clears the comparison and the chart, and keeps the typed value", async () => {
     const patch = { defaultPostRate: "abc" };

@@ -88,8 +88,16 @@ export const ASSET_ALLOCATION = {
   metaDescription:
     "Chia một khoản tiền theo mục đích và thời điểm cần dùng: quỹ dự phòng, tiền trả trước cần trong bao nhiêu tháng, và phần chưa phân bổ. Kèm chế độ nâng cao về danh mục theo tuổi. Công cụ miễn phí của FinHome.",
 
+  // §5: one purpose sentence that carries the two distinctions a reader must
+  // not lose — the reserve comes out FIRST, and near-term money is not
+  // long-term money. The three questions the form asks are the form's own
+  // labels, so listing them above it is repetition; they move to the detail.
+  // The not-product-advice limit is `scopeNotice`, which stays visible.
   lede:
-    "Tiền sắp dùng để mua nhà không nên được xếp cùng tiền để dành mười năm nữa. Bắt đầu từ ba câu hỏi: bạn muốn giữ lại bao nhiêu làm quỹ dự phòng, cần bao nhiêu cho việc gì, và cần vào lúc nào. Công cụ chia đúng khoản tiền bạn có theo các mục đích đó, và nói rõ phần nào chưa được phân bổ hoặc còn thiếu.",
+    "Chia số tiền bạn đang có theo từng mục đích và thời điểm cần dùng, sau khi đã tách riêng quỹ dự phòng. Tiền sắp dùng để mua nhà không nên được xếp cùng tiền để dành mười năm nữa.",
+  ledeDetailTitle: "Công cụ hỏi gì và trả lời gì",
+  ledeDetail:
+    "Ba câu hỏi: bạn muốn giữ lại bao nhiêu làm quỹ dự phòng, cần bao nhiêu cho việc gì, và cần vào lúc nào. Từ đó công cụ chia đúng khoản tiền bạn có theo các mục đích đó, và nói rõ phần nào chưa được phân bổ hoặc còn thiếu.",
 
   // A TOOL-SPECIFIC DISCLAIMER. The shared text says the result assumes an
   // unchanging interest rate and is not a promise of return; the DEFAULT mode
@@ -117,6 +125,21 @@ export const ASSET_ALLOCATION = {
     modePurpose: "Chia tiền theo mục đích và thời điểm cần dùng",
     modePortfolio: "Bài học nâng cao: danh mục theo tuổi và rủi ro",
     defaultMode: "purpose",
+
+    /**
+     * The advanced study's own framing for the two near-answer destinations.
+     *
+     * `next-steps.ts` holds one intro per slug, written for the DEFAULT mode:
+     * "hai câu hỏi tiếp theo dùng chính con số phân bổ cho tiền mua nhà". An
+     * independent browser round read that under the study's own screen — 8,6
+     * điểm lệch on a 700 triệu danh mục, and no home-purchase allocation
+     * anywhere in it. The two destinations are still the right questions, so
+     * only the sentence changes: it must not imply this mode produced that
+     * figure, and it points at the mode that does. No investment is
+     * recommended and nothing is transferred.
+     */
+    studyStepsIntro:
+      "Bài học này chỉ so tỷ trọng hiện tại của bạn với một quy tắc theo tuổi; nó không tách ra khoản nào cho việc mua nhà. Nếu bạn đang chuẩn bị mua nhà, hãy chọn “Chia tiền theo mục đích và thời điểm cần dùng” ở trên trước. Hai câu hỏi dưới đây vẫn hữu ích, và bạn sẽ nhập lại số:",
 
     potGroup: "Khoản tiền và quỹ dự phòng",
     availableLabel: "Tổng số tiền đang có",
@@ -200,6 +223,25 @@ export const ASSET_ALLOCATION = {
     unallocatedLabel: "Chưa phân bổ",
     shortfallLabel: "Còn thiếu so với mong muốn",
     requestedLabel: "Tổng mong muốn dành",
+
+    // ROW 58 ("Ưu tiên quỹ dự phòng, tiền mua nhà và phần còn lại; biểu đồ
+    // phân bổ cạnh form, ngày là giả định phụ"). The announced group now
+    // carries the fixed funding order and the remainder; "tổng mong muốn" and
+    // "còn thiếu" are the WISH-versus-REALITY pair and read together in their
+    // own unannounced group below. Nothing is dropped — see the component.
+    comparisonTitle: "Mong muốn so với số tiền thật có",
+    /** `{date}` substituted: the row's own need date, as a row note. */
+    needDateNote: "Cần khoảng {date}",
+    needDateUnknownNote: "Chưa ghi thời điểm cần dùng",
+    /**
+     * The anchor, promoted as one short line beside the figures.
+     *
+     * The clamping convention stays in `anchorNotice`, verbatim, inside the
+     * disclosure below the columns: the date is a supplementary assumption of
+     * this answer, not the answer.
+     */
+    anchorShort: "Mốc tính thời gian: {date}.",
+    anchorDetailTitle: "Mốc tính thời gian, cách cộng tháng và các mốc cần tiền",
 
     unallocatedNotice:
       "Phần “chưa phân bổ” là tiền chưa có mục đích — không phải tiền dư, và công cụ không gợi ý làm gì với nó. Hãy đặt cho nó một mục đích, hoặc nâng quỹ dự phòng.",

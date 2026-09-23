@@ -104,6 +104,9 @@ const WHITE_TEXT_FILES = [
   "../vision-compass.tsx",
   "../sections/signup.tsx",
   "../delete-account-form.tsx",
+  // The calculator suite's primary CTA — the newest white-on-green surface in
+  // the repo, and the one that will be rendered on all 76 tool routes.
+  "../calc/result-cta.tsx",
   "../blog-post-grid.tsx",
   "../source-attribution.tsx",
   "../education/education-article.tsx",

@@ -111,7 +111,10 @@ export const TERM_DEPOSIT = {
     "Tính lãi tiền gửi có kỳ hạn theo đúng cách ngân hàng Việt Nam tính, kèm phương án tái tục và mức thiệt hại nếu rút trước hạn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Lãi trong một kỳ hạn là lãi đơn và chỉ ghép lãi khi bạn tái tục cả gốc lẫn lãi. Chọn một trong hai cách tính: theo số tháng của kỳ hạn, hoặc theo NGÀY — ngày gửi, ngày đáo hạn và ngày bạn cần tiền, để biết tiền có sẵn đúng lúc hay phải rút trước hạn.",
+    "Lãi trong một kỳ hạn là lãi đơn và chỉ ghép lãi khi bạn tái tục cả gốc lẫn lãi.",
+  ledeDetailTitle: "Hai cách tính: theo số tháng, hoặc theo ngày",
+  ledeDetail:
+    "Chọn một trong hai cách tính: theo số tháng của kỳ hạn, hoặc theo NGÀY — ngày gửi, ngày đáo hạn và ngày bạn cần tiền, để biết tiền có sẵn đúng lúc hay phải rút trước hạn.",
 
   form: {
     modeLegend: "Bạn cần tính gì?",
@@ -408,8 +411,15 @@ export const TERM_DEPOSIT = {
       "Chưa vẽ được mốc thời gian vì chưa tính được phần theo ngày.",
   },
 
+  // The rule and the fact that the rate is the reader's own contract term stay
+  // visible; the worked 19.875.000 ₫ example and the pointer to the by-date
+  // mode read behind the disclosure. A browser pass at 390 px measured the mode
+  // selector 899 px down with this notice above it.
   earlyWithdrawalNotice:
-    "Điều đắt nhất của tiền gửi có kỳ hạn thường không nằm ở lãi suất mà ở điều khoản rút trước hạn: phần kỳ hạn đang dở không được tính theo lãi kỳ hạn mà theo một mức thấp hơn nhiều, áp cho TOÀN BỘ thời gian của kỳ đó. Những kỳ đã đến hạn thì đã chốt lãi theo kỳ hạn nên phần đó không mất. Ví dụ điền sẵn của công cụ: 500 triệu gửi 12 tháng ở 5,5% mà rút ở tháng thứ 9, với mức 0,2%/năm bạn nhập, cho 750.000 ₫ thay vì 20.625.000 ₫ — chênh 19.875.000 ₫. Mức áp cho phần rút trước hạn là con số của hợp đồng bạn ký, nên hãy tra biểu lãi suất và nhập đúng; và nếu chưa chắc ngày cần tiền, hãy dùng chế độ theo ngày ở dưới trước khi chọn kỳ hạn.",
+    "Điều đắt nhất của tiền gửi có kỳ hạn thường không nằm ở lãi suất mà ở điều khoản rút trước hạn: phần kỳ hạn đang dở được tính theo một mức thấp hơn nhiều, áp cho TOÀN BỘ thời gian của kỳ đó. Mức đó là con số của hợp đồng bạn ký — hãy tra biểu lãi suất và nhập đúng.",
+  earlyWithdrawalDetailTitle: "Mất bao nhiêu, và cách tránh phải rút trước hạn",
+  earlyWithdrawalDetail:
+    "Những kỳ đã đến hạn thì đã chốt lãi theo kỳ hạn nên phần đó không mất. Ví dụ điền sẵn của công cụ: 500 triệu gửi 12 tháng ở 5,5% mà rút ở tháng thứ 9, với mức 0,2%/năm bạn nhập, cho 750.000 ₫ thay vì 20.625.000 ₫ — chênh 19.875.000 ₫. Nếu chưa chắc ngày cần tiền, hãy dùng chế độ theo ngày ở dưới trước khi chọn kỳ hạn.",
 
   formula: {
     title: "Cách tính",

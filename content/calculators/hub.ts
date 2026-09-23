@@ -1,11 +1,12 @@
 // Copy for the /cong-cu/ hub page.
 //
-// The hub is question-first. The audit found a visitor arriving at a
-// seventy-five-item index by financial CATEGORY had no way in: the
-// affordability tool — the one a first-home buyer needs first — sat eighth
-// inside a list called "Vay & Thế chấp", and there was no search. So the page
-// now opens with five questions in a buyer's own words and keeps the complete
-// categorised catalogue underneath, searchable.
+// The hub is question-first. The audit found a visitor arriving at an index
+// ordered by financial CATEGORY had no way in: the affordability tool — the one
+// a first-home buyer needs first — sat eighth inside a list called "Vay & Thế
+// chấp", and there was no search. So the page now opens with the buyer's own
+// questions and keeps the complete categorised catalogue underneath,
+// searchable. The number of questions is `HUB_JOURNEYS.length`, not a word in
+// any title.
 //
 // Two rules this copy follows on purpose:
 //
@@ -31,12 +32,19 @@ export const CALCULATOR_HUB = {
   lede:
     "Chọn câu hỏi gần nhất với điều bạn đang cân nhắc. Mọi công cụ đều miễn phí, tính ngay trên trang và không cần đăng nhập.",
 
-  // --- the five first-home-buyer questions ---------------------------------
-  journeysTitle: "Năm câu hỏi khi mua nhà lần đầu",
+  // --- the first-home-buyer questions --------------------------------------
+  // NO COUNT IN THIS TITLE. It said "Năm câu hỏi" over six cards, because the
+  // sixth was added and the word was not. The number of cards is a fact the
+  // list itself already states, so the title stops repeating it.
+  journeysTitle: "Câu hỏi khi mua nhà lần đầu",
   // Buyer-facing guidance, not our investment order. Which tools FinHome
   // builds first is a fact about us and belongs in the execution document.
+  //
+  // DESTINATIONS BY NAME, not by ordinal: "câu hỏi số 2 hoặc số 5" pointed at
+  // the wrong two cards after the order changed, and an ordinal is unfindable
+  // anyway — each card names its tool on its own call to action.
   journeysNote:
-    "Không cần đi theo thứ tự. Nếu chưa biết bắt đầu từ đâu, hãy chọn câu hỏi đầu tiên; nếu đã có báo giá của ngân hàng, vào thẳng câu hỏi số 2 hoặc số 5.",
+    "Không cần đi theo thứ tự. Nếu chưa biết bắt đầu từ đâu, hãy chọn câu hỏi đầu tiên; nếu đã có báo giá của ngân hàng, vào thẳng “Tính khoản vay mua nhà” hoặc “So sánh khoản vay”.",
   journeyCta: "Tính thử",
 
   // --- the complete catalogue ---------------------------------------------
@@ -101,7 +109,7 @@ export const CALCULATOR_HUB = {
 } as const;
 
 /**
- * The five first-home-buyer questions, in the order the plan invests in them.
+ * The first-home-buyer questions, in the order the plan invests in them.
  *
  * `slug` must be a P1 entry in `plan-disposition.ts` and must be live — both
  * asserted in `hub.test.ts`, so a question card cannot point at a tool that

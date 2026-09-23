@@ -54,7 +54,7 @@ export function ToolCatalog({
   /** Category keys in display order, with their labels. */
   categoryOrder: { category: string; label: string }[];
   /**
-   * The five first-home-buyer question cards, rendered ON THE SERVER and passed
+   * The first-home-buyer question cards, rendered ON THE SERVER and passed
    * through as children — so they stay server HTML even though their parent is
    * a client island, and the F01 contract above still holds.
    *

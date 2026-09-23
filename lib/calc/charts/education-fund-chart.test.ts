@@ -311,6 +311,50 @@ describe("the figure reads the two curves", () => {
     expect(model.unavailable).toBeNull();
   });
 
+  it("keeps both ends of the year axis and marks the crowded label", () => {
+    // The measured defect, at this exact scenario. An independent pass at
+    // 390×844 found the year-12 label (x 310,14–326,78) overlapping the
+    // year-13 one (x 321,69–338,33) by 5,09 px, because a 13-year axis
+    // strides by 4 and then keeps its endpoint one year later.
+    //
+    // The repair marks the earlier label so `PlotFrame` can hide it below
+    // `sm`; it does NOT move a label to a year it does not name, and it does
+    // not drop the endpoint. Every position here is the true fraction.
+    const ticks = model.xAxis.ticks;
+    expect(ticks.map((t) => t.label)).toEqual(["0", "4", "8", "12", "13"]);
+    expect(ticks.find((t) => t.label === "12")!.crowded).toBe(true);
+    expect(ticks.find((t) => t.label === "13")!.crowded).toBeUndefined();
+    expect(ticks.find((t) => t.label === "13")!.at).toBe(1);
+    expect(ticks.find((t) => t.label === "12")!.at).toBe(12 / 13);
+    // And the year a hidden label would otherwise have carried is still
+    // readable: the table has a row per year, all fourteen of them.
+    expect(model.table.rows).toHaveLength(14);
+  });
+
+  it("marks nothing on a horizon whose ticks already clear", () => {
+    // The non-round horizon the review asked for: 12 years of study starting
+    // in 4 strides by 4 and ends ON a stride tick, so no pair is close.
+    const other = educationFundChartModel(
+      computeEducationSavings({
+        ...INPUT,
+        yearsUntilStart: 4,
+        yearsOfStudy: 13,
+      })!,
+      LABELS,
+    );
+    expect(other.xMax).toBe(16);
+    expect(other.xAxis.ticks.map((t) => t.label)).toEqual([
+      "0",
+      "4",
+      "8",
+      "12",
+      "16",
+    ]);
+    for (const tick of other.xAxis.ticks) {
+      expect(tick.crowded, `year ${tick.label}`).toBeUndefined();
+    }
+  });
+
   it("marks the start of study as the first payment", () => {
     expect(model.markers).toHaveLength(1);
     expect(model.markers[0].period).toBe(10);

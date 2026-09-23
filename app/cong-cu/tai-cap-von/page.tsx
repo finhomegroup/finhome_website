@@ -4,6 +4,7 @@ import {
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
 import { RefinanceCalculator } from "@/components/refinance-calculator";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { REFINANCE as C } from "@/content/calculators/refinance";
 
@@ -27,9 +28,12 @@ export default function RefinancePage() {
       prose={C.formula}
       faq={C.faq}
       disclaimer={C.disclaimer}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <RefinanceCalculator />
+      <RefinanceCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

@@ -78,9 +78,18 @@ function omittedSegmentModel(): BarChartModel {
 const draw = (model: BarChartModel) =>
   renderToStaticMarkup(createElement(BarChart, { model }));
 
-/** Fill classes in the order they appear in the markup. */
+/**
+ * Fill classes in the order they appear in the markup, PALETTE ONES ONLY.
+ *
+ * The chart opens with a zero-sized `<svg>` holding the texture patterns
+ * (`chart-texture.tsx`), and the dots pattern's own circle is `fill-ink` — the
+ * texture channel, not a palette slot. Cutting the markup at that carrier's
+ * `</svg>` keeps this helper reading exactly what it always read: the track
+ * rects and the segment rects, in order.
+ */
 function fills(markup: string): string[] {
-  return [...markup.matchAll(/class="(fill-[a-z0-9-/]+)"/g)].map((m) => m[1]);
+  const afterDefs = markup.slice(markup.indexOf("</svg>") + "</svg>".length);
+  return [...afterDefs.matchAll(/class="(fill-[a-z0-9-/]+)"/g)].map((m) => m[1]);
 }
 
 describe("BarChart — colour follows the segment KEY", () => {
@@ -204,7 +213,6 @@ describe("BarChart — labels and totals are readable text", () => {
   it("renders every bar label as HTML, not as svg text", () => {
     expect(markup).toContain("Thu nhập");
     expect(markup).toContain("Phân bổ");
-    // No `<text>` carrying a label: the only svg text left is the tick row.
     expect(markup).not.toMatch(/<text[^>]*>Thu nhập</);
     expect(markup).not.toMatch(/<text[^>]*>Phân bổ</);
   });
@@ -214,21 +222,28 @@ describe("BarChart — labels and totals are readable text", () => {
     expect(markup).not.toMatch(/<text[^>]*>30\.000\.000/);
   });
 
-  it("keeps the tick numbers inside the svg, where they line up", () => {
-    // Only the ticks need positioning against the plot — see `geometry.ts`.
-    const texts = [...markup.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map(
-      (m) => m[1],
-    );
-    expect(texts.length).toBeGreaterThan(0);
-    for (const text of texts) {
-      expect(text).not.toContain("Thu nhập");
-      expect(text).not.toContain("Phân bổ");
-    }
+  it("renders the tick numbers as positioned HTML, not svg text", () => {
+    // §12: they were the last `<text>` in this chart, at `text-[9px]` in
+    // VIEWBOX units — so around 9 px on a phone and around 15 px in a wide
+    // desktop column. A tick at fraction `at` sits at `at`% of the track's own
+    // width, which needs no svg, and `text-xs` then means the same size here
+    // as on every other axis in the suite.
+    expect(markup).not.toMatch(/<text/);
+    expect(markup).toContain("left:0%");
+    expect(markup).toContain("left:100%");
+    expect(markup).toContain("-translate-x-full");
+    expect(markup).toContain("text-xs");
+    // And it is still hidden from assistive technology, like the drawing.
+    expect(markup).toMatch(/<div aria-hidden="true" class="relative/);
   });
 
   it("hides every drawing it emits from assistive technology", () => {
     const svgs = markup.match(/<svg[^>]*>/g) ?? [];
-    // One track per bar, plus the tick row.
+    // One track per bar, plus the zero-sized carrier that defines the texture
+    // patterns for both tracks; the axis row is no longer an svg. The carrier
+    // draws nothing, but it is still an `<svg>` in the document, so it has to
+    // carry the same two attributes — a screen reader must not find a stray
+    // graphic in the flow.
     expect(svgs).toHaveLength(3);
     for (const svg of svgs) {
       expect(svg).toContain('aria-hidden="true"');

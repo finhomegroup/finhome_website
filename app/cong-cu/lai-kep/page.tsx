@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { CompoundCalculator } from "@/components/compound-calculator";
 import { COMPOUND as C } from "@/content/calculators/compound";
@@ -32,9 +33,14 @@ export default function CompoundInterestPage() {
       intro={C.table.intro}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <CompoundCalculator />
+      {/* The next step moves inside the tool, beside the answer, instead of
+          below the method prose. */}
+      <CompoundCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

@@ -36,9 +36,16 @@ export default function DdmMultiPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // CSV row 37 is "Hai cột": the calculator renders `columns="split"`, and
+      // `wide` is what gives that grid room to be worth splitting.
+      wide
       // Three quarters of the value comes from the perpetuity nobody can
       // check. Say so before the reader takes the number as an answer.
       notice={C.terminalNotice}
+      // The 77,41% figure and the 12.358 ₫ / 54.716 ₫ split. The warning to
+      // read the terminal share alongside the value stays visible.
+      noticeDetailTitle={C.terminalNoticeDetailTitle}
+      noticeDetail={C.terminalNoticeDetail}
       intro={C.form.table.intro}
       afterCalculator={
         <section>

@@ -75,6 +75,10 @@ export default function AutoLeasePage() {
       // lease — so the decrees behind it have to be openable rather than only
       // named in the help text. See the `sources` comment in `auto-lease.ts`.
       sources={C.sources}
+      // ROW 34 is a "Hai cột" row and the tool now splits eight inputs from
+      // the payment, so the card is widened from `max-w-3xl`. Unverified
+      // visually — see the recap.
+      wide
     >
       <AutoLeaseCalculator />
     </CalculatorPage>

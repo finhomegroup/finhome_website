@@ -34,7 +34,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { markupRegion } from "@/lib/markup-region";
 import { readFileSync } from "node:fs";
-import { createElement, type ComponentType } from "react";
+import { createElement, type ComponentType, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LONG_TERM_PLAN } from "@/content/calculators/long-term-plan";
 import { RETIREMENT_TARGET as C } from "@/content/calculators/retirement-target";
@@ -44,6 +44,7 @@ const CONTENT_PATH = "@/content/calculators/long-term-plan";
 /** Render the calculator, optionally on a patched default scenario. */
 async function render(
   defaults?: Partial<Record<string, string>>,
+  props?: { actions?: ReactNode },
 ): Promise<string> {
   vi.resetModules();
   if (defaults) {
@@ -66,9 +67,11 @@ async function render(
     // cast makes that a type error rather than a widening.
     const loaded = (await import(
       "@/components/retirement-target-calculator"
-    )) as { RetirementTargetCalculator: ComponentType };
+    )) as {
+      RetirementTargetCalculator: ComponentType<{ actions?: ReactNode }>;
+    };
     return renderToStaticMarkup(
-      createElement(loaded.RetirementTargetCalculator),
+      createElement(loaded.RetirementTargetCalculator, props ?? null),
     );
   } finally {
     vi.doUnmock(CONTENT_PATH);
@@ -191,10 +194,14 @@ describe("the route file's wiring", () => {
   it("shows the other three views of the same plan", () => {
     // Without the control, four pages computing one plan look like four
     // unrelated tools — which is how a reader comes to run three of them and
-    // believe they disagree. `afterCalculator`, so it renders from the page
-    // and ships no client JavaScript.
+    // believe they disagree. Still rendered FROM THE PAGE, so it ships no
+    // client JavaScript; it is now handed to the calculator as `actions` so
+    // the split layout places it immediately after the answer and BEFORE the
+    // figure, which is what docs §8 row 47 and P2 ask for.
     expect(PAGE).toContain('<LongTermViews current="contribution" />');
-    expect(PAGE).toContain("afterCalculator=");
+    expect(PAGE).toContain("actions={");
+    expect(PAGE).not.toContain("nextSteps={");
+    expect(PAGE).not.toContain("afterCalculator=");
   });
 
   it("overrides the disclaimer with the long-term plan's own scope", () => {
@@ -463,5 +470,67 @@ describe("the funded boundary, on the rendered page", () => {
     const html = await render();
     expect(html).not.toContain(C.form.fundedNotice);
     expect(html).not.toContain("0,000062");
+  });
+});
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the bugs a textual bound
+ * produces, and `detail` is the last region, so a marker-to-marker slice would
+ * run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 47: the monthly amount to set aside leads", () => {
+  it("emphasises the monthly figure, and only it", async () => {
+    const html = await render();
+    expect(html).toContain("lg:grid-cols-5");
+    expect(count(html, "md:text-3xl")).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(C.form.monthlyLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(C.form.annualLabel));
+  });
+
+  it("names the monthly figure as a division of the annual one", async () => {
+    // `monthlyEquivalent` is the ENGINE's own field and its name says what it
+    // is; the label repeats that, and the annual instruction the model applies
+    // stays directly below rather than being replaced by the division.
+    expect(C.form.monthlyLabel).toContain("chia cho 12");
+    const result = regionOf(await render(), "result");
+    expect(result).toContain(C.form.annualLabel);
+    expect(result).toContain(C.form.lastAnnualLabel);
+  });
+
+  it("moves the plan's verification figures into the detail region", async () => {
+    const html = await render();
+    // "Phần theo năm và cuối kỳ để ở chi tiết": the seven-row check, which
+    // includes the end-of-period balance, is a collapsed second reading below
+    // the answer — not the eleven rows a reader used to scroll past.
+    const detail = regionOf(html, "detail");
+    expect(detail).toContain(C.form.checkTitle);
+    expect(detail).toContain(C.form.finalBalanceLabel);
+    expect(regionOf(html, "result")).not.toContain(C.form.checkTitle);
+  });
+
+  it("restates the monthly figure on the pinned button", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="tinh-huu-tri-ket-qua"');
+    expect(html).toContain('data-calc-answer="true"');
+  });
+
+  it("keeps the family's other views beside the answer", async () => {
+    const html = await render(undefined, { actions: "VIEWS-MARKER" });
+    const result = regionOf(html, "result");
+    expect(result).toContain("VIEWS-MARKER");
+    // No `<figure>` ordering check here: this tool has no chart, so the
+    // `actions` slot is already the first thing after the answer. The sibling
+    // views with a plot assert the before-the-figure order themselves.
+    expect(result).not.toContain("<figure");
+    expect(count(html, 'data-results-live="true"')).toBe(1);
   });
 });

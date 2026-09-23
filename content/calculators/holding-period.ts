@@ -55,6 +55,12 @@ export const HOLDING_PERIOD = {
     resultTitle: "Kết quả",
     annualisedLabel: "Lợi nhuận theo năm",
     hprLabel: "Lợi nhuận cả kỳ nắm giữ",
+    // The SAME number as `hprLabel`, with the period named. CSV row 40's
+    // action is "tách rõ lợi nhuận cả kỳ và theo năm bằng nhãn rõ ràng": two
+    // percentages stacked in one panel invite being read as two measurements
+    // of the same thing, and naming the span on one of them is what stops it.
+    // Falls back to the bare label when no period was entered.
+    hprPeriodFormat: "Lợi nhuận cả kỳ nắm giữ ({years} năm)",
     capitalGainYieldLabel: "Trong đó lãi vốn",
     incomeYieldLabel: "Trong đó lợi tức",
 
@@ -73,7 +79,10 @@ export const HOLDING_PERIOD = {
   },
 
   splitNotice:
-    "Dòng cần đọc là hai dòng tách phần, không phải dòng tổng. Với ví dụ mặc định, lợi nhuận cả kỳ 30% gồm 18% lãi vốn và 12% lợi tức — cổ tức chiếm 40% toàn bộ số lãi. Một cổ phiếu tăng trưởng cùng lãi 30% nhưng không trả cổ tức sẽ có 30% lãi vốn và 0% lợi tức: cùng một con số tổng, nhưng khoản thứ nhất đã trả tiền vào tay bạn còn khoản thứ hai thì chưa, và chỉ khoản thứ nhất trả được tiền thuê nhà của bạn trong thời gian nắm giữ.",
+    "Dòng cần đọc là hai dòng tách phần, không phải dòng tổng: hai khoản cùng lãi 30% có thể là một khoản đã trả tiền vào tay bạn và một khoản chưa. Chỉ phần lợi tức trả được tiền thuê nhà của bạn trong thời gian nắm giữ.",
+  splitNoticeDetailTitle: "Con số cụ thể: 30% chia thành 18% và 12%",
+  splitNoticeDetail:
+    "Với ví dụ mặc định, lợi nhuận cả kỳ 30% gồm 18% lãi vốn và 12% lợi tức — cổ tức chiếm 40% toàn bộ số lãi. Một cổ phiếu tăng trưởng cùng lãi 30% nhưng không trả cổ tức sẽ có 30% lãi vốn và 0% lợi tức: cùng một con số tổng, nhưng khoản thứ nhất đã trả tiền vào tay bạn còn khoản thứ hai thì chưa.",
 
   formula: {
     title: "Cách tính",

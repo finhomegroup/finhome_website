@@ -88,9 +88,16 @@ describe("thue-luong-hoa-ky at its shipped defaults", () => {
     // correctly writes the Vietnamese-grouped "184.500", while
     // String(184500) is "184500" and appears nowhere on the page. Money goes
     // through the formatter; only a YEAR is safe to assert with String().
+    //
+    // REPOINTED, not weakened. Row 76's entry pass moved this walk-through
+    // from the visible notice into `regressiveNoticeDetail`, the disclosure
+    // the route passes under `regressiveNoticeDetailTitle`. The figure still
+    // has to be derived from the constant; it is now one click away, and
+    // `content/calculators/u-entry-contract.test.ts` is what proves the
+    // disclosure actually renders.
     const p = PAYROLL_YEARS[2026];
-    expect(C.regressiveNotice).toContain(usd(p.socialSecurityWageBase));
-    expect(C.regressiveNotice).toContain(String(p.year));
+    expect(C.regressiveNoticeDetail).toContain(usd(p.socialSecurityWageBase));
+    expect(C.regressiveNoticeDetail).toContain(String(p.year));
     // And the year in the sentence is the year the page opens on.
     expect(String(shipped().year)).toBe(String(p.year));
   });
@@ -108,7 +115,7 @@ describe("thue-luong-hoa-ky at its shipped defaults", () => {
     }
     // The non-indexation is the point of naming them at all.
     expect(named).toContain("2013");
-    expect(C.regressiveNotice).toContain("2013");
+    expect(C.regressiveNoticeDetail).toContain("2013");
   });
 
   it("quotes the 7,65% case the lede and the notice are built on", () => {
@@ -136,10 +143,12 @@ describe("thue-luong-hoa-ky at its shipped defaults", () => {
       formatPercent(above.marginalRatePercent, 2),
     ]) {
       expect(
-        C.regressiveNotice,
-        `the regressive notice is missing ${figure}`,
+        C.regressiveNoticeDetail,
+        `the regressive walk-through is missing ${figure}`,
       ).toContain(figure);
     }
+    // The RULE those two figures demonstrate stays where no click is needed.
+    expect(C.regressiveNotice).toContain("GIẢM chứ không tăng");
   });
 
   it("quotes the high earner, capped, with the surtax on top", () => {

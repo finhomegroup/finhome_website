@@ -22,9 +22,13 @@ export default function UsTbillPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // The two conventions that make the quote understate the return, each
-      // priced on its own so the reader can see they compound.
+      // The rule: a quoted discount rate is not a yield, so it cannot be
+      // compared with a deposit's APY. That is a limit on reading the result.
       notice={C.quoteNotice}
+      // The two conventions priced on their own and together, so the reader
+      // can see they compound.
+      noticeDetailTitle={C.quoteNoticeDetailTitle}
+      noticeDetail={C.quoteNoticeDetail}
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}

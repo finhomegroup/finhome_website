@@ -25,6 +25,10 @@ export default function HoldingPeriodPage() {
       // The split is the point, not the total. Same 30% can be money in hand
       // or money on paper.
       notice={C.splitNotice}
+      // The 18%/12% worked split and the no-dividend counterpart. The rule —
+      // read the two component rows, not the total — stays visible.
+      noticeDetailTitle={C.splitNoticeDetailTitle}
+      noticeDetail={C.splitNoticeDetail}
       prose={C.formula}
       faq={C.faq}
     >

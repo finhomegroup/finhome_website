@@ -42,11 +42,15 @@ describe("the shipped defaults are the home-fund example the row asks for", () =
 
   it("frames the example as down-payment money, not an anonymous trade", () => {
     // Row 21: "dùng ví dụ gần người mua nhà".
-    expect(C.lede).toContain("vốn dành để mua nhà");
-    // The lede names the example in the readable magnitude form, not as a
-    // grouped đồng figure: a lede sentence is prose, and the exact figures
-    // are in the fields the reader is about to look at.
-    expect(C.lede).toContain("500 triệu thành 700 triệu sau 3 năm");
+    // In `ledeDetail`, not `lede`: the entry contract keeps the heading to a
+    // purpose sentence, and an example is exactly the secondary detail it
+    // moves behind a labelled disclosure. The framing is still on the page,
+    // above the form, one click away.
+    expect(C.ledeDetail).toContain("vốn dành để mua nhà");
+    // Named in the readable magnitude form, not as a grouped đồng figure:
+    // this is prose, and the exact figures are in the fields the reader is
+    // about to look at.
+    expect(C.ledeDetail).toContain("500 triệu thành 700 triệu sau 3 năm");
     expect(formatMoney(parseMoney(F.defaultCost)!)).toBe("500.000.000");
     const homeFaq = C.faq.items.find((i) => i.q.includes("để dành mua nhà"));
     expect(homeFaq, "no FAQ answers the home-fund reader").toBeDefined();
@@ -61,6 +65,7 @@ describe("no unsupported deposit-rate comparison anywhere", () => {
   // the claim about banks is gone.
   const allCopy = [
     C.lede,
+    C.ledeDetail,
     C.leadNotice,
     ...C.formula.body,
     ...C.faq.items.flatMap((i) => [i.q, i.a]),
@@ -71,8 +76,12 @@ describe("no unsupported deposit-rate comparison anywhere", () => {
   ].join(" ");
 
   it("keeps the eight-months versus eight-years arithmetic", () => {
-    expect(C.leadNotice).toContain("65,7%/năm");
-    expect(C.leadNotice).toContain("4,3%/năm");
+    // The arithmetic is kept, in the disclosure. The RULE it demonstrates —
+    // that a total ROI says nothing about time — stays in `leadNotice`,
+    // which renders unconditionally above the form.
+    expect(C.ledeDetail).toContain("65,7%/năm");
+    expect(C.ledeDetail).toContain("4,3%/năm");
+    expect(C.leadNotice).toContain("ROI tổng không nói gì về thời gian");
   });
 
   it("claims nothing about what a deposit pays", () => {

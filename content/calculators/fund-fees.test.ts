@@ -36,6 +36,7 @@ function shipped() {
 const ALL_PROSE = [
   C.lede,
   C.compoundNotice,
+  C.compoundNoticeDetail,
   ...C.formula.body,
   ...C.faq.items.flatMap((item) => [item.q, item.a]),
 ].join(" ");

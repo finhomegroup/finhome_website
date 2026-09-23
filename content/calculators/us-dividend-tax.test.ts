@@ -174,12 +174,17 @@ describe("thue-co-tuc — the applicable year is stated, with a base", () => {
     // Fetched from IRS Topic no. 409 on 2026-09-16. The old copy rounded
     // these ("khoảng dưới 48.000 USD"); once a source is named, an
     // approximation reads as the source's own number and is not.
-    const guide = C.form.thresholdGuide;
+    // REPOINTED by row 45's entry pass: the five bracket figures moved into
+    // `thresholdGuideDetail`, the disclosure the calculator renders under
+    // `thresholdGuideDetailTitle`. The YEAR and the check date stayed in the
+    // visible guide, which is what the two assertions above pin.
+    const guide = C.form.thresholdGuideDetail;
     for (const figure of ["48.350", "96.700", "64.750", "533.400", "600.050"]) {
       expect(guide, `threshold guide is missing ${figure}`).toContain(figure);
     }
-    // And it must still tell the reader to go get their own year.
-    expect(guide).toContain("năm thuế");
+    // And the VISIBLE guide must still tell the reader to go get their own
+    // year — that instruction cannot be the thing behind the click.
+    expect(C.form.thresholdGuide).toContain("năm thuế");
   });
 
   it("does not claim a bracket table for a year it cannot cite", () => {
@@ -239,10 +244,14 @@ describe("thue-co-tuc at its shipped defaults", () => {
     expect(usd(r.taxIfAllOrdinary)).toBe("2.880");
     expect(usd(r.qualifiedSaving)).toBe("900");
     expect(usd(r.totalDividends)).toBe("12.000");
+    // REPOINTED by row 45's entry pass: the worked default case moved into
+    // `classificationNoticeDetail`. The top-bracket gap — the widest form of
+    // the same rule — stayed visible, and the test below still pins it there.
     for (const figure of ["1.980", "16,50%", "2.880", "900", "12.000"]) {
-      expect(C.classificationNotice, `notice is missing ${figure}`).toContain(
-        figure,
-      );
+      expect(
+        C.classificationNoticeDetail,
+        `the worked case is missing ${figure}`,
+      ).toContain(figure);
     }
   });
 

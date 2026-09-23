@@ -1,6 +1,8 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
@@ -41,6 +43,13 @@ import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 
 /**
+ * Shared by both routes on purpose: row 32 requires the two pages to keep the
+ * same structure, and a per-route id would be a difference with no reader.
+ */
+const FORM_ID = "the-tin-dung-nhap";
+const RESULT_ID = "the-tin-dung-ket-qua";
+
+/**
  * ONE card-payoff workspace, behind two routes — original rows 29 and 30.
  *
  * `/cong-cu/tra-het-the-tin-dung/` opens on `fixed` and
@@ -62,12 +71,59 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  *   set aside — never the first minimum payment, which was already falling.
  *
  * One live results region, four rows.
+ *
+ * ROWS 31 AND 32 — "Đưa tháng hết nợ và tổng lãi lên đầu; hai cách trả cần dễ
+ * so sánh trên mobile" and "Làm nổi bật chênh lệch thời gian hết nợ với cách
+ * trả khác; giữ cùng cấu trúc với trang trả hết thẻ."
+ *
+ * ONE STRUCTURE SERVES BOTH, which is not a shortcut — row 32 asks for it in
+ * as many words. So the announced group leads with the month the debt clears
+ * (or, in the target-month strategy, the payment that target needs), then the
+ * total interest, then the payoff date, then the SIGNED difference against the
+ * other rule. That last row is row 32's headline and row 31's "dễ so sánh":
+ * on a phone the reader sees "nhanh hơn: 97 tháng" without scrolling into the
+ * second group at all.
+ *
+ * THE COMPARISON GROUP ITSELF MOVED DOWN, not away. It keeps all four of its
+ * figures for the other rule, keeps `live={false}`, and keeps the sign-aware
+ * labels: "nhanh hơn: −97 tháng" is a claim the figures contradict, so the
+ * label follows the sign in both places.
+ *
+ * `freedLabel` STAYS IN THE ANNOUNCED GROUP with its two-date timing notice.
+ * The freed monthly money is what the household actually does next, and the
+ * notice that the payoff month is not a free month has to sit beside it.
+ *
+ * MEASURED REPAIR (independent render review of export 2026-09-22T20:56:03Z):
+ * that arrangement announced FIVE peer figures on both routes — months or
+ * solved payment, total interest, payoff date, the signed comparison and the
+ * freed budget — past the accepted one-main-plus-two-or-three-support
+ * hierarchy. Nothing was dropped to meet a count:
+ *
+ * - The payoff DATE is now a labelled qualifier on the headline row, which is
+ *   what it always was: the same months read off a calendar. It keeps
+ *   `payoffDateLabel`, and it no longer depends on the budget block, so it
+ *   survives a blank household budget.
+ * - The freed-budget row mounts only when the household stated an allocation.
+ *   At a zero budget `plan.budget` is null, so that row was a peer figure
+ *   rendering a dash for a number nobody entered.
+ * - The signed comparison row, the budget timing notice and every refusal
+ *   notice are untouched, and the target-month strategy still headlines the
+ *   solved payment.
+ *
+ * So the announced group is one main answer plus two support rows, plus the
+ * freed allocation when there is one — three at most beside the headline.
  */
 export function CardPayoffCalculator({
   strategy: openingStrategy = "fixed",
+  actions,
+  nextSteps,
 }: {
   /** Which route this is: the strategy the form opens on. */
   strategy?: CardStrategy;
+  /** Compact actions — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The longer guidance — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
 }) {
   const initial = {
     strategy: openingStrategy as string,
@@ -181,380 +237,455 @@ export function CardPayoffCalculator({
 
   const chartLabels = { ...CHART_UI.money, ...C.chart };
 
+  /**
+   * THE ONE ANSWER, FORMATTED ONCE.
+   *
+   * This form is eleven inputs plus a date group and a disclosure, so editing
+   * the minimum rule at the bottom puts the announced figure off a desktop
+   * screen. `ResultCta sticky` carries this restatement in the pinned block —
+   * the audit's "bounded short current answer", never the whole result column.
+   *
+   * The same object feeds the headline `ResultRow`, so the pinned copy and the
+   * authoritative row cannot round the same quantity two different ways.
+   */
+  const headline = isTarget
+    ? { label: C.form.paymentResultLabel, value: money(plan?.plan.levelPayment) }
+    : {
+        label: C.form.monthsResultLabel,
+        value: monthsWithYears(plan?.plan.months),
+      };
+
   return (
     <CalculatorCard>
       <ExampleNotice pristine={pristine} onReset={fields.reset} />
 
-      <FieldGroup className="mt-6">
-        <RadioGroupField
-          {...fields.bind("strategy")}
-          legend={C.form.strategyLegend}
-          help={C.form.strategyHelp}
-          options={[
-            { value: "fixed", label: C.form.strategyFixedOption },
-            { value: "target", label: C.form.strategyTargetOption },
-            { value: "minimum", label: C.form.strategyMinimumOption },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        className="mt-6"
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("strategy")}
+                legend={C.form.strategyLegend}
+                help={C.form.strategyHelp}
+                options={[
+                  { value: "fixed", label: C.form.strategyFixedOption },
+                  { value: "target", label: C.form.strategyTargetOption },
+                  { value: "minimum", label: C.form.strategyMinimumOption },
+                ]}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.group} className="mt-8">
-        <NumberField
-          {...fields.bind("balance")}
-          label={C.form.balanceLabel}
-          unit={C.form.balanceUnit}
-          help={C.form.balanceHelp}
-          error={C.form.balanceInvalid}
-          invalid={invalid.balance}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={invalid.rate}
-        />
-        {/* Only the input the chosen strategy needs: the others are either
-            the answer or another rule's setting. */}
-        {isFixed ? (
-          <NumberField
-            {...fields.bind("payment")}
-            label={C.form.paymentLabel}
-            unit={C.form.paymentUnit}
-            help={C.form.paymentHelp}
-            error={C.form.paymentInvalid}
-            invalid={invalid.payment}
+            <FieldGroup title={C.form.group} className="mt-8">
+              <NumberField
+                {...fields.bind("balance")}
+                label={C.form.balanceLabel}
+                unit={C.form.balanceUnit}
+                help={C.form.balanceHelp}
+                error={C.form.balanceInvalid}
+                invalid={invalid.balance}
+              />
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={invalid.rate}
+              />
+              {/* Only the input the chosen strategy needs: the others are
+                  either the answer or another rule's setting. */}
+              {isFixed ? (
+                <NumberField
+                  {...fields.bind("payment")}
+                  label={C.form.paymentLabel}
+                  unit={C.form.paymentUnit}
+                  help={C.form.paymentHelp}
+                  error={C.form.paymentInvalid}
+                  invalid={invalid.payment}
+                />
+              ) : null}
+              {isTarget ? (
+                <NumberField
+                  {...fields.bind("months")}
+                  label={C.form.monthsLabel}
+                  unit={C.form.monthsUnitField}
+                  help={C.form.monthsHelp}
+                  error={C.form.monthsInvalid}
+                  invalid={invalid.months}
+                />
+              ) : null}
+              {isMinimum ? (
+                <NumberField
+                  {...fields.bind("extra")}
+                  label={C.form.extraLabel}
+                  unit={C.form.extraUnit}
+                  help={C.form.extraHelp}
+                  error={C.form.extraInvalid}
+                  invalid={invalid.extra}
+                />
+              ) : null}
+            </FieldGroup>
+
+            <FieldGroup title={C.form.planGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("budget")}
+                label={C.form.budgetLabel}
+                unit={C.form.budgetUnit}
+                help={C.form.budgetHelp}
+                error={C.form.budgetInvalid}
+                invalid={invalid.budget}
+              />
+              <NumberField
+                {...fields.bind("startDay")}
+                label={C.form.startDayLabel}
+                help={C.form.startDayHelp}
+                error={C.form.startDayInvalid}
+                invalid={start.dayBad}
+              />
+              <NumberField
+                {...fields.bind("startMonth")}
+                label={C.form.startMonthLabel}
+                help={C.form.startMonthHelp}
+                error={C.form.startMonthInvalid}
+                invalid={start.monthBad}
+              />
+              <NumberField
+                {...fields.bind("startYear")}
+                label={C.form.startYearLabel}
+                help={C.form.startYearHelp}
+                error={C.form.startYearInvalid}
+                invalid={start.yearBad}
+              />
+              <div>
+                <button
+                  type="button"
+                  onClick={fillToday}
+                  className={cn(
+                    "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+                    "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+                    FH_POINTER,
+                  )}
+                >
+                  {C.form.todayLabel}
+                </button>
+                <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                  {C.form.todayHelp}
+                </p>
+              </div>
+            </FieldGroup>
+
+            {/* The card's own minimum rule. It always shapes one of the two
+                paths, so it is disclosed with its current values on the
+                summary line rather than hidden. */}
+            <AdvancedFields
+              title={C.form.minimumTitle}
+              emptySummary={C.form.minimumNone}
+              className="mt-8"
+              settings={[
+                {
+                  key: "percent",
+                  label: C.form.percentLabel,
+                  value:
+                    invalid.percent || percent === null
+                      ? C.form.percentInvalid
+                      : formatPercent(
+                          percent,
+                          Number.isInteger(percent) ? 0 : 2,
+                        ),
+                  active: invalid.percent || percent !== 0,
+                },
+                {
+                  key: "floor",
+                  label: C.form.floorLabel,
+                  value: invalid.floor ? C.form.floorInvalid : money(floor)!,
+                  active: invalid.floor || floor !== 0,
+                },
+              ]}
+            >
+              <FieldGroup title={C.form.minimumGroup}>
+                <NumberField
+                  {...fields.bind("percent")}
+                  label={C.form.percentLabel}
+                  unit={C.form.percentUnit}
+                  help={C.form.percentHelp}
+                  error={C.form.percentInvalid}
+                  invalid={invalid.percent}
+                />
+                <NumberField
+                  {...fields.bind("floor")}
+                  label={C.form.floorLabel}
+                  unit={C.form.floorUnit}
+                  help={C.form.floorHelp}
+                  error={C.form.floorInvalid}
+                  invalid={invalid.floor}
+                />
+              </FieldGroup>
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.minimumHint}
+              </p>
+            </AdvancedFields>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={!fieldsUsable || start.date === null}
+            sticky
+            answer={headline}
           />
-        ) : null}
-        {isTarget ? (
-          <NumberField
-            {...fields.bind("months")}
-            label={C.form.monthsLabel}
-            unit={C.form.monthsUnitField}
-            help={C.form.monthsHelp}
-            error={C.form.monthsInvalid}
-            invalid={invalid.months}
-          />
-        ) : null}
-        {isMinimum ? (
-          <NumberField
-            {...fields.bind("extra")}
-            label={C.form.extraLabel}
-            unit={C.form.extraUnit}
-            help={C.form.extraHelp}
-            error={C.form.extraInvalid}
-            invalid={invalid.extra}
-          />
-        ) : null}
-      </FieldGroup>
+        }
 
-      <FieldGroup title={C.form.planGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("budget")}
-          label={C.form.budgetLabel}
-          unit={C.form.budgetUnit}
-          help={C.form.budgetHelp}
-          error={C.form.budgetInvalid}
-          invalid={invalid.budget}
-        />
-        <NumberField
-          {...fields.bind("startDay")}
-          label={C.form.startDayLabel}
-          help={C.form.startDayHelp}
-          error={C.form.startDayInvalid}
-          invalid={start.dayBad}
-        />
-        <NumberField
-          {...fields.bind("startMonth")}
-          label={C.form.startMonthLabel}
-          help={C.form.startMonthHelp}
-          error={C.form.startMonthInvalid}
-          invalid={start.monthBad}
-        />
-        <NumberField
-          {...fields.bind("startYear")}
-          label={C.form.startYearLabel}
-          help={C.form.startYearHelp}
-          error={C.form.startYearInvalid}
-          invalid={start.yearBad}
-        />
-        <div>
-          <button
-            type="button"
-            onClick={fillToday}
-            className={cn(
-              "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
-              "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
-              FH_POINTER,
-            )}
-          >
-            {C.form.todayLabel}
-          </button>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.form.todayHelp}
-          </p>
-        </div>
-      </FieldGroup>
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {/* In the target-month strategy the months are the INPUT, so
+                  the headline is the payment the target needs. Repeating the
+                  number the reader just typed is not a result. */}
+              <ResultRow
+                label={headline.label}
+                value={headline.value}
+                emphasis
+                // MEASURED REPAIR: the payoff DATE was the third of five peer
+                // announced figures. It is context for the answer above it —
+                // the same months expressed as a calendar day — so it is now a
+                // labelled qualifier ON that row instead of a competing one.
+                // It keeps its own label, and it survives a blank household
+                // budget because it no longer depends on the budget block.
+                note={
+                  showDate(plan?.plan.payoffDate) === null
+                    ? undefined
+                    : `${C.form.payoffDateLabel}: ${showDate(plan?.plan.payoffDate)}`
+                }
+              />
+              <ResultRow
+                label={C.form.totalInterestLabel}
+                value={money(plan?.plan.result.totalInterest)}
+              />
+              {/* ROW 32's headline, and row 31's "dễ so sánh trên mobile":
+                  the gap against the other rule, announced, so the reader
+                  does not have to scroll into the comparison group to learn
+                  the one number that decides between the two.
 
-      {/* The card's own minimum rule. It always shapes one of the two paths,
-          so it is disclosed with its current values on the summary line
-          rather than hidden. */}
-      <AdvancedFields
-        title={C.form.minimumTitle}
-        emptySummary={C.form.minimumNone}
-        className="mt-8"
-        settings={[
-          {
-            key: "percent",
-            label: C.form.percentLabel,
-            value:
-              invalid.percent || percent === null
-                ? C.form.percentInvalid
-                : formatPercent(percent, Number.isInteger(percent) ? 0 : 2),
-            active: invalid.percent || percent !== 0,
-          },
-          {
-            key: "floor",
-            label: C.form.floorLabel,
-            value: invalid.floor ? C.form.floorInvalid : money(floor)!,
-            active: invalid.floor || floor !== 0,
-          },
-        ]}
-      >
-        <FieldGroup title={C.form.minimumGroup}>
-          <NumberField
-            {...fields.bind("percent")}
-            label={C.form.percentLabel}
-            unit={C.form.percentUnit}
-            help={C.form.percentHelp}
-            error={C.form.percentInvalid}
-            invalid={invalid.percent}
-          />
-          <NumberField
-            {...fields.bind("floor")}
-            label={C.form.floorLabel}
-            unit={C.form.floorUnit}
-            help={C.form.floorHelp}
-            error={C.form.floorInvalid}
-            invalid={invalid.floor}
-          />
-        </FieldGroup>
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.minimumHint}
-        </p>
-      </AdvancedFields>
+                  THE LABEL FOLLOWS THE SIGN. On the minimum strategy the
+                  chosen plan is slower and dearer than the flat comparison,
+                  and "nhanh hơn: −97 tháng" is a claim the figures
+                  contradict. */}
+              <ResultRow
+                label={
+                  plan?.monthsDifference == null || plan.monthsDifference === 0
+                    ? C.form.compareMonthsEqualLabel
+                    : plan.monthsDifference > 0
+                      ? C.form.compareMonthsFasterLabel
+                      : C.form.compareMonthsSlowerLabel
+                }
+                value={
+                  plan?.monthsDifference == null
+                    ? null
+                    : plan.monthsDifference === 0
+                      ? C.form.compareMonthsEqualValue
+                      : `${formatDecimal(Math.abs(plan.monthsDifference), 0)} ${C.form.monthsUnit}`
+                }
+                prose={plan?.monthsDifference === 0}
+              />
+              {/* MEASURED REPAIR: mounted only when the household actually
+                  stated an allocation. `plan.budget` is null at a zero budget,
+                  so this used to be a fifth announced row showing a dash — a
+                  peer figure for a number nobody entered. With an allocation
+                  stated it is announced exactly as before, timing notice and
+                  all. */}
+              {plan?.budget != null ? (
+                <ResultRow
+                  label={C.form.freedLabel}
+                  value={money(plan.budget.freedMonthly)}
+                />
+              ) : null}
+            </ResultGroup>
 
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        {/* In the target-month strategy the months are the INPUT, so the
-            headline is the payment the target needs. Repeating the number the
-            reader just typed is not a result. */}
-        {isTarget ? (
-          <ResultRow
-            label={C.form.paymentResultLabel}
-            value={money(plan?.plan.levelPayment)}
-          />
-        ) : (
-          <ResultRow
-            label={C.form.monthsResultLabel}
-            value={monthsWithYears(plan?.plan.months)}
-          />
-        )}
-        <ResultRow
-          label={C.form.payoffDateLabel}
-          value={showDate(plan?.plan.payoffDate)}
-        />
-        <ResultRow
-          label={C.form.totalInterestLabel}
-          value={money(plan?.plan.result.totalInterest)}
-        />
-        <ResultRow
-          label={C.form.freedLabel}
-          value={money(plan?.budget?.freedMonthly)}
-        />
-      </ResultGroup>
+            {/* THE PAYOFF MONTH IS NOT A FREE MONTH: the last payment lands
+                in it, so only the remainder of that month's allocation is
+                released and the whole amount is free from the next cycle.
+                Two different dates. */}
+            {plan?.budget != null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {fill(
+                  plan.budget.finalMonthSurplus > 0
+                    ? C.form.freedTimingNotice
+                    : C.form.freedTimingNoneNotice,
+                  {
+                    lastPayment: money(plan.budget.finalPayment)!,
+                    surplus: money(Math.max(0, plan.budget.finalMonthSurplus))!,
+                    payoffDate: showDate(plan.budget.freedFromDate)!,
+                    fullMonth: formatDecimal(
+                      plan.budget.fullBudgetFromMonth,
+                      0,
+                    ),
+                    fullDate: showDate(plan.budget.fullBudgetFromDate)!,
+                  },
+                )}
+              </p>
+            ) : null}
 
-      {/* THE PAYOFF MONTH IS NOT A FREE MONTH: the last payment lands in it,
-          so only the remainder of that month's allocation is released and the
-          whole amount is free from the next cycle. Two different dates. */}
-      {plan?.budget != null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {fill(
-            plan.budget.finalMonthSurplus > 0
-              ? C.form.freedTimingNotice
-              : C.form.freedTimingNoneNotice,
-            {
-              lastPayment: money(plan.budget.finalPayment)!,
-              surplus: money(Math.max(0, plan.budget.finalMonthSurplus))!,
-              payoffDate: showDate(plan.budget.freedFromDate)!,
-              fullMonth: formatDecimal(plan.budget.fullBudgetFromMonth, 0),
-              fullDate: showDate(plan.budget.fullBudgetFromDate)!,
-            },
-          )}
-        </p>
-      ) : null}
+            <p className="mt-3 text-sm leading-relaxed text-ink-2">
+              {C.form.budgetNotProofNotice}
+            </p>
 
-      <p className="mt-3 text-sm leading-relaxed text-ink-2">
-        {C.form.budgetNotProofNotice}
-      </p>
+            {plan?.budget?.coversPlan === false ? (
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {C.form.budgetShortfallNotice}
+              </p>
+            ) : null}
 
-      {plan?.budget?.coversPlan === false ? (
-        <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {C.form.budgetShortfallNotice}
-        </p>
-      ) : null}
+            {refusal === "neverClears" ? (
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {C.form.noPayoffNotice}
+              </p>
+            ) : null}
 
-      {refusal === "neverClears" ? (
-        <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {C.form.noPayoffNotice}
-        </p>
-      ) : null}
+            {refusal === "beyondHorizon" ? (
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {fill(C.form.beyondHorizonNotice, {
+                  limit: formatMoney(MAX_CARD_MONTHS, 0),
+                })}
+              </p>
+            ) : null}
 
-      {refusal === "beyondHorizon" ? (
-        <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {fill(C.form.beyondHorizonNotice, {
-            limit: formatMoney(MAX_CARD_MONTHS, 0),
-          })}
-        </p>
-      ) : null}
+            {dateUnreadable ? (
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {C.form.dateInvalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        actions={actions ? <div className="mt-8">{actions}</div> : null}
+        chart={
+          <ChartFigure model={chart}>
+            <LineChart model={chart} />
+          </ChartFigure>
+        }
+        nextSteps={nextSteps ? <div className="mt-8">{nextSteps}</div> : null}
+        detail={
+          <>
+            {/* The other rule, on the same balance. Not live: it is the same
+                computation seen a second way, and the announced group above
+                already carries the difference that decides between them. */}
+            <ResultGroup title={C.form.compareTitle} live={false}>
+              <ResultRow
+                label={C.form.compareStrategyLabel}
+                value={
+                  plan?.comparison == null
+                    ? null
+                    : strategyName(plan.comparison, chartLabels)
+                }
+                prose
+              />
+              <ResultRow
+                label={C.form.compareMonthsLabel}
+                value={monthsWithYears(plan?.comparison?.months)}
+              />
+              <ResultRow
+                label={C.form.compareDateLabel}
+                value={showDate(plan?.comparison?.payoffDate)}
+              />
+              <ResultRow
+                label={C.form.compareInterestLabel}
+                value={money(plan?.comparison?.result.totalInterest)}
+              />
+              <ResultRow
+                label={
+                  plan?.interestDifference == null ||
+                  plan.interestDifference === 0
+                    ? C.form.compareInterestEqualLabel
+                    : plan.interestDifference > 0
+                      ? C.form.compareInterestSavedLabel
+                      : C.form.compareInterestExtraLabel
+                }
+                value={
+                  plan?.interestDifference == null
+                    ? null
+                    : plan.interestDifference === 0
+                      ? C.form.compareInterestEqualValue
+                      : money(Math.abs(plan.interestDifference))
+                }
+                prose={plan?.interestDifference === 0}
+              />
+            </ResultGroup>
 
-      {dateUnreadable ? (
-        <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {C.form.dateInvalidNotice}
-        </p>
-      ) : null}
+            {plan !== null && plan.comparison === null ? (
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {C.form.noComparisonNotice}
+              </p>
+            ) : null}
 
-      {/* The other rule, on the same balance. Not live: it is the same
-          computation seen a second way, and the group above already
-          announces every change. */}
-      <ResultGroup title={C.form.compareTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.compareStrategyLabel}
-          value={
-            plan?.comparison == null
-              ? null
-              : strategyName(plan.comparison, chartLabels)
-          }
-          prose
-        />
-        <ResultRow
-          label={C.form.compareMonthsLabel}
-          value={monthsWithYears(plan?.comparison?.months)}
-        />
-        <ResultRow
-          label={C.form.compareDateLabel}
-          value={showDate(plan?.comparison?.payoffDate)}
-        />
-        <ResultRow
-          label={C.form.compareInterestLabel}
-          value={money(plan?.comparison?.result.totalInterest)}
-        />
-        {/* THE LABEL FOLLOWS THE SIGN. On the minimum strategy the chosen
-            plan is slower and dearer than the flat comparison, and "nhanh
-            hơn: −97 tháng" is a claim the figures contradict. */}
-        <ResultRow
-          label={
-            plan?.monthsDifference == null || plan.monthsDifference === 0
-              ? C.form.compareMonthsEqualLabel
-              : plan.monthsDifference > 0
-                ? C.form.compareMonthsFasterLabel
-                : C.form.compareMonthsSlowerLabel
-          }
-          value={
-            plan?.monthsDifference == null
-              ? null
-              : plan.monthsDifference === 0
-                ? C.form.compareMonthsEqualValue
-                : `${formatDecimal(Math.abs(plan.monthsDifference), 0)} ${C.form.monthsUnit}`
-          }
-          prose={plan?.monthsDifference === 0}
-        />
-        <ResultRow
-          label={
-            plan?.interestDifference == null ||
-            plan.interestDifference === 0
-              ? C.form.compareInterestEqualLabel
-              : plan.interestDifference > 0
-                ? C.form.compareInterestSavedLabel
-                : C.form.compareInterestExtraLabel
-          }
-          value={
-            plan?.interestDifference == null
-              ? null
-              : plan.interestDifference === 0
-                ? C.form.compareInterestEqualValue
-                : money(Math.abs(plan.interestDifference))
-          }
-          prose={plan?.interestDifference === 0}
-        />
-      </ResultGroup>
-
-      {plan !== null && plan.comparison === null ? (
-        <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {C.form.noComparisonNotice}
-        </p>
-      ) : null}
-
-      <ChartFigure model={chart}>
-        <LineChart model={chart} />
-      </ChartFigure>
-
-      {plan !== null ? (
-        <DetailDisclosure title={C.form.detailToggle} className="mt-6">
-          <DetailFigures
-            title={C.form.detailTitle}
-            figures={[
-              {
-                label:
-                  plan.plan.levelPayment === null
-                    ? C.form.decliningPaymentLabel
-                    : C.form.levelPaymentLabel,
-                value: moneyCell(
-                  plan.plan.levelPayment ?? plan.plan.result.firstPayment,
-                ),
-              },
-              {
-                label: C.form.highestPaymentLabel,
-                value: moneyCell(plan.plan.highestPayment),
-              },
-              // Mounted only when an allocation was stated: a dash beside
-              // "ngân sách hộ đã dành riêng" reads like a figure we lost.
-              ...(plan.budget === null
-                ? []
-                : [
+            {plan !== null ? (
+              <DetailDisclosure title={C.form.detailToggle} className="mt-6">
+                <DetailFigures
+                  title={C.form.detailTitle}
+                  figures={[
                     {
-                      label: C.form.budgetLabelDetail,
-                      value: moneyCell(plan.budget.amount),
+                      label:
+                        plan.plan.levelPayment === null
+                          ? C.form.decliningPaymentLabel
+                          : C.form.levelPaymentLabel,
+                      value: moneyCell(
+                        plan.plan.levelPayment ??
+                          plan.plan.result.firstPayment,
+                      ),
                     },
-                  ]),
-              {
-                label: C.form.firstPaymentLabel,
-                value: showDate(plan.firstPaymentDate)!,
-                prose: true,
-              },
-              {
-                label: C.form.firstInterestLabel,
-                value: moneyCell(plan.plan.result.schedule[0].interest),
-              },
-              {
-                label: C.form.lastPaymentLabel,
-                value: moneyCell(plan.plan.result.lastPayment),
-              },
-              {
-                label: C.form.totalPaidLabel,
-                value: moneyCell(plan.plan.result.totalPaid),
-              },
-              {
-                label: C.form.interestShareLabel,
-                value: percentCell(plan.plan.result.interestSharePercent, 1),
-              },
-            ]}
-          />
-          <p className="mt-3 text-sm leading-relaxed text-ink-3">
-            {C.form.dateConvention}
-          </p>
-        </DetailDisclosure>
-      ) : null}
+                    {
+                      label: C.form.highestPaymentLabel,
+                      value: moneyCell(plan.plan.highestPayment),
+                    },
+                    // Mounted only when an allocation was stated: a dash
+                    // beside "ngân sách hộ đã dành riêng" reads like a figure
+                    // we lost.
+                    ...(plan.budget === null
+                      ? []
+                      : [
+                          {
+                            label: C.form.budgetLabelDetail,
+                            value: moneyCell(plan.budget.amount),
+                          },
+                        ]),
+                    {
+                      label: C.form.firstPaymentLabel,
+                      value: showDate(plan.firstPaymentDate)!,
+                      prose: true,
+                    },
+                    {
+                      label: C.form.firstInterestLabel,
+                      value: moneyCell(
+                        plan.plan.result.schedule[0].interest,
+                      ),
+                    },
+                    {
+                      label: C.form.lastPaymentLabel,
+                      value: moneyCell(plan.plan.result.lastPayment),
+                    },
+                    {
+                      label: C.form.totalPaidLabel,
+                      value: moneyCell(plan.plan.result.totalPaid),
+                    },
+                    {
+                      label: C.form.interestShareLabel,
+                      value: percentCell(
+                        plan.plan.result.interestSharePercent,
+                        1,
+                      ),
+                    },
+                  ]}
+                />
+                <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                  {C.form.dateConvention}
+                </p>
+              </DetailDisclosure>
+            ) : null}
+          </>
+        }
+      />
 
       <ExampleNoticeDetail className="mt-4" />
     </CalculatorCard>

@@ -152,7 +152,9 @@ describe("the prose quotes what the module produces", () => {
     const rate = minimum!.plan.result.schedule[0].interest / base.balance;
     expect(formatPercent(rate * 100, 4)).toBe("2,5305%");
     expect(payoffProse).toContain("2,5305%");
-    expect(CARD_PAYOFF.dailyInterestNotice).toContain("2,5305%");
+    // §5 moved the figure into the disclosure under the notice; the MODEL
+    // claim and the contract-may-differ warning stayed visible.
+    expect(CARD_PAYOFF.dailyInterestNoticeDetail).toContain("2,5305%");
   });
 
   it("quotes the first statement's closing balance correctly", () => {

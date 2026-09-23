@@ -33,6 +33,7 @@ import {
   type MoneyWords,
 } from "@/lib/calc/charts/labels";
 import {
+  countTicks,
   linearTicks,
   niceMax,
   type LineChartModel,
@@ -59,6 +60,14 @@ export type FloatingChartLabels = MoneyWords & {
   budgetNote: string;
   /** Used when the first instalment is 0, so no percentage exists. */
   changePercentUndefined: string;
+  /**
+   * How to read the step, behind the figure's own disclosure.
+   *
+   * Only rendered when there IS a step: on a flat rate the line has no corner
+   * to explain. The caveats stay in `assumptions`, which stay visible.
+   */
+  shapeDetailTitle: string;
+  shapeDetail: string;
   assumptions: readonly string[];
   tableCaption: string;
   phaseColumn: string;
@@ -179,6 +188,12 @@ export function floatingChartModel(
     kind: "lines",
     title: labels.title,
     summary,
+    // The plot is preceded by the caption a browser pass called lengthy, so
+    // what explains the DRAWING moves one click away and what qualifies the
+    // NUMBERS — the scenario note, the assumptions — stays visible.
+    detail: flat
+      ? null
+      : { title: labels.shapeDetailTitle, body: labels.shapeDetail },
     assumptions: labels.assumptions,
     series: [
       {
@@ -192,7 +207,11 @@ export function floatingChartModel(
     references,
     xAxis: {
       label: labels.xAxis,
-      ticks: linearTicks(xMax, 4, (value) => formatDecimal(value, 0)),
+      // `countTicks`, NOT `linearTicks`: this axis carries whole months, so
+      // equal intervals plus a rounding formatter label quarter positions with
+      // the integers they are not. A 37-month term drew 9 / 19 / 28 at 9,25 /
+      // 18,5 / 27,75. See `countTicks` in `types.ts`.
+      ticks: countTicks(xMax, 5, (value) => formatDecimal(value, 0)),
     },
     yAxis: {
       label: fill(labels.yAxis, { unit }),

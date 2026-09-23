@@ -95,6 +95,16 @@ export const FLOATING_LOAN = {
 
     resultTitle: "Khoản trả hằng tháng",
     firstPaymentLabel: "Trong thời gian ưu đãi",
+    /*
+     * CSV row 4 asks the answer to lead with the payment before ưu đãi, the
+     * payment after it AND the month the rate resets. The first two rows were
+     * already here; the month was not — it appeared only inside the scenario
+     * block's own labels ("ở tháng {n}"), which is a comparison the reader has
+     * to choose before it exists. `{n}` is filled with `postPromoMonth`, so
+     * the label states the month instead of leaving the reader to add
+     * "số tháng ưu đãi" to one.
+     */
+    postPromoPaymentLabel: "Từ tháng {n}, khi hết ưu đãi",
     highestPaymentLabel: "Mức cao nhất phải chịu",
     shockLabel: "Tăng thêm so với thời gian ưu đãi",
     shockPercentLabel: "Tức tăng",
@@ -207,18 +217,25 @@ export const FLOATING_LOAN = {
     resetMarker: "Tháng {n}: lãi suất đổi",
     xAxis: "Tháng thứ",
     yAxis: "Khoản trả mỗi tháng ({unit})",
+    // One sentence: the step itself. How the line is drawn and how the axis is
+    // scaled are explanations of the picture, not of the money, so they moved
+    // into `shapeDetail` below.
     summary:
-      "Khoản trả bắt đầu ở {first}, rồi nhảy lên {highest} từ tháng {resetMonth} — tăng {change} mỗi tháng, tức {changePercent}. Đường nằm ngang rồi gấp khúc, chứ không dốc dần: khoản trả đổi trong đúng một tháng.",
+      "Khoản trả bắt đầu ở {first}, rồi nhảy lên {highest} từ tháng {resetMonth} — tăng {change} mỗi tháng, tức {changePercent}.",
     summaryFlat:
       "Với các số này lãi suất không đổi, nên khoản trả giữ ở {first} suốt kỳ hạn.",
     scenarioNote:
       "Mức lãi sau ưu đãi là KỊCH BẢN bạn tự nhập, không phải báo giá của ngân hàng và không phải dự báo.",
     budgetNote: "Đường ngang là ngân sách do bạn nhập.",
     changePercentUndefined: "không tính được tỷ lệ vì khoản trả đầu bằng 0",
+    shapeDetailTitle: "Cách đọc bậc nhảy trên biểu đồ",
+    shapeDetail:
+      "Đường nằm ngang rồi gấp khúc, chứ không dốc dần: khoản trả đổi trong đúng một tháng, không tăng dần suốt năm. Trục dọc bắt đầu từ 0, nên độ cao của bậc đúng bằng tỷ lệ tăng thật.",
+    // Only the two that can make the figure wrong for this reader. The axis
+    // note was never an assumption about the loan and is now in `shapeDetail`.
     assumptions: [
       "Ở mỗi lần lãi suất đổi, khoản trả được tính lại trên dư nợ còn lại trong số tháng còn lại. Đây là cách công cụ mô hình hóa; hợp đồng của bạn có thể tính khác — ví dụ trả gốc đều hoặc tính lãi theo số ngày thực tế.",
       "Không trang tĩnh nào biết lãi suất cơ sở vài năm sau ở đâu. Hãy thử nhiều mức để xem mức nào bạn vẫn trả được.",
-      "Trục dọc bắt đầu từ 0, nên độ cao của bậc đúng bằng tỷ lệ tăng thật.",
     ],
     tableCaption: "Khoản trả theo từng giai đoạn lãi suất",
     phaseColumn: "Tháng",

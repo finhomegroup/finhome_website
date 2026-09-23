@@ -316,19 +316,33 @@ describe("recovery, not a stale answer", () => {
     expect(html).not.toContain("<svg");
   });
 
-  it("drops the freed row's figure when no allocation was stated", async () => {
+  it("drops the freed row entirely when no allocation was stated", async () => {
     const html = await render("fixed", () => ({ defaultBudget: "0" }));
-    expect(html).toContain(F.freedLabel);
-    // The row is there with a placeholder; the detail block does not invent a
+    // CHANGED BY THE MEASURED REPAIR, and stated rather than weakened: the row
+    // used to be present with a placeholder, which made it a fifth PEER
+    // announced figure for a number nobody entered. `planCardPayoff` returns a
+    // null budget at a zero allocation, so the row is not mounted at all now.
+    expect(html).not.toContain(F.freedLabel);
+    // The unchanged half of this test: the detail block still does not invent a
     // "0 ₫ đã dành riêng".
     expect(html).not.toContain(F.budgetLabelDetail);
+    // And nothing else about the plan went with it.
+    expect(html).toContain(F.totalInterestLabel);
+    expect(html).toContain(F.payoffDateLabel);
   });
 });
 
 describe("the second route keeps its own framing", () => {
   it("has a title, a notice, prose and an FAQ of its own", () => {
     expect(CARD_MINIMUM.pageTitle).not.toBe(CARD_PAYOFF.pageTitle);
-    expect(CARD_MINIMUM.trapNotice.length).toBeGreaterThan(200);
+    // §5 split this notice: the comparison and the illustrative-rates warning
+    // are visible, the worked example is the disclosure. The framing is still
+    // this route's own, which is what the length bound was for — so it is
+    // asserted across the pair rather than dropped.
+    expect(
+      CARD_MINIMUM.trapNotice.length + CARD_MINIMUM.trapNoticeDetail.length,
+    ).toBeGreaterThan(200);
+    expect(CARD_MINIMUM.trapNoticeDetailTitle.length).toBeGreaterThan(0);
     expect(CARD_MINIMUM.formula.body.length).toBeGreaterThanOrEqual(3);
     expect(CARD_MINIMUM.faq.items.length).toBeGreaterThanOrEqual(3);
   });

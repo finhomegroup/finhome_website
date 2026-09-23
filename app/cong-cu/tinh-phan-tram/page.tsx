@@ -23,9 +23,16 @@ export default function PercentPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      ledeDetailTitle={C.ledeDetailTitle}
+      ledeDetail={C.ledeDetail}
       // The asymmetry trap belongs above the tool: it is the mistake people
-      // arrive already making, not a footnote about the arithmetic.
+      // arrive already making, not a footnote about the arithmetic. One line
+      // visible, the worked example behind a summary that names its own
+      // figures — the 2026-09-21 audit measured the first input 1.041 px down
+      // a 390 px viewport with the full four-sentence version in that gap.
       notice={C.asymmetryNotice}
+      noticeDetailTitle={C.asymmetryDetailTitle}
+      noticeDetail={C.asymmetryDetail}
       prose={C.formula}
       faq={C.faq}
       afterCalculator={<ToolNextSteps slug="tinh-phan-tram" />}

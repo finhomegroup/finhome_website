@@ -127,8 +127,22 @@ export const US_DIVIDEND_TAX = {
     allOrdinaryLabel: "Thuế nếu toàn bộ là cổ tức thường",
     savingLabel: "Phân loại đủ điều kiện tiết kiệm được",
 
+    // The YEAR LIMIT stays visible, next to the result, because it decides
+    // whether the rate the reader picked is the right one at all. The bracket
+    // table itself is five numbers of reference material, so it is disclosed.
     thresholdGuide:
-      "Hướng dẫn ngưỡng, áp cho năm thuế 2025: mức 0% áp cho người có thu nhập chịu thuế tới 48.350 USD với người độc thân và 96.700 USD với vợ chồng khai chung (64.750 USD với chủ hộ); mức 15% áp từ đó tới 533.400 USD độc thân và 600.050 USD khai chung; trên các mốc đó là mức 20%. Phần lớn người nộp thuế nằm ở mức 15%. Các con số này là mức năm thuế 2025 do IRS công bố tại Topic no. 409, đối chiếu ngày 16/09/2026, và chúng được điều chỉnh theo lạm phát mỗi năm — nên nếu bạn đang khai một năm thuế khác thì hãy tra mức của đúng năm đó trong phần nguồn bên dưới rồi chọn thuế suất tương ứng. Công cụ cố ý không tự suy ra thuế suất từ thu nhập của bạn, vì một bảng ngưỡng cũ một năm sẽ cho kết quả sai chắc nịch ở đúng những mức thu nhập nằm sát ranh giới.",
+      "Thuế suất cổ tức đủ điều kiện phụ thuộc thu nhập chịu thuế, và các mốc dưới đây là mức năm thuế 2025 do IRS công bố tại Topic no. 409, đối chiếu ngày 16/09/2026. Các mốc này được điều chỉnh theo lạm phát mỗi năm, nên nếu bạn đang khai một năm thuế khác thì hãy tra mức của đúng năm đó rồi chọn lại thuế suất. Công cụ cố ý không tự suy ra thuế suất từ thu nhập của bạn, vì một bảng ngưỡng cũ một năm sẽ cho kết quả sai chắc nịch ở đúng những mức thu nhập nằm sát ranh giới.",
+    thresholdGuideDetailTitle: "Các mốc 0%, 15% và 20% của năm thuế 2025",
+    thresholdGuideDetail:
+      "Mức 0% áp cho người có thu nhập chịu thuế tới 48.350 USD với người độc thân và 96.700 USD với vợ chồng khai chung (64.750 USD với chủ hộ). Mức 15% áp từ đó tới 533.400 USD độc thân và 600.050 USD khai chung; trên các mốc đó là mức 20%. Phần lớn người nộp thuế nằm ở mức 15%.",
+
+    // The surcharge rows are a second tax with its own base, so row 45 asked
+    // for them behind a disclosure rather than inside the main breakdown.
+    niitDisclosureTitle: "Phụ thu đầu tư ròng 3,8%: ngưỡng và cơ sở tính",
+    // A dividend total of 0 is a VALID entry that leaves exactly one row
+    // without an answer: there is no rate on nothing.
+    noDividendNotice:
+      "Tổng cổ tức bằng 0, nên không có thuế suất thực tế để tính — dòng đó bỏ trống vì phép chia không có mẫu số, chứ không phải vì thiếu số liệu.",
 
     aboveThresholdNotice:
       "MAGI đã vượt ngưỡng phụ thu, nên phần cổ tức chịu thêm 3,8%. Cơ sở tính phụ thu là số nhỏ hơn giữa tổng thu nhập đầu tư và phần MAGI vượt ngưỡng — không phải toàn bộ một trong hai.",
@@ -136,8 +150,13 @@ export const US_DIVIDEND_TAX = {
       "Một ô nhập chưa hợp lệ. Thuế suất cổ tức đủ điều kiện chỉ nhận 0, 15 hoặc 20 — luật không có mức nào khác.",
   },
 
+  // The RULE and the widest form of it, before the form. The worked default
+  // case moved into the disclosure.
   classificationNotice:
-    "Với các số mặc định, 10.000 USD cổ tức đủ điều kiện và 2.000 USD cổ tức thường chịu tổng 1.980 USD thuế, tương đương 16,50%. Nếu toàn bộ 12.000 USD đó là cổ tức thường, số thuế sẽ là 2.880 USD — nên riêng việc phân loại đáng 900 USD. Khoảng cách rộng nhất ở nhóm thu nhập cao nhất: 20% cộng phụ thu 3,8% là 23,80%, so với 37% cộng 3,8% là 40,80%. Cùng một số tiền, gần gấp đôi số thuế, và điều duy nhất khác biệt là cổ phiếu đã được nắm giữ bao lâu.",
+    "Khoảng cách giữa hai cách phân loại rộng nhất ở nhóm thu nhập cao nhất: 20% cộng phụ thu 3,8% là 23,80%, so với 37% cộng 3,8% là 40,80%. Cùng một số tiền, gần gấp đôi số thuế, và điều duy nhất khác biệt là cổ phiếu đã được nắm giữ bao lâu.",
+  classificationNoticeDetailTitle: "Cụ thể: phân loại đáng bao nhiêu trên các số mặc định",
+  classificationNoticeDetail:
+    "Với các số mặc định, 10.000 USD cổ tức đủ điều kiện và 2.000 USD cổ tức thường chịu tổng 1.980 USD thuế, tương đương 16,50%. Nếu toàn bộ 12.000 USD đó là cổ tức thường, số thuế sẽ là 2.880 USD — nên riêng việc phân loại đáng 900 USD.",
 
   formula: {
     title: "Cách tính",

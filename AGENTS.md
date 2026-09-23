@@ -6,11 +6,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Calculator suite
 
-There is a suite of financial calculators at `/cong-cu/`. All 75 planned tools are built.
+There is a suite of financial calculators at `/cong-cu/`. Every planned tool is built.
 **Before touching `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`,
 read `docs/calculator-suite-status.md`.** It has the recipe for adding a calculator, the
 number-formatting and sign conventions that will otherwise produce wrong figures, the
 accessibility rules the shared components already own, and what to build next.
+
+**If you are changing a tool's LAYOUT, its result hierarchy, its entry copy or its call
+to action, read `docs/finhome-tools-ux-2026-09-21.md` as well.** It holds the accepted
+region/CTA contracts, a per-tool action for every live route with a status column, and an
+explicit list of what has NOT been verified. The mechanisms are `CalculatorLayout`,
+`ResultCta`, `ResultGroup`'s `anchorId` and `ResultRow`'s `emphasis` — use them rather
+than hand-rolling a second layout idiom, and do not treat a per-tool action as satisfied
+because a shared wrapper changed.
 
 **Never quote a count from prose, including this file.** Derive it from
 `content/calculators/registry.ts` (`liveCalculators()` / `plannedCalculators()`). This

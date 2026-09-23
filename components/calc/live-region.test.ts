@@ -34,6 +34,29 @@ const limitByFilename = new Map(
 );
 
 /**
+ * Components whose source declares more than one live group of which exactly
+ * ONE can render — a purpose selector, not an exception to the convention.
+ *
+ * THIS IS NOT `MULTI_LIVE_ALLOWLIST`, and the two must not be confused. An
+ * allowlisted page really does ship N live regions in its built HTML, so
+ * `scripts/check-built-markup.mjs` expects N there. A page listed HERE ships
+ * exactly ONE live region at every moment; the extra groups are branches of a
+ * ternary that this file cannot see, because it reads source text and there is
+ * no jsdom. The built-HTML checker keeps expecting 1 for these, which is what
+ * actually proves the exclusivity — so listing a file here weakens nothing:
+ * a branch that stopped being exclusive fails the build-side check.
+ *
+ * Keyed by filename, with the count the source text declares.
+ */
+const EXCLUSIVE_LIVE_BRANCHES = new Map([
+  // ROW 70: "Bạn đang tính gì?" renders EITHER the single-trip result group
+  // or the two-home comparison, never both. Each branch is its own live
+  // region with its own anchor, and the row-count ratchet below still checks
+  // each one separately.
+  ["fuel-calculator.tsx", 2],
+]);
+
+/**
  * Ceiling on rows in a single live region — a RATCHET at the current maximum,
  * not an endorsement of it.
  *
@@ -120,7 +143,10 @@ describe("the live-region conventions", () => {
       // still checks the rendered page, where the count is 1.
       if (delegatesToAnotherCalculator(source)) continue;
       const live = resultGroups(source).filter((g) => g.live);
-      const limit = limitByFilename.get(file) ?? 1;
+      const limit =
+        limitByFilename.get(file) ??
+        EXCLUSIVE_LIVE_BRANCHES.get(file) ??
+        1;
       expect(
         live.length,
         `${file} has ${live.length} live ResultGroups (expected exactly ${limit})`,
@@ -173,6 +199,27 @@ describe("the live-region conventions", () => {
         live.length,
         `${filename} is allowlisted but now has ${live.length} live group(s) — drop it from MULTI_LIVE_ALLOWLIST`,
       ).toBeGreaterThan(1);
+    }
+  });
+
+  it("keeps the exclusive-branch list honest, and disjoint from the allowlist", () => {
+    for (const [filename, declared] of EXCLUSIVE_LIVE_BRANCHES) {
+      // A file that no longer branches does not need the entry.
+      const live = resultGroups(
+        readFileSync(`${COMPONENT_DIR}/${filename}`, "utf8"),
+      ).filter((g) => g.live);
+      expect(
+        live.length,
+        `${filename} declares ${declared} exclusive live branches but has ${live.length} live group(s) — update EXCLUSIVE_LIVE_BRANCHES`,
+      ).toBe(declared);
+
+      // And it must NOT also be allowlisted: the two lists mean opposite
+      // things about the built HTML, so an overlap would let a page ship N
+      // live regions while claiming only one renders.
+      expect(
+        limitByFilename.has(filename),
+        `${filename} is in both EXCLUSIVE_LIVE_BRANCHES and MULTI_LIVE_ALLOWLIST`,
+      ).toBe(false);
     }
   });
 

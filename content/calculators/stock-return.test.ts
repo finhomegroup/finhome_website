@@ -155,22 +155,54 @@ describe("loi-nhuan-co-phieu at its shipped defaults", () => {
     const loss = run({ sellPricePerShare: 24_000, dividendPerShare: 0 });
     expect(loss.taxedOnALoss).toBe(true);
     expect(loss.netProfit).toBeLessThan(0);
-    // The notice writes the loss unsigned ("bạn lỗ 20,320%"), so the figure
-    // is derived unsigned rather than asserted against a minus sign the copy
+    // ASSERTED ON THE DISCLOSURE, not on the notice, because CSV row 35 moved
+    // the two worked examples into `taxOnLossDetail` — the notice above the
+    // tool now carries the rule alone. Same three figures, same derivation
+    // from the engine; only the key holding them changed.
+    //
+    // The copy writes the loss unsigned ("bạn lỗ 20,320%"), so the figure is
+    // derived unsigned rather than asserted against a minus sign the copy
     // does not use.
     quotes(
-      C.taxOnLossNotice,
+      C.taxOnLossDetail,
       formatPercent(Math.abs(loss.returnPercent), 3),
-      "taxOnLossNotice",
+      "taxOnLossDetail",
     );
-    quotes(C.taxOnLossNotice, formatMoney(loss.transferTax), "taxOnLossNotice");
+    quotes(C.taxOnLossDetail, formatMoney(loss.transferTax), "taxOnLossDetail");
     quotes(
-      C.taxOnLossNotice,
+      C.taxOnLossDetail,
       formatMoney(loss.breakEvenPricePerShare!),
-      "taxOnLossNotice",
+      "taxOnLossDetail",
     );
     // And the loss really is deeper than the price move.
     expect(Math.abs(loss.returnPercent)).toBeGreaterThan(20);
+    // The "không có cổ tức" qualifier this file's header demands of any copy
+    // quoting 20,320%: with the shipped 1.500 ₫/cp dividend the same fall is
+    // only a 15,577% loss, so the figure is meaningless without it.
+    expect(C.taxOnLossDetail).toContain("cổ tức về 0");
+    expect(C.taxOnLossDetail).toContain("không có cổ tức");
+  });
+
+  /**
+   * CSV row 35's second clause — "đưa phần giải thích thuế dài ra khỏi đường
+   * nhập→kết quả". The notice renders directly above the tool box, so its
+   * length is screens of scrolling before the reader can type.
+   */
+  it("keeps the rule in the notice and the worked examples behind it", () => {
+    // The rule, which a reader must have BEFORE reading a figure off the tool,
+    // stays unconditionally visible.
+    expect(C.taxOnLossNotice).toContain("không được trừ giá vốn");
+    expect(C.taxOnLossNotice).toContain("kể cả khi bán lỗ");
+    // Two sentences, per `CalculatorPage`'s own `notice` docstring. Counted on
+    // the full stops, so a third sentence creeping back fails here rather than
+    // on a phone.
+    expect(C.taxOnLossNotice.split(". ").length).toBeLessThanOrEqual(2);
+    expect(C.taxOnLossNotice.length).toBeLessThan(C.taxOnLossDetail.length * 2);
+    // And the disclosure is reachable: `CalculatorPage` renders `noticeDetail`
+    // only when `noticeDetailTitle` is also present.
+    expect(C.taxOnLossDetailTitle.length).toBeGreaterThan(10);
+    // Nothing was deleted in the split.
+    expect(C.taxOnLossDetail).toContain("giá hòa vốn của bạn không phải giá mua");
   });
 });
 

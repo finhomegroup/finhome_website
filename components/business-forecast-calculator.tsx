@@ -1,7 +1,9 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
+import { ResultCta } from "@/components/calc/result-cta";
 import { NumberField } from "@/components/calc/number-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
@@ -21,6 +23,30 @@ import { BUSINESS_FORECAST as C } from "@/content/calculators/business-forecast"
 
 const F = C.form;
 const T = F.table;
+
+/**
+ * ROW 66: "Đưa kết quả dự phóng cạnh đầu vào; nhãn giả định tăng trưởng/biên
+ * lợi nhuận nhìn thấy cùng kết luận", at "Theo nhóm + kết quả".
+ *
+ * WHAT CHANGED:
+ *
+ * 1. `CalculatorLayout columns="split"` with `wide` on the route, so the final
+ *    year sits beside the three input groups instead of 2.560 px below the
+ *    first field on a phone-width page.
+ * 2. `assumptionLine` renders the ENTERED growth, variable-cost, fixed-cost
+ *    growth and tax figures directly under the conclusion. At a wide width the
+ *    fields are in the other column: a widening margin read without them looks
+ *    like a finding rather than an arithmetic consequence of the inputs.
+ * 3. The eight-column per-year table and the loss caveat moved to the
+ *    full-width band. The period totals stay in the result column, because
+ *    "no profitable year in the horizon" is a conclusion and not reference.
+ *
+ * Untouched: every field, default and bound (including the 17% rate and the
+ * reason recorded in the content file), the signed rendering that keeps a loss
+ * a loss, `neverProfitable`, `lossNotice`, and the per-year figures.
+ */
+const FORM_ID = "du-bao-kinh-doanh-nhap";
+const RESULT_ID = "du-bao-kinh-doanh-ket-qua";
 
 export function BusinessForecastCalculator() {
   const fields = useCalcFields(F.defaults);
@@ -83,6 +109,39 @@ export function BusinessForecastCalculator() {
   const percentOrDash = (value: number | null | undefined) =>
     value === null || value === undefined ? PLACEHOLDER : formatPercent(value, 2);
 
+  /**
+   * THE one main answer, formatted once — the emphasised row and the pinned
+   * CTA read the same string, and it keeps its sign in both places.
+   */
+  const profitAnswer =
+    result === null ? null : signedMoney(result.finalOperatingProfit);
+
+  /** A rate with its direction stated, for the assumption line. */
+  const signedRate = (value: number) =>
+    `${value > 0 ? "+" : value < 0 ? "−" : ""}${formatDecimal(
+      Math.abs(value),
+      2,
+    )}`;
+
+  /**
+   * ROW 66's second half: the assumptions, from the fields as entered.
+   *
+   * Built only when the forecast itself is usable, so the line can never
+   * describe a scenario the page is refusing to compute.
+   */
+  const assumptions =
+    result === null ||
+    growth === null ||
+    variable === null ||
+    fixedGrowth === null ||
+    tax === null
+      ? null
+      : F.assumptionLine
+          .replace("{growth}", signedRate(growth))
+          .replace("{variable}", formatDecimal(variable, 2))
+          .replace("{fixedGrowth}", signedRate(fixedGrowth))
+          .replace("{tax}", formatDecimal(tax, 2));
+
   const rows = result
     ? result.years.map((row) => [
         String(row.year),
@@ -96,8 +155,8 @@ export function BusinessForecastCalculator() {
       ])
     : [];
 
-  return (
-    <CalculatorCard>
+  const form = (
+    <>
       <FieldGroup title={F.revenueGroup}>
         <NumberField
           {...fields.bind("revenue")}
@@ -169,19 +228,24 @@ export function BusinessForecastCalculator() {
           invalid={taxInvalid}
         />
       </FieldGroup>
+    </>
+  );
 
+  const primary = (
+    <>
       {/* The final year plus the margin move: the answer. The per-year table
-          below is reference and stays out of the live region. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
+          is reference and sits in the full-width band, out of the live
+          region. ROW 66 makes the final operating profit the headline — it is
+          the figure the margin trend is about, and it is signed. */}
+      <ResultGroup title={F.resultTitle} className="mt-8" anchorId={RESULT_ID}>
+        <ResultRow
+          label={F.finalProfitLabel}
+          value={profitAnswer}
+          emphasis
+        />
         <ResultRow
           label={F.finalRevenueLabel}
           value={money(result?.finalRevenue)}
-        />
-        <ResultRow
-          label={F.finalProfitLabel}
-          value={
-            result === null ? null : signedMoney(result.finalOperatingProfit)
-          }
         />
         <ResultRow
           label={F.finalMarginLabel}
@@ -199,6 +263,19 @@ export function BusinessForecastCalculator() {
           }
         />
       </ResultGroup>
+
+      {/* ROW 66: the assumptions, beside the conclusion rather than only in
+          the form column. Not inside the live region — it is context that
+          would otherwise re-announce on every keystroke. */}
+      {assumptions === null ? null : (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">{assumptions}</p>
+      )}
+
+      {result === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {F.invalidNotice}
+        </p>
+      ) : null}
 
       <ResultGroup title={F.totalsTitle} className="mt-4" live={false}>
         <ResultRow
@@ -233,7 +310,11 @@ export function BusinessForecastCalculator() {
           }
         />
       </ResultGroup>
+    </>
+  );
 
+  const detail = (
+    <>
       {rows.length > 0 ? (
         <ResultTable
           className="mt-8"
@@ -276,12 +357,31 @@ export function BusinessForecastCalculator() {
           {F.lossNotice}
         </p>
       ) : null}
+    </>
+  );
 
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={form}
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            // Eight inputs across three groups; the tax rate at the bottom
+            // moves the after-tax total this block keeps on screen.
+            sticky
+            answer={{ label: F.finalProfitLabel, value: profitAnswer }}
+          />
+        }
+        primary={primary}
+        // No chart on this tool; the per-year table is the figure and it is
+        // eight columns wide, so it belongs in the full-width band.
+        detail={rows.length > 0 || result?.hasLossYear ? detail : null}
+      />
     </CalculatorCard>
   );
 }

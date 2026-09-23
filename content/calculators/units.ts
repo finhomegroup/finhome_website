@@ -91,6 +91,12 @@ export const UNITS_CONTENT = {
     regionBac: "Quy ước Bắc Bộ (sào 360 m², mẫu 3.600 m²)",
     regionTrung: "Quy ước Trung Bộ (sào 499,95 m², mẫu 4.999,5 m²)",
     defaultRegion: "",
+    // ROW 73 — "Khi chưa chọn vùng, hiển thị 'Chọn quy ước vùng để xem kết
+    // quả' thay vì chỉ dấu gạch". This goes in the ANSWER SLOT, where the
+    // reader is looking, and it says what to do. The longer notice below
+    // stays where it is and keeps its own job: explaining why the tool is
+    // refusing and what the deed's own số mét vuông means for them.
+    regionRequiredValue: "Chọn quy ước vùng để xem kết quả",
     regionRequiredNotice:
       "Bạn đang chọn đơn vị sào hoặc mẫu — hai đơn vị này khác nhau theo quy ước từng vùng, nên công cụ chưa đưa ra kết quả cho tới khi bạn chọn một quy ước ở trên. Nếu giấy tờ chỉ ghi “sào” mà không nói vùng, hãy lấy số mét vuông ghi trên giấy chứng nhận làm căn cứ — đó là con số có giá trị pháp lý, còn quy đổi ở đây chỉ để hình dung.",
 
@@ -199,8 +205,18 @@ export const UNITS_CONTENT = {
   // not: local usage varies inside a region, and a commune notice in Quảng Trị
   // (03/03/2026) states 1 sào = 500 m² — see the FAQ, which cites it. The two
   // options here are named CONVENTIONS, and the deed's own m² is the authority.
+  // §5: three things must need no click — sào and mẫu have no nationwide
+  // value, so the tool REQUIRES a region; this is not a national standard;
+  // and the certificate's square metres are what to trust. The regional
+  // values themselves, and how far apart they are, are the disclosure. Every
+  // value is preserved there — `units-calculator.test.ts` checks the notice
+  // still names the certificate, and the active region is explained beside
+  // the output by the component, not here.
   regionNotice:
-    "Sào và mẫu KHÔNG có một giá trị duy nhất trên cả nước. Công cụ dùng hai quy ước thường gặp: sào 360 m² / mẫu 3.600 m², và sào 499,95 m² / mẫu 4.999,5 m² — chênh nhau gần 39%. Nhiều bảng quy đổi trên mạng chỉ ghi một con số hoặc lấy trung bình, và với một thửa vài mẫu thì sai số đó là hàng nghìn mét vuông. Nhưng quy ước thực tế còn khác nhau theo từng địa phương — có nơi tính 1 sào là 500 m² — nên con số đáng tin nhất vẫn là diện tích mét vuông ghi trên giấy chứng nhận. Hãy dùng công cụ để hình dung, rồi đối chiếu với giấy tờ và hỏi lại địa phương.",
+    "Sào và mẫu KHÔNG có một giá trị duy nhất trên cả nước, nên công cụ buộc bạn chọn quy ước vùng — đây không phải một chuẩn toàn quốc. Con số đáng tin nhất vẫn là diện tích mét vuông ghi trên giấy chứng nhận, nên hãy dùng công cụ để hình dung rồi đối chiếu với giấy tờ.",
+  regionNoticeDetailTitle: "Các quy ước vùng, và khoảng cách giữa chúng",
+  regionNoticeDetail:
+    "Công cụ dùng hai quy ước thường gặp: sào 360 m² / mẫu 3.600 m², và sào 499,95 m² / mẫu 4.999,5 m² — chênh nhau gần 39%. Nhiều bảng quy đổi trên mạng chỉ ghi một con số hoặc lấy trung bình, và với một thửa vài mẫu thì sai số đó là hàng nghìn mét vuông. Quy ước thực tế còn khác nhau theo từng địa phương — có nơi tính 1 sào là 500 m² — nên ngoài giấy tờ, hãy hỏi lại địa phương.",
 
   formula: {
     title: "Cách tính",

@@ -21,7 +21,8 @@
  * here and nothing in this file is a visual observation.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
+import { markupRegion } from "@/lib/markup-region";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { RENT_VS_BUY } from "@/content/calculators/rent-vs-buy";
 import { MAX_RENT_BUY_MONTHS } from "@/lib/calc/rent-vs-buy";
@@ -34,6 +35,7 @@ const LIMIT = { limit: "1.200" };
 /** Render the calculator, optionally patching some of its defaults. */
 async function render(
   patch?: Record<string, string>,
+  props?: { nextSteps?: ReactNode },
 ): Promise<string> {
   vi.resetModules();
   if (patch) {
@@ -51,7 +53,9 @@ async function render(
   }
   try {
     const loaded = await import("@/components/rent-vs-buy-calculator");
-    return renderToStaticMarkup(createElement(loaded.RentVsBuyCalculator));
+    return renderToStaticMarkup(
+      createElement(loaded.RentVsBuyCalculator, props ?? null),
+    );
   } finally {
     vi.doUnmock(CONTENT);
     vi.resetModules();
@@ -74,6 +78,76 @@ describe("the shipped defaults, as rendered", () => {
     expect(html).toContain(fill(F.termHelp, LIMIT));
     expect(html).toContain(fill(F.horizonHelp, LIMIT));
     expect(String(MAX_RENT_BUY_MONTHS)).toBe("1200");
+  });
+});
+
+/**
+ * §8 row 12: "Đưa chênh lệch thuê/mua và mốc so sánh lên đầu; giữ giả định
+ * tăng giá nhìn thấy khi kết luận thay đổi."
+ */
+describe("§8 row 12: the difference and the crossing lead", () => {
+  /**
+   * One layout region's own markup, bounded by depth rather than by the next
+   * marker — `markupRegion`'s docstring records the bugs a textual bound
+   * produces, and `detail` is the last region, so a marker-to-marker slice
+   * would run to the end of the document.
+   */
+  const regionOf = (html: string, name: string): string => {
+    const region = markupRegion(html, `data-calc-region="${name}"`);
+    expect(region, name).not.toBeNull();
+    return region ?? "";
+  };
+
+  it("emphasises the difference, then the crossing, then the word", async () => {
+    const html = await render();
+    const advantage = html.indexOf(fill(F.advantageLabel, { months: "120" }));
+    const breakEven = html.indexOf(F.breakEvenLabel);
+    const verdict = html.indexOf(fill(F.verdictLabel, { months: "120" }));
+    expect(advantage).toBeGreaterThan(-1);
+    expect(breakEven).toBeGreaterThan(advantage);
+    // The verdict WORD is a label for the two numbers above it, not the
+    // headline: on its own it reads as advice.
+    expect(verdict).toBeGreaterThan(breakEven);
+
+    // Exactly one emphasised figure, and it is the difference.
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(html.split("md:text-3xl").length - 1).toBe(1);
+    expect(emphasis).toBeGreaterThan(advantage);
+    expect(emphasis).toBeLessThan(breakEven);
+  });
+
+  it("pins the same difference the emphasised row shows", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="thue-hay-mua-ket-qua"');
+    const pinned = html.slice(html.indexOf('data-calc-answer="true"'));
+    const figure = /[\d.]+ ₫/.exec(pinned)?.[0];
+    const answer = /[\d.]+ ₫/.exec(
+      html.slice(html.indexOf(fill(F.advantageLabel, { months: "120" }))),
+    )?.[0];
+    expect(figure).toBeTruthy();
+    expect(figure).toBe(answer);
+  });
+
+  it("names the rate on each side of the turn, and the reader's own", async () => {
+    const html = await render();
+    // `verdictScope` says the conclusion "có thể đổi chiều" for every entry;
+    // this sentence only renders when the scenario runs the tool already
+    // computed actually disagree, and it names the boundary rates.
+    expect(html).toContain("Kết luận ĐỔI CHIỀU");
+    expect(html).toContain("mua lợi hơn khi giá nhà tăng");
+    expect(html).toContain("Bạn đang giả định 5%/năm");
+  });
+
+  it("keeps the ledger and the unpriceable reasons below the answer", async () => {
+    const html = await render({}, { nextSteps: "NEXT-STEPS-MARKER" });
+    const result = regionOf(html, "result");
+    expect(result).toContain("NEXT-STEPS-MARKER");
+    const detail = regionOf(html, "detail");
+    expect(detail).toContain(F.detailToggle);
+    expect(detail).toContain(RENT_VS_BUY.nonFinancial.title);
+    // One live region, still.
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
   });
 });
 

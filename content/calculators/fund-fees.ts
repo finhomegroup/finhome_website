@@ -83,7 +83,13 @@ export const FUND_FEES = {
 
     resultTitle: "Phí lấy đi bao nhiêu",
     profitLostLabel: "Phần lợi nhuận bị phí ăn mất",
-    valueLostLabel: "Số tiền bị mất",
+    // THE HORIZON IS PART OF THE CLAIM. CSV row 29 asks for "số tiền phí lấy
+    // đi ở kỳ hạn đã chọn" to be the emphasised figure, and an emphasised
+    // "Số tiền bị mất" with no period attached reads as a property of the fee
+    // schedule. It is not: the same 2%/năm takes 1,07 tỷ over 240 tháng and a
+    // small fraction of that over 36. The figure moves with the box above it,
+    // so the label names that box.
+    valueLostLabel: "Số tiền bị mất, đến mốc bạn cần tiền",
     netValueLabel: "Giá trị cuối kỳ sau phí",
 
     compareTitle: "So với không có phí",
@@ -175,8 +181,12 @@ export const FUND_FEES = {
     feesRow: "Tổng phí đã thu",
   },
 
+  // The mechanism is the rule and stays visible; the worked total moves.
   compoundNotice:
-    "Với kế hoạch mặc định — 100 triệu ban đầu, 5 triệu mỗi tháng trong 20 năm, lợi nhuận gộp 10%/năm — phí quản lý 2%/năm cộng phí mua 1% CÙNG NHAU lấy đi 1.066.857.503 ₫. Đó là 35,99% toàn bộ lợi nhuận bạn lẽ ra có được. Không phải 2%, không phải 20%: gần 36%. Lý do là phí tính trên tài sản, nên mỗi đồng phí bị lấy hôm nay cũng lấy theo toàn bộ phần lãi mà nó còn sinh ra trong những năm còn lại. Đây là lý do chênh lệch phí giữa hai quỹ đáng quan tâm hơn chênh lệch lợi nhuận một năm.",
+    "Phí quản lý tính trên TÀI SẢN, nên mỗi đồng phí bị lấy hôm nay cũng lấy theo toàn bộ phần lãi mà nó còn sinh ra trong những năm còn lại. Đây là lý do chênh lệch phí giữa hai quỹ đáng quan tâm hơn chênh lệch lợi nhuận một năm.",
+  compoundNoticeDetailTitle: "Con số cụ thể: phí 2% lấy 35,99% lợi nhuận",
+  compoundNoticeDetail:
+    "Với kế hoạch mặc định — 100 triệu ban đầu, 5 triệu mỗi tháng trong 20 năm, lợi nhuận gộp 10%/năm — phí quản lý 2%/năm cộng phí mua 1% CÙNG NHAU lấy đi 1.066.857.503 ₫. Đó là 35,99% toàn bộ lợi nhuận bạn lẽ ra có được. Không phải 2%, không phải 20%: gần 36%.",
 
   formula: {
     title: "Cách tính",

@@ -36,7 +36,11 @@ export const BIWEEKLY = {
     "So sánh trả nợ hằng tháng với trả nửa kỳ mỗi hai tuần: số tiền lãi tiết kiệm được và số năm rút ngắn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Thay vì trả một lần mỗi tháng, bạn trả một nửa số đó mỗi hai tuần — một năm có 26 kỳ, tương đương 13 kỳ hằng tháng thay vì 12. Công cụ tách khoản lãi tiết kiệm được thành hai phần, và câu trả lời nằm ở phần lớn hơn: gần như toàn bộ đến từ số tiền trả thêm mỗi năm, không phải từ việc trả thường xuyên hơn.",
+    "Trả nửa kỳ hằng tháng mỗi hai tuần nghĩa là 26 kỳ một năm, tương đương 13 kỳ hằng tháng thay vì 12 — và gần như toàn bộ khoản tiết kiệm đến từ số tiền trả thêm đó, không phải từ việc trả thường xuyên hơn.",
+
+  ledeDetailTitle: "Vì sao khoản tiết kiệm được tách thành hai phần",
+  ledeDetail:
+    "Công cụ tách khoản lãi tiết kiệm được thành hai phần: phần do mỗi năm trả thêm một kỳ, và phần do trả thường xuyên hơn nên dư nợ giảm sớm hơn trong tháng. Câu trả lời nằm ở phần lớn hơn, và đó cũng là lý do một người không có lịch trả hai tuần vẫn lấy được gần hết khoản tiết kiệm bằng cách trả thêm gốc trên lịch hằng tháng.",
 
   form: {
     loanGroup: "Khoản vay",
@@ -105,7 +109,11 @@ export const BIWEEKLY = {
   // tool does not model the fee, the contract decides it, and not every bank
   // offers a fortnightly schedule at all.
   prepaymentNotice:
-    "Trả hai tuần một lần thực chất là trả nợ trước hạn, và công cụ chưa tính phí trả nợ trước hạn — khoản tiết kiệm ở dưới là con số trước phí. Mức phí và thời gian áp dụng do hợp đồng của bạn quy định, và có hợp đồng không thu. Không phải ngân hàng nào cũng cho phép lịch trả hai tuần. Hãy hỏi ngân hàng cả hai điều này trước khi coi khoản tiết kiệm là chắc chắn.",
+    "Trả hai tuần một lần thực chất là trả nợ trước hạn, và công cụ chưa tính phí trả nợ trước hạn — khoản tiết kiệm ở dưới là con số trước phí. Không phải ngân hàng nào cũng cho phép lịch trả hai tuần.",
+
+  prepaymentDetailTitle: "Cần hỏi ngân hàng những gì",
+  prepaymentDetail:
+    "Mức phí trả nợ trước hạn và thời gian áp dụng do hợp đồng của bạn quy định, và có hợp đồng không thu. Hãy hỏi ngân hàng cả hai điều — phí và việc có chấp nhận lịch trả hai tuần — trước khi coi khoản tiết kiệm là chắc chắn.",
 
   formula: {
     title: "Khoản tiết kiệm đến từ đâu",

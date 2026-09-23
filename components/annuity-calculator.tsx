@@ -1,7 +1,9 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
+import { ResultCta } from "@/components/calc/result-cta";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultGroup } from "@/components/calc/result-group";
@@ -22,6 +24,35 @@ import { ANNUITY as C } from "@/content/calculators/annuity";
 
 const F = C.form;
 const T = F.table;
+
+/**
+ * ROW 59: "Nhấn khoản thực nhận sau thuế và phạm vi Hoa Kỳ; không để tỷ lệ chi
+ * trả bị hiểu thành lợi suất bảo đảm", at "Hai cột".
+ *
+ * WHAT CHANGED:
+ *
+ * 1. `CalculatorLayout columns="split"` with `wide` on the route. The audit
+ *    measured the first numeric input 1.427 px down a 390 px viewport and the
+ *    result heading at 2.895 px.
+ * 2. The announced group leads with the AFTER-TAX payment — the figure the
+ *    reader actually receives — with the gross payment, the annual figure and
+ *    the payout rate as its support. The pinned CTA carries the same string.
+ * 3. The payout-rate row carries `payoutRateNote` inside its own row, so the
+ *    one figure annuity marketing leans on cannot be read as a yield or as a
+ *    guarantee even by a reader who saw no other sentence on the page.
+ * 4. `scopeLine` sits directly under the answer: USD, and United States tax
+ *    law for a fixed-term contract bought with after-tax money.
+ * 5. The three long study groups, the seven-column sensitivity table and the
+ *    quote verdicts moved to the full-width band below the columns. Nothing
+ *    was removed and no row changed its figure.
+ *
+ * Untouched: both solve modes and the mode-scoped validity, every field,
+ * default and bound, the exclusion-ratio arithmetic, the signed quote
+ * comparison and all three quote notices, and `payoutRateNotice` above the
+ * tool and the table `intro` below it — both verbatim.
+ */
+const FORM_ID = "nien-kim-nhap";
+const RESULT_ID = "nien-kim-ket-qua";
 
 const MODE_OPTIONS: readonly { value: AnnuityMode; label: string }[] = [
   { value: "payment", label: F.modeOptions.payment },
@@ -104,6 +135,14 @@ export function AnnuityCalculator() {
 
   const result = input === null ? null : computeAnnuity(input);
 
+  /**
+   * THE one main answer, formatted once.
+   *
+   * Read by the emphasised row and by the pinned CTA, so the figure the reader
+   * receives cannot be rounded two ways on one screen.
+   */
+  const netAnswer = result === null ? null : usdCents(result.netPerPayment);
+
   const rows =
     result === null || input === null
       ? []
@@ -129,8 +168,8 @@ export function AnnuityCalculator() {
             ];
           });
 
-  return (
-    <CalculatorCard>
+  const form = (
+    <>
       <FieldGroup title={F.modeGroup}>
         <RadioGroupField
           {...fields.bind("mode")}
@@ -216,8 +255,16 @@ export function AnnuityCalculator() {
           invalid={invalid.quoted}
         />
       </FieldGroup>
+    </>
+  );
 
-      <ResultGroup title={F.resultTitle} className="mt-8">
+  const primary = (
+    <>
+      {/* ROW 59: the after-tax payment leads. The gross payment and the annual
+          figure stay right under it — a reader comparing a quote needs the
+          gross — and the payout rate keeps its place with a note attached. */}
+      <ResultGroup title={F.resultTitle} className="mt-8" anchorId={RESULT_ID}>
+        <ResultRow label={F.netLabel} value={netAnswer} emphasis />
         <ResultRow
           label={F.paymentLabel}
           value={result === null ? null : usdCents(result.payment)}
@@ -227,19 +274,31 @@ export function AnnuityCalculator() {
           value={result === null ? null : usdCents(result.annualPayment)}
         />
         <ResultRow
-          label={F.netLabel}
-          value={result === null ? null : usdCents(result.netPerPayment)}
-        />
-        <ResultRow
           label={F.payoutRateLabel}
           value={
             result === null || result.payoutRatePercent === null
               ? null
               : formatPercent(result.payoutRatePercent, 2)
           }
+          // The one line that must travel with this figure wherever it is read.
+          note={F.payoutRateNote}
         />
       </ResultGroup>
 
+      {/* The scope, where the figures are. Not a replacement for the sources
+          note or the tax field's own help — both unchanged. */}
+      <p className="mt-4 text-sm leading-relaxed text-ink-3">{F.scopeLine}</p>
+
+      {result === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {F.invalidNotice}
+        </p>
+      ) : null}
+    </>
+  );
+
+  const detail = (
+    <>
       <ResultGroup title={F.breakdownTitle} className="mt-4" live={false}>
         <ResultRow
           label={F.excludedLabel}
@@ -376,12 +435,29 @@ export function AnnuityCalculator() {
               : F.quoteBetterNotice}
         </p>
       ) : null}
+    </>
+  );
 
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={form}
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            // Eight inputs across three groups, the last of them the tax rate
+            // that moves this very figure: the block keeps it on screen.
+            sticky
+            answer={{ label: F.netLabel, value: netAnswer }}
+          />
+        }
+        primary={primary}
+        detail={detail}
+      />
     </CalculatorCard>
   );
 }

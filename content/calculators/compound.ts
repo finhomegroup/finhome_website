@@ -77,6 +77,14 @@ export const COMPOUND = {
     periodsLabel: "Số kỳ ghép lãi",
     periodsUnit: "kỳ",
 
+    // The two figures that explain the result rather than being it: what the
+    // compounding period turns the nominal rate into, and how many periods it
+    // ran. They read behind this label, not beside the ending amount.
+    detailToggle: "Xem cách kỳ ghép lãi tác động",
+    detailHint:
+      "Lãi suất thực nhận mỗi năm sau khi ghép lãi, và số kỳ đã ghép trong suốt thời gian gửi.",
+    detailTitle: "Tác động của kỳ ghép lãi",
+
     emptyNotice:
       "Nhập số tiền ban đầu hoặc khoản gửi thêm lớn hơn 0, và số năm ít nhất bằng một kỳ ghép lãi, để xem kết quả.",
   },

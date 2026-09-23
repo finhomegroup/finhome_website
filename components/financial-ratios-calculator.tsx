@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -22,6 +24,30 @@ import { computeRatios, type RatioSet } from "@/lib/calc/financials";
 import { FINANCIAL_RATIOS as C } from "@/content/calculators/financial-ratios";
 
 const T = C.form.ratioTable;
+
+/**
+ * ROW 67 — "Chia báo cáo thành nhóm; giữ ba chỉ số chính bên phải, bảng chi
+ * tiết chiếm toàn chiều rộng phía dưới", at "Theo nhóm + kết quả".
+ *
+ * The grouping half of the row was already true: `StatementFields` emits the
+ * thirteen lines as three `FieldGroup`s named after their source statement,
+ * and the two optional share fields are a fourth. What was missing is the
+ * "bên phải"/"phía dưới" half — eighteen money fields and a twenty-row table
+ * were one column, so the three ratios the page promotes were roughly a
+ * screen below the last input that moves them.
+ *
+ * WHAT MOVED, AND WHAT DID NOT. The `resultTitle` group keeps exactly its
+ * three ratios and stays the page's one live region; the ROE row takes
+ * `emphasis` because it is the ratio the lede, the prose and the sibling
+ * page's whole DuPont argument are about. The ten-row derived statement and
+ * the twenty-row ratio table go to the full-width band: neither is an answer,
+ * both are the working behind one. No ratio, no format, no bound and no
+ * refusal changed — `readShareFields`, `readStatement` and `computeRatios`
+ * are untouched, and a null ratio is still the placeholder rather than a
+ * number.
+ */
+const FORM_ID = "cac-chi-so-tai-chinh-nhap";
+const RESULT_ID = "cac-chi-so-tai-chinh-ket-qua";
 
 /** How each row of the ratio table is rendered. */
 type RowSpec = {
@@ -142,8 +168,14 @@ export function FinancialRatiosCalculator() {
       ])
     : [];
 
-  return (
-    <CalculatorCard>
+  /** The one promoted ratio, formatted once for the row and the CTA. */
+  const roeAnswer =
+    result?.returnOnEquityPercent == null
+      ? null
+      : formatPercent(result.returnOnEquityPercent, 2);
+
+  const form = (
+    <>
       <StatementFields
         copy={C.statement}
         invalid={statement.invalid}
@@ -167,18 +199,19 @@ export function FinancialRatiosCalculator() {
           invalid={priceInvalid}
         />
       </FieldGroup>
+    </>
+  );
 
+  const primary = (
+    <>
       {/* Three headline ratios live; the full twenty-row set is a table and
           stays out of the live region. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.roeLabel}
-          value={
-            result?.returnOnEquityPercent == null
-              ? null
-              : formatPercent(result.returnOnEquityPercent, 2)
-          }
-        />
+      <ResultGroup
+        title={C.form.resultTitle}
+        className="mt-8"
+        anchorId={RESULT_ID}
+      >
+        <ResultRow label={C.form.roeLabel} value={roeAnswer} emphasis />
         <ResultRow
           label={C.form.netMarginLabel}
           value={
@@ -197,7 +230,27 @@ export function FinancialRatiosCalculator() {
         />
       </ResultGroup>
 
-      <ResultGroup title={C.form.statementTitle} className="mt-4" live={false}>
+      {/* Both notices stay BESIDE the three ratios, not in the band below.
+          `negativeEquityNotice` says the promoted ROE cannot be read at all,
+          and `invalidNotice` says nothing was computed — a qualification that
+          arrives a band later has already been read as a figure. */}
+      {result?.negativeEquity ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.negativeEquityNotice}
+        </p>
+      ) : null}
+
+      {statement.input === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.invalidNotice}
+        </p>
+      ) : null}
+    </>
+  );
+
+  const detail = (
+    <>
+      <ResultGroup title={C.form.statementTitle} live={false}>
         <ResultRow
           label={C.form.grossProfitLabel}
           value={money(result?.grossProfit)}
@@ -246,18 +299,27 @@ export function FinancialRatiosCalculator() {
           rows={tableRows}
         />
       ) : null}
+    </>
+  );
 
-      {result?.negativeEquity ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.negativeEquityNotice}
-        </p>
-      ) : null}
-
-      {statement.input === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.invalidNotice}
-        </p>
-      ) : null}
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={form}
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={result === null}
+            sticky
+            answer={{ label: C.form.roeLabel, value: roeAnswer }}
+          />
+        }
+        primary={primary}
+        detail={detail}
+      />
     </CalculatorCard>
   );
 }

@@ -22,10 +22,13 @@ export default function UsMortgageDeductionPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // The twelve-fold overstatement on the prefilled numbers, and what it
-      // does to the effective rate. This is the page's whole reason to
-      // exist, so it goes above the form rather than below it.
+      // The rule the page exists for — the common method overstates, twelve
+      // fold on the prefilled numbers — above the form.
       notice={C.marginalNotice}
+      // The itemised ladder that proves it, one click away.
+      noticeDetailTitle={C.marginalNoticeDetailTitle}
+      noticeDetail={C.marginalNoticeDetail}
+      wide
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}

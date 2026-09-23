@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { EffectiveRateCalculator } from "@/components/effective-rate-calculator";
 import { EFFECTIVE_RATE as C } from "@/content/calculators/effective-rate";
@@ -31,6 +32,10 @@ export default function EffectiveRatePage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // §5: the 8% → 8,30% → 8,33% worked example, which used to be the
+      // second and third sentences above the first field.
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // The APR distinction comes FIRST, because a reader who takes an
       // "effective" figure to a loan quote as though it included the fees has
       // been misled by the page. Which figure to compare on, and the flip of
@@ -51,11 +56,17 @@ export default function EffectiveRatePage() {
           <p className="text-base leading-relaxed text-ink-2">
             {C.whichNotice}
           </p>
-          <ToolNextSteps slug={SLUG} />
         </>
       }
     >
-      <EffectiveRateCalculator />
+      {/* The guidance list moved INTO the layout's `nextSteps` slot so it sits
+          under the answer rather than under the whole card; `whichNotice`
+          stays in `afterCalculator` because it qualifies the tool, not the
+          next step. No `wide`: row 60 is a "Gọn" row. */}
+      <EffectiveRateCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

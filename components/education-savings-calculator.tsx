@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -23,7 +25,35 @@ import { educationFundChartModel } from "@/lib/calc/charts/education-fund-chart"
 import { moneyCell } from "@/lib/calc/table-cell";
 import { EDUCATION_SAVINGS as C } from "@/content/calculators/education-savings";
 
-export function EducationSavingsCalculator() {
+/*
+ * CSV row 27 ("Hai cột"): "gom thời điểm nhập học, mức góp cần thiết và phần
+ * còn thiếu vào cùng một vùng; đưa biểu đồ lên trước phần giả định dài".
+ * Docs §8.
+ *
+ * WHY `monthsToSaveLabel` MOVED UP OUT OF THE DETAIL GROUP. The monthly
+ * contribution is meaningless without the horizon it is spread over, and
+ * this page has a state — no time to save — where the contribution is a dash
+ * precisely BECAUSE that horizon is zero. Leaving the month count in a
+ * disclosure put the explanation of the dash one click away from the dash.
+ * It is now the row under the contribution, in the same region, which is
+ * what the row means by "cùng một vùng".
+ *
+ * The chart goes in the layout's `chart` slot, so it renders before the
+ * full-width detail region holding the per-year tuition table — the row's
+ * "trước phần giả định dài".
+ */
+const FORM_ID = "hoc-phi-nhap";
+const RESULT_ID = "hoc-phi-ket-qua";
+
+export function EducationSavingsCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** `ResultActions` for this slug; the route owns the wiring. */
+  actions?: React.ReactNode;
+  /** `ToolNextSteps promoted` for this slug. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     tuition: C.form.defaultTuition,
     inflation: C.form.defaultInflation,
@@ -64,25 +94,30 @@ export function EducationSavingsCalculator() {
   const currentSavingsInvalid = currentSavings === null || currentSavings < 0;
   const returnInvalid = returnRate === null || returnRate <= -100;
 
-  const result =
+  const anyInvalid =
     tuitionInvalid ||
     inflationInvalid ||
     yearsUntilInvalid ||
     yearsOfStudyInvalid ||
     currentSavingsInvalid ||
-    returnInvalid
-      ? null
-      : computeEducationSavings({
-          annualTuitionToday: tuition,
-          tuitionInflationPercent: inflation,
-          yearsUntilStart: yearsUntil,
-          yearsOfStudy,
-          currentSavings,
-          investmentReturnPercent: returnRate,
-        });
+    returnInvalid;
+
+  const result = anyInvalid
+    ? null
+    : computeEducationSavings({
+        annualTuitionToday: tuition,
+        tuitionInflationPercent: inflation,
+        yearsUntilStart: yearsUntil,
+        yearsOfStudy,
+        currentSavings,
+        investmentReturnPercent: returnRate,
+      });
 
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
+
+  /** Formatted once, for the headline row and the pinned restatement. */
+  const monthlyValue = money(result?.monthlyContribution ?? undefined);
 
   /**
    * The per-year tuition table, with the two MONETARY columns as typed cells.
@@ -109,192 +144,229 @@ export function EducationSavingsCalculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.tuitionGroup}>
-        <NumberField
-          {...fields.bind("tuition")}
-          label={C.form.tuitionLabel}
-          unit={C.form.tuitionUnit}
-          help={C.form.tuitionHelp}
-          error={C.form.tuitionInvalid}
-          invalid={tuitionInvalid}
-        />
-        <NumberField
-          {...fields.bind("inflation")}
-          label={C.form.inflationLabel}
-          unit={C.form.inflationUnit}
-          help={C.form.inflationHelp}
-          error={C.form.inflationInvalid}
-          invalid={inflationInvalid}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.timeGroup} className="mt-8">
-        {/* The error names WHICH rule was broken: the field's own, or the
-            joint 100-year bound. Both fields carry the joint message,
-            because either one is a valid thing to change. */}
-        <NumberField
-          {...fields.bind("yearsUntil")}
-          label={C.form.yearsUntilLabel}
-          help={yearsBound(C.form.yearsUntilHelp)}
-          error={
-            yearsTogetherInvalid
-              ? yearsBound(C.form.yearsTogetherInvalid)
-              : C.form.yearsUntilInvalid
-          }
-          invalid={yearsUntilInvalid}
-        />
-        <NumberField
-          {...fields.bind("yearsOfStudy")}
-          label={C.form.yearsOfStudyLabel}
-          help={C.form.yearsOfStudyHelp}
-          error={
-            yearsTogetherInvalid
-              ? yearsBound(C.form.yearsTogetherInvalid)
-              : C.form.yearsOfStudyInvalid
-          }
-          invalid={yearsOfStudyInvalid}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.savingsGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("currentSavings")}
-          label={C.form.currentSavingsLabel}
-          unit={C.form.currentSavingsUnit}
-          help={C.form.currentSavingsHelp}
-          error={C.form.currentSavingsInvalid}
-          invalid={currentSavingsInvalid}
-        />
-        <NumberField
-          {...fields.bind("returnRate")}
-          label={C.form.returnLabel}
-          unit={C.form.returnUnit}
-          help={C.form.returnHelp}
-          error={C.form.returnInvalid}
-          invalid={returnInvalid}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        {/* A dash, not 0 ₫, when no monthly amount can close the gap: with
-            zero months to save there is no such figure, and "0 ₫" read as
-            "you need to contribute nothing" on a plan short of 314 triệu. */}
-        <ResultRow
-          label={C.form.monthlyLabel}
-          value={money(result?.monthlyContribution ?? undefined)}
-        />
-        <ResultRow
-          label={C.form.targetLabel}
-          value={money(result?.targetAtStart)}
-        />
-        <ResultRow
-          label={C.form.shortfallLabel}
-          value={money(result?.shortfallAtStart)}
-        />
-        {/* Mounted only on a plan that cannot pay — the two figures that ARE
-            available when the monthly one is not. */}
-        {result !== null && result.fundingGapAtStart > 0 ? (
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        actions={actions}
+        nextSteps={nextSteps}
+        form={
           <>
-            <ResultRow
-              label={C.form.heldAtStartLabel}
-              value={money(result.fundedAtStart)}
-            />
-            {/* NOT the same row as "Còn thiếu": that is the gap BEFORE any
-                contribution, and this is what is still open AFTER the
-                contributions the plan can actually make. They coincide only
-                when no contribution is possible. */}
-            <ResultRow
-              label={C.form.fundingGapLabel}
-              value={money(result.fundingGapAtStart)}
-            />
-            <ResultRow
-              label={C.form.unpaidTuitionLabel}
-              value={money(result.totalTuitionUnpaid)}
-            />
+            <FieldGroup title={C.form.tuitionGroup}>
+              <NumberField
+                {...fields.bind("tuition")}
+                label={C.form.tuitionLabel}
+                unit={C.form.tuitionUnit}
+                help={C.form.tuitionHelp}
+                error={C.form.tuitionInvalid}
+                invalid={tuitionInvalid}
+              />
+              <NumberField
+                {...fields.bind("inflation")}
+                label={C.form.inflationLabel}
+                unit={C.form.inflationUnit}
+                help={C.form.inflationHelp}
+                error={C.form.inflationInvalid}
+                invalid={inflationInvalid}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.timeGroup} className="mt-8">
+              {/* The error names WHICH rule was broken: the field's own, or
+                  the joint 100-year bound. Both fields carry the joint
+                  message, because either one is a valid thing to change. */}
+              <NumberField
+                {...fields.bind("yearsUntil")}
+                label={C.form.yearsUntilLabel}
+                help={yearsBound(C.form.yearsUntilHelp)}
+                error={
+                  yearsTogetherInvalid
+                    ? yearsBound(C.form.yearsTogetherInvalid)
+                    : C.form.yearsUntilInvalid
+                }
+                invalid={yearsUntilInvalid}
+              />
+              <NumberField
+                {...fields.bind("yearsOfStudy")}
+                label={C.form.yearsOfStudyLabel}
+                help={C.form.yearsOfStudyHelp}
+                error={
+                  yearsTogetherInvalid
+                    ? yearsBound(C.form.yearsTogetherInvalid)
+                    : C.form.yearsOfStudyInvalid
+                }
+                invalid={yearsOfStudyInvalid}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.savingsGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("currentSavings")}
+                label={C.form.currentSavingsLabel}
+                unit={C.form.currentSavingsUnit}
+                help={C.form.currentSavingsHelp}
+                error={C.form.currentSavingsInvalid}
+                invalid={currentSavingsInvalid}
+              />
+              <NumberField
+                {...fields.bind("returnRate")}
+                label={C.form.returnLabel}
+                unit={C.form.returnUnit}
+                help={C.form.returnHelp}
+                error={C.form.returnInvalid}
+                invalid={returnInvalid}
+              />
+            </FieldGroup>
           </>
-        ) : null}
-      </ResultGroup>
+        }
+        cta={
+          /* Sticky: six boxes in three legends, and the monthly figure is the
+             one the reader is steering toward while changing the tuition
+             inflation assumption further down the form. */
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            sticky
+            answer={{ label: C.form.monthlyLabel, value: monthlyValue }}
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {/* A dash, not 0 ₫, when no monthly amount can close the gap:
+                  with zero months to save there is no such figure, and
+                  "0 ₫" read as "you need to contribute nothing" on a plan
+                  short of 314 triệu. */}
+              <ResultRow
+                label={C.form.monthlyLabel}
+                value={monthlyValue}
+                emphasis
+              />
+              {/* The horizon the contribution is spread over, in the same
+                  region as the contribution. When this reads 0 tháng, the
+                  row above it is a dash and this is the reason. */}
+              <ResultRow
+                label={C.form.monthsToSaveLabel}
+                value={
+                  result
+                    ? `${formatDecimal(result.monthsToSave, 0)} ${C.form.monthsUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.targetLabel}
+                value={money(result?.targetAtStart)}
+              />
+              <ResultRow
+                label={C.form.shortfallLabel}
+                value={money(result?.shortfallAtStart)}
+              />
+              {/* Mounted only on a plan that cannot pay — the two figures
+                  that ARE available when the monthly one is not. */}
+              {result !== null && result.fundingGapAtStart > 0 ? (
+                <>
+                  <ResultRow
+                    label={C.form.heldAtStartLabel}
+                    value={money(result.fundedAtStart)}
+                  />
+                  {/* NOT the same row as "Còn thiếu": that is the gap BEFORE
+                      any contribution, and this is what is still open AFTER
+                      the contributions the plan can actually make. They
+                      coincide only when no contribution is possible. */}
+                  <ResultRow
+                    label={C.form.fundingGapLabel}
+                    value={money(result.fundingGapAtStart)}
+                  />
+                  <ResultRow
+                    label={C.form.unpaidTuitionLabel}
+                    value={money(result.totalTuitionUnpaid)}
+                  />
+                </>
+              ) : null}
+            </ResultGroup>
 
-      <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.nominalLabel}
-          value={money(result?.totalTuitionNominal)}
-        />
-        <ResultRow
-          label={C.form.savingsAtStartLabel}
-          value={money(result?.currentSavingsAtStart)}
-        />
-        <ResultRow
-          label={C.form.interestLabel}
-          value={money(result?.interestEarned)}
-        />
-        <ResultRow
-          label={C.form.totalContributionsLabel}
-          value={money(result?.totalContributions)}
-        />
-        <ResultRow
-          label={C.form.monthsToSaveLabel}
-          value={
-            result
-              ? `${formatDecimal(result.monthsToSave, 0)} ${C.form.monthsUnit}`
-              : null
-          }
-        />
-      </ResultGroup>
+            {result?.alreadyFunded ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.alreadyFundedNotice}
+              </p>
+            ) : null}
 
-      {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.form.table.caption}
-          columns={[
-            { label: C.form.table.yearColumn },
-            { label: C.form.table.fromNowColumn },
-            { label: C.form.table.tuitionColumn, numeric: true },
-            { label: C.form.table.pvColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
-      ) : null}
+            {/* GUARDED BY A REAL GAP, not by the zero wait alone. A funded
+                plan starting today has a monthly figure of 0 and no gap, and
+                the unfunded notice told that reader an amount was missing
+                and the result was blank. Source review found it on a 500
+                triệu fixture. */}
+            {result?.noTimeToSave && result.fundingGapAtStart > 0 ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.noTimeNotice}
+              </p>
+            ) : null}
 
-      {result?.alreadyFunded ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.alreadyFundedNotice}
-        </p>
-      ) : null}
+            {result?.noTimeToSave && result.fundingGapAtStart <= 0 ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.noTimeFundedNotice}
+              </p>
+            ) : null}
 
-      {/* GUARDED BY A REAL GAP, not by the zero wait alone. A funded plan
-          starting today has a monthly figure of 0 and no gap, and the
-          unfunded notice told that reader an amount was missing and the
-          result was blank. Source review found it on a 500 triệu fixture. */}
-      {result?.noTimeToSave && result.fundingGapAtStart > 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.noTimeNotice}
-        </p>
-      ) : null}
+            {/* ORIGINAL ROW 25's lesson, beside the figure it is about: this
+                contribution competes with the home deposit, and the tool
+                cannot net the two for the reader. Mounted only when there IS
+                a contribution to compete — an already-funded plan asks for
+                nothing. */}
+            {result !== null &&
+            result.monthlyContribution !== null &&
+            result.monthlyContribution > 0 ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.parallelGoalNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          // The fund against the need, year by year. Both paths come from
+          // the engine's own series. In the `chart` slot it renders before
+          // the detail region, which is the row's "trước phần giả định dài".
+          <ChartFigure model={chart}>
+            <LineChart model={chart} />
+          </ChartFigure>
+        }
+        detail={
+          <>
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.nominalLabel}
+                value={money(result?.totalTuitionNominal)}
+              />
+              <ResultRow
+                label={C.form.savingsAtStartLabel}
+                value={money(result?.currentSavingsAtStart)}
+              />
+              <ResultRow
+                label={C.form.interestLabel}
+                value={money(result?.interestEarned)}
+              />
+              <ResultRow
+                label={C.form.totalContributionsLabel}
+                value={money(result?.totalContributions)}
+              />
+            </ResultGroup>
 
-      {result?.noTimeToSave && result.fundingGapAtStart <= 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.noTimeFundedNotice}
-        </p>
-      ) : null}
-
-      {/* ORIGINAL ROW 25's lesson, beside the figure it is about: this
-          contribution competes with the home deposit, and the tool cannot
-          net the two for the reader. Mounted only when there IS a
-          contribution to compete — an already-funded plan asks for nothing. */}
-      {result !== null &&
-      result.monthlyContribution !== null &&
-      result.monthlyContribution > 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.parallelGoalNotice}
-        </p>
-      ) : null}
-
-      {/* The fund against the need, year by year. Both paths come from the
-          engine's own series. */}
-      <ChartFigure model={chart}>
-        <LineChart model={chart} />
-      </ChartFigure>
+            {tableRows.length > 0 ? (
+              <ResultTable
+                className="mt-8"
+                caption={C.form.table.caption}
+                columns={[
+                  { label: C.form.table.yearColumn },
+                  { label: C.form.table.fromNowColumn },
+                  { label: C.form.table.tuitionColumn, numeric: true },
+                  { label: C.form.table.pvColumn, numeric: true },
+                ]}
+                rows={tableRows}
+              />
+            ) : null}
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

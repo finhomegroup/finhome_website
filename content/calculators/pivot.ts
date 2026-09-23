@@ -84,7 +84,10 @@ export const PIVOT = {
   },
 
   notAPredictionNotice:
-    "Các mức này không dự đoán gì. Chúng là kết quả của một phép tính số học trên giá phiên trước, và giá trị duy nhất của chúng là ở chỗ nhiều người cùng dùng những công thức này, nên lệnh có xu hướng tụ lại quanh cùng những mức đó. Đó là một tuyên bố về hành vi của người tham gia thị trường, không phải về giá trị của tài sản. Bằng chứng rõ nhất: bốn phương pháp trong bảng dưới đưa ra bốn bộ số khác nhau từ cùng một dữ liệu — nếu chúng đo được điều gì thật, chúng đã trùng nhau.",
+    "Các mức này không dự đoán gì: chúng là kết quả của một phép tính số học trên giá phiên trước, và giá trị duy nhất của chúng là ở chỗ nhiều người cùng dùng những công thức này, nên lệnh có xu hướng tụ lại quanh cùng những mức đó. Đó là một tuyên bố về hành vi của người tham gia thị trường, không phải về giá trị của tài sản.",
+  notAPredictionNoticeDetailTitle: "Bằng chứng: bốn công thức, bốn bộ số",
+  notAPredictionNoticeDetail:
+    "Bằng chứng rõ nhất: bốn phương pháp trong bảng dưới đưa ra bốn bộ số khác nhau từ cùng một dữ liệu — nếu chúng đo được điều gì thật, chúng đã trùng nhau.",
 
   formula: {
     title: "Bốn công thức",

@@ -10,6 +10,7 @@
  * byte-identically. Nothing here is a visual check.
  */
 import { describe, expect, it, vi } from "vitest";
+import { markupRegion } from "@/lib/markup-region";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LOAN_ANALYSIS } from "@/content/calculators/loan-analysis";
@@ -72,6 +73,119 @@ const DEFAULTS = analyseLoan({
   selectedMonth: 152,
 });
 
+/**
+ * §8 row 11: "Đưa cơ cấu gốc/lãi và tháng đang xét vào cùng vùng kết quả;
+ * giảm phần giải thích trước biểu đồ."
+ */
+describe("§8 row 11: the structure leads, the month reads with it", () => {
+  /**
+   * One layout region's own markup, bounded by depth rather than by the next
+   * marker — `markupRegion`'s docstring records the bugs a textual bound
+   * produces, and `detail` is the last region, so a marker-to-marker slice
+   * would run to the end of the document.
+   */
+  const regionOf = (html: string, name: string): string => {
+    const region = markupRegion(html, `data-calc-region="${name}"`);
+    expect(region, name).not.toBeNull();
+    return region ?? "";
+  };
+
+  it("emphasises the examined month's interest share, once", async () => {
+    const C = await copy();
+    const html = await render();
+    // The form ends by asking which month to look at, so the share inside THAT
+    // month is the answer — not the whole loan's interest-to-principal ratio,
+    // which a browser pass at 390 px found leading the result instead.
+    expect(html.split("md:text-3xl").length - 1).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(C.form.examineShareLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(C.form.examineInterestLabel));
+  });
+
+  it("leads the one live group with the month, and 2-3 figures under it", async () => {
+    const C = await copy();
+    const html = await render();
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
+    // The marker sits on the rows, not on the group, so the heading is checked
+    // against the region's position rather than inside it.
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live).not.toBeNull();
+    const rows = live ?? "";
+    const heading = html.indexOf("Tháng 152 — năm thứ 13, tháng 8");
+    expect(heading).toBeGreaterThan(-1);
+    expect(heading).toBeLessThan(html.indexOf(rows));
+    // The month's own split, and nothing else: share, then the two amounts it
+    // is made of, then the instalment they sum to.
+    for (const label of [
+      C.form.examineShareLabel,
+      C.form.examineInterestLabel,
+      C.form.examinePrincipalLabel,
+      C.form.examinePaymentLabel,
+    ]) {
+      expect(rows, label).toContain(label);
+    }
+    // The whole-loan metrics are context, so none of them is in the live group.
+    for (const label of [
+      C.form.monthlyLabel,
+      C.form.totalInterestLabel,
+      C.form.ratioLabel,
+      C.form.firstShareLabel,
+      C.form.lastShareLabel,
+      C.form.crossoverLabel,
+      C.form.halfInterestLabel,
+      C.form.halfPrincipalLabel,
+    ]) {
+      expect(rows, label).not.toContain(label);
+    }
+  });
+
+  it("retains the whole-loan structure in labelled detail", async () => {
+    const C = await copy();
+    const html = await render();
+    const detail = regionOf(html, "detail");
+    // Labelled: the disclosure says the loan as a whole is inside, and the
+    // block inside carries its own heading.
+    expect(detail).toContain(C.form.detailToggle);
+    expect(detail).toContain(C.form.resultTitle);
+    for (const label of [
+      C.form.monthlyLabel,
+      C.form.totalInterestLabel,
+      C.form.ratioLabel,
+      C.form.firstShareLabel,
+      C.form.lastShareLabel,
+      C.form.crossoverLabel,
+      C.form.halfInterestLabel,
+      C.form.halfPrincipalLabel,
+    ]) {
+      expect(detail, label).toContain(label);
+    }
+    // The month's input stays in the form, which is where a reader changes it.
+    expect(regionOf(html, "form")).toContain(C.form.examineLabel);
+  });
+
+  it("moves the table's explanation from the entry copy to the table", async () => {
+    const C = await copy();
+    const html = await render();
+    // It used to explain, in the page's entry copy and ahead of the chart, a
+    // table four screens down. The sentences are now above that table.
+    const chart = html.indexOf("<figure");
+    expect(chart).toBeGreaterThan(-1);
+    const intro = html.indexOf(C.table.intro);
+    expect(intro).toBeGreaterThan(chart);
+    // Anchored on THIS table's own caption, not on the first `<table` in the
+    // document: the examined month renders a table of its own further up.
+    const caption = html.indexOf(C.table.caption);
+    expect(intro).toBeLessThan(caption);
+    expect(html.indexOf("<table", intro)).toBeGreaterThan(caption);
+  });
+
+  it("gives the route a CTA pointing at its own answer", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="phan-tich-khoan-vay-ket-qua"');
+  });
+});
+
 describe("any month of the term can be examined", () => {
   it("offers the month field with the whole term available", async () => {
     const C = await copy();
@@ -106,9 +220,9 @@ describe("any month of the term can be examined", () => {
     expect(html).toContain(`${formatMoney(selected.payment)} ₫`);
     expect(html).toContain(`${formatMoney(selected.interest)} ₫`);
     expect(html).toContain(`${formatMoney(selected.principal)} ₫`);
-    expect(html).toContain(`${formatMoney(selected.balance)} ₫`);
-    // The running totals are typed cells in the detail block: exact reading,
-    // no per-figure "₫".
+    // The balance moved into the detail block with the running totals, so it
+    // is a typed cell now: exact reading, no per-figure "₫".
+    expect(html).toContain(`>${formatMoney(selected.balance)}<`);
     expect(html).toContain(`>${formatMoney(selected.cumulativeInterest)}<`);
     expect(html).toContain(`>${formatMoney(selected.cumulativePrincipal)}<`);
   });
@@ -136,7 +250,7 @@ describe("any month of the term can be examined", () => {
     expect(html).toContain(C.form.examineInvalid);
     expect(html).toContain('aria-invalid="true"');
     // Nothing is answered about a month that is not in the schedule.
-    expect(html).not.toContain("17.356.465 ₫");
+    expect(html).not.toContain("17.356.465");
     expect(html).toContain(C.chart.unavailableRecovery);
   });
 
@@ -145,7 +259,7 @@ describe("any month of the term can be examined", () => {
       const C = await copy({ defaultExamine: typed });
       const html = await render({ defaultExamine: typed });
       expect(html, typed).toContain(C.form.examineInvalid);
-      expect(html, typed).not.toContain("17.356.465 ₫");
+      expect(html, typed).not.toContain("17.356.465");
     }
   });
 });
@@ -186,8 +300,10 @@ describe("the mortgage's repayment method, with the same meaning", () => {
     });
     expect(flat).not.toBeNull();
     if (flat === null) return;
-    // Equal principal: the crossover and the halfway point both move.
-    expect(html).toContain(`${formatMoney(flat.loan.totalInterest)} ₫`);
+    // Equal principal: the crossover and the halfway point both move. The
+    // total is a typed cell in the whole-loan detail block, so the exact
+    // reading carries no per-figure "₫".
+    expect(html).toContain(`>${formatMoney(flat.loan.totalInterest)}<`);
     expect(html).toContain("100 tháng");
     expect(html).toContain("120 tháng");
     // And the chart says which structure it drew.

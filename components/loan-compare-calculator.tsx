@@ -2,6 +2,7 @@
 
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
@@ -12,6 +13,7 @@ import {
 } from "@/components/calc/example-notice";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -152,15 +154,66 @@ function optionalCount(raw: string | undefined, max: number): OptionalNumber {
   return { value: parsed, invalid: false };
 }
 
+/*
+ * One component, two routes, so the region ids are per PERSPECTIVE rather than
+ * module constants: `#so-sanh-khoan-vay-ket-qua` on the fixed-versus-floating
+ * page would be a link to an answer that is not this page's.
+ */
+const REGION_IDS: Record<
+  ComparePerspective,
+  { form: string; result: string }
+> = {
+  offers: {
+    form: "so-sanh-khoan-vay-nhap",
+    result: "so-sanh-khoan-vay-ket-qua",
+  },
+  fixedFloating: {
+    form: "lai-co-dinh-hay-tha-noi-nhap",
+    result: "lai-co-dinh-hay-tha-noi-ket-qua",
+  },
+};
+
+/*
+ * CSV row 6 ("Hai cột"): "Đặt các phương án cạnh nhau, đồng nhất mốc thời
+ * gian; nhấn chênh lệch chi phí chứ không chỉ tên bên rẻ hơn."
+ *
+ * The first two clauses were ALREADY SATISFIED and are recorded rather than
+ * rebuilt: the detail table is transposed so the offers ARE side-by-side
+ * columns (and `mobileCards` keeps them side by side on a phone), and there is
+ * exactly one horizon field, above the offers, that every column is priced at
+ * — there is no per-offer horizon for the tool to disagree with itself over.
+ *
+ * The third clause is the change. The headline used to read "Rẻ nhất tại mốc
+ * bạn chọn: Phương án B" first with the spread as an unemphasised second row,
+ * so the page's answer was a NAME. Now the cost difference is the emphasised
+ * figure, the winner's name sits under it as the thing the difference is
+ * about, and the winner's cost at the chosen horizon follows so the difference
+ * has a base to be read against.
+ *
+ * CSV row 15 (`lai-co-dinh-hay-tha-noi`): "Dùng cùng bố cục so sánh khoản vay;
+ * cho đọc ngay rủi ro sau ưu đãi và chi phí tại cùng mốc." The first clause is
+ * this component — the route has been a perspective of it since the original
+ * row 12 consolidation, and it now inherits this layout unchanged. The second
+ * clause adds the per-side block below: the instalment after the ưu đãi ends,
+ * the month it starts, and each side's cost at the common horizon, all of
+ * which previously existed ONLY inside the collapsed 15-row table.
+ */
 // No `= {}` default on the parameter: an optional PARAMETER makes the
 // component fail `createElement`'s typed overload, so nothing could pass this
 // from a page or a test. React always supplies a props object.
 export function LoanCompareCalculator({
   perspective = "offers",
+  actions,
+  nextSteps,
 }: {
   perspective?: ComparePerspective;
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
 }) {
   const fixedFloating = perspective === "fixedFloating";
+  const ids = REGION_IDS[perspective];
 
   /**
    * The prefilled offers and the column names, per perspective.
@@ -438,6 +491,53 @@ export function LoanCompareCalculator({
   const bestLabel =
     result === null ? null : optionLabels[result.bestIndex];
 
+  /**
+   * The winner's own cost at the chosen horizon — ROW 6's base for the spread.
+   *
+   * A difference with nothing to measure it against is unreadable: "chênh lệch
+   * 180 triệu" means one thing on a 600 triệu cost and another on a 6 tỷ one.
+   * Read off the ranked row, so it is the same figure the table reports.
+   */
+  const bestHorizonCost =
+    result === null ? null : (result.rows[result.bestIndex]?.horizonCost ?? null);
+
+  /**
+   * ROW 15's per-side block: the instalment after the ưu đãi ends and the cost
+   * at the common horizon, for each side in use.
+   *
+   * Every figure is read off the same `result.rows` the detail table reads, so
+   * nothing here is a second calculation — it is the two metrics the row asks
+   * to be legible without opening a fifteen-row table. A side with no
+   * promotional phase has no reset, so it reports its constant instalment
+   * under its own name instead: printing "sau ưu đãi" for a loan that never
+   * had one would invent a phase.
+   */
+  const riskRows = shownOffers.flatMap((index) => {
+    const row = result?.rows[index] ?? null;
+    if (row === null) return [];
+    const phased = row.resetMonth !== null;
+    return [
+      {
+        label: `${optionLabels[index]} — ${
+          phased ? C.table.rows.resetPayment : C.table.rows.monthly
+        }`,
+        value: money(phased ? row.resetPayment : row.monthlyPayment),
+      },
+      ...(phased
+        ? [
+            {
+              label: `${optionLabels[index]} — ${C.table.rows.resetMonth}`,
+              value: formatDecimal(row.resetMonth as number, 0),
+            },
+          ]
+        : []),
+      {
+        label: `${optionLabels[index]} — ${C.table.rows.horizonCost}`,
+        value: money(row.horizonCost),
+      },
+    ];
+  });
+
   /** The two figures every offer needs: its rate and its term. */
   const offerCoreFields = (index: number) => (
     <>
@@ -633,196 +733,287 @@ export function LoanCompareCalculator({
 
       {/* ORIGINAL ROW 12's "hiện giả định ngay cạnh kết luận", at the top of
           the form rather than in a footnote: the prefilled fixed rate is an
-          example, and the reader is told so before reading a figure off it. */}
+          example, and the reader is told so before reading a figure off it.
+          SENTENCE + LABELLED DISCLOSURE, the same two elements
+          `CalculatorPage`'s `noticeDetail` places for shell routes: the whole
+          paragraph pushed the first field to 887 px at 390×844, and what a
+          reader needs BEFORE typing is that the figure is hypothetical — not
+          how to replace it. */}
       {fixedFloating ? (
-        <p className="mb-6 rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-          {F.compare.exampleNotice}
-        </p>
-      ) : null}
-
-      <FieldGroup title={C.form.amountGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-      </FieldGroup>
-
-      {/* The COMMON horizon, in the primary flow and above the offers: it is
-          the one input that changes what "cheaper" means, and most buyers do
-          not hold a mortgage to month 240. */}
-      <FieldGroup title={C.form.horizonGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("horizon")}
-          label={C.form.horizonLabel}
-          unit={C.form.horizonUnit}
-          help={C.form.horizonHelp}
-          error={C.form.horizonInvalid}
-          invalid={horizonInvalid}
-        />
-      </FieldGroup>
-
-      {/* Two offers in the primary flow, each with its RATE and TERM only.
-          The four optional boxes — percent fee, one-off fee, settlement fee
-          and the promotional pair — are behind that offer's own disclosure,
-          which states what is active inside it. Original row 3 asked for
-          progressive fee entry; every field visible at once was the opposite.
-          `useCalcFields` holds every key, so collapsing a panel never loses
-          what was typed into it.
-
-          The third offer stays behind its own panel: three pre-filled columns
-          is three sets of numbers to read before the page has answered
-          anything. */}
-      {OPTION_KEYS.slice(0, 2).map((keys, index) => (
-        <FieldGroup
-          key={keys.rate}
-          title={optionLabels[index]}
-          className="mt-8"
-        >
-          {/* THE PREFILLED FIXED RATE IS A LABELLED EXAMPLE. It says it is a
-              hypothetical figure, and the hint explains how to enter a real
-              "cố định 3 năm rồi thả nổi" quote instead — which this form can
-              express, because both columns take a promotional pair. No claim
-              about what the market offers: none was verified here. */}
-          {fixedFloating && index === 0 ? (
-            <p className="text-sm leading-relaxed text-ink-2">
-              {F.compare.fixedSideHint}
-            </p>
-          ) : null}
-          {offerCoreFields(index)}
-          {offerFeeFields(index)}
-        </FieldGroup>
-      ))}
-
-      {/* A third column belongs to the offers question, not to this one: fixed
-          against floating has two sides. Every key stays mounted, so nothing
-          about the shared state changes. */}
-      {fixedFloating ? null : (
-        <AdvancedFields
-          title={C.form.thirdOptionTitle}
-          settings={thirdOptionSettings}
-          emptySummary={C.form.thirdOptionUnused}
-          className="mt-8"
-        >
-          {offerCoreFields(2)}
-          {offerFeeFields(2)}
-        </AdvancedFields>
-      )}
-
-      {/* The only live region on the page: two rows a screen reader can hear
-          re-announced on every keystroke. The comparison table below carries
-          21 cells and is deliberately not live. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow label={C.form.bestLabel} value={bestLabel} />
-        <ResultRow
-          label={C.form.spreadLabel}
-          value={result === null ? null : money(result.spread)}
-        />
-      </ResultGroup>
-
-      {result === null && !amountInvalid && !horizonInvalid && !unusableInUse ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.tooFewNotice}
-        </p>
-      ) : null}
-
-      {/* An offer the reader typed that could not be priced must not vanish
-          and leave a winner ranked among a different set of columns — and
-          must never be priced as a repaired version of itself. */}
-      {unusableInUse ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-2">
-          {result === null
-            ? C.form.unusableBlockedNotice
-            : C.form.unusableNotice}
-        </p>
-      ) : null}
-
-      {/* When the horizon winner and the full-term winner differ, the page
-          says so instead of letting one ranking stand for both questions. */}
-      {result?.horizonChangesWinner ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-2">
-          {fill(C.form.winnerChangesNotice, {
-            horizonOption: optionLabels[result.bestIndex],
-            fullTermOption: optionLabels[result.bestFullTermIndex],
-          })}
-        </p>
-      ) : null}
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {C.form.settlementFeeNotice}
-      </p>
-
-      {/* Both charts sit outside every ResultGroup: neither may be
-          re-announced on each keystroke. */}
-      <ChartFigure model={costChart}>
-        <BarChart model={costChart} />
-      </ChartFigure>
-
-      <ChartFigure model={paymentChart}>
-        <LineChart model={paymentChart} />
-      </ChartFigure>
-
-      {tableRows.length > 0 ? (
-        <DetailDisclosure
-          title={C.form.detailTitle}
-          hint={C.form.detailHint}
-          className="mt-8"
-        >
-          <ResultTable
-            caption={C.table.caption}
-            columns={[
-              { label: C.table.metricColumn },
-              ...shownOffers.map((index) => ({
-                label: optionLabels[index],
-                numeric: true,
-              })),
-            ]}
-            rows={tableRows}
-            /*
-             * `mobileCards`, and here it is the IDEAL shape rather than a
-             * compromise — the opposite of the cost table above.
-             *
-             * This table's rows are METRICS and its columns are OFFERS, so a
-             * card per row is a card per metric with every offer inside it:
-             * "Trả hằng tháng — Phương án A …, B …, C …". That is precisely
-             * the comparison a reader opened this page for, kept intact.
-             *
-             * Needed because the column count GROWS WITH THE DATA. The
-             * prefilled example has two offers and the table measured 281 px
-             * in its 266 px frame — a 15 px overhang easy to miss. Fill in the
-             * third offer, which the page's own title invites ("Đặt ba phương
-             * án cạnh nhau"), and it becomes four columns at 354 px: 88 px
-             * hidden, enough to take part of an offer column off-frame. Both
-             * measured at a verified 390 px viewport on 2026-09-16.
-             *
-             * It stays under 390 px, so the layout manifest's
-             * wider-than-viewport criterion never flagged it. That criterion
-             * cannot see a table that overflows its own scroll frame, which is
-             * why this one survived two sweeps.
-             */
-            mobileCards
-          />
-
-          {/* The fee-aware rate view, nested under the same disclosure as the
-              figures it is derived from. Its own qualification sits with it,
-              because a modelled APR is not a statutory disclosure. */}
-          <DetailFigures
-            title={C.form.aprDetailTitle}
-            className="mt-6"
-            figures={aprFigures}
-          />
-          <p className="mt-3 text-sm leading-relaxed text-ink-3">
-            {C.form.aprNote}
+        <div className="mb-6 rounded-xl border border-red-400/40 bg-bg-soft p-4">
+          <p className="text-sm leading-relaxed text-ink-2">
+            {F.compare.exampleNotice}
           </p>
-        </DetailDisclosure>
+          <details className="mt-2">
+            <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+              {F.compare.exampleDetailTitle}
+            </summary>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2">
+              {F.compare.exampleDetail}
+            </p>
+          </details>
+        </div>
       ) : null}
+
+      <CalculatorLayout
+        formId={ids.form}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.amountGroup}>
+              <NumberField
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
+              />
+            </FieldGroup>
+
+            {/* The COMMON horizon, in the primary flow and above the offers:
+                it is the one input that changes what "cheaper" means, and most
+                buyers do not hold a mortgage to month 240. */}
+            <FieldGroup title={C.form.horizonGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("horizon")}
+                label={C.form.horizonLabel}
+                unit={C.form.horizonUnit}
+                help={C.form.horizonHelp}
+                error={C.form.horizonInvalid}
+                invalid={horizonInvalid}
+              />
+            </FieldGroup>
+
+            {/* Two offers in the primary flow, each with its RATE and TERM
+                only. The four optional boxes — percent fee, one-off fee,
+                settlement fee and the promotional pair — are behind that
+                offer's own disclosure, which states what is active inside it.
+                Original row 3 asked for progressive fee entry; every field
+                visible at once was the opposite. `useCalcFields` holds every
+                key, so collapsing a panel never loses what was typed into it.
+
+                The third offer stays behind its own panel: three pre-filled
+                columns is three sets of numbers to read before the page has
+                answered anything. */}
+            {OPTION_KEYS.slice(0, 2).map((keys, index) => (
+              <FieldGroup
+                key={keys.rate}
+                title={optionLabels[index]}
+                className="mt-8"
+              >
+                {/* THE PREFILLED FIXED RATE IS A LABELLED EXAMPLE. It says it
+                    is a hypothetical figure, and the hint explains how to
+                    enter a real "cố định 3 năm rồi thả nổi" quote instead —
+                    which this form can express, because both columns take a
+                    promotional pair. No claim about what the market offers:
+                    none was verified here. */}
+                {fixedFloating && index === 0 ? (
+                  <p className="text-sm leading-relaxed text-ink-2">
+                    {F.compare.fixedSideHint}
+                  </p>
+                ) : null}
+                {offerCoreFields(index)}
+                {offerFeeFields(index)}
+              </FieldGroup>
+            ))}
+
+            {/* A third column belongs to the offers question, not to this one:
+                fixed against floating has two sides. Every key stays mounted,
+                so nothing about the shared state changes. */}
+            {fixedFloating ? null : (
+              <AdvancedFields
+                title={C.form.thirdOptionTitle}
+                settings={thirdOptionSettings}
+                emptySummary={C.form.thirdOptionUnused}
+                className="mt-8"
+              >
+                {offerCoreFields(2)}
+                {offerFeeFields(2)}
+              </AdvancedFields>
+            )}
+          </>
+        }
+        cta={
+          /* Sticky: two offers of rate and term, the amount, the horizon and
+             three fee panels is a form long enough that the answer leaves the
+             screen while the second offer is being edited. The pinned figure
+             is the SPREAD, because that is now the answer. */
+          <ResultCta
+            formId={ids.form}
+            targetId={ids.result}
+            invalid={amountInvalid || horizonInvalid || unusableInUse}
+            answer={{
+              label: C.form.spreadLabel,
+              value: result === null ? null : money(result.spread),
+            }}
+            sticky
+          />
+        }
+        primary={
+          <>
+            {/* The only live region on the page: three rows a screen reader
+                can hear re-announced on every keystroke. The comparison table
+                below carries 21 cells and is deliberately not live. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={ids.result}>
+              {/* ROW 6: the DIFFERENCE is the answer, not the winner's name.
+                  A reader who only reads the big figure learns what choosing
+                  wrongly costs them; a reader who only read "Phương án B"
+                  learned nothing about whether the choice mattered. */}
+              <ResultRow
+                label={C.form.spreadLabel}
+                value={result === null ? null : money(result.spread)}
+                emphasis
+              />
+              <ResultRow label={C.form.bestLabel} value={bestLabel} />
+              {/* What the difference is measured against. */}
+              <ResultRow
+                label={C.form.horizonCostLabel}
+                value={bestHorizonCost === null ? null : money(bestHorizonCost)}
+              />
+            </ResultGroup>
+
+            {/* ROW 15, this route only: both metrics the reader has to weigh
+                before the ranking means anything, out of the collapsed table.
+                Not live — the group above already announces the answer. */}
+            {fixedFloating && riskRows.length > 0 ? (
+              <ResultGroup
+                title={F.compare.riskTitle}
+                className="mt-4"
+                live={false}
+              >
+                {riskRows.map((row) => (
+                  <ResultRow
+                    key={row.label}
+                    label={row.label}
+                    value={row.value}
+                  />
+                ))}
+              </ResultGroup>
+            ) : null}
+
+            {result === null &&
+            !amountInvalid &&
+            !horizonInvalid &&
+            !unusableInUse ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.tooFewNotice}
+              </p>
+            ) : null}
+
+            {/* An offer the reader typed that could not be priced must not
+                vanish and leave a winner ranked among a different set of
+                columns — and must never be priced as a repaired version of
+                itself. */}
+            {unusableInUse ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {result === null
+                  ? C.form.unusableBlockedNotice
+                  : C.form.unusableNotice}
+              </p>
+            ) : null}
+
+            {/* When the horizon winner and the full-term winner differ, the
+                page says so instead of letting one ranking stand for both
+                questions. */}
+            {result?.horizonChangesWinner ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {fill(C.form.winnerChangesNotice, {
+                  horizonOption: optionLabels[result.bestIndex],
+                  fullTermOption: optionLabels[result.bestFullTermIndex],
+                })}
+              </p>
+            ) : null}
+
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.settlementFeeNotice}
+            </p>
+          </>
+        }
+        chart={
+          /* Both charts sit outside every ResultGroup: neither may be
+             re-announced on each keystroke. */
+          <>
+            <ChartFigure model={costChart}>
+              <BarChart model={costChart} />
+            </ChartFigure>
+
+            <ChartFigure model={paymentChart}>
+              <LineChart model={paymentChart} />
+            </ChartFigure>
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          tableRows.length > 0 ? (
+            <DetailDisclosure title={C.form.detailTitle} hint={C.form.detailHint}>
+              {/* MOVED OFF THE PAGE ENTRY. These four sentences are about
+                  this table's two row groups, and they used to sit above the
+                  form as `intro` — ahead of the amount box, the horizon and
+                  the answer — where they described a table the reader had not
+                  reached. Row 6's "shorten the entry copy" clause, without
+                  losing a word of it. */}
+              <p className="mb-4 text-sm leading-relaxed text-ink-2">
+                {C.table.intro}
+              </p>
+              <ResultTable
+                caption={C.table.caption}
+                columns={[
+                  { label: C.table.metricColumn },
+                  ...shownOffers.map((index) => ({
+                    label: optionLabels[index],
+                    numeric: true,
+                  })),
+                ]}
+                rows={tableRows}
+                /*
+                 * `mobileCards`, and here it is the IDEAL shape rather than a
+                 * compromise — the opposite of the cost table above.
+                 *
+                 * This table's rows are METRICS and its columns are OFFERS,
+                 * so a card per row is a card per metric with every offer
+                 * inside it: "Trả hằng tháng — Phương án A …, B …, C …". That
+                 * is precisely the comparison a reader opened this page for,
+                 * kept intact.
+                 *
+                 * Needed because the column count GROWS WITH THE DATA. The
+                 * prefilled example has two offers and the table measured 281
+                 * px in its 266 px frame — a 15 px overhang easy to miss. Fill
+                 * in the third offer, which the page's own title invites ("Đặt
+                 * ba phương án cạnh nhau"), and it becomes four columns at 354
+                 * px: 88 px hidden, enough to take part of an offer column
+                 * off-frame. Both measured at a verified 390 px viewport on
+                 * 2026-09-16.
+                 *
+                 * It stays under 390 px, so the layout manifest's
+                 * wider-than-viewport criterion never flagged it. That
+                 * criterion cannot see a table that overflows its own scroll
+                 * frame, which is why this one survived two sweeps.
+                 */
+                mobileCards
+              />
+
+              {/* The fee-aware rate view, nested under the same disclosure as
+                  the figures it is derived from. Its own qualification sits
+                  with it, because a modelled APR is not a statutory
+                  disclosure. */}
+              <DetailFigures
+                title={C.form.aprDetailTitle}
+                className="mt-6"
+                figures={aprFigures}
+              />
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.aprNote}
+              </p>
+            </DetailDisclosure>
+          ) : null
+        }
+      />
+
       {/* The long version of the example-state note, out of the entry flow.
           See ExampleNotice for why it is not above the form. */}
       <ExampleNoticeDetail className="mt-6" />
-
     </CalculatorCard>
   );
 }

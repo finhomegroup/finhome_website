@@ -16,22 +16,57 @@ import { cn } from "@/lib/cn";
  * table-shaped, and announcing every cell of it on each keystroke is the same
  * failure mode `ResultTable` avoids by not being live at all. When a page has
  * both, keep exactly one live group: the summary.
+ *
+ * `anchorId` makes the group the destination of `ResultCta`, and it is what
+ * turns "scroll somewhere near the answer" into "land on the answer, with the
+ * answer announced". Three things arrive together and all three are needed:
+ *
+ * - the `id`, so the CTA can find it;
+ * - `tabIndex={-1}`, so it can take programmatic focus without becoming a tab
+ *   stop for a reader who is simply moving through the page;
+ * - `aria-labelledby` on its own `h2`, because focusing an unlabelled `div`
+ *   announces nothing. With it, arriving reads "Kết quả kế hoạch" and then the
+ *   rows, which is the point of moving focus rather than only scrolling.
+ *
+ * The heading id is DERIVED from `anchorId` rather than generated. `useId`
+ * would make this a client component for no reason, and a derived id cannot
+ * drift from the `id` the CTA was given.
  */
 export function ResultGroup({
   title,
   className,
   live = true,
+  anchorId,
   children,
 }: {
   title: string;
   className?: string;
   /** Set false for a group with many rows; see the note above. */
   live?: boolean;
+  /** Set on the ONE group `ResultCta` points at. See the note above. */
+  anchorId?: string;
   children: React.ReactNode;
 }) {
+  const titleId = anchorId ? `${anchorId}-title` : undefined;
+
   return (
-    <div className={cn("rounded-2xl bg-bg-soft p-5", className)}>
-      <h2 className="font-display text-base font-medium text-ink">{title}</h2>
+    <div
+      id={anchorId}
+      tabIndex={anchorId ? -1 : undefined}
+      aria-labelledby={titleId}
+      className={cn(
+        "rounded-2xl bg-bg-soft p-5",
+        // `scroll-mt-*` keeps the heading clear of the viewport edge when the
+        // CTA scrolls here; the focus ring is visible because this element
+        // does take focus, even though it is never tabbed to.
+        anchorId &&
+          "scroll-mt-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+        className,
+      )}
+    >
+      <h2 id={titleId} className="font-display text-base font-medium text-ink">
+        {title}
+      </h2>
       <div
         className="mt-2"
         aria-live={live ? "polite" : undefined}

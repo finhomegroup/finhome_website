@@ -65,8 +65,10 @@ describe("co-phieu-tang-truong-deu at its shipped defaults", () => {
     expect(formatMoney(r.intrinsicValue)).toBe("30.000");
     expect(formatPercent(r.impliedGrowthPercent!, 3)).toBe("3,704%");
     expect(formatPercent(r.impliedReturnPercent!, 3)).toBe("13,400%");
+    // In the notice's disclosure now: the sensitivity CLAIM stays visible
+    // above the form, the worked figures that prove it collapse.
     for (const figure of ["30.000", "3,704", "13,400", "25.000"])
-      expect(C.denominatorNotice).toContain(figure);
+      expect(C.denominatorNoticeDetail).toContain(figure);
   });
 
   it("backs the notice's own sensitivity claim by running it", () => {
@@ -76,7 +78,7 @@ describe("co-phieu-tang-truong-deu at its shipped defaults", () => {
     // run the fixture the sentence names.
     const at11 = run({ growthPercent: 11 });
     expect(at11.intrinsicValue).toBeGreaterThan(220_000);
-    expect(C.denominatorNotice).toContain("220.000");
+    expect(C.denominatorNoticeDetail).toContain("220.000");
   });
 
   it("refuses g >= r rather than printing the negative number", () => {

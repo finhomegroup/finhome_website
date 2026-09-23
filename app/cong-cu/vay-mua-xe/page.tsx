@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { AutoLoanCalculator } from "@/components/auto-loan-calculator";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
@@ -40,9 +41,15 @@ export default function AutoLoanPage() {
       intro={C.table.intro}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      // ROW 33 is a "Hai cột" row and this tool now has eleven inputs, a
+      // chart and a yearly schedule, so the card is widened. Unverified
+      // visually — see the recap.
+      wide
     >
-      <AutoLoanCalculator />
+      <AutoLoanCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

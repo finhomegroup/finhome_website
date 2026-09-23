@@ -93,8 +93,16 @@ export const TIP = {
     extraPercentLabel: "Tổng phần trả thêm ngoài tiền món",
   },
 
+  // §5: what governs the reader's own bill stays visible — tip is optional
+  // and defaults to 0, and the service charge is a DIFFERENT line from a tip
+  // because it belongs to the restaurant. The cultural comparison that
+  // explains WHY the default is 0 is the named disclosure. No default and no
+  // statutory rate moved; the VAT applicability help is its own field help.
   tippingNotice:
-    "Việt Nam không có tập quán tip như Hoa Kỳ, nên công cụ này mặc định tiền tip là 0 thay vì gợi ý 15–20%. Thứ hóa đơn Việt Nam thường có là phí phục vụ 5% và VAT — cả hai đều thuộc về nhà hàng, không phải người phục vụ, nên chúng được để riêng thành hai dòng. Nếu bạn muốn tip, hãy nhập mức của mình; nếu hóa đơn đã có phí phục vụ, bạn hoàn toàn có thể để tip bằng 0.",
+    "Tiền tip là tùy bạn và công cụ mặc định bằng 0. Phí phục vụ và VAT là hai dòng riêng, không phải tiền tip: cả hai đều thuộc về nhà hàng, không phải người phục vụ.",
+  tippingNoticeDetailTitle: "Vì sao mặc định là 0",
+  tippingNoticeDetail:
+    "Việt Nam không có tập quán tip như Hoa Kỳ, nên công cụ này mặc định tiền tip là 0 thay vì gợi ý 15–20%. Thứ hóa đơn Việt Nam thường có là phí phục vụ 5% và VAT. Nếu bạn muốn tip, hãy nhập mức của mình; nếu hóa đơn đã có phí phục vụ, bạn hoàn toàn có thể để tip bằng 0.",
 
   formula: {
     title: "Cách tính",

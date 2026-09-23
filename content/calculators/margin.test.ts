@@ -112,11 +112,20 @@ describe("margin-va-markup's counter-example, in all three places", () => {
     const shortfall = wanted.marginPercent - mistake.marginPercent;
     expect(formatDecimal(shortfall, 2)).toBe("11,43");
 
-    expect(C.trapNotice).toContain(formatMoney(COST));
-    expect(C.trapNotice).toContain(formatMoney(wanted.price));
-    expect(C.trapNotice).toContain(formatMoney(mistake.price));
-    expect(C.trapNotice).toContain(formatDecimal(mistake.marginPercent, 2));
-    expect(C.trapNotice).toContain(formatDecimal(shortfall, 2));
+    // §5 moved the arithmetic into `trapNoticeDetail`; every figure is still
+    // on the page, one click under the trap it prices.
+    expect(C.trapNoticeDetail).toContain(formatMoney(COST));
+    expect(C.trapNoticeDetail).toContain(formatMoney(wanted.price));
+    expect(C.trapNoticeDetail).toContain(formatMoney(mistake.price));
+    expect(C.trapNoticeDetail).toContain(
+      formatDecimal(mistake.marginPercent, 2),
+    );
+    expect(C.trapNoticeDetail).toContain(formatDecimal(shortfall, 2));
+    // And the RULE needs no click: the two denominators differ, so the same
+    // percentage means two different things.
+    expect(C.trapNotice).toContain("mẫu số khác nhau");
+    // No capitals for emphasis: this module bans them ("shouts at nobody").
+    expect(C.trapNotice).toContain("markup 40% không phải margin 40%");
   });
 
   it("keeps the lesson in the TITLE, where a truncated hub card still shows it", () => {

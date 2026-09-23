@@ -38,6 +38,11 @@ export default function PriceAdjustPage() {
       // an example, so the page owes the reader a link rather than a decree
       // named in prose. See the `sources` docstring in `calculator-page.tsx`.
       sources={C.sources}
+      // MEASURED: the tool renders `columns="split"`, and without this the
+      // shell was 702 px at 1440×1000 — a 261,59 px form column beside a
+      // 408,41 px result column. `wide` is what the other split rows in this
+      // batch already take; see the calculator's docstring for the numbers.
+      wide
     >
       <PriceAdjustCalculator />
     </CalculatorPage>

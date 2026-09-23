@@ -96,7 +96,12 @@ describe("chi-tra-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(usd(result.householdMonthly)).toBe("4.200");
     expect(usd(result.householdAnnual)).toBe("50.400");
     expect(usd(result.survivorMonthly)).toBe("2.800");
-    expect(C.asymmetryNotice).toContain("4.200");
+    // REPOINTED by row 57's entry pass: the worked default figures moved
+    // from the visible notice into its disclosure, and are still asserted
+    // there. The visible rule keeps the asymmetry and the US-scope limit.
+    expect(C.asymmetryNoticeDetail).toContain("4.200");
+    expect(C.asymmetryNotice).toContain("trợ cấp cho người còn sống");
+    expect(C.asymmetryNotice).toContain("BHXH Việt Nam");
   });
 
   it("quotes the asymmetry: early claiming spares the spousal, cuts the survivor", () => {
@@ -113,7 +118,7 @@ describe("chi-tra-an-sinh-xa-hoi at its shipped defaults", () => {
       late.workerMonthly - early.workerMonthly,
     );
     expect(usd(late.workerMonthly - early.workerMonthly)).toBe("840");
-    const notice = C.asymmetryNotice;
+    const notice = C.asymmetryNoticeDetail;
     for (const figure of ["2.800", "1.960", "1.400"]) {
       expect(notice, `notice is missing ${figure}`).toContain(figure);
     }
@@ -128,7 +133,7 @@ describe("chi-tra-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(at70.spouseOwnMonthly).toBeGreaterThan(atFra.spouseOwnMonthly);
     expect(at70.spousalMonthly).toBe(atFra.spousalMonthly);
     expect(at70.householdMonthly - atFra.householdMonthly).toBe(0);
-    expect(C.asymmetryNotice).toContain("1.116");
+    expect(C.asymmetryNoticeDetail).toContain("1.116");
     expect(C.faq.items[1].a).toContain("1.116");
     expect(C.faq.items[1].a).toContain("900");
   });

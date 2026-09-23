@@ -95,8 +95,13 @@ export type LongTermTrajectoryLabels = ValuePathsLabels & {
   /**
    * The partial payment in the depletion year.
    * `{planned}`, `{paid}`, `{short}` substituted.
+   *
+   * NOT appended to the summary any more — it is the figure's `detail`, behind
+   * a disclosure whose summary line is `partialTitle`.
    */
   partialNote: string;
+  /** The disclosure's own line, so `partialNote` is never an unlabelled toggle. */
+  partialTitle: string;
   /** Appended when other income covers the whole spend. */
   otherIncomeNote: string;
   /** Always appended: the two lines are one balance. */
@@ -305,21 +310,30 @@ export function longTermTrajectoryModel(
           yearsShort: String(result.yearsShort),
         });
 
-  // The depletion year's PARTIAL payment, before the reading note: it changes
-  // how the depletion age itself should be read.
-  if (
+  if (result.fundedByOtherIncome) summary += ` ${labels.otherIncomeNote}`;
+  summary += ` ${labels.readingNote}`;
+
+  /**
+   * The depletion year's PARTIAL payment — three more formatted amounts.
+   *
+   * It used to be appended to `summary`, which put nine đồng figures in one
+   * paragraph above the plot. It is worked arithmetic about the figure rather
+   * than a caveat, so it moved behind the figure's labelled disclosure; the
+   * same three amounts are also rows in the page's own detail group.
+   */
+  const detail =
     result.lastWithdrawalShortfall !== null &&
     result.lastWithdrawalPlanned !== null &&
     result.lastWithdrawalPaid !== null
-  ) {
-    summary += ` ${fill(labels.partialNote, {
-      planned: fullMoney(result.lastWithdrawalPlanned, labels),
-      paid: fullMoney(result.lastWithdrawalPaid, labels),
-      short: fullMoney(result.lastWithdrawalShortfall, labels),
-    })}`;
-  }
-  if (result.fundedByOtherIncome) summary += ` ${labels.otherIncomeNote}`;
-  summary += ` ${labels.readingNote}`;
+      ? {
+          title: labels.partialTitle,
+          body: fill(labels.partialNote, {
+            planned: fullMoney(result.lastWithdrawalPlanned, labels),
+            paid: fullMoney(result.lastWithdrawalPaid, labels),
+            short: fullMoney(result.lastWithdrawalShortfall, labels),
+          }),
+        }
+      : null;
 
   const mandatory = [
     retirementDate,
@@ -369,7 +383,7 @@ export function longTermTrajectoryModel(
     }),
   };
 
-  return valuePathsModel(paths, labels, { summary, markers, table });
+  return valuePathsModel(paths, labels, { summary, detail, markers, table });
 }
 
 /**

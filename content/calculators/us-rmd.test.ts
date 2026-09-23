@@ -78,8 +78,15 @@ describe("rut-toi-thieu-bat-buoc at its shipped defaults", () => {
     expect(usdCents(r.required)).toBe("30.188,68");
     expect(formatPercent(r.requiredPercent!, 2)).toBe("3,77%");
     expect(usdCents(r.taxOnRequired)).toBe("6.641,51");
-    expect(C.risingNotice).toContain("30.188,68");
-    expect(C.risingNotice).toContain("3,77%");
+    // REPOINTED by row 54's entry pass: the worked default case moved into
+    // `risingNoticeDetail`, the disclosure the route passes under
+    // `risingNoticeDetailTitle`. The rule those figures illustrate — the
+    // rate rises, the balance does not drain — stays visible above the tool,
+    // together with the projection's own limit.
+    expect(C.risingNoticeDetail).toContain("30.188,68");
+    expect(C.risingNoticeDetail).toContain("3,77%");
+    expect(C.risingNotice).toContain("không làm cạn tài khoản");
+    expect(C.risingNotice).toContain("dự phóng");
   });
 
   it("quotes the penalty on the small shortfall", () => {
@@ -103,7 +110,7 @@ describe("rut-toi-thieu-bat-buoc at its shipped defaults", () => {
     // the percentage is a property of the table, not of the projection.
     expect(formatPercent(100 / UNIFORM_LIFETIME[100], 2)).toBe("15,63%");
     for (const figure of ["3,77%", "6,25%", "15,63%"]) {
-      expect(C.risingNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(C.risingNoticeDetail, `notice is missing ${figure}`).toContain(figure);
     }
   });
 
@@ -124,7 +131,7 @@ describe("rut-toi-thieu-bat-buoc at its shipped defaults", () => {
       "288.154",
       "800.000",
     ]) {
-      expect(C.risingNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(C.risingNoticeDetail, `notice is missing ${figure}`).toContain(figure);
     }
   });
 

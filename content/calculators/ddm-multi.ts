@@ -66,6 +66,19 @@ export const DDM_MULTI = {
     terminalShareLabel: "Phần đến từ giá trị cuối kỳ",
     pvDividendsLabel: "Phần đến từ cổ tức giai đoạn đầu",
 
+    // THE PINNED RESTATEMENT CARRIES THE VALUE WITH ITS TERMINAL SHARE. This
+    // page's two rows are one answer: a per-share value is not usable here
+    // without knowing how much of it came from a perpetuity — 77,41% on the
+    // defaults. An independent pass at 1440×1000 focused the last field
+    // ("Lợi nhuận yêu cầu") at y 529–575 and measured the result block at
+    // y −178,25 to −4,25: both figures entirely above the viewport, while the
+    // field being edited moves both of them. Prefixes are short because the
+    // block is one line; the rows keep their full labels, and `emphasis` stays
+    // on the share exactly as CSV row 37 asks.
+    pinnedPairLabel: "Giá trị mỗi cổ phiếu",
+    pinnedTerminalPrefix: "trong đó",
+    pinnedTerminalSuffix: "từ giá trị cuối kỳ",
+
     detailTitle: "Chi tiết",
     terminalDividendLabel: "Cổ tức năm đầu giai đoạn ổn định",
     terminalValueLabel: "Giá trị cuối kỳ, tại thời điểm hết giai đoạn đầu",
@@ -95,7 +108,10 @@ export const DDM_MULTI = {
   },
 
   terminalNotice:
-    "Con số cần đọc cùng với giá trị là tỷ trọng phần cuối kỳ. Với giả định mặc định, 77,41% giá trị đến từ giá trị cuối kỳ — nghĩa là hơn ba phần tư câu trả lời phụ thuộc vào một giả định về tăng trưởng vĩnh viễn mà không ai kiểm chứng được. Giai đoạn tăng trưởng cao 20% trong năm năm, phần nghe thuyết phục nhất, chỉ đóng góp 12.358 ₫ trong tổng 54.716 ₫. Hãy thử đổi tăng trưởng vĩnh viễn từ 5% thành 4% và xem giá trị thay đổi bao nhiêu — nếu nó thay đổi nhiều, thì mô hình đang nói về giả định của bạn chứ không nói về doanh nghiệp.",
+    "Con số cần đọc cùng với giá trị là tỷ trọng phần cuối kỳ: phần lớn câu trả lời phụ thuộc vào một giả định về tăng trưởng vĩnh viễn mà không ai kiểm chứng được. Hãy thử đổi tăng trưởng vĩnh viễn một điểm phần trăm — nếu giá trị thay đổi nhiều, thì mô hình đang nói về giả định của bạn chứ không nói về doanh nghiệp.",
+  terminalNoticeDetailTitle: "Con số cụ thể: 77,41% giá trị nằm ở phần cuối kỳ",
+  terminalNoticeDetail:
+    "Với giả định mặc định, 77,41% giá trị đến từ giá trị cuối kỳ — nghĩa là hơn ba phần tư câu trả lời phụ thuộc vào một giả định về tăng trưởng vĩnh viễn mà không ai kiểm chứng được. Giai đoạn tăng trưởng cao 20% trong năm năm, phần nghe thuyết phục nhất, chỉ đóng góp 12.358 ₫ trong tổng 54.716 ₫. Hãy thử đổi tăng trưởng vĩnh viễn từ 5% thành 4% và xem giá trị thay đổi bao nhiêu.",
 
   formula: {
     title: "Cách tính",

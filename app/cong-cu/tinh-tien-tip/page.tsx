@@ -26,6 +26,9 @@ export default function TipPage() {
       // would suggest. A tool that taught a foreign norm as local would be
       // getting something more important than arithmetic wrong.
       notice={C.tippingNotice}
+      // §5: the cultural comparison behind that default, one click away.
+      noticeDetail={C.tippingNoticeDetail}
+      noticeDetailTitle={C.tippingNoticeDetailTitle}
       prose={C.formula}
       faq={C.faq}
       // The VAT box prefills 8, which is a legal parameter with an end date,

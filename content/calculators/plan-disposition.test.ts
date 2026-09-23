@@ -339,7 +339,7 @@ describe("every tool has a stated reading disposition", () => {
   });
 
   it("gives every P1 tool the emphasis treatment", () => {
-    // The five first-home-buyer questions are the ones a reader arrives at
+    // The first-home-buyer questions are the ones a reader arrives at
     // from an article, so the tool and the article must emphasise the same
     // distinction.
     for (const d of dispositionsByPriority("P1")) {

@@ -35,8 +35,15 @@ export const RENT_VS_BUY = {
   metaDescription:
     "So sánh thuê và mua nhà bằng chi phí ròng: phần gốc là tài sản chứ không phải chi phí, và tiền không dùng để trả trước thì được đầu tư. Công cụ miễn phí của FinHome.",
 
+  // ONE PURPOSE LINE. A browser pass at 390 px measured this route's first
+  // control 942 px down; the two-sentence lede plus a nine-line notice was most
+  // of that. Why the familiar comparison is wrong is the same point, read one
+  // click away, and the `formula` prose argues it in full below the tool.
   lede:
-    "Phép so quen thuộc — “thuê 15 triệu, trả nợ 18 triệu, vậy mua đắt hơn 3 triệu” — sai theo cả hai chiều cùng lúc. Công cụ này quy cả hai phương án về CHI PHÍ RÒNG: số tiền bỏ ra trừ đi những gì bạn còn lại ở cuối kỳ.",
+    "Quy cả hai phương án về CHI PHÍ RÒNG: số tiền bỏ ra trừ đi những gì bạn còn lại ở cuối kỳ.",
+  ledeDetailTitle: "Vì sao phép so “thuê 15 triệu, trả nợ 18 triệu” sai",
+  ledeDetail:
+    "Phép so quen thuộc — “thuê 15 triệu, trả nợ 18 triệu, vậy mua đắt hơn 3 triệu” — sai theo cả hai chiều cùng lúc: phần GỐC trong khoản trả nợ không phải tiền đi hẳn, nó quay lại thành tài sản của bạn; còn tiền trả trước của người mua, nếu đi thuê, lẽ ra được đem đầu tư. Vì vậy công cụ này so CHI PHÍ RÒNG của cả hai phương án thay vì so hai khoản chi hằng tháng.",
 
   form: {
     buyGroup: "Nếu mua",
@@ -169,6 +176,18 @@ export const RENT_VS_BUY = {
      */
     verdictScope:
       "Kết luận này chỉ đúng cho {months} tháng, với giả định giá nhà {growth}/năm, tiền thuê {rentGrowth}/năm và tiền tự có sinh lời {investment}/năm. Đổi một trong bốn con số đó là kết luận có thể đổi chiều — biểu đồ kịch bản bên dưới cho thấy đổi bao nhiêu.",
+    /**
+     * CSV row 12 asks for the price-growth assumption to stay visible WHEN
+     * THE CONCLUSION CHANGES. `verdictScope` above says "có thể đổi chiều"
+     * for every entry; this sentence is only rendered when the scenario runs
+     * the tool already computes actually disagree with each other, and it
+     * names the rate on each side of the turn plus the reader's own.
+     *
+     * `{growth}`, `{buyFrom}`, `{rentAt}` substituted, each already carrying
+     * its percent sign.
+     */
+    growthFlipNotice:
+      "Kết luận ĐỔI CHIỀU ngay trong dải kịch bản ở dưới: mua lợi hơn khi giá nhà tăng {buyFrom}/năm, còn thuê lợi hơn khi giá nhà tăng {rentAt}/năm. Bạn đang giả định {growth}/năm, nên câu trả lời trên phụ thuộc vào đúng ô mà không ai biết chắc — hãy đọc nó như một phép thử giả định, không phải một kết luận.",
 
     buyTitle: "Nếu mua",
     rentTitle: "Nếu thuê",
@@ -375,8 +394,14 @@ export const RENT_VS_BUY = {
   disclaimer:
     "Công cụ này chỉ mang tính minh họa, dựa trên các giả định do bạn tự nhập và giả định lãi suất vay không đổi trong cả kỳ hạn. Những khoản bạn đã nhập — phí mua một lần, phí khi bán, chi phí sở hữu hằng tháng — ĐƯỢC tính vào kết quả; các khoản không có ô để nhập thì không, và kết quả không trừ thuế thu nhập, lạm phát hay chi phí chuyển nhà. Mức tăng giá nhà, mức tăng tiền thuê và lợi nhuận đầu tư là giả định của bạn: đây không phải dự báo giá nhà, không phải cam kết lợi nhuận và không phải lời khuyên đầu tư. Vui lòng cân nhắc kỹ hoặc tham khảo chuyên gia trước khi ra quyết định tài chính.",
 
+  // The visible line keeps what a reader must know BEFORE reading a figure:
+  // one unknowable input decides the verdict, so it is not a forecast. The
+  // worked reversal and what to do about it read behind the disclosure.
   assumptionNotice:
-    "Đây là công cụ nhiều giả định nhất trong bộ này, và kết quả bị chi phối gần như hoàn toàn bởi MỘT ô mà không ai biết chắc: mức tăng giá nhà. Với mặc định — giá nhà tăng 5%/năm, đầu tư sinh lời 6%/năm, so trong 10 năm — mua lợi hơn 1.177.275.554 ₫ và có lợi từ tháng thứ 32. Đổi mức tăng giá nhà thành −3%/năm và kéo dài lên 20 năm thì thuê lợi hơn. Vì vậy đừng đọc con số này như một dự báo: hãy chạy công cụ ba lần với mức tăng giá lạc quan, trung tính và âm, rồi xem kết luận có đổi chiều hay không. Nếu có, thì quyết định của bạn phụ thuộc vào một điều không thể biết trước, và những yếu tố khác — sự ổn định chỗ ở, khả năng chuyển việc, mức chịu đựng dòng tiền — mới nên là yếu tố quyết định.",
+    "Đây là công cụ nhiều giả định nhất trong bộ này, và kết quả bị chi phối gần như hoàn toàn bởi MỘT ô mà không ai biết chắc: mức tăng giá nhà. Đừng đọc con số ở đây như một dự báo.",
+  assumptionDetailTitle: "Chạy ba mức tăng giá, rồi xem kết luận có đổi chiều",
+  assumptionDetail:
+    "Với mặc định — giá nhà tăng 5%/năm, đầu tư sinh lời 6%/năm, so trong 10 năm — mua lợi hơn 1.177.275.554 ₫ và có lợi từ tháng thứ 32. Đổi mức tăng giá nhà thành −3%/năm và kéo dài lên 20 năm thì thuê lợi hơn. Vì vậy hãy chạy công cụ ba lần với mức tăng giá lạc quan, trung tính và âm, rồi xem kết luận có đổi chiều hay không. Nếu có, thì quyết định của bạn phụ thuộc vào một điều không thể biết trước, và những yếu tố khác — sự ổn định chỗ ở, khả năng chuyển việc, mức chịu đựng dòng tiền — mới nên là yếu tố quyết định.",
 
   formula: {
     title: "Cách so công bằng",

@@ -184,4 +184,22 @@ describe("debtPathsModel", () => {
     // still renders the article's own figures.
     expect(debtPathsModel([], 0, LABELS, { table }).table).toBe(table);
   });
+
+  it("labels every month tick at its own position on an odd term", () => {
+    // Equal quarter intervals plus a rounding formatter named months the ticks
+    // do not sit on. See `countTicks` in `types.ts`.
+    const odd = debtPathsModel(
+      [pathOf("c", "37 tháng", 37)],
+      120_000_000,
+      LABELS,
+    );
+    expect(odd.xMax).toBe(37);
+    for (const tick of odd.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * odd.xMax,
+        9,
+      );
+    }
+    expect(odd.xAxis.ticks.at(-1)!.at).toBe(1);
+  });
 });

@@ -27,7 +27,8 @@ import type { LineChartModel } from "@/lib/calc/charts/types";
  * Markers and reference lines are drawn as rules only. Their TEXT is rendered
  * by `ChartFigure` as an HTML list, because rotated 9px labels inside a
  * phone-width SVG are unreadable and because that list reflows with the
- * reader's own font size.
+ * reader's own font size. Tick labels are HTML too, in `PlotFrame`, for the
+ * same reason — see that component and `geometry.ts`.
  *
  * Computes nothing financial. `aria-hidden` is `ChartFigure`'s contract.
  */
@@ -42,28 +43,19 @@ export function LineChart({ model }: { model: LineChartModel }) {
       aria-hidden="true"
       focusable="false"
     >
-      {/* Value grid and ticks. */}
+      {/* Value grid. The labels are HTML, in `PlotFrame`. */}
       {model.yAxis.ticks.map((tick) => {
         const y = yForFraction(tick.at, BOX);
         return (
-          <g key={`y-${tick.at}`}>
-            <line
-              x1={BOX.left}
-              x2={BOX.right}
-              y1={y}
-              y2={y}
-              className="stroke-ink-4/30"
-              strokeWidth={0.5}
-            />
-            <text
-              x={BOX.left - 4}
-              y={y + 3}
-              textAnchor="end"
-              className="fill-ink-3 text-[9px]"
-            >
-              {tick.label}
-            </text>
-          </g>
+          <line
+            key={`y-${tick.at}`}
+            x1={BOX.left}
+            x2={BOX.right}
+            y1={y}
+            y2={y}
+            className="stroke-ink-4/30"
+            strokeWidth={0.5}
+          />
         );
       })}
 
@@ -136,19 +128,6 @@ export function LineChart({ model }: { model: LineChartModel }) {
         className="stroke-ink-4"
         strokeWidth={0.75}
       />
-
-      {/* Period ticks. */}
-      {model.xAxis.ticks.map((tick) => (
-        <text
-          key={`x-${tick.at}`}
-          x={BOX.left + tick.at * (BOX.right - BOX.left)}
-          y={BOX.bottom + 12}
-          textAnchor={tick.at === 0 ? "start" : tick.at === 1 ? "end" : "middle"}
-          className="fill-ink-3 text-[9px]"
-        >
-          {tick.label}
-        </text>
-      ))}
     </svg>
   );
 }

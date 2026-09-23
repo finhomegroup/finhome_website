@@ -78,6 +78,19 @@ export const CAPM = {
     profileMarket: "Đi cùng thị trường",
     profileAggressive: "Khuếch đại — biến động mạnh hơn thị trường",
 
+    // CSV row 38 asks for a short beta/alpha explanation BESIDE THE LABEL, and
+    // for the reason alpha is missing when no actual return was entered. Both
+    // existed only in the method prose below the tool, which is after the
+    // reader has already tried to read the rows.
+    betaNote:
+      "Beta đo mức biến động của tài sản so với thị trường: bằng 1 là đi cùng, trên 1 là khuếch đại, dưới 1 là phòng thủ. Nó không nói tài sản tốt hay xấu.",
+    alphaNote:
+      "Alpha là phần lợi nhuận thực tế vượt trên mức kỳ vọng ở dòng đầu — dương là vượt, âm là chưa đạt.",
+    // The prefilled state: `defaultActual` is empty, so this is what most
+    // readers see first. A bare dash on the alpha row looked like a failure.
+    alphaUnavailableNote:
+      "Dòng alpha để trống vì bạn chưa nhập lợi nhuận thực tế đã đạt. Alpha là hiệu giữa con số thực tế và mức kỳ vọng ở trên, nên không có con số thực tế thì không có alpha — mức kỳ vọng vẫn đúng và vẫn dùng được.",
+
     detailTitle: "Chi tiết",
     premiumLabel: "Phần bù rủi ro thị trường",
     riskPremiumLabel: "Phần bù rủi ro của tài sản (beta × phần bù)",
@@ -88,7 +101,10 @@ export const CAPM = {
   },
 
   precisionNotice:
-    "Con số công cụ đưa ra có ba bốn chữ số nhưng không có chữ số nào trong đó là chắc chắn. Beta được đo trên dữ liệu quá khứ và thay đổi theo khoảng thời gian bạn chọn để đo; phần bù thị trường là một ước lượng mà các nhà nghiên cứu không đồng ý với nhau trong phạm vi vài điểm phần trăm; lãi suất phi rủi ro thay đổi theo kỳ hạn bạn lấy. Hãy dùng CAPM để trả lời “mức này có hợp lý không”, đừng dùng nó như một dự báo. Cách thực dụng: chạy công cụ với ba mức phần bù thị trường — 6%, 8%, 10% — rồi xem kết luận của bạn có đổi hay không.",
+    "Con số công cụ đưa ra có ba bốn chữ số nhưng không có chữ số nào trong đó là chắc chắn: beta, phần bù thị trường và lãi suất phi rủi ro đều là ước lượng, và đều thay đổi theo cách bạn đo. Hãy dùng CAPM để trả lời “mức này có hợp lý không”, đừng dùng nó như một dự báo.",
+  precisionNoticeDetailTitle: "Ba đầu vào đều là ước lượng — và cách kiểm tra",
+  precisionNoticeDetail:
+    "Beta được đo trên dữ liệu quá khứ và thay đổi theo khoảng thời gian bạn chọn để đo; phần bù thị trường là một ước lượng mà các nhà nghiên cứu không đồng ý với nhau trong phạm vi vài điểm phần trăm; lãi suất phi rủi ro thay đổi theo kỳ hạn bạn lấy. Cách thực dụng: chạy công cụ với ba mức phần bù thị trường — 6%, 8%, 10% — rồi xem kết luận của bạn có đổi hay không.",
 
   formula: {
     title: "Cách tính",

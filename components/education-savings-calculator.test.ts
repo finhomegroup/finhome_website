@@ -19,6 +19,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { markupRegion } from "@/lib/markup-region";
 import { EDUCATION_SAVINGS } from "@/content/calculators/education-savings";
 import { MAX_EDUCATION_YEARS } from "@/lib/calc/education-savings";
 
@@ -71,9 +72,12 @@ describe("study starting NOW, with too little money", () => {
 
   it("withholds the monthly figure instead of rendering 0 ₫", async () => {
     const html = await render(NOW);
-    const row = html.slice(
-      html.indexOf(F.monthlyLabel),
-      html.indexOf(F.targetLabel),
+    // Scoped to the live region: the label also appears on the pinned CTA
+    // restatement, which sits EARLIER in the document than the result.
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    const row = live.slice(
+      live.indexOf(F.monthlyLabel),
+      live.indexOf(F.targetLabel),
     );
     // `ResultRow` renders a dash for a null value.
     expect(row).toContain("—");
@@ -124,9 +128,10 @@ describe("study starting NOW with enough money", () => {
       defaultYearsUntil: "0",
       defaultCurrentSavings: "400.000.000",
     });
-    const row = html.slice(
-      html.indexOf(F.monthlyLabel),
-      html.indexOf(F.targetLabel),
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    const row = live.slice(
+      live.indexOf(F.monthlyLabel),
+      live.indexOf(F.targetLabel),
     );
     expect(row).toContain("0 ₫");
     expect(row).not.toContain("—");
@@ -180,11 +185,112 @@ describe("the example figures are labelled as the example's", () => {
     expect(intro).toContain("700.601.379");
     expect(intro).toContain("ví dụ điền sẵn");
     expect(intro).toContain("chỉ để minh họa");
-    // The other site with the same pair, on the page-level notice.
-    expect(EDUCATION_SAVINGS.streamNotice).toContain("ví dụ điền sẵn");
+    // The other site with the same pair, now in the notice's disclosure —
+    // the worked example moved out of the always-visible block, the rules
+    // stayed.
+    expect(EDUCATION_SAVINGS.streamNoticeDetail).toContain("ví dụ điền sẵn");
     // And 0% growth is described as an assumption, not a mistake.
-    expect(EDUCATION_SAVINGS.streamNotice).toContain("một giả định rõ ràng");
+    expect(EDUCATION_SAVINGS.streamNoticeDetail).toContain(
+      "một giả định rõ ràng",
+    );
     expect(F.inflationHelp).toContain("không phải một lỗi");
     expect(F.inflationHelp).not.toContain("hay bị để 0 nhất");
+  });
+});
+
+/**
+ * CSV row 27 — "gom thời điểm nhập học, mức góp cần thiết và phần còn thiếu
+ * vào cùng một vùng; đưa biểu đồ lên trước phần giả định dài".
+ *
+ * These assert DOM structure and order, which is all `renderToStaticMarkup`
+ * can see. Whether the split grid ever becomes two columns, and whether the
+ * chart is legible at any width, remain unverified here.
+ */
+describe("the horizon sits with the contribution it explains", () => {
+  /** The `emphasis` treatment `ResultRow` owns. */
+  const HEADLINE = "md:text-3xl";
+
+  it("puts the month count in the answer region, not the detail one", async () => {
+    const html = await render();
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live).toContain(F.monthsToSaveLabel);
+    expect(live).toContain(`120 ${F.monthsUnit}`);
+    const detail = markupRegion(html, 'data-calc-region="detail"')!;
+    expect(detail).not.toContain(F.monthsToSaveLabel);
+  });
+
+  it("keeps it directly under the contribution and above the shortfall", async () => {
+    const html = await render();
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live.indexOf(F.monthlyLabel)).toBeLessThan(
+      live.indexOf(F.monthsToSaveLabel),
+    );
+    expect(live.indexOf(F.monthsToSaveLabel)).toBeLessThan(
+      live.indexOf(F.targetLabel),
+    );
+    expect(live.indexOf(F.targetLabel)).toBeLessThan(
+      live.indexOf(F.shortfallLabel),
+    );
+  });
+
+  it("shows a zero horizon beside the dash it causes", async () => {
+    // The dash on the contribution row and the 0 on this row are the same
+    // fact stated twice; the row asked for them in one region so the reader
+    // does not have to open a disclosure to learn why the answer is blank.
+    const html = await render({
+      defaultYearsUntil: "0",
+      defaultCurrentSavings: "10.000.000",
+    });
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live).toContain(`0 ${F.monthsUnit}`);
+    expect(live).toContain("—");
+  });
+
+  it("gives the headline to the contribution and to nothing else", async () => {
+    const html = await render();
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live.split(HEADLINE).length - 1).toBe(1);
+    expect(live.slice(0, live.indexOf(HEADLINE))).toContain(F.monthlyLabel);
+  });
+});
+
+describe("the chart comes before the long assumptions", () => {
+  it("renders the figure ahead of the detail region", async () => {
+    const html = await render();
+    expect(html.indexOf("<figure")).toBeGreaterThan(-1);
+    expect(html.indexOf("<figure")).toBeLessThan(
+      html.indexOf('data-calc-region="detail"'),
+    );
+  });
+
+  it("keeps the per-year tuition table in the detail region and non-live", async () => {
+    const html = await render();
+    const detail = markupRegion(html, 'data-calc-region="detail"')!;
+    expect(detail).toContain("<table");
+    expect(detail).toContain(F.table.caption);
+    expect(detail).not.toContain('data-results-live="true"');
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
+  });
+});
+
+describe("the split region and CTA contract", () => {
+  it("emits the split grid, all three regions and the CTA target", async () => {
+    const html = await render();
+    expect(html).toContain('id="hoc-phi-nhap" data-calc-region="form"');
+    expect(html).toContain('data-calc-region="result"');
+    expect(html).toContain('id="hoc-phi-ket-qua"');
+    expect(html).toContain('aria-controls="hoc-phi-ket-qua"');
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain("lg:grid-cols-5");
+  });
+
+  it("marks the CTA help as pointing at a bad field only when one exists", async () => {
+    const clean = await render();
+    const broken = await render({ defaultTuition: "0" });
+    // `ResultCta`'s `invalid` drives only the help sentence; the jump
+    // destination is read from the DOM. So this asserts the two states
+    // differ, not which words either one uses.
+    expect(broken).toContain('aria-invalid="true"');
+    expect(clean).not.toContain('aria-invalid="true"');
   });
 });

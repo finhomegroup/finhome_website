@@ -1,9 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -39,6 +41,17 @@ const MODES = {
   PercentMode,
   { a: string; b: string; aIsPercent: boolean; bIsPercent: boolean }
 >;
+
+/**
+ * The two region ids the CTA contract runs on.
+ *
+ * Literals rather than `useId`, because they are a CONTRACT between two
+ * components and a stable hook for the render test — and because they must be
+ * byte-identical between the server's prerender and the client's hydration,
+ * which is the one thing every calculator in this suite is required to be.
+ */
+const FORM_ID = "tinh-phan-tram-nhap";
+const RESULT_ID = "tinh-phan-tram-ket-qua";
 
 export function PercentCalculator() {
   const fields = useCalcFields({
@@ -101,125 +114,169 @@ export function PercentCalculator() {
             ? `(${formatMoney(b)} − ${formatMoney(a)}) ÷ ${formatMoney(Math.abs(a))} = ${formatPercent(result.changePercent)}`
             : `${formatDecimal(b)} − ${formatDecimal(a)} = ${formatDecimal(result.differencePoints)} ${C.form.modes.points.pointsUnit}`;
 
+  /*
+   * A "Gọn" row in the audit's own classification (CSV row 61): its action is
+   * "chọn phép tính trước, kết quả ngay dưới hai ô; không cần chart hoặc bảng
+   * phụ". Both halves are already true of this tool and are PRESERVED here
+   * rather than rebuilt — the mode radio is the first control, the result
+   * follows the two boxes, and there is no figure and no secondary table.
+   *
+   * So `columns="single"` and no `chart`: splitting four short controls across
+   * 40/60 would make two stub columns, and adding a plot to a percentage would
+   * be chart chrome for consistency, which docs §3 forbids outright. What this
+   * row was missing is the CTA and a shorter route to the first field, and
+   * that is all that changes.
+   */
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "of", label: C.form.modes.of.label },
-            { value: "share", label: C.form.modes.share.label },
-            { value: "change", label: C.form.modes.change.label },
-            { value: "points", label: C.form.modes.points.label },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="single"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "of", label: C.form.modes.of.label },
+                  { value: "share", label: C.form.modes.share.label },
+                  { value: "change", label: C.form.modes.change.label },
+                  { value: "points", label: C.form.modes.points.label },
+                ]}
+              />
+            </FieldGroup>
 
-      {/* Keyed on the mode so React remounts the pair rather than reusing the
-          previous mode's inputs — the two boxes mean different things and
-          carry different `useId`-generated labels. */}
-      <FieldGroup key={mode} className="mt-8">
-        <NumberField
-          {...fields.bind(keys.a)}
-          label={copy.aLabel}
-          unit={copy.aUnit}
-          help={copy.aHelp}
-          error={copy.aInvalid}
-          invalid={aInvalid}
-        />
-        <NumberField
-          {...fields.bind(keys.b)}
-          label={copy.bLabel}
-          unit={copy.bUnit}
-          help={copy.bHelp}
-          error={copy.bInvalid}
-          invalid={bInvalid}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={copy.resultLabel}
-          value={
-            result === null
-              ? null
-              : result.mode === "of"
-                ? money(result.amount)
-                : result.mode === "share"
-                  ? formatPercent(result.sharePercent)
-                  : result.mode === "change"
-                    ? formatPercent(result.changePercent)
-                    : // ĐIỂM phần trăm, with its unit spelled out: the whole
-                      // point of the mode is that this is not a percentage.
-                      `${formatDecimal(result.differencePoints)} ${C.form.modes.points.pointsUnit}`
-          }
-        />
-        {mode === "change" ? (
-          <ResultRow
-            label={C.form.modes.change.differenceLabel}
-            value={
-              result === null || result.mode !== "change"
-                ? null
-                : money(result.difference)
-            }
+            {/* Keyed on the mode so React remounts the pair rather than reusing
+                the previous mode's inputs — the two boxes mean different things
+                and carry different `useId`-generated labels. */}
+            <FieldGroup key={mode} className="mt-8">
+              <NumberField
+                {...fields.bind(keys.a)}
+                label={copy.aLabel}
+                unit={copy.aUnit}
+                help={copy.aHelp}
+                error={copy.aInvalid}
+                invalid={aInvalid}
+              />
+              <NumberField
+                {...fields.bind(keys.b)}
+                label={copy.bLabel}
+                unit={copy.bUnit}
+                help={copy.bHelp}
+                error={copy.bInvalid}
+                invalid={bInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={aInvalid || bInvalid}
           />
-        ) : null}
-        {/* The same move as a percentage of the old rate — the second half of
-            the lesson, beside the first rather than instead of it.
-            The DIRECTION is a word picked from the sign, and the magnitude is
-            rendered unsigned: the label used to say "tăng" beside a negative
-            figure on any rate cut. Null at a 0% old rate, where this measure
-            does not exist but the point difference above still does. */}
-        {mode === "points" ? (
-          <ResultRow
-            label={C.form.modes.points.relativeLabel}
-            value={
-              result === null || result.mode !== "points"
-                ? null
-                : result.relativePercent === null
-                  ? C.form.modes.points.relativeUndefined
-                  : C.form.modes.points.relativeFormat
-                      .replace(
-                        "{direction}",
-                        result.relativePercent > 0
-                          ? C.form.modes.points.relativeIncrease
-                          : result.relativePercent < 0
-                            ? C.form.modes.points.relativeDecrease
-                            : C.form.modes.points.relativeSame,
-                      )
-                      .replace(
-                        "{percent}",
-                        formatPercent(Math.abs(result.relativePercent)),
-                      )
-            }
-            prose={
-              result !== null &&
-              result.mode === "points" &&
-              result.relativePercent === null
-            }
-          />
-        ) : null}
-        <ResultRow label={C.form.equationLabel} value={equation} prose />
-      </ResultGroup>
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={copy.resultLabel}
+                // The one answer this page exists to give. Every mode has
+                // exactly one, and its unit differs per mode — which is the
+                // whole lesson of the tool.
+                emphasis
+                value={
+                  result === null
+                    ? null
+                    : result.mode === "of"
+                      ? money(result.amount)
+                      : result.mode === "share"
+                        ? formatPercent(result.sharePercent)
+                        : result.mode === "change"
+                          ? formatPercent(result.changePercent)
+                          : // ĐIỂM phần trăm, with its unit spelled out: the
+                            // whole point of the mode is that this is not a
+                            // percentage.
+                            `${formatDecimal(result.differencePoints)} ${C.form.modes.points.pointsUnit}`
+                }
+              />
+              {mode === "change" ? (
+                <ResultRow
+                  label={C.form.modes.change.differenceLabel}
+                  value={
+                    result === null || result.mode !== "change"
+                      ? null
+                      : money(result.difference)
+                  }
+                />
+              ) : null}
+              {/* The same move as a percentage of the old rate — the second
+                  half of the lesson, beside the first rather than instead of
+                  it. The DIRECTION is a word picked from the sign, and the
+                  magnitude is rendered unsigned: the label used to say "tăng"
+                  beside a negative figure on any rate cut. Null at a 0% old
+                  rate, where this measure does not exist but the point
+                  difference above still does. */}
+              {mode === "points" ? (
+                <ResultRow
+                  label={C.form.modes.points.relativeLabel}
+                  value={
+                    result === null || result.mode !== "points"
+                      ? null
+                      : result.relativePercent === null
+                        ? C.form.modes.points.relativeUndefined
+                        : C.form.modes.points.relativeFormat
+                            .replace(
+                              "{direction}",
+                              result.relativePercent > 0
+                                ? C.form.modes.points.relativeIncrease
+                                : result.relativePercent < 0
+                                  ? C.form.modes.points.relativeDecrease
+                                  : C.form.modes.points.relativeSame,
+                            )
+                            .replace(
+                              "{percent}",
+                              formatPercent(Math.abs(result.relativePercent)),
+                            )
+                  }
+                  prose={
+                    result !== null &&
+                    result.mode === "points" &&
+                    result.relativePercent === null
+                  }
+                />
+              ) : null}
+              <ResultRow
+                label={C.form.equationLabel}
+                value={equation}
+                prose
+              />
+            </ResultGroup>
 
-      {/* Why there is no đồng figure in this mode. */}
-      {mode === "points" ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.pointsMoneyNote}
-        </p>
-      ) : null}
+            {/* Why there is no đồng figure in this mode. */}
+            {mode === "points" ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.pointsMoneyNote}
+              </p>
+            ) : null}
 
-      {/* And why only ONE of the two figures is missing at a 0% old rate. */}
-      {mode === "points" &&
-      result !== null &&
-      result.mode === "points" &&
-      result.relativePercent === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.modes.points.relativeUndefinedNote}
-        </p>
-      ) : null}
+            {/* And why only ONE of the two figures is missing at a 0% old
+                rate. Kept beside the answer rather than moved to a disclosure:
+                it explains a visible dash, so a reader who cannot see it is
+                looking at an unexplained gap. */}
+            {mode === "points" &&
+            result !== null &&
+            result.mode === "points" &&
+            result.relativePercent === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.modes.points.relativeUndefinedNote}
+              </p>
+            ) : null}
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

@@ -24,6 +24,8 @@ const L: FloatingChartLabels = {
   scenarioNote: "Đây là kịch bản bạn nhập, không phải báo giá ngân hàng.",
   budgetNote: "Đường ngân sách là số bạn tự nhập.",
   changePercentUndefined: "không xác định được tỷ lệ",
+  shapeDetailTitle: "Cách đọc bậc nhảy",
+  shapeDetail: "Đường nằm ngang rồi gấp khúc.",
   assumptions: ["Lãi sau ưu đãi là giả định."],
   tableCaption: "Từng giai đoạn",
   phaseColumn: "Tháng",
@@ -117,6 +119,16 @@ describe("floatingChartModel", () => {
     expect(model.summary).toContain("52,4%");
   });
 
+  it("explains the step in the disclosure, not in the caption", () => {
+    // §8b: the caption above the plot was three sentences, two of which
+    // described the DRAWING. The picture's explanation collapses; the
+    // scenario note and the model's assumptions stay visible.
+    expect(model.detail?.title).toBe(L.shapeDetailTitle);
+    expect(model.detail?.body).toBe(L.shapeDetail);
+    expect(model.summary).not.toContain(L.shapeDetail);
+    expect(model.assumptions).toEqual(L.assumptions);
+  });
+
   it("says the scenario is the user's assumption, every time", () => {
     // Not left to the page: a rate the tool was given must never read as a
     // rate a bank quoted.
@@ -195,6 +207,8 @@ describe("degenerate cases", () => {
     expect(model.markers).toEqual([]);
     expect(model.summary).toContain("giữ ở");
     expect(model.summary).not.toContain("tăng");
+    // And no "how to read the step" disclosure on a line that has no step.
+    expect(model.detail).toBeNull();
   });
 
   it("does not divide by zero when the first instalment is zero", () => {
@@ -243,5 +257,31 @@ describe("degenerate cases", () => {
     }
     // The first marker is the one the summary names.
     expect(model.summary).toContain(`tháng ${model.markers[0].period}`);
+  });
+});
+
+describe("the month axis names the month it points at", () => {
+  it("labels every tick at its own position on an odd term", () => {
+    // The defect a browser pass measured at 1440 px: equal quarter intervals
+    // with a rounding formatter drew 0/9/19/28/37 at months 0/9,25/18,5/27,75/37.
+    // A reader measures the POSITION, so the label has to be the month there.
+    const odd = computeFloatingLoan({
+      amount: AMOUNT,
+      phases: buildPhases({
+        termMonths: 37,
+        promoMonths: 12,
+        promoRatePercent: 7.5,
+        postRatePercent: 14,
+      })!,
+    })!;
+    const model = floatingChartModel(odd, null, L);
+    expect(model.xMax).toBe(37);
+    for (const tick of model.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * model.xMax,
+        9,
+      );
+    }
+    expect(model.xAxis.ticks.at(-1)!.at).toBe(1);
   });
 });

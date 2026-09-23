@@ -21,7 +21,23 @@ export const POINTS = {
     "Tính xem trả trước một khoản phí để hạ lãi suất có đáng hay không, so cả theo điểm hoàn phí đơn giản và theo vị thế thực tại thời điểm bạn tất toán. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Ngân hàng đề nghị: trả trước 1% số tiền vay, lãi suất giảm 0,25 điểm phần trăm. Có đáng không thì phụ thuộc gần như hoàn toàn vào việc bạn giữ khoản vay bao lâu — nên công cụ này hỏi bạn con số đó, và so hai bên bằng cả tiền đã trả lẫn dư nợ còn lại.",
+    // ONE SENTENCE, purpose only. The comparison method — paid plus remaining
+    // balance — is NOT repeated here: `methodNotice` already states it above
+    // the calculator. The worked offer that used to open this line read as a
+    // real quote and moved into `ledeDetail`, labelled hypothetical: at
+    // 390×844 the second browser round measured the first input starting at
+    // 816,75 px and partly cut off with both entry blocks at full length.
+    "Công cụ này tính xem trả trước một khoản phí để hạ lãi suất có đáng hay không — câu trả lời phụ thuộc gần như hoàn toàn vào việc bạn giữ khoản vay bao lâu, nên đó là ô quyết định.",
+
+  ledeDetailTitle: "Ví dụ điền sẵn, và khi nào công cụ này dùng được",
+
+  // WHERE THE ELABORATION WENT. The market structure and the worked offer are
+  // both here, not deleted: the visible slots carry the one thing a reader
+  // must know before typing — the tool needs a concrete offer — and this
+  // disclosure carries what that offer looks like in Vietnam and that the
+  // prefilled numbers are illustrative. `points.test.ts` asserts the move.
+  ledeDetail:
+    "Đề nghị điền sẵn — trả trước 1% số tiền vay để lãi suất giảm 0,25 điểm phần trăm — là SỐ GIẢ ĐỊNH để minh họa, không phải báo giá của ngân hàng nào. Ở Việt Nam hầu như không có sản phẩm nào mang tên “điểm chiết khấu”, nhưng cấu trúc thì có: nhiều ngân hàng giảm biên độ lãi suất nếu bạn mua bảo hiểm nhân thọ, mở thẻ hoặc chuyển lương về ngân hàng. Hãy quy chi phí kèm theo về số tiền rồi nhập vào ô phí trả trước.",
 
   form: {
     loanGroup: "Khoản vay",
@@ -69,6 +85,11 @@ export const POINTS = {
     holdPositionLabel: "Lợi hoặc lỗ khi tất toán",
     holdMonthsLabel: "Tính tại tháng",
     monthsUnit: "tháng",
+    // The pinned restatement for the desktop CTA block. A gain or loss means
+    // nothing without the month it was taken at, and the row that carries the
+    // month is not on screen while the lower fields are edited, so the two
+    // rows collapse into one label here.
+    pinnedPositionLabel: "Lợi hoặc lỗ khi tất toán ở tháng {month}",
 
     detailTitle: "Chi tiết",
     costLabel: "Phí trả trước",
@@ -100,8 +121,12 @@ export const POINTS = {
   // `noticeDetail`, one click away and still above the calculator. It is NOT
   // gone: the 49-vs-64 argument is also `formula.body[1]` prose and FAQ
   // item 2. `points.test.ts` asserts the move rather than trusting it.
+  // ONE SENTENCE, and it is the CONDITION rather than the market description:
+  // what decides whether the tool applies is that the reader has a concrete
+  // offer trading an upfront cost for a lower rate. What that structure looks
+  // like in Vietnam, and how to price the strings attached, is `ledeDetail`.
   scopeNotice:
-    "Ở Việt Nam hầu như không có sản phẩm nào mang tên “điểm chiết khấu”, nhưng cấu trúc thì có: nhiều ngân hàng giảm biên độ lãi suất nếu bạn mua bảo hiểm nhân thọ, mở thẻ hoặc chuyển lương về ngân hàng. Công cụ này chỉ dùng được khi bạn đang có một đề nghị cụ thể như vậy — hãy quy chi phí kèm theo về số tiền rồi nhập vào ô phí trả trước, đừng coi cấu trúc này là mặc định.",
+    "Công cụ này chỉ dùng được khi bạn đang có một đề nghị cụ thể: trả trước một khoản để được lãi suất thấp hơn — đừng coi cấu trúc này là mặc định.",
 
   methodNoticeTitle: "Vì sao kết luận ở đây sớm hơn điểm hoàn phí quen thuộc",
 

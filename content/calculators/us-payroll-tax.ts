@@ -48,8 +48,11 @@ export const US_PAYROLL_TAX = {
   metaDescription:
     "Tính thuế Social Security 6,2% có trần, Medicare 1,45% không trần và phụ thu 0,9%. Phần người lao động và phần người sử dụng lao động tách riêng. Công cụ miễn phí của FinHome.",
 
+  // ENTRY: one purpose sentence plus the limit a reader must not miss. The
+  // regressive walk-through that used to stand here moved into the notice
+  // disclosure below — the RULE stays visible, the arithmetic does not.
   lede:
-    "Ba loại thuế thường bị gộp thành một chữ “payroll tax” nhưng hành xử rất khác nhau. Đáng chú ý nhất: Social Security có trần lương, nên vượt trần rồi thì thuế suất biên của người lao động GIẢM chứ không tăng — ngược hoàn toàn với thuế thu nhập.",
+    "Công cụ tách ba loại thuế lương Hoa Kỳ mà phiếu lương thường gộp thành một chữ “payroll tax”, cho cả người làm thuê và người tự làm chủ. Đây CHỈ là FICA: thuế thu nhập liên bang, thuế bang và các khoản trừ khác đều không nằm trong đây, nên con số này không phải lương thực nhận.",
 
   form: {
     wageGroup: "Tiền lương",
@@ -98,6 +101,20 @@ export const US_PAYROLL_TAX = {
     socialSecurityLabel: "Social Security (6,2%)",
     socialSecurityWagesLabel: "Thu nhập chịu thuế Social Security",
     medicareLabel: "Medicare (1,45%)",
+
+    // THE RATE IN THE LABEL HAS TO MATCH THE AMOUNT BESIDE IT. An independent
+    // review read the `Tự làm chủ` mode on the 10:16:38.280Z export at the
+    // default 100.000 USD / 2026 / single: the base is 92.350 USD and the two
+    // rows show 11.451,40 and 2.678,15 USD, which are 12,4% and 2,9% of it —
+    // both halves, exactly as Schedule SE lines 10 and 11 print them — while
+    // the labels still said 6,2% and 1,45%. The amounts, the rates, the
+    // parameter tables and the calculation are untouched; only the two labels
+    // change, and only in this mode.
+    //
+    // The 0,9% surcharge keeps ONE label in both modes because it is not
+    // doubled — the same fact `selfEmployedNotice` states.
+    selfEmployedSocialSecurityLabel: "Social Security (12,4% — cả hai nửa)",
+    selfEmployedMedicareLabel: "Medicare (2,9% — cả hai nửa)",
     additionalLabel: "Phụ thu Medicare (0,9%)",
     additionalWagesLabel: "Thu nhập vượt ngưỡng phụ thu",
     employerLabel: "Phần người sử dụng lao động trả",
@@ -105,6 +122,20 @@ export const US_PAYROLL_TAX = {
     wageBaseLabel: "Trần lương Social Security năm này",
     thresholdLabel: "Ngưỡng phụ thu Medicare",
     cappedSavingLabel: "Trần lương giúp tiết kiệm",
+
+    // ROW 76: "kết quả tách theo vai trò". `employerLabel` and `combinedLabel`
+    // used to sit at positions 7 and 8 of an eleven-row breakdown, so who pays
+    // what was only readable by counting rows.
+    roleGroupTitle: "Ai trả bao nhiêu",
+    employeeRoleLabel: "Người lao động trả",
+    selfEmployedRoleLabel: "Bạn tự trả (cả hai nửa)",
+    employerNoneNotice:
+      "Người tự làm chủ không có chủ lao động trả đối ứng, nên phần đó là 0: cả hai nửa đã nằm trong số bạn tự trả ở trên.",
+
+    // A wage of 0 is a valid entry, not a bad field: the effective rate is the
+    // one figure that genuinely has no value there, and the dash needs saying.
+    zeroWageNotice:
+      "Với mức lương 0, không có thuế suất thực tế để tính — chia cho 0 không ra con số nào. Thuế suất trên đồng lương kế tiếp thì vẫn tính được.",
 
     defaults: {
       wages: "100.000",
@@ -121,6 +152,12 @@ export const US_PAYROLL_TAX = {
   },
 
   regressiveNotice:
+    "Social Security có trần lương, nên vượt trần rồi thì thuế suất biên của người lao động GIẢM chứ không tăng — ngược hoàn toàn với thuế thu nhập. Bảng tham số chỉ có những năm đã được đối chiếu tài liệu IRS, nên hãy chọn đúng năm thuế trước khi dựa vào kết quả.",
+
+  // The walk-through the notice used to carry, verbatim. It is teaching, not a
+  // limit: the rule is above, the numbers are a click away.
+  regressiveNoticeDetailTitle: "Cụ thể: trần lương và ngưỡng phụ thu",
+  regressiveNoticeDetail:
     "Với năm thuế 2026, trần lương Social Security là 184.500 USD. Người có lương 150.000 USD chịu thuế suất biên 7,65%; người có lương 190.000 USD chỉ chịu 1,45% trên đồng lương kế tiếp. Số tiền thuế của người thứ hai vẫn cao hơn, nhưng thuế suất thực tế thì thấp hơn — và càng lương cao thì càng thấp. Ngưỡng phụ thu 0,9% cũng đáng chú ý theo chiều ngược lại: nó được ấn định trong luật từ năm 2013 và chưa từng được điều chỉnh theo lạm phát, nên mỗi năm lại có thêm người rơi vào diện chịu phụ thu mà không cần luật nào thay đổi.",
 
   formula: {

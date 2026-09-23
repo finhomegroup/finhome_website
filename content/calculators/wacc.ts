@@ -31,7 +31,7 @@ export const WACC = {
   // question is "Doanh nghiệp cần mức sinh lời bao nhiêu?", so that is what
   // the first sentence now asks, and the definition follows as the answer.
   lede:
-    "Một dự án phải sinh lời bao nhiêu mới đáng làm? Mức tối thiểu là chi phí vốn của chính doanh nghiệp — dưới mức đó, dự án vẫn “có lãi” trên báo cáo nhưng làm giảm giá trị doanh nghiệp. Con số đó là bình quân gia quyền chi phí của từng nguồn vốn, với một điểm khác biệt quan trọng: chỉ lãi vay được trừ thuế.",
+    "Một dự án phải sinh lời bao nhiêu mới đáng làm? Mức tối thiểu là chi phí vốn của chính doanh nghiệp — bình quân gia quyền chi phí của từng nguồn vốn, trong đó chỉ lãi vay được trừ thuế.",
 
   form: {
     equityGroup: "Vốn chủ sở hữu",
@@ -92,14 +92,27 @@ export const WACC = {
     shieldLabel: "Tấm chắn thuế tiết kiệm được",
     pointsUnit: "điểm %",
 
+    // CSV row 41 asks for the components in an EXPANDABLE TABLE. They are a
+    // table by nature — three sources, the same three questions of each — and
+    // nine flat rows between the answer and the page's explanation was the
+    // shape the row objected to. The cost column carries the clarification
+    // that makes the table safe to read: only the debt row is net of tax,
+    // which is the single error this whole page exists to prevent.
+    componentsTitle: "Xem từng nguồn vốn góp bao nhiêu",
+    componentsTable: {
+      caption:
+        "Từng nguồn vốn trong WACC. Cột chi phí là con số thực sự được dùng để tính, nên riêng dòng nợ đã trừ thuế; hai dòng còn lại thì không được trừ.",
+      sourceColumn: "Nguồn vốn",
+      weightColumn: "Tỷ trọng",
+      costColumn: "Chi phí dùng để tính",
+      contributionColumn: "Góp vào WACC (điểm %)",
+    },
+
     detailTitle: "Chi tiết",
     totalCapitalLabel: "Tổng vốn",
-    equityWeightLabel: "Tỷ trọng vốn chủ",
-    debtWeightLabel: "Tỷ trọng nợ",
-    preferredWeightLabel: "Tỷ trọng ưu đãi",
-    equityContributionLabel: "Vốn chủ góp vào WACC",
-    debtContributionLabel: "Nợ góp vào WACC",
-    preferredContributionLabel: "Ưu đãi góp vào WACC",
+    // The six per-source labels these replaced are gone rather than kept
+    // unused: the same six figures are now the rows and columns of
+    // `componentsTable`, where the source is named once instead of six times.
     beforeShieldLabel: "WACC nếu lãi vay không được trừ thuế",
     debtToEquityLabel: "Nợ trên vốn chủ",
 
@@ -108,7 +121,10 @@ export const WACC = {
   },
 
   shieldNotice:
-    "Điểm dễ sai nhất: tấm chắn thuế chỉ áp cho nợ, không áp cho vốn chủ. Lãi vay là chi phí được trừ khi tính thuế thu nhập doanh nghiệp, nên nợ 9%/năm thực chất chỉ tốn 7,2% sau thuế 20%. Cổ tức thì không được trừ, nên vốn chủ và cổ phiếu ưu đãi giữ nguyên chi phí. Với cơ cấu mặc định, áp đúng cho ra WACC 11,96%; nếu bỏ tấm chắn đi thì thành 12,5%, còn nếu áp cho cả ba nguồn thì con số còn thấp hơn nữa — cả hai đều sai, và sai tới nửa điểm phần trăm trên một chỉ tiêu dùng để chiết khấu dòng tiền nhiều năm.",
+    "Điểm dễ sai nhất: tấm chắn thuế chỉ áp cho nợ, không áp cho vốn chủ. Lãi vay là chi phí được trừ khi tính thuế thu nhập doanh nghiệp nên nợ rẻ hơn mức niêm yết, còn cổ tức không được trừ nên vốn chủ và cổ phiếu ưu đãi giữ nguyên chi phí.",
+  shieldNoticeDetailTitle: "Con số cụ thể: 11,96% hay 12,5%",
+  shieldNoticeDetail:
+    "Dưới mức chi phí vốn, dự án vẫn “có lãi” trên báo cáo nhưng làm giảm giá trị doanh nghiệp. Nợ 9%/năm thực chất chỉ tốn 7,2% sau thuế 20%. Với cơ cấu mặc định, áp đúng cho ra WACC 11,96%; nếu bỏ tấm chắn đi thì thành 12,5%, còn nếu áp cho cả ba nguồn thì con số còn thấp hơn nữa — cả hai đều sai, và sai tới nửa điểm phần trăm trên một chỉ tiêu dùng để chiết khấu dòng tiền nhiều năm.",
 
   /**
    * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.

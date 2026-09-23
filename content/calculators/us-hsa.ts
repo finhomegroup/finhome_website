@@ -179,7 +179,13 @@ export const US_HSA = {
     incomeTaxSavedLabel: "Thuế thu nhập tiết kiệm",
     ficaSavedLabel: "FICA tiết kiệm (chỉ khi góp qua bảng lương)",
 
-    limitTitle: "Trần góp",
+    // Row 30 asked for the result side to be grouped the way the form is:
+    // eligibility, contributions, projection. The old single "Trần góp" group
+    // mixed the month-by-month ceiling with what the reader has actually put
+    // in, so the family/individual ceiling and the room left ran together.
+    limitsDisclosureTitle: "Trần góp được tính thế nào",
+    limitTitle: "Điều kiện và trần theo tháng",
+    contributionStatusTitle: "Đã góp và còn trống",
     fullYearBaseLimitLabel: "Trần cơ bản đủ cả năm",
     baseLimitLabel: "Trần cơ bản được phép",
     catchUpLabel: "Được góp thêm do tuổi",
@@ -217,8 +223,13 @@ export const US_HSA = {
       "Một ô nhập chưa hợp lệ. Kiểm tra tuổi, số tháng đủ điều kiện, mức lương, số năm và các thuế suất.",
   },
 
+  // The fourth advantage and the caveat on it — both rules, so both visible.
+  // The worked default case moved into the disclosure below.
   ficaNotice:
-    "Lớp ưu đãi thứ tư: khoản góp HSA bằng giảm lương qua Section 125 cafeteria plan còn tránh được FICA, điều mà khoản góp 401(k) hay IRA không có. Với lương mặc định 100.000 USD — dưới trần Social Security và ngưỡng Additional Medicare — mức tránh được là đủ 7,65%, tức 516,375 USD. Nhưng đây không phải tỷ lệ cố định: phần lương đã vượt trần Social Security không còn tiết kiệm 6,2%, và quanh ngưỡng Additional Medicare còn có tác động của phụ thu 0,9%. Công cụ tính bằng chênh lệch giữa hai hóa đơn FICA thay vì nhân cứng 7,65%.",
+    "Lớp ưu đãi thứ tư: khoản góp HSA bằng giảm lương qua Section 125 cafeteria plan còn tránh được FICA, điều mà khoản góp 401(k) hay IRA không có. Mức tránh được không phải một tỷ lệ cố định — phần lương đã vượt trần Social Security không còn tiết kiệm 6,2%, và quanh ngưỡng Additional Medicare còn có tác động của phụ thu 0,9% — nên công cụ tính bằng chênh lệch giữa hai hóa đơn FICA thay vì nhân cứng 7,65%.",
+  ficaNoticeDetailTitle: "Cụ thể: mức tránh được trên lương mặc định",
+  ficaNoticeDetail:
+    "Với lương mặc định 100.000 USD — dưới trần Social Security và ngưỡng Additional Medicare — mức tránh được là đủ 7,65%, tức 516,375 USD.",
 
   formula: {
     title: "Cách tính",

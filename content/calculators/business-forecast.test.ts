@@ -161,7 +161,16 @@ describe("du-bao-kinh-doanh at its shipped defaults", () => {
 
 describe("du-bao-kinh-doanh's notice, which used to read as a conclusion", () => {
   const r = run();
-  const notice = C.leverageNotice;
+  /**
+   * The notice as a reader can reach it: the visible requalification plus the
+   * disclosure under it.
+   *
+   * §5 moved the four default values and the whole operating-leverage
+   * illustration into `leverageNoticeDetail`. The ordering assertion below is
+   * unchanged and still meaningful — "giả định" is in the visible half, so it
+   * precedes every figure by construction, which is the point.
+   */
+  const notice = `${C.leverageNotice} ${C.leverageNoticeDetail}`;
 
   it("names the inputs as assumptions BEFORE reading anything off them", () => {
     // The row's requirement, and the single highest-value edit on it. The
@@ -178,6 +187,11 @@ describe("du-bao-kinh-doanh's notice, which used to read as a conclusion", () =>
     // And it has to say what the table IS, not only what the inputs are.
     expect(notice).toContain("không phải dữ liệu");
     expect(notice).toContain("xảy ra nếu");
+    // §5: and all three of those must need NO click. The illustration may sit
+    // behind a disclosure; the requalification may not.
+    expect(C.leverageNotice).toContain("giả định, không phải dữ liệu");
+    expect(C.leverageNotice).toContain("xảy ra nếu");
+    expect(C.leverageNotice).not.toMatch(/\d/);
   });
 
   it("keeps the operating-leverage teaching AND the experiment that tests it", () => {

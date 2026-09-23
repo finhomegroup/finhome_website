@@ -44,8 +44,12 @@ export const US_MORTGAGE_DEDUCTION = {
   metaDescription:
     "Tính số thuế thực sự tiết kiệm được từ khấu trừ lãi vay mua nhà, sau khi trừ phần khấu trừ chuẩn bạn phải từ bỏ. Công cụ miễn phí của FinHome.",
 
+  // US scope first, then the rule this page exists to state. The middle
+  // sentence — that the common method overstates the saving — is not dropped
+  // but deduplicated: `marginalNotice` right below makes the same claim with
+  // the multiple attached, and it stays visible there.
   lede:
-    "Trang này tính theo luật thuế thu nhập liên bang Hoa Kỳ, không áp dụng cho khoản vay mua nhà tại Việt Nam. Cách tính phổ biến — lãi vay nhân thuế suất biên — sai với phần lớn người nộp thuế Hoa Kỳ, và sai theo hướng làm khoản vay trông có lợi hơn thực tế. Khấu trừ lãi vay chỉ có giá trị ở phần vượt khoản khấu trừ chuẩn mà bạn vốn đã được hưởng miễn phí.",
+    "Trang này tính theo luật thuế thu nhập liên bang Hoa Kỳ, không áp dụng cho khoản vay mua nhà tại Việt Nam. Khấu trừ lãi vay chỉ có giá trị ở phần vượt khoản khấu trừ chuẩn mà bạn vốn đã được hưởng miễn phí.",
 
   form: {
     loanGroup: "Khoản vay",
@@ -113,7 +117,12 @@ export const US_MORTGAGE_DEDUCTION = {
     naiveSavingLabel: "Cách tính sai: lãi vay × thuế suất",
     overstatementLabel: "Cách tính sai phóng đại thêm",
 
-    detailTitle: "Chi tiết",
+    // Row 13 asked for the limits and the mechanics to be grouped inside a
+    // disclosure instead of standing as one nine-row "Chi tiết" table: the
+    // first four rows are the statutory cap, the last five are the ladder.
+    mechanicsDisclosureTitle: "Trần nợ gốc và từng bước khấu trừ",
+    capTitle: "Trần nợ gốc",
+    stepsTitle: "Từng bước khấu trừ",
     capLabel: "Trần nợ gốc áp dụng",
     deductibleShareLabel: "Tỷ lệ dư nợ trong trần",
     deductibleInterestLabel: "Lãi vay được khấu trừ",
@@ -132,12 +141,27 @@ export const US_MORTGAGE_DEDUCTION = {
       "Các khoản khấu trừ khác của bạn đã tự vượt khấu trừ chuẩn, nên mỗi đồng lãi vay là một đồng khấu trừ tăng thêm. Đây là trường hợp duy nhất mà cách tính lãi vay nhân thuế suất biên cho ra kết quả đúng.",
     capNotice:
       "Dư nợ vượt trần nợ gốc được khấu trừ, nên lãi vay chỉ được khấu trừ theo tỷ lệ phần dư nợ nằm trong trần. Phần lãi vay của khoản dư nợ vượt trần không được khấu trừ chút nào.",
+    // Two VALID entries each leave one supporting row without an answer, and
+    // they have different causes: no interest paid means the share has no
+    // denominator, no balance means the rate has none. A bare dash reads as a
+    // bug, and one shared sentence would misname whichever case is not the
+    // reader's.
+    noInterestNotice:
+      "Bạn chưa trả đồng lãi vay nào trong năm, nên không có tỷ lệ phần trăm lãi vay để tính: dòng đó bỏ trống vì phép chia không có mẫu số, chứ không phải vì thiếu số liệu.",
+    noBalanceNotice:
+      "Dư nợ bằng 0 nên không có lãi suất thực sau thuế để tính: lãi suất ở đây là lãi vay chia dư nợ, và mẫu số đang bằng 0.",
     invalidNotice:
       "Một ô nhập chưa hợp lệ. Lưu ý không thể có lãi vay khi dư nợ bằng 0.",
   },
 
+  // The RULE, before the form: the common method overstates, and by how much
+  // on the shipped numbers. The worked ladder that proves it is a paragraph of
+  // arithmetic, so it moved into the disclosure below.
   marginalNotice:
-    "Với các số mặc định, tổng liệt kê khi tính cả lãi vay là 32.000 USD so với khấu trừ chuẩn 30.000 USD. Nghĩa là 24.000 USD lãi vay chỉ mua thêm được 2.000 USD khấu trừ — vì 30.000 USD đầu tiên bạn đã có sẵn miễn phí. Số thuế tiết kiệm là 480 USD, không phải 5.760 USD như cách nhân lãi vay với thuế suất. Cách tính sai phóng đại gấp mười hai lần. Hệ quả thực tế: lãi suất 6,00% trên hợp đồng thực chất là 5,88% sau thuế, chứ không phải 4,56% như nhiều người vẫn nghĩ — và với đa số người nộp thuế thì nó vẫn đúng bằng 6,00%.",
+    "Cách tính phổ biến — lãi vay nhân thuế suất biên — phóng đại số thuế tiết kiệm với phần lớn người nộp thuế Hoa Kỳ; trên các số mặc định của công cụ nó phóng đại gấp mười hai lần. Hệ quả là lãi suất sau thuế của bạn gần với lãi suất trên hợp đồng hơn nhiều so với con số cách tính đó gợi ra, và với đa số người nộp thuế thì nó đúng bằng lãi suất hợp đồng.",
+  marginalNoticeDetailTitle: "Cụ thể: bậc thang liệt kê trên các số mặc định",
+  marginalNoticeDetail:
+    "Với các số mặc định, tổng liệt kê khi tính cả lãi vay là 32.000 USD so với khấu trừ chuẩn 30.000 USD. Nghĩa là 24.000 USD lãi vay chỉ mua thêm được 2.000 USD khấu trừ — vì 30.000 USD đầu tiên bạn đã có sẵn miễn phí. Số thuế tiết kiệm là 480 USD, không phải 5.760 USD như cách nhân lãi vay với thuế suất. Hệ quả thực tế: lãi suất 6,00% trên hợp đồng thực chất là 5,88% sau thuế, chứ không phải 4,56% như nhiều người vẫn nghĩ — và với đa số người nộp thuế thì nó vẫn đúng bằng 6,00%.",
 
   formula: {
     title: "Cách tính",

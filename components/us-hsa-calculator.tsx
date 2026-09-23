@@ -1,9 +1,12 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { SelectField } from "@/components/calc/select-field";
@@ -54,6 +57,10 @@ const STATUS_OPTIONS: readonly { value: FilingStatus; label: string }[] = [
 function usd(value: number): string {
   return `${formatMoney(value, 2)} USD`;
 }
+
+/** The CTA contract's two ids — literals, so prerender and hydration agree. */
+const FORM_ID = "tai-khoan-tiet-kiem-y-te-hoa-ky-nhap";
+const RESULT_ID = "tai-khoan-tiet-kiem-y-te-hoa-ky-ket-qua";
 
 export function UsHsaCalculator() {
   const fields = useCalcFields(F.defaults);
@@ -122,271 +129,371 @@ export function UsHsaCalculator() {
 
   const viaCheque = fields.values.payroll === "no";
 
+  // Formatted ONCE, for the emphasised row and the pinned restatement both.
+  const answerValue = result === null ? null : usd(result.firstYearTaxSaved);
+
+  /*
+   * CSV row 30 is "Theo nhóm + kết quả", so `columns="split"` with the page's
+   * `wide`. Its action: group the result side the way the form is grouped —
+   * eligibility, contributions, projection — and keep the US label and the
+   * applicability limits beside the tax-saved figure.
+   *
+   * The US label is not rebuilt: the registry marks this slug `usRules: true`,
+   * so `CalculatorPage` renders the scope disclaimer above the tool.
+   *
+   * What changed on the result side: the old "Trần góp" group mixed the
+   * month-prorated ceiling with what the reader has actually contributed, so
+   * the family/individual ceiling and the room left over read as one
+   * undifferentiated list. They are two groups now, and only the ceiling
+   * ladder — reference material — is the disclosed one. The room, the excess
+   * and the four applicability notices stay beside the answer.
+   *
+   * `sticky`: this is the longest form on the US shelf — thirteen controls in
+   * four groups. The measured precedent is a split, `wide`, six-control form
+   * at 1143,75 px (`components/black-scholes-calculator.tsx`), where focusing
+   * the last field left the result region at y −382..−140. `lg:items-start`
+   * holds the result column at the top of the grid, so a split layout does not
+   * keep the answer on screen by itself. This form's own height has NOT been
+   * measured.
+   *
+   * `computeUsHsa` is untouched and every figure keeps its precision.
+   */
   return (
     <CalculatorCard>
-      <FieldGroup title={F.accountGroup}>
-        <SelectField
-          {...fields.bind("year")}
-          label={F.yearLabel}
-          help={F.yearHelp}
-          options={YEAR_OPTIONS}
-        />
-        <SelectField
-          {...fields.bind("coverage")}
-          label={F.coverageLabel}
-          help={F.coverageHelp}
-          options={COVERAGE_OPTIONS}
-        />
-        <NumberField
-          {...fields.bind("age")}
-          label={F.ageLabel}
-          unit={F.ageUnit}
-          help={F.ageHelp}
-          error={F.ageInvalid}
-          invalid={ageInvalid}
-        />
-        <NumberField
-          {...fields.bind("eligibleMonths")}
-          label={F.eligibleMonthsLabel}
-          unit={F.eligibleMonthsUnit}
-          help={F.eligibleMonthsHelp}
-          error={F.eligibleMonthsInvalid}
-          invalid={eligibleMonthsInvalid}
-        />
-        <RadioGroupField
-          {...fields.bind("lastMonth")}
-          legend={F.lastMonthLabel}
-          help={F.lastMonthHelp}
-          options={LAST_MONTH_OPTIONS}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={F.contributionGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("contribution")}
-          label={F.contributionLabel}
-          unit={F.contributionUnit}
-          help={F.contributionHelp}
-          error={F.contributionInvalid}
-          invalid={contributionInvalid}
-        />
-        <NumberField
-          {...fields.bind("employer")}
-          label={F.employerLabel}
-          unit={F.employerUnit}
-          help={F.employerHelp}
-          error={F.employerInvalid}
-          invalid={employerInvalid}
-        />
-        <RadioGroupField
-          {...fields.bind("payroll")}
-          legend={F.payrollLabel}
-          help={F.payrollHelp}
-          options={PAYROLL_OPTIONS}
-        />
-        {viaPayroll ? (
+      <CalculatorLayout
+        formId={FORM_ID}
+        form={
           <>
-            <NumberField
-              {...fields.bind("wages")}
-              label={F.wagesLabel}
-              unit={F.wagesUnit}
-              help={F.wagesHelp}
-              error={F.wagesInvalid}
-              invalid={wagesInvalid}
-            />
-            <SelectField
-              {...fields.bind("status")}
-              label={F.statusLabel}
-              help={F.statusHelp}
-              options={STATUS_OPTIONS}
-            />
+            <FieldGroup title={F.accountGroup}>
+              <SelectField
+                {...fields.bind("year")}
+                label={F.yearLabel}
+                help={F.yearHelp}
+                options={YEAR_OPTIONS}
+              />
+              <SelectField
+                {...fields.bind("coverage")}
+                label={F.coverageLabel}
+                help={F.coverageHelp}
+                options={COVERAGE_OPTIONS}
+              />
+              <NumberField
+                {...fields.bind("age")}
+                label={F.ageLabel}
+                unit={F.ageUnit}
+                help={F.ageHelp}
+                error={F.ageInvalid}
+                invalid={ageInvalid}
+              />
+              <NumberField
+                {...fields.bind("eligibleMonths")}
+                label={F.eligibleMonthsLabel}
+                unit={F.eligibleMonthsUnit}
+                help={F.eligibleMonthsHelp}
+                error={F.eligibleMonthsInvalid}
+                invalid={eligibleMonthsInvalid}
+              />
+              <RadioGroupField
+                {...fields.bind("lastMonth")}
+                legend={F.lastMonthLabel}
+                help={F.lastMonthHelp}
+                options={LAST_MONTH_OPTIONS}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={F.contributionGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("contribution")}
+                label={F.contributionLabel}
+                unit={F.contributionUnit}
+                help={F.contributionHelp}
+                error={F.contributionInvalid}
+                invalid={contributionInvalid}
+              />
+              <NumberField
+                {...fields.bind("employer")}
+                label={F.employerLabel}
+                unit={F.employerUnit}
+                help={F.employerHelp}
+                error={F.employerInvalid}
+                invalid={employerInvalid}
+              />
+              <RadioGroupField
+                {...fields.bind("payroll")}
+                legend={F.payrollLabel}
+                help={F.payrollHelp}
+                options={PAYROLL_OPTIONS}
+              />
+              {/* The wage and the filing status are only read when the
+                  contribution runs through payroll. Rendering them in the
+                  cheque case would put a field the answer ignores in front of
+                  the reader — and, if it were empty, in front of the CTA's
+                  first-invalid-field search. */}
+              {viaPayroll ? (
+                <>
+                  <NumberField
+                    {...fields.bind("wages")}
+                    label={F.wagesLabel}
+                    unit={F.wagesUnit}
+                    help={F.wagesHelp}
+                    error={F.wagesInvalid}
+                    invalid={wagesInvalid}
+                  />
+                  <SelectField
+                    {...fields.bind("status")}
+                    label={F.statusLabel}
+                    help={F.statusHelp}
+                    options={STATUS_OPTIONS}
+                  />
+                </>
+              ) : null}
+            </FieldGroup>
+
+            <FieldGroup title={F.taxGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("federal")}
+                label={F.federalLabel}
+                unit={F.federalUnit}
+                help={F.federalHelp}
+                error={F.federalInvalid}
+                invalid={federalInvalid}
+              />
+              <NumberField
+                {...fields.bind("state")}
+                label={F.stateLabel}
+                unit={F.stateUnit}
+                help={F.stateHelp}
+                error={F.stateInvalid}
+                invalid={stateInvalid}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={F.projectionGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("balance")}
+                label={F.balanceLabel}
+                unit={F.balanceUnit}
+                help={F.balanceHelp}
+                error={F.balanceInvalid}
+                invalid={balanceInvalid}
+              />
+              <NumberField
+                {...fields.bind("return")}
+                label={F.returnLabel}
+                unit={F.returnUnit}
+                help={F.returnHelp}
+                error={F.returnInvalid}
+                invalid={returnInvalid}
+              />
+              <NumberField
+                {...fields.bind("years")}
+                label={F.yearsLabel}
+                unit={F.yearsUnit}
+                help={F.yearsHelp}
+                error={F.yearsInvalid}
+                invalid={yearsInvalid}
+              />
+            </FieldGroup>
           </>
-        ) : null}
-      </FieldGroup>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            sticky
+            answer={{ label: F.totalSavedLabel, value: answerValue }}
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={F.totalSavedLabel}
+                value={answerValue}
+                emphasis
+              />
+              <ResultRow
+                label={F.netCostLabel}
+                value={
+                  result === null ? null : usd(result.netCostOfContribution)
+                }
+              />
+              <ResultRow
+                label={F.incomeTaxSavedLabel}
+                value={result === null ? null : usd(result.incomeTaxSaved)}
+              />
+              <ResultRow
+                label={F.ficaSavedLabel}
+                value={result === null ? null : usd(result.ficaSaved)}
+              />
+            </ResultGroup>
 
-      <FieldGroup title={F.taxGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("federal")}
-          label={F.federalLabel}
-          unit={F.federalUnit}
-          help={F.federalHelp}
-          error={F.federalInvalid}
-          invalid={federalInvalid}
-        />
-        <NumberField
-          {...fields.bind("state")}
-          label={F.stateLabel}
-          unit={F.stateUnit}
-          help={F.stateHelp}
-          error={F.stateInvalid}
-          invalid={stateInvalid}
-        />
-      </FieldGroup>
+            {/* THE APPLICABILITY LIMITS, beside the figure they qualify. Each
+                one decides whether the saving above is the reader's real
+                number: an excess is not deductible at all, a cheque
+                contribution saves no FICA, the last-month rule can be clawed
+                back, and a prorated year is not the full ceiling. */}
+            {result !== null && result.excessContribution > 0 ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.excessNotice}
+              </p>
+            ) : null}
 
-      <FieldGroup title={F.projectionGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("balance")}
-          label={F.balanceLabel}
-          unit={F.balanceUnit}
-          help={F.balanceHelp}
-          error={F.balanceInvalid}
-          invalid={balanceInvalid}
-        />
-        <NumberField
-          {...fields.bind("return")}
-          label={F.returnLabel}
-          unit={F.returnUnit}
-          help={F.returnHelp}
-          error={F.returnInvalid}
-          invalid={returnInvalid}
-        />
-        <NumberField
-          {...fields.bind("years")}
-          label={F.yearsLabel}
-          unit={F.yearsUnit}
-          help={F.yearsHelp}
-          error={F.yearsInvalid}
-          invalid={yearsInvalid}
-        />
-      </FieldGroup>
+            {viaCheque ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.chequeNotice}
+              </p>
+            ) : null}
 
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.totalSavedLabel}
-          value={result === null ? null : usd(result.firstYearTaxSaved)}
-        />
-        <ResultRow
-          label={F.netCostLabel}
-          value={result === null ? null : usd(result.netCostOfContribution)}
-        />
-        <ResultRow
-          label={F.incomeTaxSavedLabel}
-          value={result === null ? null : usd(result.incomeTaxSaved)}
-        />
-        <ResultRow
-          label={F.ficaSavedLabel}
-          value={result === null ? null : usd(result.ficaSaved)}
-        />
-      </ResultGroup>
+            {result?.lastMonthRuleApplied ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.lastMonthNotice}
+              </p>
+            ) : null}
 
-      <ResultGroup title={F.limitTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.fullYearBaseLimitLabel}
-          value={
-            result === null
-              ? null
-              : `${formatMoney(result.fullYearBaseLimit)} USD`
-          }
-        />
-        <ResultRow
-          label={F.baseLimitLabel}
-          value={result === null ? null : `${formatMoney(result.baseLimit)} USD`}
-        />
-        <ResultRow
-          label={F.catchUpLabel}
-          value={
-            result === null
-              ? null
-              : `${formatMoney(result.catchUpAvailable)} USD`
-          }
-        />
-        <ResultRow
-          label={F.totalLimitLabel}
-          value={
-            result === null ? null : `${formatMoney(result.totalLimit)} USD`
-          }
-        />
-        <ResultRow
-          label={F.totalContributionLabel}
-          value={result === null ? null : usd(result.totalContribution)}
-        />
-        <ResultRow
-          label={F.remainingRoomLabel}
-          value={result === null ? null : usd(result.remainingRoom)}
-        />
-        <ResultRow
-          label={F.excessLabel}
-          value={result === null ? null : usd(result.excessContribution)}
-        />
-      </ResultGroup>
+            {result !== null &&
+            result.eligibilityFactor < 1 &&
+            !result.lastMonthRuleApplied ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.proratedNotice}
+              </p>
+            ) : null}
 
-      <ResultGroup title={F.projectionTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.projectedBalanceLabel}
-          value={result === null ? null : usd(result.projectedBalance)}
-        />
-        <ResultRow
-          label={F.totalContributedLabel}
-          value={result === null ? null : usd(result.totalContributed)}
-        />
-        <ResultRow
-          label={F.growthLabel}
-          value={result === null ? null : usd(result.projectedGrowth)}
-        />
-        <ResultRow
-          label={F.taxOnGrowthLabel}
-          value={result === null ? null : usd(result.taxOnGrowthIfTaxable)}
-        />
-      </ResultGroup>
+            {result === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
 
-      <ResultGroup title={F.withdrawalTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.ageAtHorizonLabel}
-          value={result === null ? null : `${formatMoney(result.ageAtHorizon)}`}
-        />
-        <ResultRow
-          label={F.medicalLabel}
-          value={result === null ? null : usd(result.medicalWithdrawalTax)}
-        />
-        <ResultRow
-          label={F.nonMedicalTaxLabel}
-          value={result === null ? null : usd(result.nonMedicalTax)}
-        />
-        <ResultRow
-          label={F.nonMedicalPenaltyLabel}
-          value={result === null ? null : usd(result.nonMedicalPenalty)}
-        />
-        <ResultRow
-          label={F.nonMedicalNetLabel}
-          value={result === null ? null : usd(result.nonMedicalNet)}
-        />
-      </ResultGroup>
+            {/* What the reader has put in against what they may — the number
+                they can act on this year, so it is not disclosed. */}
+            <ResultGroup
+              title={F.contributionStatusTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={F.totalContributionLabel}
+                value={result === null ? null : usd(result.totalContribution)}
+              />
+              <ResultRow
+                label={F.remainingRoomLabel}
+                value={result === null ? null : usd(result.remainingRoom)}
+              />
+              <ResultRow
+                label={F.excessLabel}
+                value={result === null ? null : usd(result.excessContribution)}
+              />
+            </ResultGroup>
+          </>
+        }
+        detail={
+          <>
+            {/* How the ceiling above was arrived at: the statutory full-year
+                figure, the months actually eligible, the age catch-up. */}
+            <DetailDisclosure title={F.limitsDisclosureTitle}>
+              <ResultGroup title={F.limitTitle} live={false}>
+                <ResultRow
+                  label={F.fullYearBaseLimitLabel}
+                  value={
+                    result === null
+                      ? null
+                      : `${formatMoney(result.fullYearBaseLimit)} USD`
+                  }
+                />
+                <ResultRow
+                  label={F.baseLimitLabel}
+                  value={
+                    result === null
+                      ? null
+                      : `${formatMoney(result.baseLimit)} USD`
+                  }
+                />
+                <ResultRow
+                  label={F.catchUpLabel}
+                  value={
+                    result === null
+                      ? null
+                      : `${formatMoney(result.catchUpAvailable)} USD`
+                  }
+                />
+                <ResultRow
+                  label={F.totalLimitLabel}
+                  value={
+                    result === null
+                      ? null
+                      : `${formatMoney(result.totalLimit)} USD`
+                  }
+                />
+              </ResultGroup>
+            </DetailDisclosure>
 
-      {result !== null && result.excessContribution > 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.excessNotice}
-        </p>
-      ) : null}
+            <ResultGroup
+              title={F.projectionTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={F.projectedBalanceLabel}
+                value={result === null ? null : usd(result.projectedBalance)}
+              />
+              <ResultRow
+                label={F.totalContributedLabel}
+                value={result === null ? null : usd(result.totalContributed)}
+              />
+              <ResultRow
+                label={F.growthLabel}
+                value={result === null ? null : usd(result.projectedGrowth)}
+              />
+              <ResultRow
+                label={F.taxOnGrowthLabel}
+                value={
+                  result === null ? null : usd(result.taxOnGrowthIfTaxable)
+                }
+              />
+            </ResultGroup>
 
-      {viaCheque ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.chequeNotice}
-        </p>
-      ) : null}
+            <ResultGroup
+              title={F.withdrawalTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={F.ageAtHorizonLabel}
+                value={
+                  result === null ? null : `${formatMoney(result.ageAtHorizon)}`
+                }
+              />
+              <ResultRow
+                label={F.medicalLabel}
+                value={result === null ? null : usd(result.medicalWithdrawalTax)}
+              />
+              <ResultRow
+                label={F.nonMedicalTaxLabel}
+                value={result === null ? null : usd(result.nonMedicalTax)}
+              />
+              <ResultRow
+                label={F.nonMedicalPenaltyLabel}
+                value={result === null ? null : usd(result.nonMedicalPenalty)}
+              />
+              <ResultRow
+                label={F.nonMedicalNetLabel}
+                value={result === null ? null : usd(result.nonMedicalNet)}
+              />
+            </ResultGroup>
 
-      {result?.lastMonthRuleApplied ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.lastMonthNotice}
-        </p>
-      ) : null}
-
-      {result !== null && result.eligibilityFactor < 1 && !result.lastMonthRuleApplied ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.proratedNotice}
-        </p>
-      ) : null}
-
-      {result !== null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {result.penaltyApplies ? F.penaltyNotice : F.noPenaltyNotice}
-        </p>
-      ) : null}
-
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+            {/* Whether the 20% penalty applies at the age the projection
+                reaches — a reading of the four rows above, so it sits with
+                them rather than beside this year's tax saving. */}
+            {result !== null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {result.penaltyApplies ? F.penaltyNotice : F.noPenaltyNotice}
+              </p>
+            ) : null}
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

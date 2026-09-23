@@ -148,12 +148,28 @@ export const STATEMENT_ANALYSIS = {
 
     negativeEquityNotice:
       "Một trong hai kỳ có vốn chủ sở hữu âm, nên ROE và phép tách DuPont của kỳ đó không đọc được. Hãy xem các dòng tuyệt đối và phần tỷ trọng thay vì các chỉ số có vốn chủ ở mẫu số.",
+    // A SEPARATE state from the one above, and it was reaching the reader with
+    // no sentence at all. `lib/calc/financials.ts` returns null from `ratio`
+    // only when the denominator is 0, so a zero equity — not a negative one —
+    // leaves ROE and the promoted change as dashes while the prior period's
+    // ROE keeps its figure. Without this the summary shows one real percentage
+    // beside two dashes and nothing says which of the two possible readings
+    // applies: "chia cho 0" or "chúng tôi không tính được gì".
+    zeroEquityNotice:
+      "Vốn chủ sở hữu của một trong hai kỳ bằng 0, nên ROE của kỳ đó và mức thay đổi không tồn tại: dấu gạch ngang ở đây nghĩa là không chia được, chứ không phải bằng 0. Con số ROE của kỳ còn lại vẫn đúng, nhưng không có gì để đối chiếu với nó.",
     invalidNotice:
       "Một dòng trong một trong hai kỳ không hợp lệ. Mọi dòng đều là số dương hoặc 0 — phần lỗ sinh ra từ phép trừ, không phải từ một chi phí âm.",
   },
 
+  // §5: the warning is the visible half — a rise in ROE that comes from
+  // borrowing is not good news — and the counterfactual arithmetic that
+  // demonstrates it is the labelled disclosure. `statement-analysis.test.ts`
+  // still pins both counterfactuals against the model, now on the detail.
   duPontNotice:
-    "Với hai kỳ mặc định, ROE tăng từ 13,06% lên 19,20% — thêm 6,14 điểm phần trăm. Cách kiểm tra xem mức tăng đến từ đâu là giữ hai thành phần ở giá trị kỳ trước và cho một thành phần thay đổi: nếu chỉ biên lợi nhuận thuần đổi, ROE đã là 17,63%; nếu chỉ đòn bẩy đổi, ROE chỉ là 13,55%. Nghĩa là phần lớn mức tăng đến từ việc bán hàng có lãi hơn, còn việc vay thêm gần như không đóng góp. Nếu kết quả ngược lại — ROE tăng nhưng gần hết mức tăng nằm ở hệ số nhân vốn chủ — thì đó không phải tin tốt, chỉ là cổ đông gánh thêm rủi ro tài chính để có một con số đẹp hơn. Đó là lý do trang này tồn tại thay vì chỉ hiển thị ROE của hai kỳ cạnh nhau.",
+    "Phép tách DuPont cho biết lợi nhuận trên vốn chủ thay đổi vì biên lợi nhuận, vì vòng quay tài sản, hay chỉ vì vay thêm. Nếu gần hết mức tăng nằm ở hệ số nhân vốn chủ thì đó không phải tin tốt: đòn bẩy làm ROE tăng bằng cách để cổ đông gánh thêm rủi ro tài chính.",
+  duPontNoticeDetailTitle: "Số học với hai kỳ mặc định",
+  duPontNoticeDetail:
+    "Với hai kỳ mặc định, ROE tăng từ 13,06% lên 19,20% — thêm 6,14 điểm phần trăm. Cách kiểm tra xem mức tăng đến từ đâu là giữ hai thành phần ở giá trị kỳ trước và cho một thành phần thay đổi: nếu chỉ biên lợi nhuận thuần đổi, ROE đã là 17,63%; nếu chỉ đòn bẩy đổi, ROE chỉ là 13,55%. Nghĩa là phần lớn trong 6,14 điểm phần trăm tăng thêm đến từ việc bán hàng có lãi hơn, còn việc vay thêm gần như không đóng góp. Đó là lý do trang này tồn tại thay vì chỉ hiển thị ROE của hai kỳ cạnh nhau.",
 
   /**
    * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.

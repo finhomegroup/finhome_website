@@ -70,6 +70,10 @@ export const LOAN_ANALYSIS = {
     examineInterestLabel: "Trong đó là lãi",
     examinePrincipalLabel: "Trong đó là gốc",
     examineShareLabel: "Tỷ lệ lãi trong tháng đó",
+    // The pinned restatement of the row above, for the desktop CTA block. It
+    // sits away from `examineTitle`, so "tháng đó" has nothing to refer to
+    // there and the month has to be named in the label itself.
+    pinnedShareLabel: "Tỷ lệ lãi tháng {month}",
     examineBalanceLabel: "Dư nợ còn lại cuối tháng đó",
     examineCumulativeInterestLabel: "Lãi đã trả từ đầu đến tháng đó",
     examineCumulativePrincipalLabel: "Gốc đã trả từ đầu đến tháng đó",
@@ -83,7 +87,13 @@ export const LOAN_ANALYSIS = {
     returnRouteNote:
       "Đó là một trang khác. Số bạn đang nhập ở đây KHÔNG được chuyển sang — trang này không lưu và không gửi gì đi — nên hãy ghi lại số tiền vay, lãi suất, kỳ hạn và cách trả nợ rồi nhập lại. Bù lại, hai trang dùng cùng một bảng trả nợ, nên cùng bộ số sẽ cho cùng con số.",
 
-    resultTitle: "Cơ cấu chi phí",
+    // The disclosure that now holds the whole-loan structure. The examined
+    // month is the answer above it, so this line has to say that what is inside
+    // is the loan as a whole, not a deeper cut of the month.
+    detailToggle: "Xem cơ cấu cả khoản vay và chi tiết tháng đó",
+    detailHint:
+      "Tổng lãi, tỷ lệ lãi đầu và cuối kỳ, các mốc trả nửa lãi và nửa gốc, cùng dư nợ và số đã trả tính đến tháng bạn đang xem.",
+    resultTitle: "Cơ cấu chi phí cả khoản vay",
     monthlyLabel: "Trả hằng tháng",
     totalInterestLabel: "Tổng lãi",
     ratioLabel: "Tổng lãi so với số tiền vay",

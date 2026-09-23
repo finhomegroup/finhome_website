@@ -155,8 +155,13 @@ describe("gop-401k at its shipped defaults", () => {
     expect(usdCents(r.employerMatch)).toBe("2.700,00");
     expect(usdCents(r.unclaimedMatch)).toBe("2.700,00");
     expect(usd(r.unclaimedMatchAtHorizon)).toBe("272.897");
-    expect(C.forfeitNotice).toContain("2.700");
-    expect(C.forfeitNotice).toContain("272.897");
+    // REPOINTED by row 48's entry pass: the worked default case moved into
+    // `forfeitNoticeDetail`, the disclosure the route passes under
+    // `forfeitNoticeDetailTitle`. The RULE stays where no click is needed.
+    expect(C.forfeitNoticeDetail).toContain("2.700");
+    expect(C.forfeitNoticeDetail).toContain("272.897");
+    expect(C.forfeitNotice).toContain("ngưỡng công ty đối ứng");
+    expect(C.forfeitNotice).toContain("những năm đã qua");
   });
 
   it("quotes the cost of fixing it, and the return on that cost", () => {
@@ -173,8 +178,13 @@ describe("gop-401k at its shipped defaults", () => {
     // exactly twice the contribution, so exactly twice the balance.
     expect(full.projectedBalance / now.projectedBalance).toBeCloseTo(2, 10);
     for (const figure of ["2.052", "5.400", "263%", "545.794", "1.091.589"]) {
-      expect(C.forfeitNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.forfeitNoticeDetail,
+        `the worked case is missing ${figure}`,
+      ).toContain(figure);
     }
+    // And the claim those figures support stays visible.
+    expect(C.forfeitNotice).toContain("thấp hơn số nhận được");
   });
 
   it("makes the forfeited match equal the match received, at 3% of a 6% formula", () => {

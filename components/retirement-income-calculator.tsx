@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import {
@@ -106,7 +108,27 @@ export function withdrawalChartLabels(plan: LongTermPlan | null) {
  * state what was forgiven. See `lib/calc/long-term-plan.ts` and
  * `retirement-income-render.test.ts` for the reproduction.
  */
-export function RetirementIncomeCalculator() {
+/*
+ * CSV row 52 ("Hai cột"): the MONTHLY sustainable spend leads, because that is
+ * the reading a household compares against its own outgoings, and the three
+ * longevity branches sit beside the answer rather than four groups below it.
+ * The nominal restatements — capital, first draw, total withdrawn — drop into
+ * the detail region, so the real-vs-nominal distinction stays legible in the
+ * answer's own labels ("theo giá hôm nay") without a paragraph. Docs §8.
+ */
+const FORM_ID = "thu-nhap-huu-tri-nhap";
+const RESULT_ID = "thu-nhap-huu-tri-ket-qua";
+
+export function RetirementIncomeCalculator({
+  actions,
+}: {
+  /**
+   * `<LongTermViews current="withdrawal">`, in the `actions` slot — after the
+   * answer, before the figure. See `RetirementPlanCalculator` for why the set
+   * crosses whole rather than being trimmed to two views.
+   */
+  actions?: React.ReactNode;
+}) {
   const fields = useCalcFields(L.defaults);
   const read = readRetirement(fields.values, OMIT);
   const plan = read.input === null ? null : resolveLongTermPlan(read.input);
@@ -159,168 +181,216 @@ export function RetirementIncomeCalculator() {
       ? F.pathLasts
       : fill(F.pathRunsOut, { age: String(path.projection.depletionAge) });
 
+  /*
+   * The monthly reading of the SAME annual figure, computed here exactly as it
+   * was before this row: `sustainable / 12`, a restatement for comparing
+   * against this month's outgoings and not a withdrawal instruction. The
+   * method section says so, `F.monthlyLabel` names it, and the annual figure
+   * stays on the row below rather than being replaced.
+   */
+  const monthly = sustainable === null ? null : longTermMoney(sustainable / 12);
+
   return (
     <CalculatorCard>
-      <RetirementFields
-        copy={L.fields}
-        invalid={read.invalid}
-        bind={fields.bind}
-        omit={OMIT}
-      />
-
-      {/* The draw leads, in today's money and per month, because those are the
-          two readings a household can compare against its own outgoings.
-          Everything else on the page exists to qualify this figure. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.annualLabel}
-          value={sustainable === null ? null : longTermMoney(sustainable)}
-        />
-        <ResultRow
-          label={F.monthlyLabel}
-          value={sustainable === null ? null : longTermMoney(sustainable / 12)}
-        />
-        <ResultRow
-          label={F.portfolioAnnualLabel}
-          value={fromPortfolio === null ? null : longTermMoney(fromPortfolio)}
-        />
-        <ResultRow
-          label={F.shortfallLabel}
-          value={
-            withdrawal === null
-              ? null
-              : longTermMoney(withdrawal.spendingShortfall)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.detailTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.otherIncomeLabel}
-          value={read.input === null ? null : longTermMoney(other)}
-        />
-        <ResultRow
-          label={F.desiredLabel}
-          value={read.input === null ? null : longTermMoney(desired)}
-        />
-        <ResultRow
-          label={F.shareLabel}
-          value={
-            sustainable === null || desired <= 0
-              ? null
-              : formatPercent((sustainable / desired) * 100, 1)
-          }
-        />
-      </ResultGroup>
-
-      <p className="mt-4 text-sm leading-relaxed text-ink-3">
-        {F.desiredNote}
-      </p>
-
-      {/* The alternatives, as sentences. A verdict given the figure treatment
-          cannot shrink and pushes the row past its container, which is what
-          `ResultRow`'s `prose` is for.
-
-          Mounted from the plan's OWN path list, in its order, rather than as
-          three fixed rows: a path is absent rather than faked when the engine
-          refuses its horizon, and a fixed row would then render a label whose
-          `{endAge}` had nothing to fill it beside a dash. Row 44's note
-          applies — an optional row is mounted conditionally, because a dash
-          beside a label reads as a figure the tool failed to find. */}
-      <ResultGroup title={F.pathsTitle} className="mt-4" live={false}>
-        {(plan?.withdrawal.paths ?? []).map((path) => (
-          <ResultRow
-            key={path.key}
-            label={nameFor(path.key)}
-            value={verdictOf(path)}
-            prose
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <RetirementFields
+            copy={L.fields}
+            invalid={read.invalid}
+            bind={fields.bind}
+            omit={OMIT}
           />
-        ))}
-      </ResultGroup>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={read.input === null}
+            // Ten fields once the desired spend is omitted, so the button
+            // leaves the first screen while the form is still being filled.
+            sticky
+            answer={{ label: F.monthlyLabel, value: monthly }}
+          />
+        }
+        primary={
+          <>
+            {/* The draw leads, per month first: that is the reading a household
+                can compare against its own outgoings, and everything else on
+                the page exists to qualify it. The annual figure it is derived
+                from stays directly below, so neither has to be looked up. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow label={F.monthlyLabel} value={monthly} emphasis />
+              <ResultRow
+                label={F.annualLabel}
+                value={sustainable === null ? null : longTermMoney(sustainable)}
+              />
+              <ResultRow
+                label={F.portfolioAnnualLabel}
+                value={
+                  fromPortfolio === null ? null : longTermMoney(fromPortfolio)
+                }
+              />
+              <ResultRow
+                label={F.shortfallLabel}
+                value={
+                  withdrawal === null
+                    ? null
+                    : longTermMoney(withdrawal.spendingShortfall)
+                }
+              />
+            </ResultGroup>
 
-      <ResultGroup title={F.capitalTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.realBalanceLabel}
-          value={
-            plan === null
-              ? null
-              : longTermMoney(plan.asEntered.realBalanceAtRetirement)
-          }
-        />
-        <ResultRow
-          label={F.nominalBalanceLabel}
-          value={
-            plan === null
-              ? null
-              : longTermMoney(plan.asEntered.balanceAtRetirement)
-          }
-        />
-        {/* The SUSTAINABLE draw's rate, not the desired spend's: quoting the
-            rate of a plan that runs out beside a draw that does not would
-            describe a different plan. */}
-        <ResultRow
-          label={F.initialRateLabel}
-          value={
-            sustainablePath === null ||
-            sustainablePath.projection.initialWithdrawalRatePercent === null
-              ? null
-              : formatPercent(
-                  sustainablePath.projection.initialWithdrawalRatePercent,
-                  2,
-                )
-          }
-        />
-        <ResultRow
-          label={F.firstDrawLabel}
-          value={
-            firstDraw === undefined ? null : longTermMoney(firstDraw.withdrawal)
-          }
-        />
-        <ResultRow
-          label={F.totalWithdrawnLabel}
-          value={
-            sustainablePath === null
-              ? null
-              : longTermMoney(sustainablePath.projection.totalWithdrawn)
-          }
-        />
-      </ResultGroup>
+            {/* The alternatives, as sentences, BESIDE the answer: the choice
+                between them is the decision this page exists to inform, and it
+                used to sit two groups below the figure.
 
-      {plan !== null ? (
-        <p className="mt-6 text-sm leading-relaxed text-ink-3">
-          {desiredLasts ? F.fundedNotice : F.shortNotice}
-        </p>
-      ) : null}
+                A verdict given the figure treatment cannot shrink and pushes
+                the row past its container, which is what `ResultRow`'s `prose`
+                is for.
 
-      {/* What the boundary policy forgave on the draw this page reports, in
-          đồng. Six decimal places: the residue is a fraction of one đồng by
-          construction, and rounding it to the đồng would render the disclosure
-          as "0 ₫". */}
-      {sustainablePath !== null && sustainablePath.boundaryResidue !== null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {fill(F.boundaryNotice, {
-            residue: formatMoney(sustainablePath.boundaryResidue, 6),
-          })}
-        </p>
-      ) : null}
+                Mounted from the plan's OWN path list, in its order, rather
+                than as three fixed rows: a path is absent rather than faked
+                when the engine refuses its horizon, and a fixed row would then
+                render a label whose `{endAge}` had nothing to fill it beside a
+                dash. Row 44's note applies — an optional row is mounted
+                conditionally, because a dash beside a label reads as a figure
+                the tool failed to find. */}
+            <ResultGroup title={F.pathsTitle} className="mt-4" live={false}>
+              {(plan?.withdrawal.paths ?? []).map((path) => (
+                <ResultRow
+                  key={path.key}
+                  label={nameFor(path.key)}
+                  value={verdictOf(path)}
+                  prose
+                />
+              ))}
+            </ResultGroup>
 
-      {plan !== null && plan.asEntered.realBalanceAtRetirement <= 0 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {F.noBalanceNotice}
-        </p>
-      ) : null}
+            {plan !== null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {desiredLasts ? F.fundedNotice : F.shortNotice}
+              </p>
+            ) : null}
 
-      {plan === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+            {/* What the boundary policy forgave on the draw this page reports,
+                in đồng. Six decimal places: the residue is a fraction of one
+                đồng by construction, and rounding it to the đồng would render
+                the disclosure as "0 ₫". */}
+            {sustainablePath !== null &&
+            sustainablePath.boundaryResidue !== null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {fill(F.boundaryNotice, {
+                  residue: formatMoney(sustainablePath.boundaryResidue, 6),
+                })}
+              </p>
+            ) : null}
 
-      {/* Row 50's figure. Built and tested with the model slice, rendered
-          nowhere until now. The exact reading is this figure's own table. */}
-      <ChartFigure model={chart} className="mt-8">
-        <LineChart model={chart} />
-      </ChartFigure>
+            {plan !== null && plan.asEntered.realBalanceAtRetirement <= 0 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {F.noBalanceNotice}
+              </p>
+            ) : null}
+
+            {plan === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          /* Row 50's figure. The exact reading is this figure's own table. */
+          <ChartFigure model={chart}>
+            <LineChart model={chart} />
+          </ChartFigure>
+        }
+        actions={actions}
+        detail={
+          <>
+            <ResultGroup title={F.detailTitle} live={false}>
+              <ResultRow
+                label={F.otherIncomeLabel}
+                value={read.input === null ? null : longTermMoney(other)}
+              />
+              <ResultRow
+                label={F.desiredLabel}
+                value={read.input === null ? null : longTermMoney(desired)}
+              />
+              <ResultRow
+                label={F.shareLabel}
+                value={
+                  sustainable === null || desired <= 0
+                    ? null
+                    : formatPercent((sustainable / desired) * 100, 1)
+                }
+              />
+            </ResultGroup>
+
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">
+              {F.desiredNote}
+            </p>
+
+            {/* The NOMINAL restatements of the same plan. Down here because
+                every figure in the answer above is already labelled "theo giá
+                hôm nay": a reader who wants the nominal counting can find it,
+                and one who does not is no longer reading a paragraph about the
+                difference before reaching the draw. */}
+            <ResultGroup title={F.capitalTitle} className="mt-6" live={false}>
+              <ResultRow
+                label={F.realBalanceLabel}
+                value={
+                  plan === null
+                    ? null
+                    : longTermMoney(plan.asEntered.realBalanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.nominalBalanceLabel}
+                value={
+                  plan === null
+                    ? null
+                    : longTermMoney(plan.asEntered.balanceAtRetirement)
+                }
+              />
+              {/* The SUSTAINABLE draw's rate, not the desired spend's: quoting
+                  the rate of a plan that runs out beside a draw that does not
+                  would describe a different plan. */}
+              <ResultRow
+                label={F.initialRateLabel}
+                value={
+                  sustainablePath === null ||
+                  sustainablePath.projection.initialWithdrawalRatePercent ===
+                    null
+                    ? null
+                    : formatPercent(
+                        sustainablePath.projection
+                          .initialWithdrawalRatePercent,
+                        2,
+                      )
+                }
+              />
+              <ResultRow
+                label={F.firstDrawLabel}
+                value={
+                  firstDraw === undefined
+                    ? null
+                    : longTermMoney(firstDraw.withdrawal)
+                }
+              />
+              <ResultRow
+                label={F.totalWithdrawnLabel}
+                value={
+                  sustainablePath === null
+                    ? null
+                    : longTermMoney(sustainablePath.projection.totalWithdrawn)
+                }
+              />
+            </ResultGroup>
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

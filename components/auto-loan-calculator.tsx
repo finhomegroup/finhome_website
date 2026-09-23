@@ -2,6 +2,8 @@
 
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import {
@@ -245,6 +247,9 @@ export function autoLoanFormState(
   };
 }
 
+const FORM_ID = "vay-mua-xe-nhap";
+const RESULT_ID = "vay-mua-xe-ket-qua";
+
 /**
  * The vehicle loan calculator, and what the instalment does to the month.
  *
@@ -259,8 +264,33 @@ export function autoLoanFormState(
  * them. `AdvancedFields` names an ACTIVE trade-in on its own summary line and
  * opens itself when one is set, so a value that is changing the amount
  * financed can never be hidden — see that component's docstring.
+ *
+ * ROW 33 — "Ưu tiên ngân sách tháng còn lại sau khi mua xe; kết quả khoản vay
+ * xe là phần giải thích đi kèm."
+ *
+ * THIS INVERTS THE PAGE. The announced answer is now what the household has
+ * left each month once the car is paid for, emphasised, with the before/after
+ * gap beside it — and the loan's seven figures, which used to be the live
+ * group, are the explanation underneath. The reader is deciding whether to buy
+ * a car, not shopping for an instalment.
+ *
+ * WHICH MEANS THE HOUSEHOLD FIELDS MOVED INTO THE FORM. They were below the
+ * loan result, which is where inputs go when their output is an afterthought.
+ * They are five of the eleven inputs to the answer now.
+ *
+ * STILL EXACTLY ONE LIVE REGION. The budget group took the announcement and
+ * the loan group gave it up — `live={false}` — because docs §4 allows one per
+ * page and `check:markup` enforces it on the built export.
  */
-export function AutoLoanCalculator() {
+export function AutoLoanCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The longer guidance — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const initial = {
     price: C.form.defaultPrice,
     down: C.form.defaultDown,
@@ -302,6 +332,20 @@ export function AutoLoanCalculator() {
     budget,
   } = autoLoanFormState(fields.values);
 
+  // The CTA's help wording only: the destination comes from the first
+  // `aria-invalid="true"` field inside the form region.
+  const anyFieldInvalid =
+    priceInvalid ||
+    downInvalid ||
+    tradeInInvalid ||
+    rateInvalid ||
+    termInvalid ||
+    netIncomeInvalid ||
+    essentialsInvalid ||
+    otherDebtsInvalid ||
+    reserveInvalid ||
+    runningInvalid;
+
   const money = (value: number | null | undefined) =>
     value === null || value === undefined ? null : `${formatMoney(value)} ₫`;
 
@@ -332,250 +376,301 @@ export function AutoLoanCalculator() {
         className="mb-6"
       />
 
-      <FieldGroup title={C.form.vehicleGroup}>
-        <NumberField
-          {...fields.bind("price")}
-          label={C.form.priceLabel}
-          unit={C.form.priceUnit}
-          help={C.form.priceHelp}
-          error={C.form.priceInvalid}
-          invalid={priceInvalid}
-        />
-        <NumberField
-          {...fields.bind("down")}
-          label={C.form.downLabel}
-          unit={C.form.downUnit}
-          help={C.form.downHelp}
-          error={C.form.downInvalid}
-          invalid={downInvalid}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.vehicleGroup}>
+              <NumberField
+                {...fields.bind("price")}
+                label={C.form.priceLabel}
+                unit={C.form.priceUnit}
+                help={C.form.priceHelp}
+                error={C.form.priceInvalid}
+                invalid={priceInvalid}
+              />
+              <NumberField
+                {...fields.bind("down")}
+                label={C.form.downLabel}
+                unit={C.form.downUnit}
+                help={C.form.downHelp}
+                error={C.form.downInvalid}
+                invalid={downInvalid}
+              />
+            </FieldGroup>
 
-      <AdvancedFields
-        className="mt-6"
-        title={C.form.tradeInGroup}
-        emptySummary={C.form.tradeInGroupEmpty}
-        settings={[
-          {
-            key: "tradeIn",
-            label: C.form.tradeInLabel,
-            value: `${fields.values.tradeIn} ${C.form.tradeInUnit}`,
-            active: tradeInActive,
-          },
-        ]}
-      >
-        <NumberField
-          {...fields.bind("tradeIn")}
-          label={C.form.tradeInLabel}
-          unit={C.form.tradeInUnit}
-          help={C.form.tradeInHelp}
-          error={C.form.tradeInInvalid}
-          invalid={tradeInInvalid}
-        />
-      </AdvancedFields>
+            <AdvancedFields
+              className="mt-6"
+              title={C.form.tradeInGroup}
+              emptySummary={C.form.tradeInGroupEmpty}
+              settings={[
+                {
+                  key: "tradeIn",
+                  label: C.form.tradeInLabel,
+                  value: `${fields.values.tradeIn} ${C.form.tradeInUnit}`,
+                  active: tradeInActive,
+                },
+              ]}
+            >
+              <NumberField
+                {...fields.bind("tradeIn")}
+                label={C.form.tradeInLabel}
+                unit={C.form.tradeInUnit}
+                help={C.form.tradeInHelp}
+                error={C.form.tradeInInvalid}
+                invalid={tradeInInvalid}
+              />
+            </AdvancedFields>
 
-      <FieldGroup title={C.form.loanGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-        <SelectField
-          {...fields.bind("termUnit")}
-          label={C.form.termUnitLabel}
-          options={[
-            { value: "years", label: C.form.termUnitYears },
-            { value: "months", label: C.form.termUnitMonths },
-          ]}
-        />
-      </FieldGroup>
+            <FieldGroup title={C.form.loanGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+              <SelectField
+                {...fields.bind("termUnit")}
+                label={C.form.termUnitLabel}
+                options={[
+                  { value: "years", label: C.form.termUnitYears },
+                  { value: "months", label: C.form.termUnitMonths },
+                ]}
+              />
+            </FieldGroup>
 
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.financedLabel}
-          value={money(result?.amountFinanced)}
-        />
-        <ResultRow
-          label={C.form.downPercentLabel}
-          value={result ? formatPercent(result.downPaymentPercent, 1) : null}
-        />
-        <ResultRow
-          label={C.form.monthlyLabel}
-          value={money(result?.loan.monthlyPrincipalInterest)}
-        />
-        <ResultRow
-          label={C.form.totalInterestLabel}
-          value={money(result?.loan.totalInterest)}
-        />
-        <ResultRow
-          label={C.form.totalPaymentLabel}
-          value={money(result?.loan.totalPrincipalInterest)}
-        />
-        <ResultRow label={C.form.totalCostLabel} value={money(totalCost)} />
-        <ResultRow
-          label={C.form.termResultLabel}
-          value={
-            result
-              ? `${formatDecimal(result.loan.months, 0)} ${C.form.monthsUnit}`
-              : null
-          }
-        />
-      </ResultGroup>
-
-      {/* The scope of the total sits BESIDE the figure, not only in a
-          collapsed FAQ: a nine-digit number labelled as the cost of owning a
-          car, with the exclusions hidden, is the finding this answers. */}
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {C.form.totalCostHelp}
-      </p>
-
-      {nothingToFinance ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.nothingToFinanceNotice}
-        </p>
-      ) : null}
-
-      {/* Original row 31's own question. The loan above is the input to it. */}
-      <FieldGroup title={C.form.householdGroup} className="mt-10">
-        <p className="text-sm leading-relaxed text-ink-3">
-          {C.form.householdIntro}
-        </p>
-        <NumberField
-          {...fields.bind("netIncome")}
-          label={C.form.netIncomeLabel}
-          unit={C.form.netIncomeUnit}
-          help={C.form.netIncomeHelp}
-          error={C.form.netIncomeInvalid}
-          invalid={netIncomeInvalid}
-        />
-        <NumberField
-          {...fields.bind("essentials")}
-          label={C.form.essentialsLabel}
-          unit={C.form.essentialsUnit}
-          help={C.form.essentialsHelp}
-          error={C.form.essentialsInvalid}
-          invalid={essentialsInvalid}
-        />
-        <NumberField
-          {...fields.bind("otherDebts")}
-          label={C.form.otherDebtsLabel}
-          unit={C.form.otherDebtsUnit}
-          help={C.form.otherDebtsHelp}
-          error={C.form.otherDebtsInvalid}
-          invalid={otherDebtsInvalid}
-        />
-        <NumberField
-          {...fields.bind("reserve")}
-          label={C.form.reserveLabel}
-          unit={C.form.reserveUnit}
-          help={C.form.reserveHelp}
-          error={C.form.reserveInvalid}
-          invalid={reserveInvalid}
-        />
-        <NumberField
-          {...fields.bind("running")}
-          label={C.form.runningLabel}
-          unit={C.form.runningUnit}
-          help={C.form.runningHelp}
-          error={C.form.runningInvalid}
-          invalid={runningInvalid}
-        />
-      </FieldGroup>
-
-      {/* Not live: the loan group above already announces every keystroke, and
-          docs §4 allows exactly one live results region per page. */}
-      <ResultGroup
-        title={C.form.budgetTitle}
-        className="mt-6"
-        live={false}
-      >
-        <ResultRow
-          label={C.form.withoutCarLabel}
-          value={money(budget?.withoutCar)}
-        />
-        <ResultRow label={C.form.withCarLabel} value={money(budget?.withCar)} />
-        <ResultRow label={C.form.gapLabel} value={money(budget?.difference)} />
-        {/* Mounted only when there IS a shortfall: docs §6 — an optional row
-            is not mounted, not nulled, or it shows a dash beside figures the
-            tool actually knows. */}
-        {budget?.shortfallAmount != null ? (
-          <ResultRow
-            label={C.form.shortfallLabel}
-            value={money(budget.shortfallAmount)}
+            {/* ROW 33 MOVED THIS INTO THE FORM. The household ledger used to
+                sit below the loan result, which is where inputs end up when
+                their own output is treated as an afterthought. Its answer is
+                now the page's answer, so its five fields are inputs like any
+                other. */}
+            <FieldGroup title={C.form.householdGroup} className="mt-8">
+              <p className="text-sm leading-relaxed text-ink-3">
+                {C.form.householdIntro}
+              </p>
+              <NumberField
+                {...fields.bind("netIncome")}
+                label={C.form.netIncomeLabel}
+                unit={C.form.netIncomeUnit}
+                help={C.form.netIncomeHelp}
+                error={C.form.netIncomeInvalid}
+                invalid={netIncomeInvalid}
+              />
+              <NumberField
+                {...fields.bind("essentials")}
+                label={C.form.essentialsLabel}
+                unit={C.form.essentialsUnit}
+                help={C.form.essentialsHelp}
+                error={C.form.essentialsInvalid}
+                invalid={essentialsInvalid}
+              />
+              <NumberField
+                {...fields.bind("otherDebts")}
+                label={C.form.otherDebtsLabel}
+                unit={C.form.otherDebtsUnit}
+                help={C.form.otherDebtsHelp}
+                error={C.form.otherDebtsInvalid}
+                invalid={otherDebtsInvalid}
+              />
+              <NumberField
+                {...fields.bind("reserve")}
+                label={C.form.reserveLabel}
+                unit={C.form.reserveUnit}
+                help={C.form.reserveHelp}
+                error={C.form.reserveInvalid}
+                invalid={reserveInvalid}
+              />
+              <NumberField
+                {...fields.bind("running")}
+                label={C.form.runningLabel}
+                unit={C.form.runningUnit}
+                help={C.form.runningHelp}
+                error={C.form.runningInvalid}
+                invalid={runningInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyFieldInvalid}
+            // Eleven inputs in one column: editing the household fields at the
+            // bottom puts the answer off a desktop screen. The pinned block
+            // carries the ONE figure — same formatted string as the row below,
+            // never a second rounding of it — and not the result column.
+            sticky
+            answer={{
+              label: C.form.withCarLabel,
+              value: money(budget?.withCar),
+            }}
           />
-        ) : null}
-        <ResultRow
-          label={C.form.committedLabel}
-          value={money(budget?.committedWithoutVehicle)}
-        />
-        <ResultRow
-          label={C.form.vehicleCostLabel}
-          value={money(budget?.vehicleMonthlyCost)}
-        />
-      </ResultGroup>
+        }
+        primary={
+          <>
+            {/* THE ANSWER. Live now, and the loan group below is not: docs §4
+                allows exactly one announced region per page. */}
+            <ResultGroup title={C.form.budgetTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={C.form.withCarLabel}
+                value={money(budget?.withCar)}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.withoutCarLabel}
+                value={money(budget?.withoutCar)}
+              />
+              <ResultRow
+                label={C.form.gapLabel}
+                value={money(budget?.difference)}
+              />
+              {/* Mounted only when there IS a shortfall: docs §6 — an optional
+                  row is not mounted, not nulled, or it shows a dash beside
+                  figures the tool actually knows. */}
+              {budget?.shortfallAmount != null ? (
+                <ResultRow
+                  label={C.form.shortfallLabel}
+                  value={money(budget.shortfallAmount)}
+                />
+              ) : null}
+            </ResultGroup>
 
-      {/* The recovery for a withheld with-car leg. The rows above show the
-          placeholder rather than a 0, and this says why and what to fix. */}
-      {budget?.vehicleCostUnknown ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.paymentUnknownNotice}
-        </p>
-      ) : null}
+            {/* The recovery for a withheld with-car leg. The rows above show
+                the placeholder rather than a 0, and this says why and what to
+                fix. */}
+            {budget?.vehicleCostUnknown ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.paymentUnknownNotice}
+              </p>
+            ) : null}
 
-      {budget?.limited ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.budgetLimitedNotice}
-        </p>
-      ) : null}
+            {budget?.limited ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.budgetLimitedNotice}
+              </p>
+            ) : null}
 
-      {budget?.shortfallWithoutVehicle ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.shortfallBeforeNotice}
-        </p>
-      ) : budget?.shortfall ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.shortfallNotice}
-        </p>
-      ) : null}
+            {budget?.shortfallWithoutVehicle ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.shortfallBeforeNotice}
+              </p>
+            ) : budget?.shortfall ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.shortfallNotice}
+              </p>
+            ) : null}
 
-      {/* The "higher than reality" comparison needs an after figure to
-          exist. With the instalment unknown the exclusion still matters, but
-          nothing can be claimed about a number that was withheld. */}
-      {budget?.runningCostsExcluded ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {budget.vehicleCostUnknown
-            ? C.form.runningExcludedUnknownNotice
-            : C.form.runningExcludedNotice}
-        </p>
-      ) : null}
+            {/* The "higher than reality" comparison needs an after figure to
+                exist. With the instalment unknown the exclusion still matters,
+                but nothing can be claimed about a number that was withheld. */}
+            {budget?.runningCostsExcluded ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {budget.vehicleCostUnknown
+                  ? C.form.runningExcludedUnknownNotice
+                  : C.form.runningExcludedNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        actions={actions ? <div className="mt-8">{actions}</div> : null}
+        chart={
+          <ChartFigure model={chart}>
+            <BarChart model={chart} />
+          </ChartFigure>
+        }
+        nextSteps={nextSteps ? <div className="mt-8">{nextSteps}</div> : null}
+        detail={
+          <>
+            {/* "Kết quả khoản vay xe là phần giải thích đi kèm." Every figure
+                the loan group used to announce is still here, in the same
+                order, with the two ledger components that explain how the
+                instalment reaches the month. It no longer announces. */}
+            <ResultGroup title={C.form.resultTitle} live={false}>
+              <ResultRow
+                label={C.form.financedLabel}
+                value={money(result?.amountFinanced)}
+              />
+              <ResultRow
+                label={C.form.downPercentLabel}
+                value={
+                  result ? formatPercent(result.downPaymentPercent, 1) : null
+                }
+              />
+              <ResultRow
+                label={C.form.monthlyLabel}
+                value={money(result?.loan.monthlyPrincipalInterest)}
+              />
+              <ResultRow
+                label={C.form.totalInterestLabel}
+                value={money(result?.loan.totalInterest)}
+              />
+              <ResultRow
+                label={C.form.totalPaymentLabel}
+                value={money(result?.loan.totalPrincipalInterest)}
+              />
+              <ResultRow
+                label={C.form.totalCostLabel}
+                value={money(totalCost)}
+              />
+              <ResultRow
+                label={C.form.termResultLabel}
+                value={
+                  result
+                    ? `${formatDecimal(result.loan.months, 0)} ${C.form.monthsUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.committedLabel}
+                value={money(budget?.committedWithoutVehicle)}
+              />
+              <ResultRow
+                label={C.form.vehicleCostLabel}
+                value={money(budget?.vehicleMonthlyCost)}
+              />
+            </ResultGroup>
 
-      <ChartFigure model={chart}>
-        <BarChart model={chart} />
-      </ChartFigure>
+            {/* The scope of the total sits BESIDE the figure, not only in a
+                collapsed FAQ: a nine-digit number labelled as the cost of
+                owning a car, with the exclusions hidden, is the finding this
+                answers. */}
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.totalCostHelp}
+            </p>
 
-      {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.table.caption}
-          columns={[
-            { label: C.table.yearColumn },
-            { label: C.table.interestColumn, numeric: true },
-            { label: C.table.principalColumn, numeric: true },
-            { label: C.table.balanceColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
-      ) : null}
+            {nothingToFinance ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.nothingToFinanceNotice}
+              </p>
+            ) : null}
+
+            {tableRows.length > 0 ? (
+              <ResultTable
+                className="mt-8"
+                caption={C.table.caption}
+                columns={[
+                  { label: C.table.yearColumn },
+                  { label: C.table.interestColumn, numeric: true },
+                  { label: C.table.principalColumn, numeric: true },
+                  { label: C.table.balanceColumn, numeric: true },
+                ]}
+                rows={tableRows}
+              />
+            ) : null}
+          </>
+        }
+      />
 
       {/* After the result, never before it — see ExampleNotice's docstring. */}
       <ExampleNoticeDetail className="mt-6" />

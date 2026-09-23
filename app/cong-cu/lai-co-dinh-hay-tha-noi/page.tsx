@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { LoanCompareCalculator } from "@/components/loan-compare-calculator";
 import { FIXED_VS_FLOATING as C } from "@/content/calculators/fixed-vs-floating";
@@ -50,12 +51,16 @@ export default function FixedVsFloatingPage() {
       noticeDetailTitle={C.reframeDetailTitle}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
       // Shared with the comparison route, for the same reason: the shared
       // notice says fees are excluded, and here entered fees are modelled.
       disclaimer={LOAN_COMPARE.disclaimer}
+      wide
     >
-      <LoanCompareCalculator perspective="fixedFloating" />
+      <LoanCompareCalculator
+        perspective="fixedFloating"
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

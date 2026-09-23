@@ -1,7 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { FieldGroup } from "@/components/calc/field-group";
+import { ResultCta } from "@/components/calc/result-cta";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultGroup } from "@/components/calc/result-group";
@@ -39,6 +42,36 @@ const F = C.form;
 const T = F.table;
 const P = C.purpose;
 
+/**
+ * ROW 58: "Ưu tiên quỹ dự phòng, tiền mua nhà và phần còn lại; biểu đồ phân bổ
+ * cạnh form, ngày là giả định phụ", at "Hai cột".
+ *
+ * WHAT CHANGED, and nothing else did:
+ *
+ * 1. `CalculatorLayout columns="split"` (with `wide` on the route), so the
+ *    allocation bar sits in the result column BESIDE the form instead of below
+ *    a form that ends with a three-box date and a button.
+ * 2. The announced group is the tool's fixed funding order and what is left
+ *    over — reserve (the one main answer, because the reserve is separated
+ *    before any purpose is funded and that is this page's whole convention),
+ *    then the home money, then the other goal, then the unallocated remainder.
+ *    "Tổng mong muốn dành" and "Còn thiếu" are not allocations; they are the
+ *    wish measured against the money, and they now read together in their own
+ *    unannounced group. No figure was dropped and no notice was shortened.
+ * 3. The DATE is supplementary: each funded purpose carries its own need date
+ *    as a `ResultRow note` inside that row's own `aria-atomic` node, the anchor
+ *    is one short line under the group, and the full `anchorNotice` — the
+ *    clamping convention and the per-purpose list — stays VERBATIM in a
+ *    disclosure in the full-width band.
+ *
+ * Untouched: both modes and the mode selector, every field and default, the
+ * reserve → home → other funding order, the anchor fields and the "Hôm nay"
+ * button, the zero-month reading, the shortfall arithmetic, the no-capital and
+ * no-product explanations, and the advanced study's table and formulas.
+ */
+const FORM_ID = "phan-bo-tai-san-nhap";
+const RESULT_ID = "phan-bo-tai-san-ket-qua";
+
 const RISK_OPTIONS: readonly { value: RiskTolerance; label: string }[] = [
   { value: "conservative", label: F.riskOptions.conservative },
   { value: "moderate", label: F.riskOptions.moderate },
@@ -61,7 +94,36 @@ function points(value: number): string {
   return `${sign}${formatDecimal(Math.abs(value), 1)}`;
 }
 
-export function AssetAllocationCalculator() {
+export function AssetAllocationCalculator({
+  actions,
+  studyActions,
+  nextSteps,
+}: {
+  /**
+   * The one or two near-answer destinations — `<ResultActions>`.
+   *
+   * PLACEMENT FOLLOWS THE ACTIVE MODE for free, which is why this belongs in
+   * the layout slot rather than inside either mode's own result block: exactly
+   * one `primary` mounts, and `CalculatorLayout` emits `actions` directly after
+   * it, so the links sit under the purpose allocation's reserve figure or under
+   * the study's max drift depending on which question is on screen. They used
+   * to arrive after the whole card, below the allocation bar and the detail
+   * band.
+   */
+  actions?: React.ReactNode;
+  /**
+   * The same destinations with the ADVANCED STUDY's own framing.
+   *
+   * Only the intro sentence differs — see `purpose.studyStepsIntro`. Two
+   * prebuilt nodes rather than one, because the page is a server component and
+   * cannot see the mode the reader selected, while this component cannot build
+   * a `ResultActions` without becoming a second actions pattern. Falls back to
+   * `actions` when a caller passes only one.
+   */
+  studyActions?: React.ReactNode;
+  /** The further questions and the retention panel — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     // Original row 56: the purpose/time allocation is the DEFAULT question.
     // The age/risk study below is a retained educational mode.
@@ -177,6 +239,51 @@ export function AssetAllocationCalculator() {
   const purposeOf = (key: "home" | "other") =>
     allocation?.purposes.find((purpose) => purpose.key === key) ?? null;
 
+  /**
+   * The need date as a note on the purpose's OWN row — row 58's "ngày là giả
+   * định phụ".
+   *
+   * `undefined` while there is no allocation at all: a row showing the
+   * placeholder has no date to qualify. A purpose with a blank month count
+   * says so rather than borrowing the anchor, because 0 months is a real
+   * answer here and a blank is not.
+   */
+  const needNote = (key: "home" | "other"): string | undefined => {
+    const purpose = purposeOf(key);
+    if (purpose === null) return undefined;
+    const date = showDate(purpose.needDate);
+    return date === null
+      ? P.needDateUnknownNote
+      : P.needDateNote.replace("{date}", date);
+  };
+
+  /**
+   * THE one main answer of the default mode, formatted once.
+   *
+   * The emphasised row and the pinned CTA both read this string, so the same
+   * quantity cannot be rounded two ways on one screen.
+   */
+  const reserveAnswer = purposeMoney(allocation?.reserveAllocated);
+
+  /**
+   * `anchorNotice` verbatim, then the per-purpose need dates: the exact text
+   * this mode used to render open between the inputs and the figures, now the
+   * body of the disclosure in the full-width band.
+   */
+  const anchorDetailBody =
+    allocation === null
+      ? null
+      : `${P.anchorNotice.replace("{date}", anchorLabel ?? "")} ${allocation.purposes
+          .map((purpose) => {
+            const name = purpose.key === "home" ? P.homeName : P.otherName;
+            return purpose.needDate === null
+              ? P.anchorUnknownFormat.replace("{name}", name)
+              : P.anchorPurposeFormat
+                  .replace("{name}", name)
+                  .replace("{date}", showDate(purpose.needDate) ?? "");
+          })
+          .join(" · ")}`;
+
   const age = parseCount(v.age);
   const equityHolding = parseMoney(v.equityHolding);
   const bondHolding = parseMoney(v.bondHolding);
@@ -231,6 +338,12 @@ export function AssetAllocationCalculator() {
 
   const result = input === null ? null : analyseAllocation(input);
 
+  /** The study's own main answer, formatted once for its row and the CTA. */
+  const driftAnswer =
+    result === null || result.maxDriftPoints === null
+      ? null
+      : `${formatDecimal(result.maxDriftPoints, 1)} ${F.pointsUnit}`;
+
   /**
    * The advanced study's per-class table.
    *
@@ -262,22 +375,30 @@ export function AssetAllocationCalculator() {
           result.trades === null ? null : moneyCell(result.trades[key]),
         ]);
 
-  return (
-    <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={P.modeLegend}
-          help={P.modeHelp}
-          options={[
-            { value: "purpose", label: P.modePurpose },
-            { value: "portfolio", label: P.modePortfolio },
-          ]}
-        />
-      </FieldGroup>
+  /**
+   * The slots are built as values rather than inline branches.
+   *
+   * `CalculatorLayout` wants form / primary / chart / detail as four separate
+   * nodes, and this page has two modes' worth of each. Composing them here
+   * keeps every block in its original place in the file — and keeps the two
+   * modes from being interleaved inside one deeply nested ternary.
+   */
+  const modeField = (
+    <FieldGroup>
+      <RadioGroupField
+        {...fields.bind("mode")}
+        legend={P.modeLegend}
+        help={P.modeHelp}
+        options={[
+          { value: "purpose", label: P.modePurpose },
+          { value: "portfolio", label: P.modePortfolio },
+        ]}
+      />
+    </FieldGroup>
+  );
 
-      {!portfolioMode ? (
-        <>
+  const purposeForm = (
+    <>
           <FieldGroup title={P.potGroup} className="mt-8">
             <NumberField
               {...fields.bind("available")}
@@ -381,32 +502,58 @@ export function AssetAllocationCalculator() {
               </p>
             </div>
           </FieldGroup>
+    </>
+  );
 
+  const purposeResults = (
+    <>
           {/* THE page's live region, because this is the default mode and the
               one the static export renders. The portfolio study's groups are
-              all `live={false}`; docs §4 allows exactly one per page. */}
-          <ResultGroup title={P.resultTitle} className="mt-8">
+              all `live={false}`; docs §4 allows exactly one per page.
+
+              ROW 58: the funding order, then the remainder. The reserve is the
+              emphasised answer because it is separated FIRST — emphasising the
+              house money instead would read as the priority this tool
+              explicitly does not give it (`shortfallNotice`). */}
+          <ResultGroup
+            title={P.resultTitle}
+            className="mt-8"
+            anchorId={RESULT_ID}
+          >
             <ResultRow
               label={P.reserveResultLabel}
-              value={purposeMoney(allocation?.reserveAllocated)}
+              value={reserveAnswer}
+              emphasis
             />
             <ResultRow
               label={P.homeResultLabel}
               value={purposeMoney(purposeOf("home")?.allocated)}
+              note={needNote("home")}
             />
             <ResultRow
               label={P.otherResultLabel}
               value={purposeMoney(purposeOf("other")?.allocated)}
+              note={needNote("other")}
             />
             <ResultRow
               label={P.unallocatedLabel}
               value={purposeMoney(allocation?.unallocated)}
             />
+          </ResultGroup>
+
+          {/* NOT allocations, and not announced: the wish measured against the
+              money. Both figures are unchanged and both are still here — the
+              shortfall row is still mounted only when something is short, so
+              the page never invents a 0 ₫ gap. */}
+          <ResultGroup
+            title={P.comparisonTitle}
+            className="mt-4"
+            live={false}
+          >
             <ResultRow
               label={P.requestedLabel}
               value={purposeMoney(allocation?.totalRequested)}
             />
-            {/* Mounted only when something is actually short. */}
             {allocation !== null && allocation.shortfall > 0 ? (
               <ResultRow
                 label={P.shortfallLabel}
@@ -423,22 +570,14 @@ export function AssetAllocationCalculator() {
             </p>
           ) : (
             <>
-              {/* The anchor and the dates it produces, restated where the
-                  figures are read. Not inside the live region: it re-announces
-                  on every keystroke there, and it is context, not an answer. */}
+              {/* The anchor, restated where the figures are read — one line.
+                  Not inside the live region: it re-announces on every
+                  keystroke there, and it is context, not an answer. The
+                  clamping convention and the per-purpose list are the same
+                  text, verbatim, in the disclosure below the columns: row 58
+                  makes the date a supplementary assumption of the answer. */}
               <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {P.anchorNotice.replace("{date}", anchorLabel ?? "")}{" "}
-                {allocation.purposes
-                  .map((purpose) => {
-                    const name =
-                      purpose.key === "home" ? P.homeName : P.otherName;
-                    return purpose.needDate === null
-                      ? P.anchorUnknownFormat.replace("{name}", name)
-                      : P.anchorPurposeFormat
-                          .replace("{name}", name)
-                          .replace("{date}", showDate(purpose.needDate) ?? "");
-                  })
-                  .join(" · ")}
+                {P.anchorShort.replace("{date}", anchorLabel ?? "")}
               </p>
               {allocation.shortfall > 0 ? (
                 <p className="mt-4 text-sm leading-relaxed text-ink-3">
@@ -463,9 +602,27 @@ export function AssetAllocationCalculator() {
             </>
           )}
 
+    </>
+  );
+
+  // ROW 58's "biểu đồ phân bổ cạnh form": the `chart` slot of the layout,
+  // which is the result column — beside the inputs from `lg` up, and still
+  // directly under the answer on a phone.
+  const purposeChart = (
           <ChartFigure model={allocationChart}>
             <BarChart model={allocationChart} />
           </ChartFigure>
+  );
+
+  const purposeDetail = (
+    <>
+          {anchorDetailBody === null ? null : (
+            <DetailDisclosure title={P.anchorDetailTitle}>
+              <p className="text-sm leading-relaxed text-ink-2">
+                {anchorDetailBody}
+              </p>
+            </DetailDisclosure>
+          )}
 
           {/* HOW TO READ THIS MODE'S OWN THREE FIGURES. It used to be the
               page's server-rendered `intro`, which cannot see the selected
@@ -476,11 +633,11 @@ export function AssetAllocationCalculator() {
           <p className="mt-8 text-base leading-relaxed text-ink-2">
             {C.purposeIntro}
           </p>
-        </>
-      ) : null}
+    </>
+  );
 
-      {portfolioMode ? (
-        <>
+  const portfolioForm = (
+    <>
       <p className="mt-8 rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
         {C.advancedNotice}
       </p>
@@ -579,17 +736,22 @@ export function AssetAllocationCalculator() {
         />
       </FieldGroup>
 
+    </>
+  );
+
+  const portfolioResults = (
+    <>
       {/* `live={false}`: the purpose mode above owns the page's one live
-          results region, and that is the mode the static export renders. */}
-      <ResultGroup title={F.resultTitle} className="mt-8" live={false}>
-        <ResultRow
-          label={F.maxDriftLabel}
-          value={
-            result === null || result.maxDriftPoints === null
-              ? null
-              : `${formatDecimal(result.maxDriftPoints, 1)} ${F.pointsUnit}`
-          }
-        />
+          results region, and that is the mode the static export renders. It
+          still carries `anchorId`, because in this mode it is where the CTA
+          has to land. */}
+      <ResultGroup
+        title={F.resultTitle}
+        className="mt-8"
+        live={false}
+        anchorId={RESULT_ID}
+      >
+        <ResultRow label={F.maxDriftLabel} value={driftAnswer} emphasis />
         <ResultRow
           label={F.rebalanceLabel}
           value={
@@ -711,6 +873,29 @@ export function AssetAllocationCalculator() {
         />
       </ResultGroup>
 
+      {/* The study's own verdict sentences, kept with the figures they are
+          about. They used to sit under the six-column table; the table is
+          detail now, and a verdict is not. */}
+      {result !== null && result.currentWeights === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {F.emptyNotice}
+        </p>
+      ) : result !== null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {result.rebalanceDue ? F.rebalanceNotice : F.inBandNotice}
+        </p>
+      ) : null}
+
+      {result === null ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {F.invalidNotice}
+        </p>
+      ) : null}
+    </>
+  );
+
+  const portfolioDetail = (
+    <>
       {rows.length > 0 ? (
         <>
           <p className="mt-8 text-sm leading-relaxed text-ink-3">{T.intro}</p>
@@ -732,22 +917,6 @@ export function AssetAllocationCalculator() {
             rows={rows}
           />
         </>
-      ) : null}
-
-      {result !== null && result.currentWeights === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.emptyNotice}
-        </p>
-      ) : result !== null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {result.rebalanceDue ? F.rebalanceNotice : F.inBandNotice}
-        </p>
-      ) : null}
-
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
       ) : null}
 
       {/* THE ADVANCED STUDY'S OWN EXPLANATION, inside the advanced mode.
@@ -776,8 +945,45 @@ export function AssetAllocationCalculator() {
           ))}
         </div>
       </section>
-        </>
-      ) : null}
+    </>
+  );
+
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            {modeField}
+            {portfolioMode ? portfolioForm : purposeForm}
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={portfolioMode ? anyInvalid : !purposeUsable}
+            // Ten inputs in the default mode and eleven in the study, with a
+            // date group at the bottom of the form: the pinned block keeps the
+            // mode's own main answer on screen while a lower field is edited.
+            sticky
+            answer={
+              portfolioMode
+                ? { label: F.maxDriftLabel, value: driftAnswer }
+                : { label: P.reserveResultLabel, value: reserveAnswer }
+            }
+          />
+        }
+        primary={portfolioMode ? portfolioResults : purposeResults}
+        // Same links, same position; the study does not claim the home figure.
+        actions={portfolioMode ? (studyActions ?? actions) : actions}
+        // The study has no chart; the default mode's allocation bar is the
+        // figure that belongs beside the form.
+        chart={portfolioMode ? undefined : purposeChart}
+        nextSteps={nextSteps}
+        detail={portfolioMode ? portfolioDetail : purposeDetail}
+      />
     </CalculatorCard>
   );
 }

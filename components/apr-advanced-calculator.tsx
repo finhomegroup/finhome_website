@@ -17,6 +17,11 @@ import { AprCalculator } from "@/components/apr-calculator";
  * arriving here from the other route still starts from this page's defaults,
  * which the copy states rather than implying the figures travel.
  */
+/*
+ * No `nextSteps` prop: `TOOL_NEXT_STEPS` has an entry for `apr` and none for
+ * this route, and inventing one is not this batch's business. The APR tool's
+ * own cross-route links still render in that slot, beside the answer.
+ */
 export function AprAdvancedCalculator() {
   return <AprCalculator initialMode="advanced" />;
 }

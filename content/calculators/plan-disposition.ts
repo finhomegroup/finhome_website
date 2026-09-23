@@ -34,7 +34,7 @@
 // hierarchy. Every one of the 75 keeps its own URL. The plan intentionally
 // splits into 5 / 12 / 22 / 36:
 //
-//   P1  the five first-home-buyer questions the plan invests in first
+//   P1  the first-home-buyer questions the plan invests in first
 //   P2  the next buying decision — supporting work, context and links
 //   P3  education utilities that stay useful without an acquisition push
 //   P4  maintain or move to a library until audience evidence justifies more

@@ -25,6 +25,8 @@ export default function CommercialLoanPage() {
       // Neither structure makes the loan cheaper — they move when you pay,
       // and both cost more in total. Say it before the small figure is read.
       notice={C.structureNotice}
+      noticeDetail={C.structureDetail}
+      noticeDetailTitle={C.structureDetailTitle}
       // Where the balloon principal is repaid from — the row's own
       // requirement, promoted out of the collapsed FAQ. `intro` is the only
       // always-visible prose slot near the figure: `noticeDetail` and
@@ -33,7 +35,10 @@ export default function CommercialLoanPage() {
       intro={C.balloonSourceNotice}
       prose={C.formula}
       faq={C.faq}
+      wide
     >
+      {/* No next-step entry exists for this slug in the library, and one is not
+          invented here. */}
       <CommercialLoanCalculator />
     </CalculatorPage>
   );

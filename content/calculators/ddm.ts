@@ -74,6 +74,14 @@ export const DDM = {
     verdictFair: "Giá xấp xỉ giá trị mô hình",
     premiumLabel: "Chênh lệch so với giá trị mô hình",
 
+    // CSV row 36's second clause is "không biến kết quả thành lệnh mua".
+    // Once the model value is the headline figure, the row beside it saying
+    // the price is lower reads as a signal unless something says out loud
+    // whose assumptions produced it. This sentence is that something, and it
+    // sits beside the answer rather than in the prose below the tool.
+    modelOnlyNote:
+      "Đây là giá trị theo mô hình với đúng ba giả định bạn vừa nhập, không phải khuyến nghị mua hay bán. Đổi tăng trưởng hoặc lợi nhuận yêu cầu một chút là con số này đổi rất nhiều, nên phần “thị trường đang ngụ ý điều gì” mới là phần kiểm chứng được.",
+
     impliedTitle: "Giá thị trường đang ngụ ý điều gì",
     impliedGrowthLabel: "Tăng trưởng ngụ ý, nếu giữ lợi nhuận yêu cầu",
     impliedReturnLabel: "Lợi nhuận ngụ ý, nếu giữ giả định tăng trưởng",
@@ -100,7 +108,10 @@ export const DDM = {
   },
 
   denominatorNotice:
-    "Cả mô hình nằm ở mẫu số. Tăng trưởng 5% với lợi nhuận yêu cầu 12% cho mẫu số 7% và giá trị 30.000 ₫; nâng tăng trưởng lên 11% thì mẫu số còn 1% và giá trị nhảy lên hơn 220.000 ₫. Vì thế đừng đọc con số giá trị như một kết luận — hãy dùng chiều ngược lại. Với giá thị trường 25.000 ₫, mô hình cho biết thị trường đang ngụ ý tăng trưởng vĩnh viễn 3,704%, hoặc ngụ ý lợi nhuận 13,400% nếu giữ giả định tăng trưởng 5%. Hai câu hỏi đó trả lời được; câu “cổ phiếu này đáng 30.000 ₫ không” thì không.",
+    "Cả mô hình nằm ở mẫu số: một thay đổi nhỏ ở tốc độ tăng trưởng làm giá trị nhảy lên nhiều lần, nên đừng đọc con số giá trị như một kết luận. Hãy dùng chiều ngược lại — hỏi giá thị trường đang ngụ ý tăng trưởng hay lợi nhuận bao nhiêu.",
+  denominatorNoticeDetailTitle: "Con số cụ thể: mẫu số 7% hay 1%",
+  denominatorNoticeDetail:
+    "Tăng trưởng 5% với lợi nhuận yêu cầu 12% cho mẫu số 7% và giá trị 30.000 ₫; nâng tăng trưởng lên 11% thì mẫu số còn 1% và giá trị nhảy lên hơn 220.000 ₫. Với giá thị trường 25.000 ₫, mô hình cho biết thị trường đang ngụ ý tăng trưởng vĩnh viễn 3,704%, hoặc ngụ ý lợi nhuận 13,400% nếu giữ giả định tăng trưởng 5%. Hai câu hỏi đó trả lời được; câu “cổ phiếu này đáng 30.000 ₫ không” thì không.",
 
   formula: {
     title: "Cách tính",

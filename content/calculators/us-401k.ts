@@ -36,8 +36,11 @@ export const US_401K = {
   metaDescription:
     "Tính mức đóng góp 401(k), phần đối ứng của công ty và phần đối ứng bị bỏ lại vì góp dưới ngưỡng. Có đủ bốn loại trần theo luật Hoa Kỳ. Công cụ miễn phí của FinHome.",
 
+  // One purpose sentence. "Phép tính ở đây rất đơn giản" asserted nothing, so
+  // it is gone; the guaranteed-return argument is teaching rather than a rule
+  // needed before the form, so it moved verbatim into the disclosure below.
   lede:
-    "Phép tính ở đây rất đơn giản. Con số đáng nhìn là con số hay bị bỏ qua: phần đối ứng của công ty mà người lao động không nhận, chỉ vì đóng góp dưới ngưỡng công ty thưởng. Đó là chỗ duy nhất trong tài chính cá nhân có một mức sinh lời 50% hay 100% được bảo đảm, không phụ thuộc thị trường, và người ta để nó mất bằng cách không làm gì.",
+    "Con số đáng nhìn là con số hay bị bỏ qua: phần đối ứng của công ty mà người lao động không nhận, chỉ vì đóng góp dưới ngưỡng công ty thưởng.",
 
   form: {
     incomeGroup: "Thu nhập và mức góp",
@@ -119,6 +122,11 @@ export const US_401K = {
     matchReturnLabel: "Đối ứng tính trên tiền bạn góp",
     thresholdLabel: "Cần góp bao nhiêu để nhận đủ đối ứng",
 
+    // Row 48 keeps the conditions that decide whether the answer applies —
+    // the four notices — beside the answer, and lets the statutory ladder
+    // itself be disclosed. It is reference material: nothing in it changes
+    // what the reader should do about the forfeited match.
+    limitsDisclosureTitle: "Bốn trần theo luật chặn những gì",
     limitTitle: "Các trần theo luật",
     deferralLimitLabel: "Trần bạn được góp",
     catchUpLabel: "Phần bù tuổi trong trần đó",
@@ -159,8 +167,16 @@ export const US_401K = {
       "Một ô nhập chưa hợp lệ, hoặc năm bạn chọn chưa có số liệu trong công cụ.",
   },
 
+  // The RULE and the model's limit, before the form. The worked default case
+  // is a paragraph of arithmetic, so it moved into the disclosure below. Two
+  // sentences, not three: the cost-of-fixing claim and the model's limit are
+  // both "how to read this", so they share one sentence rather than one of
+  // them being dropped — neither is safe to hide behind a click.
   forfeitNotice:
-    "Với các giá trị mặc định, mức góp 3% lương đưa 2.700 USD vào tài khoản và nhận đúng 2.700 USD đối ứng — nhưng để lại 2.700 USD nữa mà công ty đã sẵn sàng trả. Sau 30 năm ở lợi suất 7%, riêng phần bị bỏ lại đó đáng 272.897 USD. Điều đáng chú ý hơn là giá của việc sửa: nâng mức góp từ 3% lên 6% làm tiền lương về nhà giảm 2.052 USD một năm, sau khi tính phần thuế được hoãn, và đưa thêm 5.400 USD một năm vào tài khoản — tức 263% cho mỗi đồng thực chi. Số dư sau 30 năm đi từ 545.794 lên 1.091.589 USD, đúng gấp đôi.",
+    "Góp dưới ngưỡng công ty đối ứng nghĩa là mỗi năm có một khoản tiền công ty đã sẵn sàng trả không vào tài khoản của bạn, và không có cách nào lấy lại phần của những năm đã qua. Giá của việc sửa luôn thấp hơn số nhận được, vì phần thuế được hoãn làm mức giảm lương về nhà nhỏ hơn số tiền thêm vào tài khoản; phép dự phóng ở đây giữ mức góp phần trăm và mức lương không đổi suốt kỳ, nên hãy đọc nó như một phép so sánh giữa hai lựa chọn chứ không phải một dự báo.",
+  forfeitNoticeDetailTitle: "Cụ thể: phần bỏ lại và giá của việc sửa, trên các số mặc định",
+  forfeitNoticeDetail:
+    "Với các giá trị mặc định, mức góp 3% lương đưa 2.700 USD vào tài khoản và nhận đúng 2.700 USD đối ứng — nhưng để lại 2.700 USD nữa mà công ty đã sẵn sàng trả. Sau 30 năm ở lợi suất 7%, riêng phần bị bỏ lại đó đáng 272.897 USD. Điều đáng chú ý hơn là giá của việc sửa: nâng mức góp từ 3% lên 6% làm tiền lương về nhà giảm 2.052 USD một năm, sau khi tính phần thuế được hoãn, và đưa thêm 5.400 USD một năm vào tài khoản — tức 263% cho mỗi đồng thực chi. Số dư sau 30 năm đi từ 545.794 lên 1.091.589 USD, đúng gấp đôi. Đó là chỗ duy nhất trong tài chính cá nhân có một mức sinh lời 50% hay 100% được bảo đảm, không phụ thuộc thị trường, và người ta để nó mất bằng cách không làm gì.",
 
   // The authority for the rule this page applies, as links a reader can
   // open. Naming a statute in prose is not a citation anyone can check, and

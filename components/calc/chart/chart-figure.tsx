@@ -1,9 +1,17 @@
 import { CHART_UI as C } from "@/content/calculators/chart-ui";
+import { columnTicks } from "@/components/calc/chart/column-chart";
+import {
+  TextureMarks,
+  textureKind,
+} from "@/components/calc/chart/chart-texture";
+import { PlotFrame } from "@/components/calc/chart/plot-frame";
 import { ResultTable } from "@/components/calc/result-table";
+import { PLOT, PLOT_TWO_AXES } from "@/lib/calc/charts/geometry";
 import { cn } from "@/lib/cn";
 import {
   paletteIndexByKey,
   paletteSlot,
+  seriesIndex,
 } from "@/lib/calc/charts/palette";
 import type { ChartModel, ChartSeries } from "@/lib/calc/charts/types";
 
@@ -115,6 +123,31 @@ export function ChartFigure({
     segmentKeys: [],
   });
 
+  /**
+   * The tick labels, as HTML around the plot.
+   *
+   * Built here rather than in each plot component because the frame is this
+   * component's job and because one call site cannot drift from another. Only
+   * the three plotted kinds get it — `bars` is `BarChart`, which lays its own
+   * labels out per bar and already renders them as HTML.
+   */
+  const frame =
+    model.kind === "lines" || model.kind === "areas"
+      ? {
+          box: PLOT,
+          yTicks: model.yAxis.ticks,
+          xTicks: model.xAxis.ticks,
+          overlayTicks: undefined,
+        }
+      : model.kind === "columns"
+        ? {
+            box: PLOT_TWO_AXES,
+            yTicks: model.yAxis.ticks,
+            xTicks: columnTicks(model),
+            overlayTicks: model.overlayAxis?.ticks,
+          }
+        : null;
+
   return (
     <figure className={cn("mt-8", className)}>
       <figcaption className="font-display text-base font-medium text-ink">
@@ -138,7 +171,33 @@ export function ChartFigure({
             {model.summary}
           </p>
 
-          <div className="mt-4">{children}</div>
+          {/* Worked arithmetic about the figure, labelled. A caveat never goes
+              here — those are `assumptions`, below, and stay visible. */}
+          {model.detail ? (
+            <details className="mt-2">
+              <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+                {model.detail.title}
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {model.detail.body}
+              </p>
+            </details>
+          ) : null}
+
+          <div className="mt-4">
+            {frame ? (
+              <PlotFrame
+                box={frame.box}
+                yTicks={frame.yTicks}
+                xTicks={frame.xTicks}
+                overlayTicks={frame.overlayTicks}
+              >
+                {children}
+              </PlotFrame>
+            ) : (
+              children
+            )}
+          </div>
 
           <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
             {axes.map((axis) => (
@@ -205,17 +264,61 @@ export function ChartFigure({
                         />
                       </svg>
                     ) : (
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "size-2.5 shrink-0 rounded-sm",
-                          // By KEY, from the shared map — not by position here.
-                          // The two happen to coincide for the legend (it is
-                          // what defines the order), and going through the map
-                          // is what guarantees the plot agrees.
-                          SWATCHES[paletteSlot(paletteSlots, entry.key, index)],
-                        )}
-                      />
+                      /*
+                       * A STACKED SEGMENT IS A FILL, SO ITS MARK IS A FILLED
+                       * SHAPE — with the same TEXTURE the segment carries.
+                       *
+                       * This was a coloured dot, which is the fill half of the
+                       * defect the stroke branch above fixed for lines: the
+                       * palette is two greens and two neutrals, so a reader
+                       * who cannot separate the greens had nothing else to
+                       * match a segment to its label with. The plot now draws
+                       * each segment with its SERIES' texture
+                       * (`chart-texture.tsx`) and this draws the same kind, at
+                       * swatch size, from the same `textureKind` — one list,
+                       * two scales, no drift.
+                       *
+                       * The texture reads `seriesIndex` (unwrapped) while the
+                       * colour reads `paletteSlot` (wrapped at four). A second
+                       * review measured the six-entry allocation legend at
+                       * 390 px, where both channels wrapped together and the
+                       * fifth and sixth keys were pixel-identical to the first
+                       * and second.
+                       *
+                       * An `<svg>` rather than a `<span>` because the marks
+                       * are lines and dots. It keeps the dot's own size and
+                       * rounded corner, so nothing about the legend's layout
+                       * moves.
+                       */
+                      <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        viewBox="0 0 10 10"
+                        className="size-2.5 shrink-0"
+                      >
+                        <rect
+                          x={0}
+                          y={0}
+                          width={10}
+                          height={10}
+                          rx={1.5}
+                          // By KEY, from the shared map — not by position
+                          // here. The two happen to coincide for the legend
+                          // (it is what defines the order), and going through
+                          // the map is what guarantees the plot agrees.
+                          className={
+                            SERIES_FILL[
+                              paletteSlot(paletteSlots, entry.key, index)
+                            ]
+                          }
+                        />
+                        <TextureMarks
+                          kind={textureKind(
+                            seriesIndex(paletteSlots, entry.key, index),
+                          )}
+                          size={10}
+                        />
+                      </svg>
                     )}
                     {entry.label}
                   </li>
@@ -296,21 +399,24 @@ export function ChartFigure({
 }
 
 /**
- * Swatch classes, in the order the legend and the plots consume them.
+ * The palette, in the order the legend and the plots consume it.
  *
  * Restrained: two greens and two neutrals, which is the FinHome palette rather
- * than a categorical chart scheme. Shared with the plot components through
- * `SERIES_FILL`/`SERIES_STROKE` below so a legend swatch and the thing it
- * labels cannot come from two different lists.
+ * than a categorical chart scheme. Every consumer reads these same lists, so a
+ * legend mark and the thing it labels cannot come from two different ones.
+ *
+ * `TEXTURE_KINDS` in `chart-texture.tsx` is LONGER than this list and is NOT
+ * index-aligned with it: four colours wrap at four, and a fifth or sixth
+ * simultaneous series has to be a new texture on a repeated colour. Both
+ * channels are still derived from the one `paletteIndexByKey` map, so a
+ * series' colour and its texture travel together for that series.
+ *
+ * The legend's own `bg-*` swatch classes are GONE: its mark is now a filled
+ * `<svg>` shape reading `SERIES_FILL`, because it has to carry the texture
+ * too and a background colour cannot.
  */
-const SWATCHES = [
-  "bg-ink-3",
-  "bg-brand-green",
-  "bg-brand-softgreen",
-  "bg-ink-4",
-];
 
-/** Fill classes for stacked segments, index-aligned with `SWATCHES`. */
+/** Fill classes for stacked segments and legend marks. */
 export const SERIES_FILL = [
   "fill-ink-3",
   "fill-brand-green",
@@ -318,7 +424,7 @@ export const SERIES_FILL = [
   "fill-ink-4",
 ];
 
-/** Stroke classes for line series, index-aligned with `SWATCHES`. */
+/** Stroke classes for line series, index-aligned with `SERIES_FILL`. */
 export const SERIES_STROKE = [
   "stroke-ink-3",
   "stroke-brand-green",

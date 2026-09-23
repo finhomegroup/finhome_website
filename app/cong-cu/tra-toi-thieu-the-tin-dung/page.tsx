@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { CardPayoffCalculator } from "@/components/card-payoff-calculator";
 import { CARD_MINIMUM as C } from "@/content/calculators/card-minimum";
@@ -39,13 +40,24 @@ export default function CardMinimumPage() {
       title={C.pageTitle}
       lede={C.lede}
       // 90 months vs 28 months on the same first payment. This is the whole
-      // page, and it belongs above the tool rather than under it.
+      // page, and it belongs above the tool rather than under it — §5 keeps
+      // the comparison and the illustrative-rates warning visible and puts
+      // the seven figures behind the disclosure.
       notice={C.trapNotice}
+      noticeDetail={C.trapNoticeDetail}
+      noticeDetailTitle={C.trapNoticeDetailTitle}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      // ROW 32: "giữ cùng cấu trúc với trang trả hết thẻ" — so this page
+      // takes the same `wide` split the payoff route does. Two pages that
+      // differ in card width would be two structures.
+      wide
     >
-      <CardPayoffCalculator strategy="minimum" />
+      <CardPayoffCalculator
+        strategy="minimum"
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

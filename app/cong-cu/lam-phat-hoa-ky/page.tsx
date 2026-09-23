@@ -24,8 +24,12 @@ export default function UsInflationPage() {
       lede={C.lede}
       // Cumulative inflation and purchasing power lost are not the same
       // number, and the second is always smaller. The page shows both rows
-      // separately, so it owes the reader the reason.
+      // separately, so it owes the reader the rule before the rows.
       notice={C.conflationNotice}
+      // The worked cases behind it — doubling, tripling, and why the second
+      // figure never reaches 100%.
+      noticeDetailTitle={C.conflationNoticeDetailTitle}
+      noticeDetail={C.conflationNoticeDetail}
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}

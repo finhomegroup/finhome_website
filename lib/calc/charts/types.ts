@@ -66,7 +66,24 @@ export type ChartTable = {
 };
 
 /** One labelled tick. `at` is a fraction of the axis, 0 at the origin. */
-export type ChartTick = { at: number; label: string };
+export type ChartTick = {
+  at: number;
+  label: string;
+  /**
+   * This tick's label would collide with its neighbour's on a PHONE-width
+   * figure, and it is the one that may go.
+   *
+   * Set by `countTicks` only, and only on a tick that has a tick immediately
+   * after it — never on the origin and never on the endpoint, because the
+   * axis has to keep both ends. `PlotFrame` hides a marked label below `sm`
+   * and shows it from there up, where the same fraction is enough pixels.
+   *
+   * The position is NOT moved and the data is NOT touched. Nudging a label to
+   * a fraction its count does not sit at would make the axis lie, which is
+   * the failure mode `countTicks`'s own docstring already records.
+   */
+  crowded?: boolean;
+};
 
 export type ChartAxis = {
   /** Title including the unit, e.g. "Số tiền (triệu ₫)". */
@@ -91,6 +108,21 @@ type ChartBase = {
   title: string;
   /** One sentence that replaces the picture for a non-visual reader. */
   summary: string;
+  /**
+   * Worked arithmetic ABOUT the figure, behind a labelled disclosure.
+   *
+   * `summary` is the text equivalent and has to stay one readable sentence. A
+   * browser pass measured the retirement figure's caption carrying nine
+   * formatted đồng amounts in a single paragraph directly above a 155 px plot,
+   * which is the caption doing the table's job. Numbers that EXPLAIN a figure
+   * in the summary — "the depletion year needed X, paid Y, short Z" — belong
+   * here instead.
+   *
+   * NOT for a caveat, a limitation or a warning: those are `assumptions`,
+   * which stay visible. `ChartFigure` renders this as a `<details>` whose
+   * summary line is `title`, so nothing is hidden behind an unlabelled toggle.
+   */
+  detail?: { title: string; body: string } | null;
   /** What the picture assumes. Rendered as visible text, not a tooltip. */
   assumptions: readonly string[];
   table: ChartTable;
@@ -313,6 +345,31 @@ export function linearTicks(
 }
 
 /**
+ * The narrowest gap, as a fraction of the axis, that two period labels can
+ * sit at on a phone without overlapping.
+ *
+ * DERIVED FROM THE MEASURED COLLISION, not chosen. On `tiet-kiem-hoc-phi` at
+ * 390×844 the two two-digit labels are 16,64 px wide, the year-12 label is
+ * centred on its tick and the year-13 label is right-anchored on the axis end
+ * (`PlotFrame` pulls an endpoint label inside so it cannot overhang). Clearing
+ * therefore needs 1,5 label widths of tick gap — half of the centred one plus
+ * all of the anchored one — which is 24,96 px. The measured gap is 19,87 px,
+ * and 24,96 − 19,87 = 5,09 px: exactly the overlap the review reported, which
+ * is what says this model of the geometry is the right one.
+ *
+ * Those 19,87 px are 1/13 of that axis, so the axis is about 258 px at 390 px
+ * of viewport and the clearing gap is 24,96/258 ≈ 0,097 of it. This is that
+ * plus roughly 3,5 px of breathing room, because labels that merely touch are
+ * still unreadable.
+ *
+ * It stays a fraction rather than becoming a pixel count because a model
+ * module has no width: `PlotFrame` scales the same fractions to whatever the
+ * figure is given, and from `sm` up every gap in the suite clears this by a
+ * wide margin, which is why a marked label comes back there.
+ */
+const MIN_TICK_GAP = 0.11;
+
+/**
  * Ticks for an axis of COUNTS — months, years, periods.
  *
  * `linearTicks` divides the axis into equal intervals and lets the caller
@@ -331,6 +388,13 @@ export function linearTicks(
  *
  * `maxTicks` is a CEILING on ticks, not a count of intervals — the opposite
  * of `linearTicks`'s `count`, because here the spacing follows the data.
+ *
+ * THE KEPT ENDPOINT CAN LAND NEXT DOOR TO A STRIDE TICK, and on a phone the
+ * two labels then overlap. Measured on `tiet-kiem-hoc-phi` at its default
+ * scenario, 390×844: the year-12 label spans x 310,14–326,78 and the year-13
+ * label spans x 321,69–338,33, so they overlap by 5,09 px. Such a tick is
+ * MARKED `crowded` rather than moved or dropped — see `MIN_TICK_GAP` and
+ * `ChartTick.crowded`.
  */
 export function countTicks(
   max: number,
@@ -352,11 +416,21 @@ export function countTicks(
   if (values[values.length - 1] !== whole) values.push(whole);
   if (fractionalEnd) values.push(max);
   const seen = new Set<number>();
-  return values
-    .filter((value) => {
-      if (seen.has(value)) return false;
-      seen.add(value);
-      return true;
-    })
-    .map((value) => ({ at: value / max, label: format(value) }));
+  const kept = values.filter((value) => {
+    if (seen.has(value)) return false;
+    seen.add(value);
+    return true;
+  });
+  return kept.map((value, index) => {
+    const next = kept[index + 1];
+    // The EARLIER label of a colliding pair is the one marked: the later one
+    // is either the endpoint, which the axis must keep, or a stride tick that
+    // the next pair will consider on its own terms. The origin is never
+    // marked because `index > 0` excludes it.
+    const crowded =
+      index > 0 && next !== undefined && (next - value) / max < MIN_TICK_GAP;
+    return crowded
+      ? { at: value / max, label: format(value), crowded: true }
+      : { at: value / max, label: format(value) };
+  });
 }

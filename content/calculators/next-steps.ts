@@ -109,7 +109,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
   // to an article whose exercise links back.
   "nha-o-xa-hoi": {
     intro:
-      "Tầm giá ở trên là ngân sách theo các trần của chương trình, chưa phải suất mua. Ba câu hỏi thường đến ngay sau đó:",
+      "Tầm giá ở trên là ngân sách theo các trần của chương trình, chưa phải suất mua. Hai câu hỏi thường đến ngay sau đó:",
     tools: [
       {
         slug: "kha-nang-mua-nha",
@@ -133,7 +133,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
 
   "vay-mua-nha": {
     intro:
-      "Khoản trả ở trên tính theo giả định lãi suất không đổi. Ba điều làm con số đó thay đổi:",
+      "Khoản trả ở trên tính theo giả định lãi suất không đổi. Hai điều làm con số đó thay đổi:",
     tools: [
       {
         slug: "lai-suat-tha-noi",
@@ -155,9 +155,14 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
     },
   },
 
+  // `vay-mua-nha` was DELETED here to get down to two actions, and restored
+  // when the next browser pass said so: the plan retains useful links, and the
+  // near-answer limit is a question of PLACEMENT. The first two render beside
+  // the answer; the extra-principal question — furthest from a payment that
+  // jumps when the promotional rate ends — is the further one below the plot.
   "lai-suat-tha-noi": {
     intro:
-      "Sau khi xem khoản trả có thể tăng bao nhiêu trong kịch bản của mình, ba câu hỏi tiếp theo:",
+      "Sau khi xem khoản trả có thể tăng bao nhiêu trong kịch bản của mình, hai câu hỏi tiếp theo:",
     tools: [
       {
         slug: "kha-nang-mua-nha",
@@ -169,7 +174,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
       },
       {
         slug: "vay-mua-nha",
-        why: "Nếu trả thêm gốc mỗi tháng, khoản vay ngắn lại bao nhiêu?",
+        why: "Trả thêm gốc mỗi tháng có làm khoản trả sau ưu đãi dễ chịu hơn không?",
       },
     ],
     education: {
@@ -181,7 +186,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
 
   "muc-tieu-tiet-kiem": {
     intro:
-      "Khi đã có mức góp mỗi tháng và thời điểm đạt mục tiêu, ba việc nên làm kế tiếp:",
+      "Khi đã có mức góp mỗi tháng và thời điểm đạt mục tiêu, hai việc nên làm kế tiếp:",
     tools: [
       {
         slug: "kha-nang-mua-nha",
@@ -231,7 +236,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
   // travels with it.
   "phan-tich-khoan-vay": {
     intro:
-      "Khi đã thấy tiền của mình đi đâu trong từng tháng, ba việc làm được ngay với thông tin đó:",
+      "Khi đã thấy tiền của mình đi đâu trong từng tháng, hai việc làm được ngay với thông tin đó:",
     tools: [
       {
         slug: "vay-mua-nha",
@@ -327,8 +332,13 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
   // trả trước", which is the first link here — and the copy says the figures
   // have to be typed in again, because nothing travels with the link.
   "lai-kep": {
+    // PLACEMENT-INDEPENDENT. This said "Biểu đồ ở trên" while the block sat
+    // below the figure; the `actions` slot moved it above the figure and the
+    // sentence became false. It names the RESULT instead — which carries the
+    // same split, three rows: total, contributed, assumed interest — so it
+    // reads correctly wherever the block renders.
     intro:
-      "Biểu đồ ở trên cho thấy phần nào là tiền của bạn và phần nào là lãi giả định. Khi đã có một mục tiêu cụ thể, hai câu hỏi tiếp theo:",
+      "Kết quả ở trên cho thấy phần nào là tiền của bạn và phần nào là lãi giả định. Khi đã có một mục tiêu cụ thể, hai câu hỏi tiếp theo:",
     tools: [
       {
         slug: "muc-tieu-tiet-kiem",
@@ -529,12 +539,19 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
   // shortlist, so the links go to the two tools that actually take a monthly
   // obligation and a price — and nothing is transferred.
   "chi-phi-nhien-lieu": {
+    // The COMPARISON purpose's framing — the trip purpose overrides it with
+    // `FUEL.form.tripStepsIntro`, because it computes no monthly figure. A
+    // browser round also caught this sentence calling the result a travel
+    // cost: what the tool compares is fuel, and parking, maintenance and time
+    // are not in it.
     intro:
-      "Chi phí đi lại mỗi tháng là một phần của việc chọn nơi ở, không phải toàn bộ. Hai câu hỏi đi cùng nó, và bạn sẽ nhập lại số:",
+      "Chênh lệch tiền nhiên liệu mỗi tháng là một phần của việc chọn nơi ở, không phải toàn bộ chi phí đi lại — chưa gồm gửi xe, bảo dưỡng hay thời gian. Hai câu hỏi đi cùng nó, và bạn sẽ nhập lại số:",
     tools: [
       {
         slug: "kha-nang-mua-nha",
-        why: "Cộng chênh lệch đi lại vào chi phí thiết yếu của hộ thì tầm giá nhà thay đổi thế nào?",
+        // "chênh lệch đi lại" read as a total commuting cost; the tool
+        // compares fuel only. Same destination, same label.
+        why: "Cộng chênh lệch tiền nhiên liệu vào chi phí thiết yếu của hộ thì tầm giá nhà thay đổi thế nào?",
       },
       {
         slug: "thue-hay-mua",
@@ -707,7 +724,7 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
 
   "so-sanh-khoan-vay": {
     intro:
-      "Khi đã so được chi phí của từng gói tại mốc mình chọn, trước khi chốt nên kiểm tra ba điều:",
+      "Khi đã so được chi phí của từng gói tại mốc mình chọn, trước khi chốt nên kiểm tra hai điều:",
     tools: [
       {
         slug: "lai-suat-tha-noi",
@@ -900,4 +917,27 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
 /** The next steps for a tool, or undefined when it deliberately has none. */
 export function nextStepsFor(slug: string): ToolNextSteps | undefined {
   return TOOL_NEXT_STEPS[slug];
+}
+
+/**
+ * How many of a tool's steps go BESIDE the answer.
+ *
+ * P2 is "đưa 1–2 hành động phù hợp ngay sau câu trả lời", and a browser pass
+ * measured the full block 1101,9px below the answer on the floating-rate tool,
+ * behind an 805,2px plot. So the list is split rather than shortened: the first
+ * two render compactly under the answer (`ResultActions`), the rest keep their
+ * place in the block below the figure (`ToolNextSteps promoted`). Nothing is
+ * deleted, and this constant is the ONE place the boundary lives so the two
+ * components cannot disagree about it.
+ */
+export const NEAR_ANSWER_ACTIONS = 2;
+
+/** The steps that render beside the answer. */
+export function nearAnswerSteps(slug: string): readonly NextStepTool[] {
+  return nextStepsFor(slug)?.tools.slice(0, NEAR_ANSWER_ACTIONS) ?? [];
+}
+
+/** The steps that stay in the block below the figure. Often empty. */
+export function furtherSteps(slug: string): readonly NextStepTool[] {
+  return nextStepsFor(slug)?.tools.slice(NEAR_ANSWER_ACTIONS) ?? [];
 }

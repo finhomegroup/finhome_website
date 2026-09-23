@@ -24,6 +24,8 @@ export default function RetirementIncomePage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // The draw is calibrated to run the capital out AT the end age. A reader
       // who mistakes it for a permanently safe rate has the wrong number, so
       // the one sentence that says so goes above the tool and the arithmetic
@@ -36,19 +38,20 @@ export default function RetirementIncomePage() {
       // paragraph stays one plain string and the phrases stay data beside it.
       prose={C.formula}
       faq={C.faq}
-      // The other three views of the SAME plan, above the method and the FAQ:
-      // a reader who has their answer should find the next question without
-      // scrolling past two explanatory sections. Rendered from the page rather
-      // than from inside the calculator so it ships no client JavaScript.
-      afterCalculator={<LongTermViews current="withdrawal" />}
       // The shared default is false here and says so in its own comment: this
       // model uses a different return before and after the retirement date, so
       // "giả định mức lãi đó giữ nguyên trong suốt thời gian được tính" is
       // wrong on a page that has rate fields. The override keeps the opening
       // clause `check:markup` counts.
       disclaimer={L.scope.disclaimer}
+      wide
     >
-      <RetirementIncomeCalculator />
+      {/* The other three views of the SAME plan, handed to the calculator so
+          the layout places them beside the answer. Still rendered from the
+          page, so they ship no client JavaScript. */}
+      <RetirementIncomeCalculator
+        actions={<LongTermViews current="withdrawal" />}
+      />
     </CalculatorPage>
   );
 }

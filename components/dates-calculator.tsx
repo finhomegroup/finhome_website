@@ -1,9 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -18,6 +20,9 @@ import {
 import { readDateFields } from "@/lib/calc/date-input";
 import { DATES as C } from "@/content/calculators/dates";
 
+const FORM_ID = "tinh-ngay-nhap";
+const RESULT_ID = "tinh-ngay-ket-qua";
+
 /**
  * Parse a year/month/day trio out of the raw field strings.
  *
@@ -29,7 +34,36 @@ import { DATES as C } from "@/content/calculators/dates";
  */
 export const readDate = readDateFields;
 
-export function DatesCalculator() {
+/**
+ * ROW 72: "Gom ngày bắt đầu/kết thúc thành hai nhóm ngắn; đặt nút xem số ngày
+ * cuối form, giữ quy tắc ngày lễ cạnh kết quả."
+ *
+ * Two of the three were already true — the two date trios have been separate
+ * short groups, and `countingRuleLabel` has sat inside the result group with
+ * the "không loại ngày lễ" sentence in it. The missing one was the button,
+ * which the shared `ResultCta` now provides at the END of the form, after
+ * whichever second group the mode put there. It names what it will show,
+ * because "Xem kết quả" is vaguer than this tool needs to be.
+ *
+ * THE INACTIVE MODE'S FIELDS ARE UNMOUNTED, NOT HIDDEN, and that is the
+ * review's requirement rather than an implementation detail: a `display:none`
+ * input can still take focus in some engines. Unmounting also takes the
+ * inactive mode's BLAME with it, which is why `dateInvalid` scopes the `to`
+ * trio behind `byDifference` — an impossible second date the reader cannot
+ * see must not withhold an answer they can.
+ *
+ * `columns="single"`: this is a "Gọn" row, and three narrow date boxes in a
+ * 40% column would wrap to one box a line.
+ */
+export function DatesCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The longer guidance below — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     mode: C.form.defaultMode,
     fromYear: C.form.defaultFromYear,
@@ -96,200 +130,225 @@ export function DatesCalculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "difference", label: C.form.modeDifference },
-            { value: "offset", label: C.form.modeOffset },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="single"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "difference", label: C.form.modeDifference },
+                  { value: "offset", label: C.form.modeOffset },
+                ]}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.fromGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("fromDay")}
-          label={C.form.fromDayLabel}
-          help={C.form.dayHelp}
-          error={C.form.dayInvalid}
-          invalid={from.dayBad}
-        />
-        <NumberField
-          {...fields.bind("fromMonth")}
-          label={C.form.fromMonthLabel}
-          help={C.form.monthHelp}
-          error={C.form.monthInvalid}
-          invalid={from.monthBad}
-        />
-        <NumberField
-          {...fields.bind("fromYear")}
-          label={C.form.fromYearLabel}
-          help={C.form.yearHelp}
-          error={C.form.yearInvalid}
-          invalid={from.yearBad}
-        />
-        <div>
-          <button
-            type="button"
-            onClick={fillToday}
-            className={cn(
-              "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
-              "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
-              FH_POINTER,
+            <FieldGroup title={C.form.fromGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("fromDay")}
+                label={C.form.fromDayLabel}
+                help={C.form.dayHelp}
+                error={C.form.dayInvalid}
+                invalid={from.dayBad}
+              />
+              <NumberField
+                {...fields.bind("fromMonth")}
+                label={C.form.fromMonthLabel}
+                help={C.form.monthHelp}
+                error={C.form.monthInvalid}
+                invalid={from.monthBad}
+              />
+              <NumberField
+                {...fields.bind("fromYear")}
+                label={C.form.fromYearLabel}
+                help={C.form.yearHelp}
+                error={C.form.yearInvalid}
+                invalid={from.yearBad}
+              />
+              <div>
+                <button
+                  type="button"
+                  onClick={fillToday}
+                  className={cn(
+                    "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+                    "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+                    FH_POINTER,
+                  )}
+                >
+                  {C.form.todayLabel}
+                </button>
+                <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                  {C.form.todayHelp}
+                </p>
+              </div>
+            </FieldGroup>
+
+            {byDifference ? (
+              <FieldGroup title={C.form.toGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("toDay")}
+                  label={C.form.toDayLabel}
+                  help={C.form.dayHelp}
+                  error={C.form.dayInvalid}
+                  invalid={to.dayBad}
+                />
+                <NumberField
+                  {...fields.bind("toMonth")}
+                  label={C.form.toMonthLabel}
+                  help={C.form.monthHelp}
+                  error={C.form.monthInvalid}
+                  invalid={to.monthBad}
+                />
+                <NumberField
+                  {...fields.bind("toYear")}
+                  label={C.form.toYearLabel}
+                  help={C.form.yearHelp}
+                  error={C.form.yearInvalid}
+                  invalid={to.yearBad}
+                />
+              </FieldGroup>
+            ) : (
+              <FieldGroup title={C.form.offsetGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("offset")}
+                  label={C.form.offsetLabel}
+                  help={C.form.offsetHelp}
+                  error={C.form.offsetInvalid}
+                  invalid={offsetInvalid}
+                />
+                <RadioGroupField
+                  {...fields.bind("skipWeekends")}
+                  legend={C.form.skipWeekendsLegend}
+                  help={C.form.skipWeekendsHelp}
+                  options={[
+                    { value: "no", label: C.form.skipWeekendsNo },
+                    { value: "yes", label: C.form.skipWeekendsYes },
+                  ]}
+                />
+              </FieldGroup>
             )}
-          >
-            {C.form.todayLabel}
-          </button>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.form.todayHelp}
-          </p>
-        </div>
-      </FieldGroup>
-
-      {byDifference ? (
-        <FieldGroup title={C.form.toGroup} className="mt-8">
-          <NumberField
-            {...fields.bind("toDay")}
-            label={C.form.toDayLabel}
-            help={C.form.dayHelp}
-            error={C.form.dayInvalid}
-            invalid={to.dayBad}
-          />
-          <NumberField
-            {...fields.bind("toMonth")}
-            label={C.form.toMonthLabel}
-            help={C.form.monthHelp}
-            error={C.form.monthInvalid}
-            invalid={to.monthBad}
-          />
-          <NumberField
-            {...fields.bind("toYear")}
-            label={C.form.toYearLabel}
-            help={C.form.yearHelp}
-            error={C.form.yearInvalid}
-            invalid={to.yearBad}
-          />
-        </FieldGroup>
-      ) : (
-        <FieldGroup title={C.form.offsetGroup} className="mt-8">
-          <NumberField
-            {...fields.bind("offset")}
-            label={C.form.offsetLabel}
-            help={C.form.offsetHelp}
-            error={C.form.offsetInvalid}
-            invalid={offsetInvalid}
-          />
-          <RadioGroupField
-            {...fields.bind("skipWeekends")}
-            legend={C.form.skipWeekendsLegend}
-            help={C.form.skipWeekendsHelp}
-            options={[
-              { value: "no", label: C.form.skipWeekendsNo },
-              { value: "yes", label: C.form.skipWeekendsYes },
-            ]}
-          />
-        </FieldGroup>
-      )}
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        {byDifference ? (
-          <>
-            <ResultRow
-              label={C.form.daysLabel}
-              value={
-                difference
-                  ? `${formatDecimal(difference.absoluteDays, 0)} ${C.form.daysUnit}`
-                  : null
-              }
-            />
-            <ResultRow
-              label={C.form.workdaysLabel}
-              value={
-                difference
-                  ? `${formatDecimal(difference.workdays, 0)} ${C.form.daysUnit}`
-                  : null
-              }
-            />
-            <ResultRow
-              label={C.form.componentsLabel}
-              value={
-                difference
-                  ? `${formatDecimal(difference.years, 0)} ${C.form.yearsUnit} ${formatDecimal(difference.months, 0)} ${C.form.monthsUnit} ${formatDecimal(difference.dayComponent, 0)} ${C.form.daysUnit}`
-                  : null
-              }
-            />
           </>
-        ) : (
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={dateInvalid || offsetInvalid}
+            label={byDifference ? C.form.ctaDifference : C.form.ctaOffset}
+          />
+        }
+        primary={
           <>
-            <ResultRow
-              label={C.form.resultDateLabel}
-              value={shifted ? showDate(shifted.date) : null}
-            />
-            <ResultRow
-              label={C.form.resultWeekdayLabel}
-              value={shifted ? weekday(shifted.weekday) : null}
-            />
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {byDifference ? (
+                <>
+                  <ResultRow
+                    label={C.form.daysLabel}
+                    value={
+                      difference
+                        ? `${formatDecimal(difference.absoluteDays, 0)} ${C.form.daysUnit}`
+                        : null
+                    }
+                    emphasis
+                  />
+                  <ResultRow
+                    label={C.form.workdaysLabel}
+                    value={
+                      difference
+                        ? `${formatDecimal(difference.workdays, 0)} ${C.form.daysUnit}`
+                        : null
+                    }
+                  />
+                  <ResultRow
+                    label={C.form.componentsLabel}
+                    value={
+                      difference
+                        ? `${formatDecimal(difference.years, 0)} ${C.form.yearsUnit} ${formatDecimal(difference.months, 0)} ${C.form.monthsUnit} ${formatDecimal(difference.dayComponent, 0)} ${C.form.daysUnit}`
+                        : null
+                    }
+                  />
+                </>
+              ) : (
+                <>
+                  <ResultRow
+                    label={C.form.resultDateLabel}
+                    value={shifted ? showDate(shifted.date) : null}
+                    emphasis
+                  />
+                  <ResultRow
+                    label={C.form.resultWeekdayLabel}
+                    value={shifted ? weekday(shifted.weekday) : null}
+                  />
+                </>
+              )}
+              {/* The counting convention sits WITH the figures. A reader who
+                  counts by hand and gets one more than the tool needs the
+                  rule here, not three sections down — and it is also where
+                  the "no holidays, no legal deadline" boundary belongs. */}
+              <ResultRow
+                label={C.form.countingRuleLabel}
+                value={
+                  byDifference
+                    ? C.form.countingRuleDifference
+                    : C.form.countingRuleOffset
+                }
+                prose
+              />
+            </ResultGroup>
+
+            {/* Why there is no figure, beside where the figure would be. */}
+            {dateInvalid ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.invalidNotice}
+              </p>
+            ) : null}
           </>
-        )}
-        {/* The counting convention sits WITH the figures. A reader who counts
-            by hand and gets one more than the tool needs the rule here, not
-            three sections down — and it is also where the "no holidays, no
-            legal deadline" boundary belongs. */}
-        <ResultRow
-          label={C.form.countingRuleLabel}
-          value={
-            byDifference
-              ? C.form.countingRuleDifference
-              : C.form.countingRuleOffset
-          }
-          prose
-        />
-      </ResultGroup>
-
-      {byDifference ? (
-        <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-          <ResultRow
-            label={C.form.weeksLabel}
-            value={
-              difference
-                ? `${formatDecimal(difference.weeks, 0)} ${C.form.weeksUnit} ${formatDecimal(difference.remainderDays, 0)} ${C.form.daysUnit}`
-                : null
-            }
-          />
-          <ResultRow
-            label={C.form.totalMonthsLabel}
-            value={
-              difference
-                ? `${formatDecimal(difference.totalMonths, 0)} ${C.form.monthsUnit}`
-                : null
-            }
-          />
-          <ResultRow
-            label={C.form.weekendDaysLabel}
-            value={
-              difference
-                ? `${formatDecimal(difference.weekendDays, 0)} ${C.form.daysUnit}`
-                : null
-            }
-          />
-          <ResultRow
-            label={C.form.fromWeekdayLabel}
-            value={difference ? weekday(difference.fromWeekday) : null}
-          />
-          <ResultRow
-            label={C.form.toWeekdayLabel}
-            value={difference ? weekday(difference.toWeekday) : null}
-          />
-        </ResultGroup>
-      ) : null}
-
-      {dateInvalid ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.invalidNotice}
-        </p>
-      ) : null}
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          byDifference ? (
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.weeksLabel}
+                value={
+                  difference
+                    ? `${formatDecimal(difference.weeks, 0)} ${C.form.weeksUnit} ${formatDecimal(difference.remainderDays, 0)} ${C.form.daysUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.totalMonthsLabel}
+                value={
+                  difference
+                    ? `${formatDecimal(difference.totalMonths, 0)} ${C.form.monthsUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.weekendDaysLabel}
+                value={
+                  difference
+                    ? `${formatDecimal(difference.weekendDays, 0)} ${C.form.daysUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.fromWeekdayLabel}
+                value={difference ? weekday(difference.fromWeekday) : null}
+              />
+              <ResultRow
+                label={C.form.toWeekdayLabel}
+                value={difference ? weekday(difference.toWeekday) : null}
+              />
+            </ResultGroup>
+          ) : null
+        }
+      />
     </CalculatorCard>
   );
 }

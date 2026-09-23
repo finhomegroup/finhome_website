@@ -1,9 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -54,9 +56,28 @@ const MODES = {
   }
 >;
 
+const FORM_ID = "margin-nhap";
+const RESULT_ID = "margin-ket-qua";
+
+/**
+ * ROW 63: "Một khối ngắn, hai nhãn margin và markup giải thích bằng tiếng
+ * Việt; không cần chart."
+ *
+ * `columns="single"`, and there is no `detail` region and no chart at all —
+ * four rows of arithmetic on two inputs do not earn a second column or a
+ * picture. What the layout adds over the bare card is the region hooks and
+ * the CTA, so a reader on a phone gets the same "xem kết quả" affordance as
+ * every other tool rather than an unmarked scroll.
+ *
+ * THE EMPHASISED ROW FOLLOWS THE MODE, because the answer does. Somebody who
+ * entered cost and price is asking what their margin is; somebody who entered
+ * a target margin or markup is asking what to charge. Fixing the emphasis to
+ * one row would headline the reader's own input back at them in two of the
+ * three modes.
+ */
 export function MarginCalculator() {
   const fields = useCalcFields({
-    mode: "price",
+    mode: C.form.defaultMode,
     cost: C.form.defaultCost,
     price: C.form.defaultPrice,
     margin: C.form.defaultMargin,
@@ -86,56 +107,81 @@ export function MarginCalculator() {
   const money = (figure: number | undefined) =>
     figure === undefined ? null : `${formatMoney(figure)} ₫`;
 
+  // The reader entered a price, so the price is not the answer; they entered
+  // a rate, so the rate is not the answer.
+  const answerIsPrice = mode !== "price";
+
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "price", label: C.form.modePrice },
-            { value: "margin", label: C.form.modeMargin },
-            { value: "markup", label: C.form.modeMarkup },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="single"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "price", label: C.form.modePrice },
+                  { value: "margin", label: C.form.modeMargin },
+                  { value: "markup", label: C.form.modeMarkup },
+                ]}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.group} className="mt-8">
-        <NumberField
-          {...fields.bind("cost")}
-          label={C.form.costLabel}
-          unit={C.form.costUnit}
-          help={C.form.costHelp}
-          error={C.form.costInvalid}
-          invalid={costInvalid}
-        />
-        <NumberField
-          key={mode}
-          {...fields.bind(active.key)}
-          label={active.label}
-          unit={active.unit}
-          help={active.help}
-          error={active.error}
-          invalid={valueInvalid}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.priceResultLabel}
-          value={money(result?.price)}
-        />
-        <ResultRow label={C.form.profitLabel} value={money(result?.profit)} />
-        <ResultRow
-          label={C.form.marginResultLabel}
-          value={result ? formatPercent(result.marginPercent) : null}
-        />
-        <ResultRow
-          label={C.form.markupResultLabel}
-          value={result ? formatPercent(result.markupPercent) : null}
-        />
-      </ResultGroup>
+            <FieldGroup title={C.form.group} className="mt-8">
+              <NumberField
+                {...fields.bind("cost")}
+                label={C.form.costLabel}
+                unit={C.form.costUnit}
+                help={C.form.costHelp}
+                error={C.form.costInvalid}
+                invalid={costInvalid}
+              />
+              <NumberField
+                key={mode}
+                {...fields.bind(active.key)}
+                label={active.label}
+                unit={active.unit}
+                help={active.help}
+                error={active.error}
+                invalid={valueInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={costInvalid || valueInvalid}
+          />
+        }
+        primary={
+          <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+            <ResultRow
+              label={C.form.priceResultLabel}
+              value={money(result?.price)}
+              emphasis={answerIsPrice}
+            />
+            <ResultRow
+              label={C.form.profitLabel}
+              value={money(result?.profit)}
+            />
+            <ResultRow
+              label={C.form.marginResultLabel}
+              value={result ? formatPercent(result.marginPercent) : null}
+              emphasis={!answerIsPrice}
+            />
+            <ResultRow
+              label={C.form.markupResultLabel}
+              value={result ? formatPercent(result.markupPercent) : null}
+            />
+          </ResultGroup>
+        }
+      />
     </CalculatorCard>
   );
 }

@@ -85,7 +85,12 @@ describe("tra-no-hai-tuan at its shipped defaults", () => {
     const split = r.split!;
     const copy = [
       C.lede,
+      // The disclosures count as copy: §8b moved the contract detail and the
+      // second half of the lede behind `<details>`, and a claim does not stop
+      // needing to be true because it is collapsed.
+      C.ledeDetail,
       C.prepaymentNotice,
+      C.prepaymentDetail,
       ...C.formula.body,
       ...C.faq.items.map((item) => item.a),
     ].join(" ");
@@ -158,7 +163,12 @@ describe("tra-no-hai-tuan at its shipped defaults", () => {
     // was still in this file's notice.
     const copy = [
       C.lede,
+      // The disclosures count as copy: §8b moved the contract detail and the
+      // second half of the lede behind `<details>`, and a claim does not stop
+      // needing to be true because it is collapsed.
+      C.ledeDetail,
       C.prepaymentNotice,
+      C.prepaymentDetail,
       ...C.formula.body,
       ...C.faq.items.map((item) => item.a),
     ].join(" ");
@@ -168,9 +178,14 @@ describe("tra-no-hai-tuan at its shipped defaults", () => {
     expect(C.prepaymentNotice).not.toContain("Phần lớn ngân hàng");
     // What is true, and still said: the tool does not model the fee, the
     // contract decides it, and the schedule may not be on offer.
+    // What is visible is what can invalidate the figure: the fee is not
+    // modelled, and the schedule may not be on offer. The contract's role and
+    // the questions to ask sit in the labelled disclosure beside it — still
+    // said, one click away, not ahead of the first input.
     expect(C.prepaymentNotice).toContain("chưa tính phí trả nợ trước hạn");
-    expect(C.prepaymentNotice).toContain("hợp đồng");
     expect(C.prepaymentNotice).toContain("Không phải ngân hàng nào cũng");
+    expect(C.prepaymentDetail).toContain("hợp đồng");
+    expect(C.prepaymentDetailTitle).toContain("ngân hàng");
   });
 
   it("declares emphasis that exists in the prose and stays under the cap", () => {

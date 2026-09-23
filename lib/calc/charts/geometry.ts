@@ -9,15 +9,27 @@
  * drawing one that drifts up over a year.
  *
  * One coordinate system for all three chart components: a fixed `viewBox` that
- * the browser scales to whatever width the container has. Chosen mobile-first
- * at 360 units wide, so at a phone's 340-ish CSS pixels the scale is about 1:1
- * and the 9-unit tick text renders at roughly 9px — small but legible — while
- * on a 700px desktop column everything doubles.
+ * the browser scales to whatever width the container has.
  *
- * Axis TITLES and legends are deliberately NOT in the SVG: they are HTML in
- * `ChartFigure`, where they reflow, wrap, and scale with the reader's own font
- * size. Only tick numbers live inside, because only they need to be positioned
- * against the plot.
+ * NO TEXT LIVES IN THE SVG ANY MORE. It used to: tick numbers were 9-unit
+ * `<text>`, and the comment here reasoned that at a phone's 340-ish CSS pixels
+ * the scale is about 1:1 so they render at roughly 9px. Both halves of that
+ * were the problem. A browser pass measured the rendered tick glyphs at 9px on
+ * a 390 px viewport — below the 12px this suite wants — and the same fixed
+ * size doubles to ~18px on a 700px desktop column, which is larger than the
+ * body copy beside it. A scaling viewBox cannot hold text at a readable
+ * constant size; that is why `BarChart`'s labels were moved to HTML already.
+ * `PlotFrame` now positions every tick label as HTML from these same numbers,
+ * so the SVG carries only grid, data and axis rules.
+ *
+ * The box therefore no longer reserves room for descending tick glyphs, and
+ * `bottom`/`height` grew into the space that freed: the plot is 200 units tall
+ * instead of 158, which is about a quarter more rendered plot at any width.
+ * `left` still reserves the gutter the value labels are positioned over.
+ *
+ * `width` and `height` are the viewBox only — no helper here reads them — so
+ * they can move without touching a coordinate. `left`/`right`/`top`/`bottom`
+ * are pinned by literal path expectations in `refinance-chart.test.ts`.
  */
 
 import type { SeriesPoint } from "@/lib/calc/charts/types";
@@ -40,11 +52,11 @@ export type PlotBox = {
  */
 export const PLOT: PlotBox = {
   width: 360,
-  height: 196,
+  height: 224,
   left: 42,
   right: 352,
   top: 10,
-  bottom: 168,
+  bottom: 210,
 };
 
 /**

@@ -1,6 +1,8 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -36,6 +38,30 @@ import { DepositTimeline } from "@/components/calc/chart/deposit-timeline";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { TERM_DEPOSIT as C } from "@/content/calculators/term-deposit";
 
+const FORM_ID = "tien-gui-co-ky-han-nhap";
+const RESULT_ID = "tien-gui-co-ky-han-ket-qua";
+
+/*
+ * CSV row 22, "Hai cột": "Đưa tiền thực nhận và thời điểm cần tiền lên đầu;
+ * phí/rút sớm vào nhóm riêng."
+ *
+ * The second clause was ALREADY SATISFIED and is recorded rather than rebuilt:
+ * the demand rate and the break month are their own `FieldGroup`, and the
+ * early-exit figures are their own `ResultGroup`, rendered only when the
+ * reader asked. Both are left exactly as they stand.
+ *
+ * The first clause is the change, and it is an ordering one in both views. The
+ * money the saver actually ends up with was the LAST of four rows in the date
+ * view, under two dates and an interest figure; and the date that money is
+ * needed — the input the whole view exists to answer against — was a row
+ * inside the collapsed day ledger. Both now lead the group, the cash as the
+ * page's one emphasised figure. The months view gets the same treatment with
+ * the figures it has: the value at maturity, then the horizon it is committed
+ * for, which was the third row of the detail group.
+ *
+ * No engine change and no new arithmetic: every figure moved is the same call
+ * on the same `plan`/`result` object, and none of them is now shown twice.
+ */
 /**
  * The term-deposit calculator, in two views of ONE product.
  *
@@ -54,7 +80,15 @@ import { TERM_DEPOSIT as C } from "@/content/calculators/term-deposit";
  *
  * One live results region, whichever view is showing.
  */
-export function TermDepositCalculator() {
+export function TermDepositCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     mode: C.form.defaultMode,
     principal: C.form.defaultPrincipal,
@@ -218,6 +252,15 @@ export function TermDepositCalculator() {
             : null;
 
   /**
+   * THE answer, by view — formatted once, so the emphasised row and the
+   * pinned CTA restate the same string rather than formatting it twice.
+   */
+  const answerLabel = byDates ? C.form.availableLabel : C.form.totalValueLabel;
+  const answerValue = byDates
+    ? money(plan?.availableAtNeedDate)
+    : money(result?.totalValue);
+
+  /**
    * Reads the clock — the ONE place in this tool that may, and only on a
    * click, well after mount, so the prerendered and hydrated HTML agree.
    */
@@ -230,483 +273,554 @@ export function TermDepositCalculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "term", label: C.form.modeTerm },
-            { value: "dates", label: C.form.modeDates },
-          ]}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.depositGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("principal")}
-          label={C.form.principalLabel}
-          unit={C.form.principalUnit}
-          help={C.form.principalHelp}
-          error={C.form.principalInvalid}
-          invalid={principalInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-        {/* The payout choice belongs to the months view: the date view models
-            interest at maturity or at the exit, and offering a monthly payout
-            there would imply a schedule it does not compute. */}
-        {!byDates ? (
-          <SelectField
-            {...fields.bind("payout")}
-            label={C.form.payoutLabel}
-            help={C.form.payoutHelp}
-            options={[
-              { value: "maturity", label: C.form.payoutMaturity },
-              { value: "monthly", label: C.form.payoutMonthly },
-              { value: "quarterly", label: C.form.payoutQuarterly },
-            ]}
-          />
-        ) : null}
-      </FieldGroup>
-
-      {byDates ? (
-        <FieldGroup title={C.form.dateGroup} className="mt-8">
-          <NumberField
-            {...fields.bind("startDay")}
-            label={C.form.startDayLabel}
-            help={C.form.startDayHelp}
-            error={C.form.startDayInvalid}
-            invalid={start.dayBad}
-          />
-          <NumberField
-            {...fields.bind("startMonth")}
-            label={C.form.startMonthLabel}
-            help={C.form.startMonthHelp}
-            error={C.form.startMonthInvalid}
-            invalid={start.monthBad}
-          />
-          <NumberField
-            {...fields.bind("startYear")}
-            label={C.form.startYearLabel}
-            help={C.form.startYearHelp}
-            error={C.form.startYearInvalid}
-            invalid={start.yearBad}
-          />
-          <div>
-            <button
-              type="button"
-              onClick={fillToday}
-              className={cn(
-                "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
-                "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
-                FH_POINTER,
-              )}
-            >
-              {C.form.todayLabel}
-            </button>
-            <p className="mt-2 text-sm leading-relaxed text-ink-3">
-              {C.form.todayHelp}
-            </p>
-          </div>
-          <NumberField
-            {...fields.bind("needDay")}
-            label={C.form.needDayLabel}
-            help={C.form.needDayHelp}
-            error={C.form.needDayInvalid}
-            invalid={need.dayBad}
-          />
-          <NumberField
-            {...fields.bind("needMonth")}
-            label={C.form.needMonthLabel}
-            help={C.form.needMonthHelp}
-            error={C.form.needMonthInvalid}
-            invalid={need.monthBad}
-          />
-          <NumberField
-            {...fields.bind("needYear")}
-            label={C.form.needYearLabel}
-            help={C.form.needYearHelp}
-            error={C.form.needYearInvalid}
-            invalid={need.yearBad}
-          />
-          <RadioGroupField
-            {...fields.bind("renew")}
-            legend={C.form.renewLegend}
-            help={C.form.renewHelp}
-            options={[
-              { value: "no", label: C.form.renewNo },
-              { value: "yes", label: C.form.renewYes },
-            ]}
-          />
-          <NumberField
-            {...fields.bind("demandRate")}
-            label={C.form.demandRateLabel}
-            unit={C.form.demandRateUnit}
-            help={C.form.demandRateHelp}
-            error={C.form.demandRateInvalid}
-            invalid={demandRateInvalid}
-          />
-        </FieldGroup>
-      ) : (
-        <>
-          <FieldGroup title={C.form.rolloverGroup} className="mt-8">
-            <NumberField
-              {...fields.bind("cycles")}
-              label={C.form.cyclesLabel}
-              help={C.form.cyclesHelp}
-              error={C.form.cyclesInvalid}
-              invalid={cyclesInvalid}
-            />
-            <RadioGroupField
-              {...fields.bind("compound")}
-              legend={C.form.compoundLegend}
-              help={C.form.compoundHelp}
-              options={[
-                { value: "yes", label: C.form.compoundYes },
-                { value: "no", label: C.form.compoundNo },
-              ]}
-            />
-          </FieldGroup>
-
-          <FieldGroup title={C.form.earlyGroup} className="mt-8">
-            <NumberField
-              {...fields.bind("demandRate")}
-              label={C.form.demandRateLabel}
-              unit={C.form.demandRateUnit}
-              help={C.form.demandRateHelp}
-              error={C.form.demandRateInvalid}
-              invalid={demandRateInvalid}
-            />
-            <NumberField
-              {...fields.bind("breakAfter")}
-              label={C.form.breakLabel}
-              help={C.form.breakHelp}
-              error={C.form.breakInvalid}
-              invalid={breakInvalid}
-            />
-          </FieldGroup>
-        </>
-      )}
-
-      {/* ONE live region, with the rows of whichever view is showing. Two
-          ResultGroups — one per mode — would read as two live regions to the
-          source-level and built-markup checks even though only one ever
-          renders. */}
-      <ResultGroup
-        title={byDates ? C.form.dateResultTitle : C.form.resultTitle}
-        className="mt-8"
-      >
-        {byDates ? (
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
           <>
-            {/* The CURRENT term's maturity — after a renewal that is not the
-                first one, and the first is a separate detail row. Suppressed
-                entirely for `beyondLimit`, whose horizon was never reached. */}
-            <ResultRow
-              label={C.form.maturityDateLabel}
-              value={
-                plan === null || plan.status === "beyondLimit"
-                  ? null
-                  : showDate(plan.pendingMaturity ?? plan.currentMaturity)
-              }
-            />
-            <ResultRow
-              label={C.form.availabilityLabel}
-              value={availability}
-              prose
-            />
-            <ResultRow
-              label={C.form.interestAtExitLabel}
-              value={money(plan?.interestAtExit)}
-            />
-            {/* What the saver HAS on the day, which after maturity is not a
-                payment made that day. The split is in the group below. */}
-            <ResultRow
-              label={C.form.availableLabel}
-              value={money(plan?.availableAtNeedDate)}
-            />
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "term", label: C.form.modeTerm },
+                  { value: "dates", label: C.form.modeDates },
+                ]}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.depositGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("principal")}
+                label={C.form.principalLabel}
+                unit={C.form.principalUnit}
+                help={C.form.principalHelp}
+                error={C.form.principalInvalid}
+                invalid={principalInvalid}
+              />
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+              {/* The payout choice belongs to the months view: the date view
+                  models interest at maturity or at the exit, and offering a
+                  monthly payout there would imply a schedule it does not
+                  compute. */}
+              {!byDates ? (
+                <SelectField
+                  {...fields.bind("payout")}
+                  label={C.form.payoutLabel}
+                  help={C.form.payoutHelp}
+                  options={[
+                    { value: "maturity", label: C.form.payoutMaturity },
+                    { value: "monthly", label: C.form.payoutMonthly },
+                    { value: "quarterly", label: C.form.payoutQuarterly },
+                  ]}
+                />
+              ) : null}
+            </FieldGroup>
+
+            {byDates ? (
+              <FieldGroup title={C.form.dateGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("startDay")}
+                  label={C.form.startDayLabel}
+                  help={C.form.startDayHelp}
+                  error={C.form.startDayInvalid}
+                  invalid={start.dayBad}
+                />
+                <NumberField
+                  {...fields.bind("startMonth")}
+                  label={C.form.startMonthLabel}
+                  help={C.form.startMonthHelp}
+                  error={C.form.startMonthInvalid}
+                  invalid={start.monthBad}
+                />
+                <NumberField
+                  {...fields.bind("startYear")}
+                  label={C.form.startYearLabel}
+                  help={C.form.startYearHelp}
+                  error={C.form.startYearInvalid}
+                  invalid={start.yearBad}
+                />
+                <div>
+                  <button
+                    type="button"
+                    onClick={fillToday}
+                    className={cn(
+                      "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+                      "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+                      FH_POINTER,
+                    )}
+                  >
+                    {C.form.todayLabel}
+                  </button>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                    {C.form.todayHelp}
+                  </p>
+                </div>
+                <NumberField
+                  {...fields.bind("needDay")}
+                  label={C.form.needDayLabel}
+                  help={C.form.needDayHelp}
+                  error={C.form.needDayInvalid}
+                  invalid={need.dayBad}
+                />
+                <NumberField
+                  {...fields.bind("needMonth")}
+                  label={C.form.needMonthLabel}
+                  help={C.form.needMonthHelp}
+                  error={C.form.needMonthInvalid}
+                  invalid={need.monthBad}
+                />
+                <NumberField
+                  {...fields.bind("needYear")}
+                  label={C.form.needYearLabel}
+                  help={C.form.needYearHelp}
+                  error={C.form.needYearInvalid}
+                  invalid={need.yearBad}
+                />
+                <RadioGroupField
+                  {...fields.bind("renew")}
+                  legend={C.form.renewLegend}
+                  help={C.form.renewHelp}
+                  options={[
+                    { value: "no", label: C.form.renewNo },
+                    { value: "yes", label: C.form.renewYes },
+                  ]}
+                />
+                <NumberField
+                  {...fields.bind("demandRate")}
+                  label={C.form.demandRateLabel}
+                  unit={C.form.demandRateUnit}
+                  help={C.form.demandRateHelp}
+                  error={C.form.demandRateInvalid}
+                  invalid={demandRateInvalid}
+                />
+              </FieldGroup>
+            ) : (
+              <>
+                <FieldGroup title={C.form.rolloverGroup} className="mt-8">
+                  <NumberField
+                    {...fields.bind("cycles")}
+                    label={C.form.cyclesLabel}
+                    help={C.form.cyclesHelp}
+                    error={C.form.cyclesInvalid}
+                    invalid={cyclesInvalid}
+                  />
+                  <RadioGroupField
+                    {...fields.bind("compound")}
+                    legend={C.form.compoundLegend}
+                    help={C.form.compoundHelp}
+                    options={[
+                      { value: "yes", label: C.form.compoundYes },
+                      { value: "no", label: C.form.compoundNo },
+                    ]}
+                  />
+                </FieldGroup>
+
+                {/* ROW 22's "phí/rút sớm vào nhóm riêng", ALREADY SATISFIED
+                    and left as it stands: the demand rate and the month the
+                    saver would break the deposit are their own group, apart
+                    from the deposit itself. */}
+                <FieldGroup title={C.form.earlyGroup} className="mt-8">
+                  <NumberField
+                    {...fields.bind("demandRate")}
+                    label={C.form.demandRateLabel}
+                    unit={C.form.demandRateUnit}
+                    help={C.form.demandRateHelp}
+                    error={C.form.demandRateInvalid}
+                    invalid={demandRateInvalid}
+                  />
+                  <NumberField
+                    {...fields.bind("breakAfter")}
+                    label={C.form.breakLabel}
+                    help={C.form.breakHelp}
+                    error={C.form.breakInvalid}
+                    invalid={breakInvalid}
+                  />
+                </FieldGroup>
+              </>
+            )}
           </>
-        ) : (
+        }
+        cta={
+          /* Sticky: the date view puts six date boxes, a renewal choice and
+             the demand rate between the principal and the answer. The pinned
+             line repeats the money in hand, not "xem kết quả". */
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={byDates ? !coreUsable || !datesUsable : !fieldsUsable}
+            sticky
+            answer={{ label: answerLabel, value: answerValue }}
+          />
+        }
+
+        primary={
           <>
-            <ResultRow
-              label={C.form.totalValueLabel}
-              value={money(result?.totalValue)}
-            />
-            <ResultRow
-              label={C.form.totalInterestLabel}
-              value={money(result?.totalInterest)}
-            />
-            <ResultRow
-              label={C.form.effectiveLabel}
-              value={
-                result ? formatPercent(result.effectiveAnnualPercent, 3) : null
-              }
-            />
-          </>
-        )}
-      </ResultGroup>
+            {/* ONE live region, with the rows of whichever view is showing.
+                Two ResultGroups — one per mode — would read as two live
+                regions to the source-level and built-markup checks even
+                though only one ever renders.
 
-      {byDates ? (
-        <>
-          {/* Each status is a real answer with its own consequence, so each
-              has its own sentence rather than a shared "no result". */}
-          {plan?.status === "beforeMaturity" ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.beforeMaturityNotice}
-            </p>
-          ) : null}
-          {plan?.status === "atMaturity" ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.atMaturityNotice}
-            </p>
-          ) : null}
-          {plan?.status === "afterMaturity" ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.afterMaturityNotice}
-            </p>
-          ) : null}
-          {plan?.status === "beyondLimit" ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.beyondLimitNotice.replace(
-                "{limit}",
-                formatDecimal(MAX_DEPOSIT_CYCLES, 0),
-              )}
-            </p>
-          ) : null}
-          {needBeforeStart ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.needBeforeStartNotice}
-            </p>
-          ) : null}
-          {byDates && !datesUsable ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.dateInvalidNotice}
-            </p>
-          ) : null}
-
-          {/* Which of the two cash questions this plan answers. Short, and it
-              stays WITH the primary result — the full ledger moves below the
-              visuals. */}
-          {plan?.proceedsHeldSinceMaturity ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.heldSinceMaturityNotice}
-            </p>
-          ) : null}
-          {plan !== null &&
-          plan.status !== "beyondLimit" &&
-          plan.termsElapsed > 1 ? (
-            <p className="mt-3 text-sm leading-relaxed text-ink-3">
-              {C.form.renewedPrincipalNotice}
-            </p>
-          ) : null}
-
-          {/* Original row 20 asks for BOTH halves: the timeline and the bars.
-              They sit here, directly after the answer — the day ledger and the
-              cash breakdown used to push the timeline to 5.371 px on a phone,
-              which is not the answer → visual → optional detail sequence the
-              flow contract asks for. */}
-          <DepositTimeline model={timeline} />
-
-          <ChartFigure model={chart}>
-            <BarChart model={chart} />
-          </ChartFigure>
-
-          {/* Everything a reader may never need, collapsed — and every figure
-              still here, at both precisions, in the same shared rows. */}
-          {plan !== null && plan.status !== "beyondLimit" ? (
-            <DetailDisclosure
-              title={C.form.dateLedgerTitle}
-              hint={C.form.dateLedgerHint}
-              className="mt-8"
+                ROW 22's "tiền thực nhận và thời điểm cần tiền lên đầu": each
+                view now LEADS with the money the saver ends up with, as the
+                one emphasised figure, and puts the date that money is needed
+                — or, in the months view, the horizon it comes back over —
+                directly under it. Both figures existed; the cash was the
+                fourth row of four and the need date was inside the collapsed
+                ledger. */}
+            <ResultGroup
+              title={byDates ? C.form.dateResultTitle : C.form.resultTitle}
+              anchorId={RESULT_ID}
             >
-              <ResultGroup
-                title={C.form.dateDetailTitle}
-                live={false}
+              {byDates ? (
+                <>
+                  {/* What the saver HAS on the day, which after maturity is
+                      not a payment made that day. The split is in the cash
+                      group inside the ledger. */}
+                  <ResultRow
+                    label={C.form.availableLabel}
+                    value={money(plan?.availableAtNeedDate)}
+                    emphasis
+                  />
+                  {/* MOVED UP out of the day ledger: the date the money is
+                      needed is half of this view's question, not a detail of
+                      it. It is not repeated below. */}
+                  <ResultRow
+                    label={C.form.needDateLabel}
+                    value={showDate(plan?.needDate)}
+                  />
+                  <ResultRow
+                    label={C.form.availabilityLabel}
+                    value={availability}
+                    prose
+                  />
+                  {/* The CURRENT term's maturity — after a renewal that is not
+                      the first one, and the first is a separate detail row.
+                      Suppressed entirely for `beyondLimit`, whose horizon was
+                      never reached. */}
+                  <ResultRow
+                    label={C.form.maturityDateLabel}
+                    value={
+                      plan === null || plan.status === "beyondLimit"
+                        ? null
+                        : showDate(plan.pendingMaturity ?? plan.currentMaturity)
+                    }
+                  />
+                  <ResultRow
+                    label={C.form.interestAtExitLabel}
+                    value={money(plan?.interestAtExit)}
+                  />
+                </>
+              ) : (
+                <>
+                  <ResultRow
+                    label={C.form.totalValueLabel}
+                    value={money(result?.totalValue)}
+                    emphasis
+                  />
+                  {/* MOVED UP out of the detail group: how long the money is
+                      committed for is this view's "when". */}
+                  <ResultRow
+                    label={C.form.totalMonthsLabel}
+                    value={
+                      result
+                        ? `${formatDecimal(result.totalMonths, 0)} ${C.form.monthsUnit}`
+                        : null
+                    }
+                  />
+                  <ResultRow
+                    label={C.form.totalInterestLabel}
+                    value={money(result?.totalInterest)}
+                  />
+                  <ResultRow
+                    label={C.form.effectiveLabel}
+                    value={
+                      result
+                        ? formatPercent(result.effectiveAnnualPercent, 3)
+                        : null
+                    }
+                  />
+                </>
+              )}
+            </ResultGroup>
+
+            {byDates ? (
+              <>
+                {/* Each status is a real answer with its own consequence, so
+                    each has its own sentence rather than a shared "no
+                    result". */}
+                {plan?.status === "beforeMaturity" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.beforeMaturityNotice}
+                  </p>
+                ) : null}
+                {plan?.status === "atMaturity" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.atMaturityNotice}
+                  </p>
+                ) : null}
+                {plan?.status === "afterMaturity" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.afterMaturityNotice}
+                  </p>
+                ) : null}
+                {plan?.status === "beyondLimit" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.beyondLimitNotice.replace(
+                      "{limit}",
+                      formatDecimal(MAX_DEPOSIT_CYCLES, 0),
+                    )}
+                  </p>
+                ) : null}
+                {needBeforeStart ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.needBeforeStartNotice}
+                  </p>
+                ) : null}
+                {byDates && !datesUsable ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.dateInvalidNotice}
+                  </p>
+                ) : null}
+
+                {/* Which of the two cash questions this plan answers. Short,
+                    and it stays WITH the primary result — the full ledger is
+                    below the visuals. */}
+                {plan?.proceedsHeldSinceMaturity ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.heldSinceMaturityNotice}
+                  </p>
+                ) : null}
+                {plan !== null &&
+                plan.status !== "beyondLimit" &&
+                plan.termsElapsed > 1 ? (
+                  <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                    {C.form.renewedPrincipalNotice}
+                  </p>
+                ) : null}
+
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {C.form.dateModeScopeNotice}
+                </p>
+              </>
+            ) : (
+              <>
+                {/* With interest paid out during the term, the early-exit
+                    figures are interest EARNED, not a single payout — and this
+                    tool does not model the bank's reconciliation of what it
+                    already paid. */}
+                {result !== null &&
+                result.earlyLoss !== null &&
+                payout !== "maturity" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.earlyPayoutScopeNotice}
+                  </p>
+                ) : null}
+
+                {/* ROW 22's separate early-exit group on the answer side, and
+                    already its own group before this batch. It stays beside
+                    the answer rather than moving into the disclosure: it is
+                    only rendered when the reader asked what breaking the
+                    deposit costs. */}
+                {result !== null && result.earlyLoss !== null ? (
+                  <ResultGroup
+                    title={C.form.earlyTitle}
+                    className="mt-4"
+                    live={false}
+                  >
+                    <ResultRow
+                      label={C.form.earlyInterestLabel}
+                      value={money(result.earlyInterest)}
+                    />
+                    <ResultRow
+                      label={C.form.earlyForegoneLabel}
+                      value={money(result.earlyForegoneInterest)}
+                    />
+                    <ResultRow
+                      label={C.form.earlyLossLabel}
+                      value={money(result.earlyLoss)}
+                    />
+                  </ResultGroup>
+                ) : null}
+
+                {payoutMismatch ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                    {C.form.payoutMismatchNotice}
+                  </p>
+                ) : null}
+
+                {compoundIgnored ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                    {C.form.compoundIgnoredNotice}
+                  </p>
+                ) : null}
+
+                {/* The months/12 view says so, beside its own figures. */}
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {C.form.approximationNotice}
+                </p>
+              </>
+            )}
+          </>
+        }
+        chart={
+          byDates ? (
+            <>
+              {/* Original row 20 asks for BOTH halves: the timeline and the
+                  bars. They sit directly after the answer — the day ledger and
+                  the cash breakdown used to push the timeline to 5.371 px on a
+                  phone, which is not the answer → visual → optional detail
+                  sequence the flow contract asks for. */}
+              <DepositTimeline model={timeline} />
+
+              <ChartFigure model={chart}>
+                <BarChart model={chart} />
+              </ChartFigure>
+            </>
+          ) : null
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          byDates ? (
+            /* Everything a reader may never need, collapsed — and every
+               figure still here, at both precisions, in the same shared
+               rows. Full width below the answer now, rather than the tail of
+               one column. */
+            plan !== null && plan.status !== "beyondLimit" ? (
+              <DetailDisclosure
+                title={C.form.dateLedgerTitle}
+                hint={C.form.dateLedgerHint}
               >
-              <ResultRow
-                label={C.form.needDateLabel}
-                value={showDate(plan.needDate)}
-              />
-              <ResultRow
-                label={C.form.firstMaturityLabel}
-                value={showDate(plan.firstMaturity)}
-              />
-              <ResultRow
-                label={C.form.termsElapsedLabel}
-                value={`${formatDecimal(plan.termsElapsed, 0)} ${C.form.termsUnit}`}
-              />
-              <ResultRow
-                label={C.form.currentTermDaysLabel}
-                value={days(plan.currentTermDays)}
-              />
-              <ResultRow
-                label={C.form.daysHeldLabel}
-                value={days(plan.daysFromStart)}
-              />
-              <ResultRow
-                label={C.form.daysIntoTermLabel}
-                value={days(plan.daysIntoBrokenTerm)}
-              />
-              <ResultRow
-                label={C.form.daysToMaturityLabel}
-                value={days(plan.daysToPendingMaturity)}
-              />
-              <ResultRow
-                label={C.form.maturedInterestLabel}
-                value={money(plan.maturedInterest)}
-              />
-              <ResultRow
-                label={C.form.heldToMaturityLabel}
-                value={money(plan.interestIfHeldToMaturity)}
-              />
-              </ResultGroup>
+                <ResultGroup title={C.form.dateDetailTitle} live={false}>
+                  <ResultRow
+                    label={C.form.firstMaturityLabel}
+                    value={showDate(plan.firstMaturity)}
+                  />
+                  <ResultRow
+                    label={C.form.termsElapsedLabel}
+                    value={`${formatDecimal(plan.termsElapsed, 0)} ${C.form.termsUnit}`}
+                  />
+                  <ResultRow
+                    label={C.form.currentTermDaysLabel}
+                    value={days(plan.currentTermDays)}
+                  />
+                  <ResultRow
+                    label={C.form.daysHeldLabel}
+                    value={days(plan.daysFromStart)}
+                  />
+                  <ResultRow
+                    label={C.form.daysIntoTermLabel}
+                    value={days(plan.daysIntoBrokenTerm)}
+                  />
+                  <ResultRow
+                    label={C.form.daysToMaturityLabel}
+                    value={days(plan.daysToPendingMaturity)}
+                  />
+                  <ResultRow
+                    label={C.form.maturedInterestLabel}
+                    value={money(plan.maturedInterest)}
+                  />
+                  <ResultRow
+                    label={C.form.heldToMaturityLabel}
+                    value={money(plan.interestIfHeldToMaturity)}
+                  />
+                </ResultGroup>
 
-              <ResultGroup
-                title={C.form.cashTitle}
-                className="mt-4"
-                live={false}
-              >
-              <ResultRow
-                label={C.form.newPaymentLabel}
-                value={money(plan.newPaymentAtNeedDate)}
-              />
-              <ResultRow
-                label={C.form.cashPrincipalLabel}
-                value={money(plan.principalReturned)}
-              />
-              <ResultRow
-                label={C.form.cashInterestLabel}
-                value={money(plan.interestPaidAtNeedDate)}
-              />
-              {/* Interest handed over earlier is NOT new cash at the exit. */}
-              <ResultRow
-                label={C.form.alreadyPaidLabel}
-                value={money(plan.interestAlreadyPaid)}
-              />
-              <ResultRow
-                label={C.form.sameHorizonLabel}
-                value={money(plan.termRateSameHorizon)}
-              />
-              <ResultRow
-                label={C.form.rateDifferenceLabel}
-                value={money(plan.rateDifference)}
-              />
-              {/* Future earning time, named as such — never folded into the
-                  rate difference and never called a penalty. */}
-              <ResultRow
-                label={C.form.foregoneLabel}
-                value={money(plan.foregoneFutureInterest)}
-              />
-              </ResultGroup>
+                <ResultGroup
+                  title={C.form.cashTitle}
+                  className="mt-4"
+                  live={false}
+                >
+                  <ResultRow
+                    label={C.form.newPaymentLabel}
+                    value={money(plan.newPaymentAtNeedDate)}
+                  />
+                  <ResultRow
+                    label={C.form.cashPrincipalLabel}
+                    value={money(plan.principalReturned)}
+                  />
+                  <ResultRow
+                    label={C.form.cashInterestLabel}
+                    value={money(plan.interestPaidAtNeedDate)}
+                  />
+                  {/* Interest handed over earlier is NOT new cash at the
+                      exit. */}
+                  <ResultRow
+                    label={C.form.alreadyPaidLabel}
+                    value={money(plan.interestAlreadyPaid)}
+                  />
+                  <ResultRow
+                    label={C.form.sameHorizonLabel}
+                    value={money(plan.termRateSameHorizon)}
+                  />
+                  <ResultRow
+                    label={C.form.rateDifferenceLabel}
+                    value={money(plan.rateDifference)}
+                  />
+                  {/* Future earning time, named as such — never folded into
+                      the rate difference and never called a penalty. */}
+                  <ResultRow
+                    label={C.form.foregoneLabel}
+                    value={money(plan.foregoneFutureInterest)}
+                  />
+                </ResultGroup>
 
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {C.form.dayCountNotice}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-ink-3">
-                {C.form.monthEndNotice}
-              </p>
-            </DetailDisclosure>
-          ) : null}
-
-          <p className="mt-4 text-sm leading-relaxed text-ink-3">
-            {C.form.dateModeScopeNotice}
-          </p>
-        </>
-      ) : (
-        <>
-          <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-            <ResultRow
-              label={C.form.perPayoutLabel}
-              value={money(result?.interestPerPayout)}
-            />
-            <ResultRow
-              label={C.form.payoutCountLabel}
-              value={
-                result
-                  ? `${formatDecimal(result.payoutCount, 0)} ${C.form.timesUnit}`
-                  : null
-              }
-            />
-            <ResultRow
-              label={C.form.totalMonthsLabel}
-              value={
-                result
-                  ? `${formatDecimal(result.totalMonths, 0)} ${C.form.monthsUnit}`
-                  : null
-              }
-            />
-            <ResultRow
-              label={C.form.finalPrincipalLabel}
-              value={money(result?.finalPrincipal)}
-            />
-            <ResultRow
-              label={C.form.compoundedLabel}
-              value={
-                result === null ? null : result.compounded ? C.form.yes : C.form.no
-              }
-            />
-          </ResultGroup>
-
-          {/* With interest paid out during the term, the early-exit figures
-              are interest EARNED, not a single payout — and this tool does
-              not model the bank's reconciliation of what it already paid. */}
-          {result !== null &&
-          result.earlyLoss !== null &&
-          payout !== "maturity" ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              {C.form.earlyPayoutScopeNotice}
-            </p>
-          ) : null}
-
-          {/* Only rendered when the user asked about breaking early. */}
-          {result !== null && result.earlyLoss !== null ? (
-            <ResultGroup title={C.form.earlyTitle} className="mt-4" live={false}>
+                <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                  {C.form.dayCountNotice}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                  {C.form.monthEndNotice}
+                </p>
+              </DetailDisclosure>
+            ) : null
+          ) : (
+            <ResultGroup title={C.form.detailTitle} live={false}>
               <ResultRow
-                label={C.form.earlyInterestLabel}
-                value={money(result.earlyInterest)}
+                label={C.form.perPayoutLabel}
+                value={money(result?.interestPerPayout)}
               />
               <ResultRow
-                label={C.form.earlyForegoneLabel}
-                value={money(result.earlyForegoneInterest)}
+                label={C.form.payoutCountLabel}
+                value={
+                  result
+                    ? `${formatDecimal(result.payoutCount, 0)} ${C.form.timesUnit}`
+                    : null
+                }
               />
               <ResultRow
-                label={C.form.earlyLossLabel}
-                value={money(result.earlyLoss)}
+                label={C.form.finalPrincipalLabel}
+                value={money(result?.finalPrincipal)}
+              />
+              <ResultRow
+                label={C.form.compoundedLabel}
+                value={
+                  result === null
+                    ? null
+                    : result.compounded
+                      ? C.form.yes
+                      : C.form.no
+                }
               />
             </ResultGroup>
-          ) : null}
-
-          {payoutMismatch ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-3">
-              {C.form.payoutMismatchNotice}
-            </p>
-          ) : null}
-
-          {compoundIgnored ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-3">
-              {C.form.compoundIgnoredNotice}
-            </p>
-          ) : null}
-
-          {/* The months/12 view says so, beside its own figures. */}
-          <p className="mt-4 text-sm leading-relaxed text-ink-3">
-            {C.form.approximationNotice}
-          </p>
-        </>
-      )}
+          )
+        }
+      />
     </CalculatorCard>
   );
 }

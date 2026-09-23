@@ -54,6 +54,7 @@ const TRAJECTORY = {
   summaryDepleted:
     "Nghỉ ở tuổi {retirementAge} với {capital} ({realCapital} theo giá hôm nay), cạn ở tuổi {depletionAge}, thiếu {yearsShort} năm.",
   partialNote: "Năm cạn cần {planned}, chỉ trả được {paid}, thiếu {short}.",
+  partialTitle: "Năm cạn trả được bao nhiêu",
   otherIncomeNote: "Thu nhập khác đã đủ cho mức chi tiêu.",
   readingNote: "Hai đường là hai cách đếm cùng một số dư.",
   ageColumn: "Tuổi",
@@ -146,8 +147,18 @@ describe("the trajectory figure (row 44)", () => {
     const marker = model.markers[1];
     expect(marker.period).toBe(p.asEntered.depletionAge! - BASE.currentAge);
     expect(marker.label).toContain(`tuổi ${p.asEntered.depletionAge}`);
-    expect(model.summary).toContain("Năm cạn cần");
-    expect(model.summary).toContain("thiếu");
+    // The partial payment is still reported WITH the figure, and still carries
+    // all three amounts — it moved out of `summary` and into `detail` on
+    // 2026-09-21, behind a labelled disclosure, because nine formatted đồng
+    // figures in the caption above the plot is the caption doing the table's
+    // job. The claim is unchanged: the depletion year is not reported as an
+    // age alone.
+    expect(model.detail).not.toBeNull();
+    expect(model.detail!.title).toBe(TRAJECTORY.partialTitle);
+    expect(model.detail!.body).toContain("Năm cạn cần");
+    expect(model.detail!.body).toContain("thiếu");
+    // And the caption itself no longer carries it.
+    expect(model.summary).not.toContain("Năm cạn cần");
   });
 
   it("marks the horizon instead when the plan lasts", () => {
@@ -157,7 +168,9 @@ describe("the trajectory figure (row 44)", () => {
     );
     expect(funded.markers[1].label).toContain("Hết mô phỏng");
     expect(funded.summary).toContain("đủ đến tuổi 85");
-    expect(funded.summary).not.toContain("Năm cạn cần");
+    // No partial payment to report, so no disclosure at all — an empty
+    // labelled toggle is worse than none.
+    expect(funded.detail).toBeNull();
   });
 
   it("names the other-income case on the figure too", () => {

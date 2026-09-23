@@ -22,10 +22,15 @@ export default function UsPayrollTaxPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // The regressive-at-the-top result, with the two wage levels that
-      // demonstrate it. Also why the 0,9% threshold catches more people
-      // every year without any law changing.
+      // The rule itself — a cap makes the marginal rate FALL — plus the year
+      // table's scope. Both are limits on reading the result, so both stay
+      // above the first input.
       notice={C.regressiveNotice}
+      // The two wage levels that demonstrate it, and why the 0,9% threshold
+      // catches more people every year without any law changing. Teaching,
+      // not a limit, so it is a click away.
+      noticeDetailTitle={C.regressiveNoticeDetailTitle}
+      noticeDetail={C.regressiveNoticeDetail}
       prose={C.formula}
       faq={C.faq}
       // The rates are applied with no field to hold them, so the citation is

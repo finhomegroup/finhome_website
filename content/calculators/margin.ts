@@ -16,13 +16,20 @@ export const MARGIN = {
   metaDescription:
     "Nhập giá vốn cùng giá bán, tỷ lệ margin hoặc tỷ lệ markup để có đủ cả bốn con số. Công cụ miễn phí của FinHome.",
 
+  // §5: two sentences. The different-denominator rule and the 50/33,33 pair
+  // that makes it concrete are the whole point of the page, so both stay
+  // visible; only the input instruction folded into the first sentence.
   lede:
-    "Margin chia lợi nhuận cho giá bán, markup chia lợi nhuận cho giá vốn. Cùng một đồng lãi, hai con số khác nhau — và markup 50% chỉ là margin 33,33%. Nhập giá vốn cùng một trong ba con số còn lại để có đủ cả bốn.",
+    "Margin chia lợi nhuận cho giá bán, markup chia lợi nhuận cho giá vốn — hai mẫu số khác nhau, nên markup 50% chỉ là margin 33,33%. Nhập giá vốn cùng một trong ba con số còn lại để có đủ cả bốn.",
 
   form: {
     modeLegend: "Bạn biết con số nào?",
     modeHelp:
       "Cách nào cũng cho ra đủ giá bán, lợi nhuận, margin và markup, nên bạn có thể dùng công cụ để chuyển đổi giữa hai tỷ lệ.",
+    // Unchanged in value — it was the literal `"price"` inside the component.
+    // It lives here so the mode-dependent emphasis row 63 introduces can be
+    // rendered in a test at every mode, which a hardcoded default cannot be.
+    defaultMode: "price",
     modePrice: "Giá vốn và giá bán",
     modeMargin: "Giá vốn và margin mong muốn",
     modeMarkup: "Giá vốn và markup mong muốn",
@@ -56,12 +63,28 @@ export const MARGIN = {
     resultTitle: "Kết quả",
     priceResultLabel: "Giá bán",
     profitLabel: "Lợi nhuận trên mỗi đơn vị",
-    marginResultLabel: "Margin",
-    markupResultLabel: "Markup",
+
+    // ROW 63 — "hai nhãn margin và markup giải thích bằng tiếng Việt".
+    //
+    // The two rows that matter used to be labelled with the bare loanwords,
+    // which is precisely the pair a reader inverts: the page exists because
+    // someone wanted a 40% margin and marked cost up 40% instead. The words
+    // stay — they are the terms a supplier and an accountant will both use —
+    // but each now carries what it divides BY, which is the entire
+    // distinction. No chart: the row asks for a short block.
+    marginResultLabel: "Margin (lợi nhuận ÷ giá bán)",
+    markupResultLabel: "Markup (lợi nhuận ÷ giá vốn)",
   },
 
+  // §5: the trap and the rule that avoids it stay visible — markup 40% is not
+  // margin 40%, because the denominators differ. The five-figure arithmetic
+  // that prices the mistake is the labelled disclosure, and `margin.test.ts`
+  // still derives every one of those figures from the module.
   trapNotice:
-    "Cái bẫy: muốn margin 40% nhưng lại cộng 40% lên giá vốn. Với giá vốn 600.000 ₫, margin 40% cần giá bán 1.000.000 ₫; cộng 40% lên giá vốn chỉ ra 840.000 ₫, tức margin 28,57% — thiếu 11,43 điểm phần trăm. Một cửa hàng có thể bán suốt một năm theo cách đó rồi không hiểu tiền lãi đã đi đâu. Hãy dùng đúng chế độ “giá vốn và margin mong muốn” khi bạn nghĩ theo margin.",
+    "Cái bẫy: muốn margin 40% nhưng lại cộng 40% lên giá vốn. Vì hai mẫu số khác nhau, markup 40% không phải margin 40% — hãy dùng đúng chế độ “giá vốn và margin mong muốn” khi bạn nghĩ theo margin.",
+  trapNoticeDetailTitle: "Cái bẫy đó đắt bao nhiêu",
+  trapNoticeDetail:
+    "Với giá vốn 600.000 ₫, margin 40% cần giá bán 1.000.000 ₫; cộng 40% lên giá vốn chỉ ra 840.000 ₫, tức margin 28,57% — thiếu 11,43 điểm phần trăm. Một cửa hàng có thể bán suốt một năm theo cách đó rồi không hiểu tiền lãi đã đi đâu.",
 
   formula: {
     title: "Cách tính",

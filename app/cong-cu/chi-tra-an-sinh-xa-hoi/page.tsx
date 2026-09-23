@@ -25,6 +25,11 @@ export default function UsSocialSecurityPayoutPage() {
       // Two rules that pull in opposite directions, and a reader who knows
       // only one of them will draw the wrong conclusion from the table.
       notice={C.asymmetryNotice}
+      // The rule stays above; the worked default case behind this summary.
+      noticeDetailTitle={C.asymmetryNoticeDetailTitle}
+      noticeDetail={C.asymmetryNoticeDetail}
+      // Row 57's two-column result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       // The two earnings-test amounts prefill from a dated constant and ARE

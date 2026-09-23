@@ -181,8 +181,12 @@ describe("tai-khoan-tiet-kiem-y-te-hoa-ky at its shipped defaults", () => {
     );
     expect(formatPercent(fullRate, 2)).toBe("7,65%");
     expect(C.ficaNotice).toContain(formatPercent(fullRate, 2));
-    expect(C.ficaNotice).toContain(usdMills(result.ficaSaved));
-    expect(C.ficaNotice).toContain(usd(input.annualWagesBeforeHsa));
+    // REPOINTED by row 30's entry pass: the worked default case moved into
+    // `ficaNoticeDetail`, the disclosure the route passes under
+    // `ficaNoticeDetailTitle`. The RULE — the 7,65% claim above, and the two
+    // thresholds that bound it — stays where no click is needed.
+    expect(C.ficaNoticeDetail).toContain(usdMills(result.ficaSaved));
+    expect(C.ficaNoticeDetail).toContain(usd(input.annualWagesBeforeHsa));
     // The FAQ quotes the same saving rounded to cents.
     expect(C.faq.items[0].a).toContain(usdCents(result.ficaSaved));
   });

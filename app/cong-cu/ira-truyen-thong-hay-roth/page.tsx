@@ -26,6 +26,11 @@ export default function UsIraPage() {
       // and it is wrong by a measurable margin. That margin belongs above
       // the tool.
       notice={C.equalCostNotice}
+      // The rule stays above; the worked default case behind this summary.
+      noticeDetailTitle={C.equalCostNoticeDetailTitle}
+      noticeDetail={C.equalCostNoticeDetail}
+      // Row 53's split result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       // The row prefills three US federal rates and renders a statutory

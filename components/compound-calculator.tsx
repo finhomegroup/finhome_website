@@ -1,10 +1,13 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { AreaChart } from "@/components/calc/chart/area-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
+import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { SelectField } from "@/components/calc/select-field";
@@ -35,8 +38,24 @@ import { COMPOUND as C } from "@/content/calculators/compound";
  *
  * The yearly schedule sits outside the results live region — see
  * `ResultTable`'s docstring for why.
+ *
+ * CSV row 19 ("Hai cột"): contributions, interest and the ending balance beside
+ * the form, figure before the long explanation. The second half was already
+ * true — the figure follows the answer and the page's method section is below
+ * the tool — so only the split and the CTA are new. Docs §8.
  */
-export function CompoundCalculator() {
+const FORM_ID = "lai-kep-nhap";
+const RESULT_ID = "lai-kep-ket-qua";
+
+export function CompoundCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     principal: C.form.defaultPrincipal,
     rate: C.form.defaultRate,
@@ -93,90 +112,135 @@ export function CompoundCalculator() {
   // disclosure — and a dense always-expanded duplicate below it was the
   // reading experience this unit was asked to fix.
 
+  const anyInvalid =
+    principalInvalid || rateInvalid || yearsInvalid || contributionInvalid;
+
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.depositGroup}>
-        <NumberField
-          {...fields.bind("principal")}
-          label={C.form.principalLabel}
-          unit={C.form.principalUnit}
-          help={C.form.principalHelp}
-          error={C.form.principalInvalid}
-          invalid={principalInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("years")}
-          label={C.form.yearsLabel}
-          unit={C.form.yearsUnit}
-          help={C.form.yearsHelp}
-          error={C.form.yearsInvalid}
-          invalid={yearsInvalid}
-        />
-        <SelectField
-          {...fields.bind("compounding")}
-          label={C.form.compoundingLabel}
-          help={C.form.compoundingHelp}
-          options={C.form.compoundingOptions}
-        />
-        <NumberField
-          {...fields.bind("contribution")}
-          label={C.form.contributionLabel}
-          unit={C.form.contributionUnit}
-          help={C.form.contributionHelp}
-          error={C.form.contributionInvalid}
-          invalid={contributionInvalid}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <FieldGroup title={C.form.depositGroup}>
+            <NumberField
+              {...fields.bind("principal")}
+              label={C.form.principalLabel}
+              unit={C.form.principalUnit}
+              help={C.form.principalHelp}
+              error={C.form.principalInvalid}
+              invalid={principalInvalid}
+            />
+            <NumberField
+              {...fields.bind("rate")}
+              label={C.form.rateLabel}
+              unit={C.form.rateUnit}
+              help={C.form.rateHelp}
+              error={C.form.rateInvalid}
+              invalid={rateInvalid}
+            />
+            <NumberField
+              {...fields.bind("years")}
+              label={C.form.yearsLabel}
+              unit={C.form.yearsUnit}
+              help={C.form.yearsHelp}
+              error={C.form.yearsInvalid}
+              invalid={yearsInvalid}
+            />
+            <SelectField
+              {...fields.bind("compounding")}
+              label={C.form.compoundingLabel}
+              help={C.form.compoundingHelp}
+              options={C.form.compoundingOptions}
+            />
+            <NumberField
+              {...fields.bind("contribution")}
+              label={C.form.contributionLabel}
+              unit={C.form.contributionUnit}
+              help={C.form.contributionHelp}
+              error={C.form.contributionInvalid}
+              invalid={contributionInvalid}
+            />
+          </FieldGroup>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            // Measured at 1440×1000 with the contribution field focused at
+            // y 529–575: the first result row sat at y −96,5. Five controls in
+            // one group is still a form whose answer leaves the screen while
+            // the last of them is edited. The restatement is the EMPHASISED
+            // row, whose label already names its own period ("cuối kỳ"),
+            // through the same `money()` the row uses.
+            sticky
+            answer={{
+              label: C.form.futureValueLabel,
+              value: money(result?.futureValue),
+            }}
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={C.form.futureValueLabel}
+                value={money(result?.futureValue)}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.contributedLabel}
+                value={money(result?.totalContributed)}
+              />
+              <ResultRow
+                label={C.form.interestLabel}
+                value={money(result?.totalInterest)}
+              />
+            </ResultGroup>
 
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.futureValueLabel}
-          value={money(result?.futureValue)}
-        />
-        <ResultRow
-          label={C.form.contributedLabel}
-          value={money(result?.totalContributed)}
-        />
-        <ResultRow
-          label={C.form.interestLabel}
-          value={money(result?.totalInterest)}
-        />
-        <ResultRow
-          label={C.form.effectiveRateLabel}
-          value={
-            result
-              ? formatPercent(result.effectiveAnnualRatePercent)
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.periodsLabel}
-          value={
-            result
-              ? `${formatDecimal(result.periods, 0)} ${C.form.periodsUnit}`
-              : null
-          }
-        />
-      </ResultGroup>
-
-      {nothingToCompute ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.emptyNotice}
-        </p>
-      ) : null}
-
-      {/* Right after the answer, and outside every ResultGroup. */}
-      <ChartFigure model={chart}>
-        <AreaChart model={chart} />
-      </ChartFigure>
+            {nothingToCompute ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.emptyNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          <ChartFigure model={chart}>
+            <AreaChart model={chart} />
+          </ChartFigure>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          /* The effective rate and the period count moved here from the answer
+             group: a browser pass at 390 px read five rows, of which only the
+             first three answer "how much will I have". These two explain what
+             the compounding period did to get there, so they read behind a
+             label. Same figures, same formatters, nothing recomputed. */
+          <DetailDisclosure
+            title={C.form.detailToggle}
+            hint={C.form.detailHint}
+          >
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.effectiveRateLabel}
+                value={
+                  result ? formatPercent(result.effectiveAnnualRatePercent) : null
+                }
+              />
+              <ResultRow
+                label={C.form.periodsLabel}
+                value={
+                  result
+                    ? `${formatDecimal(result.periods, 0)} ${C.form.periodsUnit}`
+                    : null
+                }
+              />
+            </ResultGroup>
+          </DetailDisclosure>
+        }
+      />
     </CalculatorCard>
   );
 }

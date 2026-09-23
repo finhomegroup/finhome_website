@@ -38,7 +38,18 @@ export const ROI = {
     "Nhập số vốn, giá trị thu về và thời gian nắm giữ để tính ROI cùng tỷ suất lợi nhuận theo năm. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Nhập số vốn bỏ ra, số tiền thu về và thời gian nắm giữ. Công cụ tính cả ROI tổng và tỷ suất lợi nhuận theo năm — con số thứ hai mới là con số dùng để so sánh giữa các khoản đầu tư. Ví dụ điền sẵn là một phần vốn dành để mua nhà: 500 triệu thành 700 triệu sau 3 năm.",
+    "Nhập số vốn bỏ ra, số tiền thu về và thời gian nắm giữ; công cụ tính cả ROI tổng và tỷ suất lợi nhuận theo năm.",
+
+  // ONE DISCLOSURE, NOT TWO. The example and the eight-months-versus-eight-
+  // years arithmetic were the tail of a three-sentence lede and a
+  // four-sentence notice, both of which render above the tool box. They move
+  // here rather than being cut; the notice keeps the rule itself, which is
+  // what a reader needs BEFORE reading a figure. `ledeDetail` rather than a
+  // second `noticeDetail` because each disclosure adds its own summary line
+  // above the form, and this route only needs one.
+  ledeDetailTitle: "Ví dụ điền sẵn, và cùng 40% ở hai tốc độ",
+  ledeDetail:
+    "Ví dụ điền sẵn là một phần vốn dành để mua nhà: 500 triệu thành 700 triệu sau 3 năm. Con số theo năm mới là con số dùng để so sánh giữa các khoản đầu tư: ROI tổng 40% nghe giống nhau dù bạn mất tám tháng hay tám năm để đạt được, nhưng tám tháng là 65,7%/năm còn tám năm chỉ là 4,3%/năm.",
 
   form: {
     group: "Khoản đầu tư",
@@ -72,6 +83,13 @@ export const ROI = {
     resultTitle: "Kết quả",
     annualisedLabel: "Lợi nhuận theo năm",
     roiLabel: "ROI tổng",
+    // The SAME number as `roiLabel`, labelled with the period it actually
+    // covers. CSV row 23's action is "không đánh đồng ROI cả kỳ với lợi nhuận
+    // năm": once the annual figure is the headline, the row beside it has to
+    // say out loud that it is a whole-period figure, or the two read as two
+    // measurements of the same thing. Falls back to `roiLabel` when the holding
+    // period is empty, where there is no period to name.
+    roiPeriodFormat: "ROI tổng (cả {years} năm)",
     gainLabel: "Lãi hoặc lỗ",
     multipleLabel: "Số vốn đã thành",
     multipleSuffix: "lần",
@@ -87,7 +105,7 @@ export const ROI = {
   },
 
   leadNotice:
-    "Hãy đọc dòng “lợi nhuận theo năm” trước. ROI tổng 40% nghe giống nhau dù bạn mất tám tháng hay tám năm để đạt được, nhưng tám tháng là 65,7%/năm còn tám năm chỉ là 4,3%/năm. ROI tổng không nói gì về thời gian, nên nó không so sánh được giữa các khoản đầu tư có kỳ hạn khác nhau — hãy lấy con số theo năm và đặt cạnh mức lãi bạn thực sự được trả ở nơi khác.",
+    "Hãy đọc dòng “lợi nhuận theo năm” trước: ROI tổng không nói gì về thời gian, nên nó không so sánh được giữa các khoản đầu tư có kỳ hạn khác nhau. Hãy lấy con số theo năm và đặt cạnh mức lãi bạn thực sự được trả ở nơi khác.",
 
   formula: {
     title: "Cách tính",

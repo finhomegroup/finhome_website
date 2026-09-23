@@ -156,6 +156,27 @@ export const AUTO_LEASE = {
     taxInvalid: "Vui lòng nhập một số từ 0 đến 100.",
     defaultTax: "0",
 
+    // ROW 34: "đưa khoản trả hàng tháng lên trước đoạn thuế dài; giữ cảnh báo
+    // loại thuế áp dụng nhưng mở thêm chi tiết". `taxHelp` above is ~1.100 ký
+    // tự of tax law and it sat open, inside the form, ABOVE the monthly
+    // payment — so on a phone the answer was several screens below the
+    // question. NOTHING IS DELETED: `taxHelp` is rendered verbatim inside the
+    // disclosure titled below, and this short version keeps at the field the
+    // one thing that changes what the reader TYPES — which contract they have
+    // and therefore which rate applies.
+    taxHelpShort:
+      "Mặc định là 0: hợp đồng cho thuê tài chính đúng nghĩa là dịch vụ cấp tín dụng, thuộc đối tượng không chịu thuế GTGT, nên tiền thuê không có thuế suất. Nếu hợp đồng của bạn là cho thuê tài sản thông thường thì hãy nhập 8. Căn cứ pháp lý, cùng khoản thuế công cụ không tính, ở phần chi tiết ngay dưới ô này.",
+    taxDetailTitle: "Căn cứ của thuế suất, và khoản thuế công cụ không tính",
+
+    // THE SECOND REFUSAL, which `residualTooHighNotice` was speaking for and
+    // should not have been. `computeAutoLease` also returns null when the
+    // capitalised cost is not positive — tiền trả trước cộng xe cũ thu lại
+    // bằng hoặc vượt giá xe cộng phí — and in that case the residual may be
+    // perfectly sensible. Blaming the residual there sends the reader to
+    // change the one field that is not the problem.
+    capitalisedNotPositiveNotice:
+      "Số tiền vốn hóa đang bằng 0 hoặc âm: tiền trả trước cộng giá trị xe cũ thu lại đã bằng hoặc vượt giá xe cộng phí gộp vào hợp đồng, nên không còn khoản nào để thuê và phép tính không có kết quả. Hãy giảm tiền trả trước hoặc giá trị xe cũ thu lại, hoặc kiểm tra lại giá xe.",
+
     resultTitle: "Khoản trả hằng tháng",
     monthlyLabel: "Trả hằng tháng, theo thuế suất đã nhập",
     depreciationLabel: "Trong đó phần khấu hao",

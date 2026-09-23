@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { InterestOnlyCalculator } from "@/components/interest-only-calculator";
 import { INTEREST_ONLY as C } from "@/content/calculators/interest-only";
@@ -46,12 +47,15 @@ export default function GraceLoanPage() {
       intro={C.form.table.intro}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
       // The shared notice says the rate is assumed constant; this page models
       // a reset. Tool-owned text, mandatory opening sentence kept.
       disclaimer={C.disclaimer}
+      wide
     >
-      <InterestOnlyCalculator />
+      <InterestOnlyCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

@@ -68,6 +68,10 @@ export const RAISE = {
     increasePercentLabel: "Mức tăng",
     increasePerYearLabel: "Tăng thêm cả năm",
     nextPerYearLabel: "Tổng lương cả năm sau khi tăng",
+    // ROW 65 — "đưa lương mới và tăng thực mỗi tháng ngay dưới form". The
+    // other three salary figures are the same rise expressed per year or as a
+    // percentage, so they read as context rather than as the answer.
+    detailTitle: "Cùng mức tăng đó, theo năm và theo phần trăm",
 
     // ---------------------------------- original row 63: the goal, and the date
     goalGroup: "Tăng lương giúp đạt mục tiêu sớm bao lâu?",
@@ -161,8 +165,22 @@ export const RAISE = {
       "Bạn chưa nhập mức thực nhận tăng thêm, nên công cụ chưa biết mỗi tháng có thêm bao nhiêu để dành. Công cụ KHÔNG dùng mức tăng gộp ở trên để thay thế: nó không tính các khoản trừ trên bảng lương và không suy ra con số thực nhận. Kế hoạch hiện tại vẫn hiển thị bên trên. Hãy so hai bảng lương trước và sau khi tăng rồi nhập chênh lệch vào.",
     payCutNotice:
       "Mức thực nhận đang giảm, nên không có khoản nào được giải phóng để để dành thêm. Công cụ giữ nguyên kế hoạch hiện tại chứ không tự giảm mức góp — chỉ bạn biết sẽ cắt khoản nào.",
+    /**
+     * TWO SENTENCES FOR ONE ENGINE STATE. `baselineOnly` means "nothing was
+     * added", which has two causes: a 0% share of a real rise, or a rise of
+     * 0 ₫ at any share. One sentence spoke for both, so a reader who entered
+     * a 0 ₫ net rise at 50% was told "Bạn đang để dành 0% mức tăng" — which
+     * their own field contradicts — and advised to raise a percentage that is
+     * being applied to nothing. An independent runtime round reproduced it.
+     *
+     * The computation is unchanged: `extraContribution` is 0 either way, and
+     * the engine still reports one state. Only which sentence is shown moved,
+     * on `netIncrease === 0`, which the plan echoes back.
+     */
     zeroShareNotice:
-      "Bạn đang để dành 0% mức tăng, nên kế hoạch giữ nguyên đúng như trước. Thử nâng phần trăm lên để xem mục tiêu đến sớm hơn bao nhiêu.",
+      "Bạn đang để dành 0% mức tăng thực nhận, nên kế hoạch giữ nguyên đúng như trước. Thử nâng phần trăm lên để xem mục tiêu đến sớm hơn bao nhiêu.",
+    zeroNetNotice:
+      "Mức thực nhận tăng thêm bạn nhập là 0 ₫, nên không có khoản nào mới để dành và kế hoạch giữ nguyên đúng như trước. Nâng phần trăm để dành cũng không thay đổi gì, vì phần trăm đó đang tính trên 0 ₫ — hãy so lại hai bảng lương trước và sau khi tăng.",
     unreachableNotice:
       "Với mức góp và lãi suất giả định hiện tại, mục tiêu không đạt được trong khoảng thời gian công cụ hỗ trợ. Hãy tăng mức góp, giảm mục tiêu, hoặc kiểm tra lại lãi suất giả định.",
     goalInvalidNotice:

@@ -181,8 +181,18 @@ export const APR = {
       "Hãy kiểm tra số tiền vay, lãi suất, kỳ hạn và các khoản phí — mỗi ô đều có hướng dẫn riêng ngay bên dưới.",
   },
 
+  // What decides whether the reader may use the figure at all stays visible:
+  // APR only means something as a comparison, both sides need the same fees
+  // entered, and the fees have to be asked for first. The two worked
+  // illustrations are evidence for that, not a precondition to entering
+  // numbers, so they collapse — the entry copy here measured 887 characters
+  // before the first input.
   compareNotice:
-    "APR chỉ có ích khi bạn dùng nó để so sánh, và chỉ khi hai bên được nhập đầy đủ phí như nhau. Với khoản vay mặc định, lãi hợp đồng 8,5% nhưng APR là 8,7081% — cao hơn 0,2081 điểm phần trăm chỉ vì 30 triệu phí. Một ngân hàng báo 8,4% kèm phí 60 triệu sẽ có APR cao hơn ngân hàng báo 8,5% không phí. Hãy hỏi rõ từng khoản phí trước khi so lãi suất, vì đó là chỗ khoản chênh lệch thật nằm.",
+    "APR chỉ có ích khi bạn dùng nó để so sánh, và chỉ khi hai bên được nhập đầy đủ phí như nhau. Hãy hỏi rõ từng khoản phí trước khi so lãi suất, vì đó là chỗ khoản chênh lệch thật nằm.",
+
+  compareDetailTitle: "Phí làm lệch so sánh đến mức nào",
+  compareDetail:
+    "Với khoản vay mặc định, lãi hợp đồng 8,5% nhưng APR là 8,7081% — cao hơn 0,2081 điểm phần trăm chỉ vì 30 triệu phí. Và thứ tự có thể đảo: một ngân hàng báo 8,4% kèm phí 60 triệu sẽ có APR cao hơn ngân hàng báo 8,5% không phí, nên chọn theo lãi suất niêm yết là chọn sai bên.",
 
   formula: {
     title: "Cách tính",

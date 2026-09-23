@@ -487,7 +487,9 @@ describe("C12 — one path, two break-evens, kept apart", () => {
     const markers = model.markers.map((m) => m.label);
     expect(markers).toContain("Chi phí bù đủ phí lần đầu: tháng 14");
     expect(markers).toContain("Tiền đã chi bù đủ phí lần đầu: tháng 18");
-    expect(model.summary).toContain("Hai mốc khác nhau");
+    // Said in the figure's labelled disclosure since §8b trimmed a five
+    // sentence caption; the two markers above it stay visible.
+    expect(model.detail?.body).toContain("Hai mốc khác nhau");
   });
 
   it("reproduces the independent path at every checkpoint", () => {
@@ -553,8 +555,14 @@ describe("C12 — one path, two break-evens, kept apart", () => {
   });
 
   it("never calls the cash-flow measure an economic saving", () => {
-    const words = [model.summary, ...model.assumptions, model.table.hint ?? ""]
-      .join(" ");
+    // The disclosure counts: it is where the cash figure itself now sits, and
+    // the qualification has to travel with the number it qualifies.
+    const words = [
+      model.summary,
+      model.detail?.body ?? "",
+      ...model.assumptions,
+      model.table.hint ?? "",
+    ].join(" ");
     expect(words).toContain("chưa tính dư nợ");
     expect(words).toContain("không phải lợi ích kinh tế");
     // The SIGN is scoped per line: below zero on the cost line means dearer,

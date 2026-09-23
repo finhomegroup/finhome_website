@@ -25,6 +25,9 @@ export default function MarginPage() {
       // The mistake the page exists for. It belongs above the tool, because a
       // shop owner who picks the wrong mode gets a plausible wrong price.
       notice={C.trapNotice}
+      // §5: what the mistake costs, in figures, one click under the rule.
+      noticeDetail={C.trapNoticeDetail}
+      noticeDetailTitle={C.trapNoticeDetailTitle}
       prose={C.formula}
       faq={C.faq}
     >

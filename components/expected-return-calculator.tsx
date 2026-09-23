@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -23,6 +25,22 @@ import { EXPECTED_RETURN as C } from "@/content/calculators/expected-return";
  */
 const MAX_SCENARIOS = 8;
 const INDEXES = Array.from({ length: MAX_SCENARIOS }, (_, index) => index);
+
+/*
+ * CSV row 39 ("Hai cột"): "giữ bảng tình huống gọn, tổng xác suất nhìn thấy;
+ * kết quả lợi nhuận và dao động đứng cạnh nhau". Docs §8.
+ *
+ * Three things follow from that. The probability pair of each scenario shares
+ * one grid row where there is width for it, so eight scenarios are sixteen
+ * fields in eight lines rather than sixteen. The probability total moves out
+ * of the detail disclosure into the answer region, because it is the
+ * diagnostic for the single rejection this module makes on input that
+ * otherwise parses — a total the reader cannot see is a total they cannot
+ * fix. And the standard deviation is the row immediately under the expected
+ * return, which is the page's own argument: nobody receives the average.
+ */
+const FORM_ID = "loi-nhuan-ky-vong-nhap";
+const RESULT_ID = "loi-nhuan-ky-vong-ket-qua";
 
 export function ExpectedReturnCalculator() {
   const fields = useCalcFields({
@@ -76,121 +94,164 @@ export function ExpectedReturnCalculator() {
   // reason the module rejects an otherwise-valid set.
   const badSum = rowsUsable && result === null;
 
+  // A wrong TOTAL is not a wrong FIELD: no control is marked invalid for it,
+  // so the CTA must not promise the reader a bad box to jump to. The notice
+  // beside the answer is what explains that state.
+  const anyFieldInvalid =
+    countInvalid ||
+    rows.some((row) => row.probabilityInvalid || row.valueInvalid);
+
+  /** Formatted once, for the headline row and the pinned restatement. */
+  const expectedValue = result
+    ? formatPercent(result.expectedReturnPercent, 4)
+    : null;
+
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.setupGroup}>
-        <NumberField
-          {...fields.bind("count")}
-          label={C.form.countLabel}
-          help={C.form.countHelp}
-          error={C.form.countInvalid}
-          invalid={countInvalid}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.setupGroup}>
+              <NumberField
+                {...fields.bind("count")}
+                label={C.form.countLabel}
+                help={C.form.countHelp}
+                error={C.form.countInvalid}
+                invalid={countInvalid}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.scenarioGroup} className="mt-8">
-        {rows.map((row) => (
-          <div key={row.index} className="space-y-4">
-            <NumberField
-              {...fields.bind(`probability${row.index}`)}
-              label={C.form.probabilityLabel.replace(
-                "{n}",
-                String(row.index + 1),
-              )}
-              unit={C.form.probabilityUnit}
-              help={C.form.probabilityHelp}
-              error={C.form.probabilityInvalid}
-              invalid={row.probabilityInvalid}
+            <FieldGroup title={C.form.scenarioGroup} className="mt-8">
+              {rows.map((row) => (
+                // The row's "bảng tình huống gọn": probability and return are
+                // one scenario, so they share a line where there is room.
+                // Back to one column at `lg`, where the split layout narrows
+                // this side to two fifths and a pair would not fit.
+                // RUNTIME-PENDING: the breakpoints themselves are unverified
+                // in a browser.
+                <div
+                  key={row.index}
+                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1"
+                >
+                  <NumberField
+                    {...fields.bind(`probability${row.index}`)}
+                    label={C.form.probabilityLabel.replace(
+                      "{n}",
+                      String(row.index + 1),
+                    )}
+                    unit={C.form.probabilityUnit}
+                    help={C.form.probabilityHelp}
+                    error={C.form.probabilityInvalid}
+                    invalid={row.probabilityInvalid}
+                  />
+                  <NumberField
+                    {...fields.bind(`return${row.index}`)}
+                    label={C.form.returnLabel.replace(
+                      "{n}",
+                      String(row.index + 1),
+                    )}
+                    unit={C.form.returnUnit}
+                    help={C.form.returnHelp}
+                    error={C.form.returnInvalid}
+                    invalid={row.valueInvalid}
+                  />
+                </div>
+              ))}
+            </FieldGroup>
+          </>
+        }
+        cta={
+          /* Sticky: at the maximum of eight scenarios this form is sixteen
+             boxes plus the count, and the probabilities have to be balanced
+             against a total the reader cannot see from the bottom of it. */
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyFieldInvalid}
+            sticky
+            answer={{ label: C.form.expectedLabel, value: expectedValue }}
+          />
+        }
+        primary={
+          <>
+            {/* The expected return with the spread beside it, so the average
+                is never read on its own, and the probability total in plain
+                sight rather than behind a disclosure. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={C.form.expectedLabel}
+                value={expectedValue}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.stdDevLabel}
+                value={
+                  result ? formatPercent(result.standardDeviationPercent, 4) : null
+                }
+              />
+              <ResultRow
+                label={C.form.coefficientLabel}
+                value={
+                  result?.coefficientOfVariation == null
+                    ? null
+                    : formatDecimal(result.coefficientOfVariation, 4)
+                }
+              />
+              {/* Rendered whether or not the set computes: it is the only
+                  thing that tells the reader WHY it did not. */}
+              <ResultRow
+                label={C.form.probabilitySumLabel}
+                value={
+                  probabilitySum === null ? null : formatPercent(probabilitySum, 2)
+                }
+              />
+            </ResultGroup>
+
+            {badSum ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.badSumNotice}
+              </p>
+            ) : null}
+
+            {result !== null && result.coefficientOfVariation === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.noCoefficientNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        detail={
+          // The four measures that describe the shape of the distribution
+          // rather than its centre. NOT live: the summary above is the one
+          // announced region.
+          <ResultGroup title={C.form.detailTitle} live={false}>
+            <ResultRow
+              label={C.form.downsideLabel}
+              value={result ? formatPercent(result.downsideRiskPercent, 4) : null}
             />
-            <NumberField
-              {...fields.bind(`return${row.index}`)}
-              label={C.form.returnLabel.replace("{n}", String(row.index + 1))}
-              unit={C.form.returnUnit}
-              help={C.form.returnHelp}
-              error={C.form.returnInvalid}
-              invalid={row.valueInvalid}
+            <ResultRow
+              label={C.form.lossProbabilityLabel}
+              value={
+                result ? formatPercent(result.probabilityOfLossPercent, 2) : null
+              }
             />
-          </div>
-        ))}
-      </FieldGroup>
-
-      {/* The expected return with the two spread measures beside it, so the
-          average is never read on its own. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.expectedLabel}
-          value={
-            result ? formatPercent(result.expectedReturnPercent, 4) : null
-          }
-        />
-        <ResultRow
-          label={C.form.stdDevLabel}
-          value={
-            result
-              ? formatPercent(result.standardDeviationPercent, 4)
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.coefficientLabel}
-          value={
-            result?.coefficientOfVariation == null
-              ? null
-              : formatDecimal(result.coefficientOfVariation, 4)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.downsideLabel}
-          value={
-            result ? formatPercent(result.downsideRiskPercent, 4) : null
-          }
-        />
-        <ResultRow
-          label={C.form.lossProbabilityLabel}
-          value={
-            result
-              ? formatPercent(result.probabilityOfLossPercent, 2)
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.bestLabel}
-          value={result ? formatPercent(result.bestCasePercent, 2) : null}
-        />
-        <ResultRow
-          label={C.form.worstLabel}
-          value={result ? formatPercent(result.worstCasePercent, 2) : null}
-        />
-        <ResultRow
-          label={C.form.varianceLabel}
-          value={result ? formatDecimal(result.variance, 4) : null}
-        />
-        {/* Always shown, valid or not: it is the diagnostic for the one
-            rejection the module makes on otherwise-good input. */}
-        <ResultRow
-          label={C.form.probabilitySumLabel}
-          value={
-            probabilitySum === null
-              ? null
-              : formatPercent(probabilitySum, 2)
-          }
-        />
-      </ResultGroup>
-
-      {badSum ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.badSumNotice}
-        </p>
-      ) : null}
-
-      {result !== null && result.coefficientOfVariation === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.noCoefficientNotice}
-        </p>
-      ) : null}
+            <ResultRow
+              label={C.form.bestLabel}
+              value={result ? formatPercent(result.bestCasePercent, 2) : null}
+            />
+            <ResultRow
+              label={C.form.worstLabel}
+              value={result ? formatPercent(result.worstCasePercent, 2) : null}
+            />
+            <ResultRow
+              label={C.form.varianceLabel}
+              value={result ? formatDecimal(result.variance, 4) : null}
+            />
+          </ResultGroup>
+        }
+      />
     </CalculatorCard>
   );
 }

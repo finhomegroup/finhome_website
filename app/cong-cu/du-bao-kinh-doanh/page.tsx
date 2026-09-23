@@ -22,13 +22,22 @@ export default function BusinessForecastPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // Reads the prefilled scenario and names where the margin widening
-      // comes from, plus how to make it disappear.
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
+      // The requalification — assumptions, not data; arithmetic, not forecast
+      // — is the visible notice. The prefilled scenario it reads, where the
+      // margin widening comes from and how to make it disappear are the
+      // disclosure under it (§5).
       notice={C.leverageNotice}
+      noticeDetail={C.leverageNoticeDetail}
+      noticeDetailTitle={C.leverageNoticeDetailTitle}
       prose={C.formula}
       faq={C.faq}
       // Primary documents behind the prefilled statutory tax rate.
       sources={C.sources}
+      // ROW 66 is "Theo nhóm + kết quả": the tool now renders `columns="split"`
+      // with an eight-column per-year table in the full-width band below.
+      wide
     >
       <BusinessForecastCalculator />
     </CalculatorPage>

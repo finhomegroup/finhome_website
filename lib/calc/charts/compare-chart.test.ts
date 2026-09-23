@@ -332,4 +332,28 @@ describe("paymentTimelineModel", () => {
     expect(model2.unavailable).not.toBeNull();
     expect(model2.series).toEqual([]);
   });
+
+  it("labels every month tick at its own position on odd terms", () => {
+    // Equal quarter intervals plus a rounding formatter named months the ticks
+    // do not sit on. See `countTicks` in `types.ts`.
+    const odd = paymentTimelineModel(
+      compareLoans({
+        amount: AMOUNT,
+        options: [
+          { annualRatePercent: 8.5, termMonths: 37, feePercent: 0 },
+          { annualRatePercent: 9, termMonths: 43, feePercent: 0 },
+        ],
+      })!,
+      OPTIONS,
+      PAY,
+    );
+    expect(odd.xMax).toBe(43);
+    for (const tick of odd.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * odd.xMax,
+        9,
+      );
+    }
+    expect(odd.xAxis.ticks.at(-1)!.at).toBe(1);
+  });
 });

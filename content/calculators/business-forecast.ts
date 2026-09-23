@@ -19,7 +19,12 @@ export const BUSINESS_FORECAST = {
   metaDescription:
     "Dự báo doanh thu, biến phí, định phí và lợi nhuận sau thuế qua tối đa 30 năm. Tăng trưởng tính kép, và định phí tách riêng để thấy đòn bẩy hoạt động. Công cụ miễn phí của FinHome.",
 
+  // §5: the lede had no purpose sentence at all — it opened with two lessons.
+  // The purpose is visible now; the lessons are the disclosure.
   lede:
+    "Dự phóng doanh thu, chi phí và biên lợi nhuận hoạt động qua nhiều năm, từ các giả định bạn tự nhập.",
+  ledeDetailTitle: "Hai điều phép tính này làm rõ",
+  ledeDetail:
     "Tăng trưởng cộng dồn theo cấp số nhân, không phải cộng thẳng. Và biên lợi nhuận chỉ nở ra khi định phí được tách riêng khỏi biến phí — nếu coi mọi chi phí là một tỷ lệ trên doanh thu thì biên lợi nhuận đứng yên vĩnh viễn, bất kể doanh thu tăng bao nhiêu.",
 
   form: {
@@ -98,6 +103,19 @@ export const BUSINESS_FORECAST = {
       tax: "17",
     },
 
+    // ROW 66 ("Đưa kết quả dự phóng cạnh đầu vào; nhãn giả định tăng
+    // trưởng/biên lợi nhuận nhìn thấy cùng kết luận").
+    /**
+     * The four assumptions the conclusion rests on, restated beside it.
+     *
+     * `{growth}`, `{variable}`, `{fixedGrowth}` and `{tax}` are substituted
+     * from the fields the reader actually entered — never from these defaults.
+     * At a wide width the form is in the other column, so a year-5 margin can
+     * otherwise be read with no sight of the growth rate that produced it.
+     */
+    assumptionLine:
+      "Giả định đang dùng: doanh thu {growth}%/năm, biến phí {variable}% doanh thu, định phí {fixedGrowth}%/năm, thuế {tax}%.",
+
     resultTitle: "Năm cuối kỳ dự báo",
     finalRevenueLabel: "Doanh thu năm cuối",
     finalProfitLabel: "Lợi nhuận hoạt động năm cuối",
@@ -151,8 +169,17 @@ export const BUSINESS_FORECAST = {
   // falsifiable — set fixed-cost growth to 15% and the margin stops moving —
   // because that experiment is what turns the notice from a claim into
   // something the reader can check in the form above it.
+  // §5: the requalification is the visible half and stays FIRST — the inputs
+  // are assumptions, and the table is their arithmetic rather than a forecast.
+  // The four default values and the whole operating-leverage illustration,
+  // including the falsifiable experiment, are the labelled disclosure. The
+  // active assumptions are also summarised beside the result by the component,
+  // so a reader never has to open this to know what is in force.
   leverageNotice:
-    "Bốn con số trong form là giả định, không phải dữ liệu: tăng trưởng doanh thu 15%/năm, biến phí 60% doanh thu, định phí tăng 8%/năm, kỳ 5 năm. Bảng bên dưới là hệ quả số học của bốn giả định đó — nó cho biết điều gì xảy ra nếu chúng đúng, chứ không phải điều gì sẽ xảy ra. Với chính bốn con số này, doanh thu đi từ 10 tỷ lên 17,49 tỷ và lợi nhuận hoạt động đi từ 1 tỷ lên 2,91 tỷ, nên biên lợi nhuận nở từ 10,00% lên 16,66%. Toàn bộ mức nở đó đến từ một chỗ: định phí tăng 8%/năm trong khi doanh thu tăng 15%/năm, nên định phí co lại thành một tỷ lệ nhỏ dần trên doanh thu. Đó là đòn bẩy hoạt động. Hãy tự kiểm tra: đặt tăng trưởng định phí bằng 15% và biên lợi nhuận sẽ đứng đúng 10,00% ở cả năm năm — mức nở biến mất, vì nó vốn là hệ quả của khoảng cách giữa hai giả định chứ không phải của doanh nghiệp.",
+    "Bốn con số trong form là giả định, không phải dữ liệu. Bảng kết quả là hệ quả số học của bốn giả định đó — nó cho biết điều gì xảy ra nếu chúng đúng, chứ không phải điều gì sẽ xảy ra.",
+  leverageNoticeDetailTitle: "Ví dụ: đòn bẩy hoạt động với bốn giả định mặc định",
+  leverageNoticeDetail:
+    "Bốn giả định mặc định: tăng trưởng doanh thu 15%/năm, biến phí 60% doanh thu, định phí tăng 8%/năm, kỳ 5 năm. Với chính bốn con số này, doanh thu đi từ 10 tỷ lên 17,49 tỷ và lợi nhuận hoạt động đi từ 1 tỷ lên 2,91 tỷ, nên biên lợi nhuận nở từ 10,00% lên 16,66%. Toàn bộ mức nở đó đến từ một chỗ: định phí tăng 8%/năm trong khi doanh thu tăng 15%/năm, nên định phí co lại thành một tỷ lệ nhỏ dần trên doanh thu. Đó là đòn bẩy hoạt động. Hãy tự kiểm tra: đặt tăng trưởng định phí bằng 15% và biên lợi nhuận sẽ đứng đúng 10,00% ở cả năm năm — mức nở biến mất, vì nó vốn là hệ quả của khoảng cách giữa hai giả định chứ không phải của doanh nghiệp.",
 
   /**
    * Editor-selected emphasis for the method section — DECLARED, NOT WIRED.

@@ -19,6 +19,22 @@ import { ANNUITY as C } from "@/content/calculators/annuity";
 
 const D = C.form.defaults;
 
+/**
+ * The entry copy as a reader can reach it: the visible claim plus the two
+ * disclosures under it.
+ *
+ * §5 moved the 250.000 / 18.908,57 / 13,2-năm / tax arithmetic out of the
+ * `lede` and `payoutRateNotice` themselves and into `ledeDetail` and
+ * `payoutRateNoticeDetail`. Every figure is still on the page, which is what
+ * asserting the four strings together proves.
+ */
+const ENTRY = [
+  C.lede,
+  C.ledeDetail,
+  C.payoutRateNotice,
+  C.payoutRateNoticeDetail,
+].join(" ");
+
 /** The component's own parse and wiring, reproduced — docs §6. */
 function shippedInput(): AnnuityInput {
   const mode = D.mode as AnnuityMode;
@@ -83,9 +99,13 @@ describe("nien-kim at its shipped defaults", () => {
     expect(usdCents(r.payment)).toBe("1.575,71");
     expect(usdCents(r.annualPayment)).toBe("18.908,57");
     expect(formatPercent(r.payoutRatePercent!, 2)).toBe("7,56%");
-    expect(C.payoutRateNotice).toContain("18.908,57");
-    expect(C.payoutRateNotice).toContain("7,56%");
-    expect(C.lede).toContain("7,56%");
+    expect(ENTRY).toContain("18.908,57");
+    expect(ENTRY).toContain("7,56%");
+    expect(C.ledeDetail).toContain("7,56%");
+    // §5: the claim the figures serve needs no click.
+    expect(C.payoutRateNotice).toContain("KHÔNG phải lợi suất");
+    expect(C.payoutRateNotice).toContain("bảo đảm");
+    expect(C.lede).toContain("USD");
   });
 
   it("splits each payment into capital and interest", () => {
@@ -96,9 +116,7 @@ describe("nien-kim at its shipped defaults", () => {
     // The two parts add back to the whole payment.
     expect(r.excludedPerPayment + r.taxablePerPayment).toBeCloseTo(r.payment, 8);
     for (const figure of ["1.575,71", "1.041,67", "534,05"]) {
-      expect(C.payoutRateNotice, `notice is missing ${figure}`).toContain(
-        figure,
-      );
+      expect(ENTRY, `entry copy is missing ${figure}`).toContain(figure);
     }
   });
 
@@ -108,8 +126,8 @@ describe("nien-kim at its shipped defaults", () => {
     expect(usdCents(r.netPerPayment)).toBe("1.458,22");
     expect(formatPercent(r.effectiveTaxRatePercent!, 2)).toBe("7,46%");
     expect(r.effectiveTaxRatePercent!).toBeLessThan(22);
-    expect(C.payoutRateNotice).toContain("7,46%");
-    expect(C.payoutRateNotice).toContain("22%");
+    expect(ENTRY).toContain("7,46%");
+    expect(ENTRY).toContain("22%");
   });
 
   it("quotes the money-back point and the multiple", () => {
@@ -118,7 +136,7 @@ describe("nien-kim at its shipped defaults", () => {
     expect(formatDecimal(r.payoutMultiple!, 2)).toBe("1,51");
     expect(usd(r.totalPaid)).toBe("378.171");
     expect(usd(r.interestEarned)).toBe("128.171");
-    expect(C.payoutRateNotice).toContain("13,2");
+    expect(ENTRY).toContain("13,2");
     const a = C.faq.items[0].a;
     for (const figure of ["378.171", "250.000", "1,51"]) {
       expect(a, `FAQ 1 is missing ${figure}`).toContain(figure);

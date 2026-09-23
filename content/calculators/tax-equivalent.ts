@@ -45,7 +45,15 @@ export const TAX_EQUIVALENT = {
     "Quy lợi suất của sản phẩm chịu thuế và miễn thuế về cùng một thước đo, để so sánh công bằng giữa tiền gửi, trái phiếu và cổ tức. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Hai mức lợi suất niêm yết trước thuế không so được với nhau nếu một trong hai bị đánh thuế. Đây là câu hỏi thường gặp với TIỀN ĐANG CHỜ MUA NHÀ: bạn có một khoản sẽ dùng trong vài tháng tới và đang chọn nơi để nó, giữa một sổ tiết kiệm và một sản phẩm trả lợi suất cao hơn nhưng bị khấu trừ thuế. Công cụ quy hai mức về cùng một thước đo sau thuế.",
+    "Hai mức lợi suất niêm yết trước thuế không so được với nhau nếu một trong hai bị đánh thuế. Công cụ quy hai mức về cùng một thước đo sau thuế.",
+
+  // The waiting-to-buy framing and the worked pair, moved out of the two
+  // visible entry blocks. They go in ONE disclosure because the scenario is
+  // what makes the figures mean anything. `vietnamNoticeDetail` keeps the
+  // legal provenance — a different question, with its own title.
+  ledeDetailTitle: "Khi nào bạn cần công cụ này, với con số cụ thể",
+  ledeDetail:
+    "Đây là câu hỏi thường gặp với TIỀN ĐANG CHỜ MUA NHÀ: bạn có một khoản sẽ dùng trong vài tháng tới và đang chọn nơi để nó, giữa một sổ tiết kiệm và một sản phẩm trả lợi suất cao hơn nhưng bị khấu trừ thuế. Với thuế suất 5% điền sẵn, một sổ tiết kiệm 5,5%/năm và một trái phiếu chịu thuế 5,8%/năm không cách nhau 0,3 điểm phần trăm: trái phiếu thực nhận 5,51%, gần như ngang nhau. Để bằng đúng 5,5% sau thuế, mức chịu thuế phải là 5,789474%.",
 
   form: {
     directionLegend: "Bạn đang có con số nào?",
@@ -83,12 +91,21 @@ export const TAX_EQUIVALENT = {
     taxFreeLabel: "Lợi suất miễn thuế",
     grossUpLabel: "Mức chênh tương đối cần có",
 
+    // FULL PRECISION, ON REQUEST. CSV row 26's action is "giảm số thập phân ở
+    // phần tóm tắt, giữ nhãn thuế, cho xem đầy đủ khi cần". The summary rounds
+    // to THREE places, not two: the comparison this page exists for turns on
+    // the second and third digit after the comma, so two would hide the thing
+    // being measured. Six places are the same numbers unrounded, below.
+    fullPrecisionTitle: "Xem đầy đủ số thập phân",
+    fullPrecisionNote:
+      "Cùng những con số ở trên, không làm tròn, kèm hai dòng phụ. Phần tóm tắt lấy ba chữ số thập phân — đủ để thấy khoảng cách thuế tạo ra; sáu chữ số ở đây dùng khi bạn cần đối chiếu đúng phép tính.",
+
     impossibleNotice:
       "Thuế suất 100% nghĩa là không có mức lợi suất chịu thuế nào bằng được một mức miễn thuế dương, nên phép quy đổi không có kết quả. Hãy nhập thuế suất nhỏ hơn 100%.",
   },
 
   vietnamNotice:
-    "Điều quyết định không phải mức lợi suất nào cao hơn, mà khoản nào BỊ KHẤU TRỪ THUẾ và khoản nào không. Với thuế suất 5% điền sẵn, một sổ tiết kiệm 5,5%/năm và một trái phiếu chịu thuế 5,8%/năm không cách nhau 0,3 điểm phần trăm: trái phiếu thực nhận 5,51%, gần như ngang nhau — trong khi bạn gánh rủi ro tín dụng của tổ chức phát hành thay cho rủi ro của một khoản tiền gửi. Để bằng đúng 5,5% sau thuế, mức chịu thuế phải là 5,789474%.",
+    "Điều quyết định không phải mức lợi suất nào cao hơn, mà khoản nào BỊ KHẤU TRỪ THUẾ và khoản nào không. Và khi bạn đổi một khoản tiền gửi sang trái phiếu để lấy thêm lợi suất, bạn gánh rủi ro tín dụng của tổ chức phát hành thay cho rủi ro của một khoản tiền gửi.",
   vietnamNoticeDetailTitle: "Khoản nào chịu thuế, khoản nào được miễn — và nguồn",
   vietnamNoticeDetail:
     "Hướng dẫn chính thức ngày 04/07/2026 về Nghị định 253/2026 (Điều 9 và 52) nêu mức 5% cho thu nhập từ đầu tư vốn CHỊU THUẾ của cá nhân cư trú, gồm lãi từ trái phiếu và giấy tờ có giá phát hành trong nước. Nhưng hướng dẫn chính thức ngày 03/07/2026 về các trường hợp MIỄN thuế thu nhập cá nhân lại liệt kê trong số đó: lãi tiền gửi tại tổ chức tín dụng, lãi trái phiếu chính phủ và trái phiếu chính quyền địa phương, lãi từ hợp đồng bảo hiểm nhân thọ, và lãi trái phiếu xanh. Vì vậy KHÔNG thể nói “mọi trái phiếu đều chịu 5%”: trái phiếu chính phủ và trái phiếu xanh nằm trong danh sách miễn. Luật Thuế thu nhập cá nhân 109/2025/QH15 có hiệu lực từ 01/07/2026. Phạm vi của trang này: các văn bản trên được đọc trong phần rà soát nguồn của dự án, không phải do trang tự tra lại tại thời điểm bạn đọc; trang không kiểm tra toàn văn Nghị định 253 hay các văn bản sửa đổi về sau, không xác định sản phẩm cụ thể của bạn thuộc diện nào, và không phải tư vấn thuế. Hãy đối chiếu với bản công bố chính thức và với điều khoản của sản phẩm, rồi nhập đúng thuế suất áp dụng cho bạn vào ô ở trên.",

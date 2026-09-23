@@ -1,7 +1,9 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
+import { ResultCta } from "@/components/calc/result-cta";
 import { NumberField } from "@/components/calc/number-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
@@ -26,8 +28,27 @@ import { RULE_OF_72 as C } from "@/content/calculators/rule-of-72";
  * The table is rendered unconditionally rather than behind a "show table"
  * button as the reference does: it is 13 rows of genuinely useful content, and
  * hiding it behind a click would also hide it from crawlers.
+ *
+ * CSV row 20 ("Gọn"): one short block per question, no chart, the answer
+ * directly under the rate. Two of those three were already true, so what is new
+ * is the single-column wrapper and a CTA per question. TWO layouts rather than
+ * one, because each has its own input: `ResultCta` scopes its search for the
+ * first invalid field to its own `formId`, and folding the second field into the
+ * first block's detail region would put it outside that scope and silently drop
+ * its recovery. This route is the one entry in the two-live-region allowlist.
+ * Docs §8.
  */
-export function RuleOf72Calculator() {
+const RATE_FORM_ID = "quy-tac-72-lai-suat-nhap";
+const RATE_RESULT_ID = "quy-tac-72-thoi-gian";
+const YEARS_FORM_ID = "quy-tac-72-thoi-gian-nhap";
+const YEARS_RESULT_ID = "quy-tac-72-lai-suat";
+
+export function RuleOf72Calculator({
+  actions,
+}: {
+  /** `<ResultActions slug="quy-tac-72">`, from the route. Second layout only. */
+  actions?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     rate: C.form.defaultRate,
     years: C.form.defaultYears,
@@ -89,79 +110,130 @@ export function RuleOf72Calculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateSuffix}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-      </FieldGroup>
-
-      {/* The two figures side by side, then the gap between them as its own
-          row: original row 17's lesson is the ERROR, so it is a result and
-          not a footnote. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-6">
-        <ResultRow
-          label={C.form.estimateLabel}
-          value={asYears(estimateYears)}
-        />
-        <ResultRow label={C.form.exactLabel} value={asYears(exactYearsValue)} />
-        <ResultRow label={C.form.errorLabel} value={errorValue} prose />
-      </ResultGroup>
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {C.form.errorHelp}
-      </p>
-
-      {milestoneRows.length > 0 ? (
-        <div className="mt-8">
-          <h3 className="font-display text-base font-medium text-ink">
-            {C.milestones.title}
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.milestones.intro}
-          </p>
-          <ResultTable
-            className="mt-4"
-            caption={C.milestones.caption}
-            columns={[
-              { label: C.milestones.multipleColumn },
-              { label: C.milestones.doublingsColumn, numeric: true },
-              { label: C.milestones.yearsColumn, numeric: true },
-            ]}
-            rows={milestoneRows}
+      <CalculatorLayout
+        formId={RATE_FORM_ID}
+        columns="single"
+        form={
+          <FieldGroup>
+            <NumberField
+              {...fields.bind("rate")}
+              label={C.form.rateLabel}
+              unit={C.form.rateSuffix}
+              help={C.form.rateHelp}
+              error={C.form.rateInvalid}
+              invalid={rateInvalid}
+            />
+          </FieldGroup>
+        }
+        cta={
+          <ResultCta
+            formId={RATE_FORM_ID}
+            targetId={RATE_RESULT_ID}
+            invalid={rateInvalid}
           />
-        </div>
-      ) : null}
+        }
+        primary={
+          <>
+            {/* The two figures side by side, then the gap between them as its
+                own row: original row 17's lesson is the ERROR, so it is a
+                result and not a footnote. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={RATE_RESULT_ID}>
+              <ResultRow
+                label={C.form.estimateLabel}
+                value={asYears(estimateYears)}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.exactLabel}
+                value={asYears(exactYearsValue)}
+              />
+              <ResultRow label={C.form.errorLabel} value={errorValue} prose />
+            </ResultGroup>
 
-      <FieldGroup className="mt-8">
-        <NumberField
-          {...fields.bind("years")}
-          label={C.form.yearsLabel}
-          unit={C.form.yearsSuffix}
-          help={C.form.yearsHelp}
-          error={C.form.yearsInvalid}
-          invalid={yearsInvalid}
-        />
-      </FieldGroup>
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.errorHelp}
+            </p>
+          </>
+        }
+        detail={
+          milestoneRows.length > 0 ? (
+            <div>
+              <h3 className="font-display text-base font-medium text-ink">
+                {C.milestones.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                {C.milestones.intro}
+              </p>
+              <ResultTable
+                className="mt-4"
+                caption={C.milestones.caption}
+                columns={[
+                  { label: C.milestones.multipleColumn },
+                  { label: C.milestones.doublingsColumn, numeric: true },
+                  { label: C.milestones.yearsColumn, numeric: true },
+                ]}
+                rows={milestoneRows}
+              />
+            </div>
+          ) : undefined
+        }
+      />
 
-      <ResultGroup title={C.form.rateResultTitle} className="mt-6">
-        <ResultRow label={C.form.estimateLabel} value={asRate(estimateRate)} />
-        <ResultRow label={C.form.exactLabel} value={asRate(exactRateValue)} />
-      </ResultGroup>
-
-      <ResultTable
-        className="mt-8"
-        caption={C.table.caption}
-        columns={[
-          { label: C.table.rateColumn },
-          { label: C.table.estimateColumn, numeric: true },
-          { label: C.table.exactColumn, numeric: true },
-        ]}
-        rows={tableRows}
+      <CalculatorLayout
+        className="mt-10"
+        formId={YEARS_FORM_ID}
+        columns="single"
+        form={
+          <FieldGroup>
+            <NumberField
+              {...fields.bind("years")}
+              label={C.form.yearsLabel}
+              unit={C.form.yearsSuffix}
+              help={C.form.yearsHelp}
+              error={C.form.yearsInvalid}
+              invalid={yearsInvalid}
+            />
+          </FieldGroup>
+        }
+        cta={
+          <ResultCta
+            formId={YEARS_FORM_ID}
+            targetId={YEARS_RESULT_ID}
+            invalid={yearsInvalid}
+          />
+        }
+        primary={
+          <ResultGroup
+            title={C.form.rateResultTitle}
+            anchorId={YEARS_RESULT_ID}
+          >
+            <ResultRow
+              label={C.form.estimateLabel}
+              value={asRate(estimateRate)}
+              emphasis
+            />
+            <ResultRow
+              label={C.form.exactLabel}
+              value={asRate(exactRateValue)}
+            />
+          </ResultGroup>
+        }
+        /* SECOND layout only, deliberately. One compact block per page: putting
+           it under the first answer would interrupt question 1 → question 2, and
+           duplicating it would put the same two links on screen twice. Here it
+           sits between the second answer and the 13-row reference table. */
+        actions={actions}
+        detail={
+          <ResultTable
+            caption={C.table.caption}
+            columns={[
+              { label: C.table.rateColumn },
+              { label: C.table.estimateColumn, numeric: true },
+              { label: C.table.exactColumn, numeric: true },
+            ]}
+            rows={tableRows}
+          />
+        }
       />
     </CalculatorCard>
   );

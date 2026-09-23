@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { NetDistributionCalculator } from "@/components/net-distribution-calculator";
 import { NET_DISTRIBUTION as C } from "@/content/calculators/net-distribution";
@@ -23,6 +24,12 @@ export default function NetDistributionPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // §5: the purpose and the unchanged obligation are the visible half;
+      // which deductions the tool accepts, in what order, and the reverse
+      // direction are one click away instead of standing between the reader
+      // and the first field.
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // WHAT the deductions are comes first: they are the reader's own
       // hypothetical figures, and this is not a tax or legal calculator.
       // Original row 67 asks for the transaction type to be explicit, and a
@@ -39,9 +46,22 @@ export default function NetDistributionPage() {
       // interest rate. This tool subtracts the entered fees and computes no
       // rate at all. See the content file.
       disclaimer={C.disclaimer}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      // ROW 69 is "Hai cột": the tool now renders `columns="split"` with the
+      // deduction bridge directly under the answer and the Chi tiết rows in
+      // the full-width band below.
+      wide
     >
-      <NetDistributionCalculator />
+      {/* P2 placement, on the pattern `lai-suat-thuc-te` already ships: the
+          APR question a reader has the moment they see how much the fees took
+          now sits under the net figure, and the remaining guidance stays after
+          it. Nothing is added or dropped — `next-steps.ts` holds the same three
+          tools, the first two travel into `ResultActions` with the intro, and
+          `promoted` leaves the third plus the education link below. It used to
+          arrive in `afterCalculator`, under the chart and the detail band. */}
+      <NetDistributionCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

@@ -55,8 +55,10 @@ describe("education-savings copy — figures reproduce from the module", () => {
 
     expect(target).toBe("700.601.379");
     expect(nominal).toBe("778.268.627");
-    expect(C.streamNotice).toContain(target);
-    expect(C.streamNotice).toContain(nominal);
+    // The figures moved to `streamNoticeDetail`; the two RULES they support
+    // stayed in `streamNotice`, which renders unconditionally above the form.
+    expect(C.streamNoticeDetail).toContain(target);
+    expect(C.streamNoticeDetail).toContain(nominal);
     expect(C.form.table.intro).toContain(nominal);
     expect(C.formula.body[1]).toContain(target);
     expect(C.formula.body[2]).toContain(formatMoney(r.currentSavingsAtStart));
@@ -68,7 +70,7 @@ describe("education-savings copy — figures reproduce from the module", () => {
     const r = plan();
     expect(C.formula.body[0]).toContain(formatMoney(r.years[0].tuition));
     expect(C.formula.body[0]).toContain(formatMoney(r.years[3].tuition));
-    expect(C.streamNotice).toContain(formatMoney(r.years[0].tuition));
+    expect(C.streamNoticeDetail).toContain(formatMoney(r.years[0].tuition));
   });
 
   it("gives the last year of study the 13-year earning horizon it claims", () => {

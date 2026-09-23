@@ -22,9 +22,13 @@ export default function UsDividendTaxPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
-      // What the classification is worth on the prefilled numbers, and the
-      // 23,80% against 40,80% gap at the top.
+      // The 23,80% against 40,80% gap at the top: the widest form of the rule
+      // the page exists for.
       notice={C.classificationNotice}
+      // What the classification is worth on the prefilled numbers.
+      noticeDetailTitle={C.classificationNoticeDetailTitle}
+      noticeDetail={C.classificationNoticeDetail}
+      wide
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}

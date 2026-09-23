@@ -48,8 +48,11 @@ export const US_INFLATION = {
   metaDescription:
     "Quy đổi sức mua một số tiền giữa hai thời điểm theo chỉ số giá tiêu dùng Hoa Kỳ, hoặc theo một tỷ lệ lạm phát giả định. Công cụ miễn phí của FinHome.",
 
+  // ENTRY: the measure-versus-forecast distinction and the basket limit are
+  // both limits on reading the result, so both stay here. The sentence that
+  // only said the page keeps them apart was cut — the two mode labels say it.
   lede:
-    "Hai câu hỏi khác nhau, và công cụ giữ chúng riêng: quy đổi theo hai số đọc CPI là một phép đo chính xác cho hai thời điểm đó, còn quy đổi theo một tỷ lệ giả định là một phép dự báo. Trang này không trộn hai thứ lại. Lưu ý thêm một điều trước khi đọc kết quả: CPI là mức giá bình quân của một giỏ hàng hóa và dịch vụ, không phải giá của một món cụ thể — nên nó không nói gì về mức tăng giá của một căn nhà, một mã cổ phiếu hay một khoản học phí riêng lẻ.",
+    "Hai câu hỏi khác nhau, và công cụ giữ chúng riêng: quy đổi theo hai số đọc CPI là phép đo chính xác cho đúng hai thời điểm đó, còn quy đổi theo một tỷ lệ giả định là một phép dự báo. CPI là mức giá bình quân của một giỏ hàng hóa và dịch vụ, nên nó không nói gì về mức tăng giá của một căn nhà, một mã cổ phiếu hay một khoản học phí riêng lẻ.",
 
   form: {
     modeGroup: "Cách quy đổi",
@@ -109,8 +112,14 @@ export const US_INFLATION = {
     halvingUnit: "năm",
     neverHalves: "Không bao giờ (giá không tăng)",
 
+    // Row 74 keeps the CPI SOURCE visible and moves the CPI-chain teaching
+    // into a disclosure. The same-series rule stays up here because it is the
+    // one way this mode can be wrong while looking right.
     cpiSourceNotice:
-      "Công cụ cố ý không kèm sẵn chuỗi CPI lịch sử mà để bạn tự nhập hai số đọc. Lý do: một số CPI bị chép sai sẽ cho ra kết quả sai mà người đọc không có cách nào phát hiện — vì chính việc không biết con số đó mới là lý do họ dùng công cụ. Chuỗi CPI cũng được điều chỉnh và đổi gốc theo thời gian, nên một bảng kèm sẵn sẽ cũ đi một cách vô hình. Tra hai số đọc tại Cục Thống kê Lao động Hoa Kỳ (bls.gov, chuỗi CPI-U) rồi nhập vào đây, kết quả sẽ chính xác cho đúng hai thời điểm đó và chính xác mãi về sau. Lưu ý dùng cùng một loại số đọc cho cả hai — hoặc cùng là bình quân năm, hoặc cùng là số theo tháng.",
+      "Hai số đọc là của bạn: tra tại Cục Thống kê Lao động Hoa Kỳ (bls.gov, chuỗi CPI-U) và dùng cùng một loại cho cả hai — hoặc cùng là bình quân năm, hoặc cùng là số theo tháng.",
+    cpiSourceDetailTitle: "Vì sao công cụ không kèm sẵn bảng CPI",
+    cpiSourceDetail:
+      "Một số CPI bị chép sai sẽ cho ra kết quả sai mà người đọc không có cách nào phát hiện — vì chính việc không biết con số đó mới là lý do họ dùng công cụ. Chuỗi CPI cũng được điều chỉnh và đổi gốc theo thời gian, nên một bảng kèm sẵn sẽ cũ đi một cách vô hình. Khi bạn tự nhập hai số đọc, kết quả chính xác cho đúng hai thời điểm đó và chính xác mãi về sau.",
     deflationNotice:
       "Hai số đọc cho thấy giá giảm trong kỳ. Sức mua tăng, nên dòng “sức mua đã mất” hiện số âm — đó là phần sức mua có thêm. Giảm phát không bao giờ làm sức mua giảm một nửa, nên dòng đó để trống.",
     rateModeNotice:
@@ -120,7 +129,13 @@ export const US_INFLATION = {
   },
 
   conflationNotice:
-    "Một điểm hay bị lẫn: lạm phát tích lũy và sức mua đã mất không phải cùng một con số, và con số thứ hai luôn nhỏ hơn. Giá tăng gấp đôi là lạm phát 100%, nhưng sức mua chỉ mất 50% — vì 1 USD giờ mua được nửa số hàng, không phải không mua được gì. Giá tăng gấp ba là lạm phát 200% và sức mua mất 66,67%. Sức mua đã mất không bao giờ đạt 100% dù lạm phát cao đến đâu, vì tiền luôn còn một phần giá trị. Công cụ hiển thị cả hai dòng riêng biệt, và bộ kiểm thử quét một dải rộng để bảo đảm dòng thứ hai luôn nhỏ hơn dòng thứ nhất.",
+    "Lạm phát tích lũy và sức mua đã mất không phải cùng một con số, và con số thứ hai luôn nhỏ hơn: giá tăng gấp đôi là lạm phát 100% nhưng sức mua chỉ mất 50%. Sức mua đã mất không bao giờ đạt 100% dù lạm phát cao đến đâu, vì tiền luôn còn một phần giá trị.",
+
+  // The worked cases, a click away. The RULE above is what a reader needs
+  // before trusting two rows that look like they should agree.
+  conflationNoticeDetailTitle: "Cụ thể: hai con số trên cùng một mức giá",
+  conflationNoticeDetail:
+    "Giá tăng gấp đôi là lạm phát 100%, nhưng 1 USD giờ mua được nửa số hàng chứ không phải không mua được gì — nên sức mua mất 50%. Giá tăng gấp ba là lạm phát 200% và sức mua mất 66,67%. Công cụ hiển thị cả hai dòng riêng biệt, và bộ kiểm thử quét một dải rộng để bảo đảm dòng thứ hai luôn nhỏ hơn dòng thứ nhất.",
 
   formula: {
     title: "Cách tính",

@@ -63,8 +63,15 @@ export type WithdrawalChartLabels = ValuePathsLabels & {
    * `{full}`, `{planned}`, `{paid}`, `{short}` substituted.
    */
   partialNote: string;
-  /** Appended when inflation is zero, where the two lines coincide. */
-  noInflationNote: string;
+  /**
+   * Appended when the two drawn series coincide at every point.
+   *
+   * NOT "when inflation is zero". This module never receives the inflation
+   * entry — `WithdrawalResult` reports `realReturnPercent`, which cannot be
+   * inverted without the nominal return — so the copy must describe the
+   * coincidence, not diagnose its cause. See the note in the content file.
+   */
+  coincidentLinesNote: string;
   itemColumn: string;
   amountColumn: string;
   monthRow: string;
@@ -155,12 +162,17 @@ export function withdrawalChartModel(
 
   summary += ` ${labels.indexNote}`;
 
-  // The two lines coincide at zero inflation, and saying so stops a reader
-  // looking for a second line that is exactly underneath the first.
-  const inflationFree = result.series.every(
+  // A reader seeing one line needs to know the second is exactly underneath
+  // it. The condition is what it has always been — the two series agree at
+  // every drawn point — but it is NOT evidence that inflation was zero, and
+  // the note used to say it was. A plan that depletes in month 1 draws only
+  // month 0 and a terminal 0, both of which agree at any inflation: a browser
+  // pass hit exactly that with 1.000.000 ₫, a 30.000.000 ₫ draw, 8% and 4%,
+  // and got "Bạn đang đặt lạm phát bằng 0" beside a real return of 3,8462%.
+  const linesCoincide = result.series.every(
     (point) => point.balance === point.realBalance,
   );
-  if (inflationFree) summary += ` ${labels.noInflationNote}`;
+  if (linesCoincide) summary += ` ${labels.coincidentLinesNote}`;
 
   return valuePathsModel(
     [

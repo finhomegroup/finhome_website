@@ -49,7 +49,10 @@ export const EDUCATION_SAVINGS = {
     // nobody here measured: which input matters most depends on the horizon,
     // the return and the amounts. It is a MATERIAL assumption — the result
     // moves a lot with it — and that is what the sentence now says.
-    "Hai tốc độ tăng chạy ngược nhau: học phí tăng theo năm trong khi tiền tiết kiệm sinh lãi. Bỏ qua tốc độ thứ nhất sẽ tính thiếu. Mức tăng học phí là một giả định ẢNH HƯỞNG LỚN đến kết quả — hãy lấy từ thông báo học phí của đúng trường bạn nhắm tới, vì trang này không biết mức nào, rồi thử thêm một mức cao hơn để xem kế hoạch còn đứng được không.",
+    // The tuition-growth warning is not deleted here, it is PROMOTED: it
+    // moved into `streamNotice`, the entry slot the contract keeps
+    // unconditionally visible, so the lede is the purpose alone.
+    "Hai tốc độ tăng chạy ngược nhau: học phí tăng theo năm trong khi tiền tiết kiệm sinh lãi. Bỏ qua tốc độ thứ nhất sẽ tính thiếu.",
 
   form: {
     tuitionGroup: "Học phí",
@@ -229,7 +232,15 @@ export const EDUCATION_SAVINGS = {
   // 0%-growth sentence was also rewritten: entering 0 is the assumption that
   // tuition stays flat, not an error — what it is NOT is a way to avoid
   // making an assumption.
+  // The longest entry block in the batch at 888 characters, all of it above
+  // the form. The two RULES it carried — that the growth rate is the material
+  // assumption, and that summing the raised years overstates the target —
+  // stay visible here; every worked figure moves to the disclosure below,
+  // unchanged.
   streamNotice:
+    "Mức tăng học phí là giả định ẢNH HƯỞNG LỚN nhất đến kết quả và trang này không biết mức nào của trường bạn nhắm tới: hãy lấy từ thông báo học phí của đúng trường đó, rồi thử thêm một mức cao hơn để xem kế hoạch còn đứng được không. Số cần có vào ngày nhập học nhỏ hơn tổng học phí bốn năm, vì tiền dành cho các năm sau vẫn sinh lãi trong lúc chờ — nên cộng thẳng các năm đã tăng giá là cách tính thừa.",
+  streamNoticeDetailTitle: "Con số cụ thể: 778.268.627 ₫ so với 700.601.379 ₫",
+  streamNoticeDetail:
     "Học phí không phải một con số ở một thời điểm. Trong ví dụ điền sẵn của trang — và cụ thể là ở mức lợi nhuận 7%/năm của ví dụ đó — tổng học phí bốn năm là 778.268.627 ₫ nhưng số cần có vào ngày nhập học chỉ là 700.601.379 ₫, vì tiền dành cho năm thứ hai, thứ ba, thứ tư vẫn tiếp tục sinh lãi trong lúc chờ được dùng. Khoảng cách đó có được là nhờ lợi nhuận dương: ở 0% hai con số bằng nhau, còn ở lợi nhuận âm thì số cần có lớn hơn tổng học phí. Cộng thẳng các năm đã tăng giá là cách tính thừa hơn 77 triệu đồng trong chính ví dụ đó, và nó khiến mục tiêu trông nặng hơn thực tế. Ở chiều còn lại, ô “học phí tăng” quyết định rất nhiều: cũng với ví dụ đó, ở 8%/năm học phí năm đầu là 172.714.000 ₫ — hơn gấp đôi mức 80 triệu hôm nay — còn nếu bạn đặt 0% thì nó vẫn là 80 triệu. Đặt 0% là một giả định rõ ràng rằng học phí không đổi; hãy chọn nó có ý thức chứ không phải để trống cho nhanh.",
 
   formula: {

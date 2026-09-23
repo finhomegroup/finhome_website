@@ -181,9 +181,16 @@ describe("tiet-kiem-thue-vay-mua-nha at its shipped defaults", () => {
     expect(usd(r.effectiveDeduction)).toBe("2.000");
     expect(usd(r.taxSaving)).toBe("480");
     expect(usd(r.naiveSaving)).toBe("5.760");
+    // REPOINTED by row 13's entry pass: the worked ladder moved into
+    // `marginalNoticeDetail`, the disclosure the route passes under
+    // `marginalNoticeDetailTitle`. The overstatement CLAIM stays visible.
     for (const figure of ["32.000", "30.000", "24.000", "2.000", "480", "5.760"]) {
-      expect(C.marginalNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.marginalNoticeDetail,
+        `the worked ladder is missing ${figure}`,
+      ).toContain(figure);
     }
+    expect(C.marginalNotice).toContain("phóng đại");
   });
 
   it("makes the twelve-fold claim arithmetic rather than rhetoric", () => {
@@ -206,9 +213,15 @@ describe("tiet-kiem-thue-vay-mua-nha at its shipped defaults", () => {
     const naive =
       ((input.annualInterest - r.naiveSaving) / input.loanBalance) * 100;
     expect(pct(naive)).toBe("4,56%");
+    // Same move: the three rates are in the disclosure, while the visible
+    // notice still says which way the common method errs.
     for (const figure of ["5,88%", "6,00%", "4,56%"]) {
-      expect(C.marginalNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.marginalNoticeDetail,
+        `the worked ladder is missing ${figure}`,
+      ).toContain(figure);
     }
+    expect(C.marginalNotice).toContain("lãi suất trên hợp đồng");
   });
 
   it("answers zero, not a fraction, for the filer who never itemises", () => {

@@ -1,6 +1,8 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import {
@@ -117,8 +119,26 @@ export function contributionCheckpointAges(
  * It owns no arithmetic. The plan is `resolveLongTermPlan`, which resolves one
  * `RetirementInput` into all four views at once so this route and its three
  * siblings cannot disagree, and this page leads with `plan.contribution`.
+ *
+ * CSV row 47 ("Hai cột"): the MONTHLY figure leads, and the year-by-year table
+ * and the end-of-plan check move into the full-width detail region. The monthly
+ * figure is `answer.monthlyEquivalent` from the model — not this component
+ * dividing an annual figure — and the exact annual instruction stays directly
+ * under it, because that is what the projection actually applies. Docs §8.
  */
-export function RetirementTargetCalculator() {
+const FORM_ID = "tinh-huu-tri-nhap";
+const RESULT_ID = "tinh-huu-tri-ket-qua";
+
+export function RetirementTargetCalculator({
+  actions,
+}: {
+  /**
+   * `<LongTermViews current="contribution">`, in the `actions` slot — after the
+   * answer, before the figure. See `RetirementPlanCalculator` for why the set
+   * crosses whole rather than being trimmed to two views.
+   */
+  actions?: React.ReactNode;
+}) {
   const fields = useCalcFields(L.defaults);
   const read = readRetirement(fields.values, OMIT);
 
@@ -208,124 +228,24 @@ export function RetirementTargetCalculator() {
               ];
         });
 
-  return (
-    <CalculatorCard>
-      <RetirementFields
-        copy={L.fields}
-        invalid={read.invalid}
-        bind={fields.bind}
-        omit={OMIT}
-      />
+  /**
+   * The ONE main answer, formatted once. The pinned CTA block restates this
+   * exact string rather than formatting the number a second time.
+   */
+  const monthly =
+    answer?.monthlyEquivalent === null || answer?.monthlyEquivalent === undefined
+      ? null
+      : longTermMoney(answer.monthlyEquivalent);
 
-      {/* The annual figure leads: it is the plan's actual instruction, and the
-          model adds it once a year. The month figure under it is that figure
-          divided by twelve and says so. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.annualLabel}
-          value={
-            answer?.annualContribution === null ||
-            answer?.annualContribution === undefined
-              ? null
-              : longTermMoney(answer.annualContribution)
-          }
-        />
-        <ResultRow
-          label={F.monthlyLabel}
-          value={
-            answer?.monthlyEquivalent === null ||
-            answer?.monthlyEquivalent === undefined
-              ? null
-              : longTermMoney(answer.monthlyEquivalent)
-          }
-        />
-        <ResultRow
-          label={F.lastAnnualLabel}
-          value={
-            lastAccumulating === undefined
-              ? null
-              : longTermMoney(lastAccumulating.contribution)
-          }
-        />
-        <ResultRow
-          label={F.realBalanceLabel}
-          value={
-            projection === null
-              ? null
-              : longTermMoney(projection.realBalanceAtRetirement)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.checkTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.nominalBalanceLabel}
-          value={
-            projection === null
-              ? null
-              : longTermMoney(projection.balanceAtRetirement)
-          }
-        />
-        <ResultRow
-          label={F.requiredBalanceLabel}
-          value={
-            projection === null
-              ? null
-              : longTermMoney(projection.requiredRealBalanceAtRetirement)
-          }
-        />
-        <ResultRow
-          label={F.totalContributedLabel}
-          value={
-            projection === null
-              ? null
-              : longTermMoney(projection.totalContributed)
-          }
-        />
-        <ResultRow
-          label={F.totalGrowthLabel}
-          value={
-            projection === null ? null : longTermMoney(projection.totalGrowth)
-          }
-        />
-        <ResultRow
-          label={F.initialRateLabel}
-          value={
-            projection === null ||
-            projection.initialWithdrawalRatePercent === null
-              ? null
-              : formatPercent(projection.initialWithdrawalRatePercent, 2)
-          }
-        />
-        <ResultRow
-          label={F.sustainableLabel}
-          value={
-            projection === null || projection.sustainableSpending === null
-              ? null
-              : longTermMoney(projection.sustainableSpending)
-          }
-        />
-        <ResultRow
-          label={F.finalBalanceLabel}
-          value={
-            projection === null ? null : longTermMoney(projection.finalBalance)
-          }
-        />
-      </ResultGroup>
-
-      {rows.length > 0 ? (
-        <>
-          <p className="mt-8 text-sm leading-relaxed text-ink-3">{T.intro}</p>
-          <ResultTable
-            className="mt-4"
-            caption={T.caption}
-            columns={CONTRIBUTION_TABLE_COLUMNS}
-            rows={rows}
-            mobileCards
-          />
-        </>
-      ) : null}
-
+  /**
+   * Every sentence that says what the figure above MEANS — funded already,
+   * funded by the pension, no year left to contribute in, unreachable,
+   * unusable input, and what the boundary policy forgave. They stay with the
+   * answer rather than moving under the detail tables: each one is the
+   * difference between "0 ₫" being good news and being a failure to solve.
+   */
+  const notices = (
+    <>
       {alreadyFunded ? (
         <p className="mt-4 text-sm leading-relaxed text-ink-3">
           {F.fundedNotice}
@@ -370,6 +290,147 @@ export function RetirementTargetCalculator() {
           {F.invalidNotice}
         </p>
       ) : null}
+    </>
+  );
+
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <RetirementFields
+            copy={L.fields}
+            invalid={read.invalid}
+            bind={fields.bind}
+            omit={OMIT}
+          />
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={read.input === null}
+            sticky
+            answer={{ label: F.monthlyLabel, value: monthly }}
+          />
+        }
+        primary={
+          <>
+            {/* Row 47 puts the MONTHLY figure first — it is what a reader can
+                act on — with the annual instruction the model actually applies
+                directly under it. Neither is derived here from the other. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow label={F.monthlyLabel} value={monthly} emphasis />
+              <ResultRow
+                label={F.annualLabel}
+                value={
+                  answer?.annualContribution === null ||
+                  answer?.annualContribution === undefined
+                    ? null
+                    : longTermMoney(answer.annualContribution)
+                }
+              />
+              <ResultRow
+                label={F.lastAnnualLabel}
+                value={
+                  lastAccumulating === undefined
+                    ? null
+                    : longTermMoney(lastAccumulating.contribution)
+                }
+              />
+              <ResultRow
+                label={F.realBalanceLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.realBalanceAtRetirement)
+                }
+              />
+            </ResultGroup>
+            {notices}
+          </>
+        }
+        actions={actions}
+        detail={
+          <>
+            <ResultGroup title={F.checkTitle} live={false}>
+              <ResultRow
+                label={F.nominalBalanceLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.balanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.requiredBalanceLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.requiredRealBalanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.totalContributedLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.totalContributed)
+                }
+              />
+              <ResultRow
+                label={F.totalGrowthLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.totalGrowth)
+                }
+              />
+              <ResultRow
+                label={F.initialRateLabel}
+                value={
+                  projection === null ||
+                  projection.initialWithdrawalRatePercent === null
+                    ? null
+                    : formatPercent(projection.initialWithdrawalRatePercent, 2)
+                }
+              />
+              <ResultRow
+                label={F.sustainableLabel}
+                value={
+                  projection === null || projection.sustainableSpending === null
+                    ? null
+                    : longTermMoney(projection.sustainableSpending)
+                }
+              />
+              <ResultRow
+                label={F.finalBalanceLabel}
+                value={
+                  projection === null
+                    ? null
+                    : longTermMoney(projection.finalBalance)
+                }
+              />
+            </ResultGroup>
+
+            {rows.length > 0 ? (
+              <>
+                <p className="mt-8 text-sm leading-relaxed text-ink-3">
+                  {T.intro}
+                </p>
+                <ResultTable
+                  className="mt-4"
+                  caption={T.caption}
+                  columns={CONTRIBUTION_TABLE_COLUMNS}
+                  rows={rows}
+                  mobileCards
+                />
+              </>
+            ) : null}
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

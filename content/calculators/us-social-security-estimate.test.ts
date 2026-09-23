@@ -94,8 +94,14 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(usdCents(r.aime.aime)).toBe("6.500,00");
     expect(usdCents(r.pia.pia)).toBe("2.825,80");
     expect(formatPercent(r.pia.replacementRatePercent!, 2)).toBe("43,47%");
-    expect(C.regressiveNotice).toContain("2.825,80");
-    expect(C.regressiveNotice).toContain("43,47%");
+    // REPOINTED by row 55's entry pass: the worked cases moved into
+    // `regressiveNoticeDetail`, the disclosure the route passes under
+    // `regressiveNoticeDetailTitle`. The rule they illustrate — 90/32/15 and
+    // the taxable ceiling — stays visible above the tool.
+    expect(C.regressiveNotice).toContain("lũy thoái");
+    expect(C.regressiveNotice).toContain("ước tính");
+    expect(C.regressiveNoticeDetail).toContain("2.825,80");
+    expect(C.regressiveNoticeDetail).toContain("43,47%");
   });
 
   it("quotes each tier of the formula from the module's bend points", () => {
@@ -189,7 +195,7 @@ describe("uoc-tinh-an-sinh-xa-hoi at its shipped defaults", () => {
       "5,13",
       "1,55",
     ]) {
-      expect(C.regressiveNotice, `notice is missing ${figure}`).toContain(
+      expect(C.regressiveNoticeDetail, `notice is missing ${figure}`).toContain(
         figure,
       );
     }

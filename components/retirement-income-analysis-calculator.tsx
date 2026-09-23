@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -26,6 +28,9 @@ const F = C.form;
 const ST = F.sourceTable;
 const YT = F.yearTable;
 
+const FORM_ID = "phan-tich-thu-nhap-huu-tri-nhap";
+const RESULT_ID = "phan-tich-thu-nhap-huu-tri-ket-qua";
+
 /** A source that pays for life. The engine's age ceiling. */
 const FOR_LIFE = 120;
 
@@ -36,6 +41,34 @@ function usd(value: number): string {
   return `${formatMoney(value)} USD`;
 }
 
+/**
+ * ROW 51 — "Tách nguồn thu cố định và phần phải rút từ quỹ; ghi đơn vị tiền
+ * ngay trong tóm tắt", at "Hai cột".
+ *
+ * WHAT THE ROW IS ABOUT. The announced group held four rows: the share of the
+ * need the fixed sources cover in the first and last year, and the portfolio
+ * draw in the first and last year. Those are two different subjects — what
+ * arrives without touching capital, and what has to be sold to make up the
+ * difference — reported at one weight in one group. So:
+ *
+ * - The announced group is the FIXED SOURCES only: the first year's coverage
+ *   as the one emphasised answer, the last year's beside it, and the same two
+ *   years stated as AMOUNTS in USD. That second pair is the row's "ghi đơn vị
+ *   tiền ngay trong tóm tắt": a percentage carries no unit, and every figure
+ *   on this page is US dollars because the tool models United States practice.
+ * - The portfolio draw has its own group under `drawTitle`, with the first
+ *   year's withdrawal rate, which is the figure that says whether the draw is
+ *   sustainable at all.
+ * - `portfolioTitle` keeps what happens TO the portfolio — depletion age, the
+ *   first unmet year, the closing real balance.
+ * - Both wide tables move into the full-width detail band, where they get the
+ *   whole card rather than three fifths of it. `mobileCards` is unchanged on
+ *   both, so the 390 px measurements behind them still hold.
+ *
+ * UNCHANGED: every field, default, bound and guard; the indexation wiring for
+ * Social Security and part-time pay; `projectIncomeSources` and every figure
+ * it returns; the US scope; the covered/unmet notices and the invalid notice.
+ */
 export function RetirementIncomeAnalysisCalculator() {
   const fields = useCalcFields(F.defaults);
   const v = fields.values;
@@ -183,246 +216,319 @@ export function RetirementIncomeAnalysisCalculator() {
         ])
     : [];
 
+  /**
+   * THE ONE ANSWER, FORMATTED ONCE: the share of the first year's spending the
+   * fixed sources cover. Thirteen inputs across four groups, so editing the
+   * inflation box at the bottom puts the announced figure off a desktop
+   * screen; this same string feeds the emphasised row and the pinned block, so
+   * the two cannot round one quantity two different ways.
+   */
+  const headline = {
+    label: F.firstCoverageLabel,
+    value:
+      result === null || result.first.fixedCoveragePercent === null
+        ? null
+        : formatPercent(result.first.fixedCoveragePercent, 1),
+  };
+
   return (
     <CalculatorCard>
-      <FieldGroup title={F.needGroup}>
-        <NumberField
-          {...fields.bind("startAge")}
-          label={F.startAgeLabel}
-          unit={F.startAgeUnit}
-          help={F.startAgeHelp}
-          error={F.ageInvalid}
-          invalid={invalid.startAge}
-        />
-        <NumberField
-          {...fields.bind("endAge")}
-          label={F.endAgeLabel}
-          unit={F.endAgeUnit}
-          help={F.endAgeHelp}
-          error={F.ageInvalid}
-          invalid={invalid.endAge}
-        />
-        <NumberField
-          {...fields.bind("need")}
-          label={F.needLabel}
-          unit={F.needUnit}
-          help={F.needHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.need}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={F.needGroup}>
+              <NumberField
+                {...fields.bind("startAge")}
+                label={F.startAgeLabel}
+                unit={F.startAgeUnit}
+                help={F.startAgeHelp}
+                error={F.ageInvalid}
+                invalid={invalid.startAge}
+              />
+              <NumberField
+                {...fields.bind("endAge")}
+                label={F.endAgeLabel}
+                unit={F.endAgeUnit}
+                help={F.endAgeHelp}
+                error={F.ageInvalid}
+                invalid={invalid.endAge}
+              />
+              <NumberField
+                {...fields.bind("need")}
+                label={F.needLabel}
+                unit={F.needUnit}
+                help={F.needHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.need}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={F.fixedGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("social")}
-          label={F.socialLabel}
-          unit={F.socialUnit}
-          help={F.socialHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.social}
-        />
-        <NumberField
-          {...fields.bind("pension")}
-          label={F.pensionLabel}
-          unit={F.pensionUnit}
-          help={F.pensionHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.pension}
-        />
-        <NumberField
-          {...fields.bind("pensionIndex")}
-          label={F.pensionIndexLabel}
-          unit={F.pensionIndexUnit}
-          help={F.pensionIndexHelp}
-          error={F.rateInvalid}
-          invalid={invalid.pensionIndex}
-        />
-      </FieldGroup>
+            <FieldGroup title={F.fixedGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("social")}
+                label={F.socialLabel}
+                unit={F.socialUnit}
+                help={F.socialHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.social}
+              />
+              <NumberField
+                {...fields.bind("pension")}
+                label={F.pensionLabel}
+                unit={F.pensionUnit}
+                help={F.pensionHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.pension}
+              />
+              <NumberField
+                {...fields.bind("pensionIndex")}
+                label={F.pensionIndexLabel}
+                unit={F.pensionIndexUnit}
+                help={F.pensionIndexHelp}
+                error={F.rateInvalid}
+                invalid={invalid.pensionIndex}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={F.flexGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("work")}
-          label={F.workLabel}
-          unit={F.workUnit}
-          help={F.workHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.work}
-        />
-        <NumberField
-          {...fields.bind("workThrough")}
-          label={F.workThroughLabel}
-          unit={F.workThroughUnit}
-          help={F.workThroughHelp}
-          error={F.ageInvalid}
-          invalid={invalid.workThrough}
-        />
-        <NumberField
-          {...fields.bind("other")}
-          label={F.otherLabel}
-          unit={F.otherUnit}
-          help={F.otherHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.other}
-        />
-        <NumberField
-          {...fields.bind("otherIndex")}
-          label={F.otherIndexLabel}
-          unit={F.otherIndexUnit}
-          help={F.otherIndexHelp}
-          error={F.rateInvalid}
-          invalid={invalid.otherIndex}
-        />
-      </FieldGroup>
+            <FieldGroup title={F.flexGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("work")}
+                label={F.workLabel}
+                unit={F.workUnit}
+                help={F.workHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.work}
+              />
+              <NumberField
+                {...fields.bind("workThrough")}
+                label={F.workThroughLabel}
+                unit={F.workThroughUnit}
+                help={F.workThroughHelp}
+                error={F.ageInvalid}
+                invalid={invalid.workThrough}
+              />
+              <NumberField
+                {...fields.bind("other")}
+                label={F.otherLabel}
+                unit={F.otherUnit}
+                help={F.otherHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.other}
+              />
+              <NumberField
+                {...fields.bind("otherIndex")}
+                label={F.otherIndexLabel}
+                unit={F.otherIndexUnit}
+                help={F.otherIndexHelp}
+                error={F.rateInvalid}
+                invalid={invalid.otherIndex}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={F.portfolioGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("balance")}
-          label={F.balanceLabel}
-          unit={F.balanceUnit}
-          help={F.balanceHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.balance}
-        />
-        <NumberField
-          {...fields.bind("returnPercent")}
-          label={F.returnLabel}
-          unit={F.returnUnit}
-          help={F.returnHelp}
-          error={F.rateInvalid}
-          invalid={invalid.returnPercent}
-        />
-        <NumberField
-          {...fields.bind("inflation")}
-          label={F.inflationLabel}
-          unit={F.inflationUnit}
-          help={F.inflationHelp}
-          error={F.rateInvalid}
-          invalid={invalid.inflation}
-        />
-      </FieldGroup>
-
-      {/* Both ends of retirement, side by side. A page that reported only
-          the first year would say this plan covers 82,5% of the need and
-          stop there. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.firstCoverageLabel}
-          value={
-            result === null || result.first.fixedCoveragePercent === null
-              ? null
-              : formatPercent(result.first.fixedCoveragePercent, 1)
-          }
-        />
-        <ResultRow
-          label={F.lastCoverageLabel}
-          value={
-            result === null || result.last.fixedCoveragePercent === null
-              ? null
-              : formatPercent(result.last.fixedCoveragePercent, 1)
-          }
-        />
-        <ResultRow
-          label={F.firstDrawLabel}
-          value={result === null ? null : usd(result.first.realWithdrawal)}
-        />
-        <ResultRow
-          label={F.lastDrawLabel}
-          value={result === null ? null : usd(result.last.realWithdrawal)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.portfolioTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.initialRateLabel}
-          value={
-            result === null || result.initialWithdrawalRatePercent === null
-              ? null
-              : formatPercent(result.initialWithdrawalRatePercent, 2)
-          }
-        />
-        <ResultRow
-          label={F.depletionLabel}
-          value={
-            result === null || result.depletionAge === null
-              ? null
-              : String(result.depletionAge)
-          }
-        />
-        <ResultRow
-          label={F.unmetLabel}
-          value={
-            result === null || result.firstUnmetAge === null
-              ? null
-              : String(result.firstUnmetAge)
-          }
-        />
-        <ResultRow
-          label={F.finalRealLabel}
-          value={result === null ? null : usd(result.last.realBalance)}
-        />
-      </ResultGroup>
-
-      {sourceRows.length > 0 ? (
-        <>
-          <p className="mt-8 text-sm leading-relaxed text-ink-3">{ST.intro}</p>
-          <ResultTable
-            className="mt-4"
-            caption={ST.caption}
-            columns={[
-              { label: ST.sourceColumn },
-              { label: ST.firstColumn, numeric: true },
-              { label: ST.lastNominalColumn, numeric: true },
-              { label: ST.lastRealColumn, numeric: true },
-              { label: ST.keptColumn, numeric: true },
-              { label: ST.shareColumn, numeric: true },
-            ]}
-            rows={sourceRows}
-            // Six columns, so `mobileCards` per docs §3. Measured at a
-            // verified 390 px viewport on 2026-09-16: 586 px inside a 300 px
-            // frame. Rows are income sources, so a card per row is one
-            // source's whole story across the retirement.
-            mobileCards
+            <FieldGroup title={F.portfolioGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("balance")}
+                label={F.balanceLabel}
+                unit={F.balanceUnit}
+                help={F.balanceHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.balance}
+              />
+              <NumberField
+                {...fields.bind("returnPercent")}
+                label={F.returnLabel}
+                unit={F.returnUnit}
+                help={F.returnHelp}
+                error={F.rateInvalid}
+                invalid={invalid.returnPercent}
+              />
+              <NumberField
+                {...fields.bind("inflation")}
+                label={F.inflationLabel}
+                unit={F.inflationUnit}
+                help={F.inflationHelp}
+                error={F.rateInvalid}
+                invalid={invalid.inflation}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            sticky
+            answer={headline}
           />
-        </>
-      ) : null}
+        }
+        primary={
+          <>
+            {/* ROW 51: the fixed sources, and only them. Both ends of
+                retirement, because a page that reported only the first year
+                would say this plan covers 82,5% of the need and stop there —
+                and both ends stated in money as well as in percent, so the
+                summary carries the unit the percentages cannot. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={headline.label}
+                value={headline.value}
+                emphasis
+              />
+              <ResultRow
+                label={F.lastCoverageLabel}
+                value={
+                  result === null || result.last.fixedCoveragePercent === null
+                    ? null
+                    : formatPercent(result.last.fixedCoveragePercent, 1)
+                }
+              />
+              <ResultRow
+                label={F.fixedFirstLabel}
+                value={result === null ? null : usd(result.first.fixedIncome)}
+              />
+              <ResultRow
+                label={F.fixedLastLabel}
+                value={
+                  result === null ? null : usd(result.last.realFixedIncome)
+                }
+              />
+            </ResultGroup>
 
-      {yearRows.length > 0 ? (
-        <>
-          <p className="mt-8 text-sm leading-relaxed text-ink-3">{YT.intro}</p>
-          <ResultTable
-            className="mt-4"
-            caption={YT.caption}
-            columns={[
-              { label: YT.ageColumn },
-              { label: YT.needColumn, numeric: true },
-              { label: YT.fixedColumn, numeric: true },
-              { label: YT.coverageColumn, numeric: true },
-              { label: YT.drawColumn, numeric: true },
-              { label: YT.realDrawColumn, numeric: true },
-              { label: YT.balanceColumn, numeric: true },
-            ]}
-            rows={yearRows}
-            // Seven columns, so `mobileCards` per docs §3. Measured at a
-            // verified 390 px viewport on 2026-09-16: 724 px inside a 300 px
-            // frame, the second worst ratio in the suite at 2,41. This is the
-            // page's SECOND wide table — `WIDE_TABLE_PENDING` recorded "TWO
-            // wide tables on one page", and both are carded in this change.
-            mobileCards
-          />
-        </>
-      ) : null}
+            {/* ROW 51's other half: what the portfolio has to supply, kept
+                apart from what arrives on its own. Not live — the announced
+                group above is the page's one announcement, and this is the
+                same projection read from the other side. */}
+            <ResultGroup title={F.drawTitle} className="mt-4" live={false}>
+              <ResultRow
+                label={F.firstDrawLabel}
+                value={
+                  result === null ? null : usd(result.first.realWithdrawal)
+                }
+              />
+              <ResultRow
+                label={F.lastDrawLabel}
+                value={result === null ? null : usd(result.last.realWithdrawal)}
+              />
+              <ResultRow
+                label={F.initialRateLabel}
+                value={
+                  result === null ||
+                  result.initialWithdrawalRatePercent === null
+                    ? null
+                    : formatPercent(result.initialWithdrawalRatePercent, 2)
+                }
+              />
+            </ResultGroup>
 
-      {result !== null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {result.firstUnmetAge === null ? F.coveredNotice : F.unmetNotice}
-        </p>
-      ) : null}
+            <ResultGroup
+              title={F.portfolioTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={F.depletionLabel}
+                value={
+                  result === null || result.depletionAge === null
+                    ? null
+                    : String(result.depletionAge)
+                }
+              />
+              <ResultRow
+                label={F.unmetLabel}
+                value={
+                  result === null || result.firstUnmetAge === null
+                    ? null
+                    : String(result.firstUnmetAge)
+                }
+              />
+              <ResultRow
+                label={F.finalRealLabel}
+                value={result === null ? null : usd(result.last.realBalance)}
+              />
+            </ResultGroup>
 
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+            {result !== null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {result.firstUnmetAge === null
+                  ? F.coveredNotice
+                  : F.unmetNotice}
+              </p>
+            ) : null}
+
+            {result === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        detail={
+          // A null slot renders NO detail region, which is what an invalid
+          // form should get: an empty full-width band under the columns is a
+          // region announcing that something is missing.
+          result === null ? null : (
+            <>
+            {sourceRows.length > 0 ? (
+              <>
+                <p className="text-sm leading-relaxed text-ink-3">
+                  {ST.intro}
+                </p>
+                <ResultTable
+                  className="mt-4"
+                  caption={ST.caption}
+                  columns={[
+                    { label: ST.sourceColumn },
+                    { label: ST.firstColumn, numeric: true },
+                    { label: ST.lastNominalColumn, numeric: true },
+                    { label: ST.lastRealColumn, numeric: true },
+                    { label: ST.keptColumn, numeric: true },
+                    { label: ST.shareColumn, numeric: true },
+                  ]}
+                  rows={sourceRows}
+                  // Six columns, so `mobileCards` per docs §3. Measured at a
+                  // verified 390 px viewport on 2026-09-16: 586 px inside a
+                  // 300 px frame. Rows are income sources, so a card per row
+                  // is one source's whole story across the retirement.
+                  mobileCards
+                />
+              </>
+            ) : null}
+
+            {yearRows.length > 0 ? (
+              <>
+                <p className="mt-8 text-sm leading-relaxed text-ink-3">
+                  {YT.intro}
+                </p>
+                <ResultTable
+                  className="mt-4"
+                  caption={YT.caption}
+                  columns={[
+                    { label: YT.ageColumn },
+                    { label: YT.needColumn, numeric: true },
+                    { label: YT.fixedColumn, numeric: true },
+                    { label: YT.coverageColumn, numeric: true },
+                    { label: YT.drawColumn, numeric: true },
+                    { label: YT.realDrawColumn, numeric: true },
+                    { label: YT.balanceColumn, numeric: true },
+                  ]}
+                  rows={yearRows}
+                  // Seven columns, so `mobileCards` per docs §3. Measured at a
+                  // verified 390 px viewport on 2026-09-16: 724 px inside a
+                  // 300 px frame, the second worst ratio in the suite at 2,41.
+                  // This is the page's SECOND wide table —
+                  // `WIDE_TABLE_PENDING` recorded "TWO wide tables on one
+                  // page", and both are carded in this change.
+                  mobileCards
+                />
+              </>
+            ) : null}
+            </>
+          )
+        }
+      />
     </CalculatorCard>
   );
 }

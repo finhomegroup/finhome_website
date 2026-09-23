@@ -1,8 +1,10 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -116,7 +118,24 @@ export function readCommercialLoanFields(values: {
   };
 }
 
-export function CommercialLoanCalculator() {
+/**
+ * CSV row 10 ("Hai cột"): the three payments in one block — already true, and
+ * asserted so it stays true — with the emphasis on the BALLOON rather than on
+ * an ordinary amortising month, because the end-of-term principal is the figure
+ * this structure can surprise a borrower with. Docs §8.
+ */
+const FORM_ID = "vay-thuong-mai-nhap";
+const RESULT_ID = "vay-thuong-mai-ket-qua";
+
+export function CommercialLoanCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     amount: C.form.defaultAmount,
     rate: C.form.defaultRate,
@@ -172,130 +191,172 @@ export function CommercialLoanCalculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.loanGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.loanGroup}>
+              <NumberField
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
+              />
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.structureGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("grace")}
-          label={C.form.graceLabel}
-          unit={C.form.graceUnit}
-          help={C.form.graceHelp}
-          error={C.form.graceInvalid}
-          invalid={graceInvalid}
-        />
-        <NumberField
-          {...fields.bind("balloon")}
-          label={C.form.balloonLabel}
-          unit={C.form.balloonUnit}
-          help={C.form.balloonHelp}
-          error={C.form.balloonInvalid}
-          invalid={balloonInvalid}
-        />
-      </FieldGroup>
+            <FieldGroup title={C.form.structureGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("grace")}
+                label={C.form.graceLabel}
+                unit={C.form.graceUnit}
+                help={C.form.graceHelp}
+                error={C.form.graceInvalid}
+                invalid={graceInvalid}
+              />
+              <NumberField
+                {...fields.bind("balloon")}
+                label={C.form.balloonLabel}
+                unit={C.form.balloonUnit}
+                help={C.form.balloonHelp}
+                error={C.form.balloonInvalid}
+                invalid={balloonInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={
+              amountInvalid ||
+              rateInvalid ||
+              termInvalid ||
+              graceInvalid ||
+              balloonInvalid
+            }
+            // Measured at 1440×1000: with the last field focused at y 528,75
+            // the first result row sat at y −103,75, i.e. off the top of the
+            // viewport while the structure fields are being edited. The
+            // restated figure is the EMPHASISED row — the end-of-term
+            // principal, which is what this structure can surprise a borrower
+            // with — through `money()`, the same formatter that row uses.
+            sticky
+            answer={{
+              label: C.form.balloonResultLabel,
+              value: money(result?.balloonAmount),
+            }}
+          />
+        }
+        primary={
+          /* Three rows because there are three payments. A single "monthly
+             payment" would be true for neither stretch of the loan. */
+          <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+            <ResultRow
+              label={C.form.balloonResultLabel}
+              value={money(result?.balloonAmount)}
+              emphasis
+            />
+            <ResultRow
+              label={C.form.gracePaymentLabel}
+              value={money(result?.gracePayment)}
+            />
+            <ResultRow
+              label={C.form.amortizingPaymentLabel}
+              value={money(result?.amortizingPayment)}
+            />
+          </ResultGroup>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <>
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.totalInterestLabel}
+                value={money(result?.totalInterest)}
+              />
+              <ResultRow
+                label={C.form.ratioLabel}
+                value={
+                  result
+                    ? formatPercent(result.interestToPrincipalPercent, 2)
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.structureCostLabel}
+                value={money(result?.structureCost)}
+              />
+              {/* The yardstick: the same money with no grace and no balloon. */}
+              <ResultRow
+                label={C.form.plainPaymentLabel}
+                value={money(result?.plainPayment)}
+              />
+              <ResultRow
+                label={C.form.plainInterestLabel}
+                value={money(result?.plainTotalInterest)}
+              />
+              <ResultRow
+                label={C.form.graceInterestLabel}
+                value={money(result?.graceInterest)}
+              />
+              <ResultRow
+                label={C.form.amortizingMonthsLabel}
+                value={
+                  result
+                    ? `${formatDecimal(result.amortizingMonths, 0)} ${C.form.monthsUnit}`
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.totalPaidLabel}
+                value={money(result?.totalPaid)}
+              />
+            </ResultGroup>
 
-      {/* Three rows because there are three payments. A single "monthly
-          payment" would be true for neither stretch of the loan. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.gracePaymentLabel}
-          value={money(result?.gracePayment)}
-        />
-        <ResultRow
-          label={C.form.amortizingPaymentLabel}
-          value={money(result?.amortizingPayment)}
-        />
-        <ResultRow
-          label={C.form.balloonResultLabel}
-          value={money(result?.balloonAmount)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.totalInterestLabel}
-          value={money(result?.totalInterest)}
-        />
-        <ResultRow
-          label={C.form.ratioLabel}
-          value={
-            result ? formatPercent(result.interestToPrincipalPercent, 2) : null
-          }
-        />
-        <ResultRow
-          label={C.form.structureCostLabel}
-          value={money(result?.structureCost)}
-        />
-        {/* The yardstick: the same money with no grace and no balloon. */}
-        <ResultRow
-          label={C.form.plainPaymentLabel}
-          value={money(result?.plainPayment)}
-        />
-        <ResultRow
-          label={C.form.plainInterestLabel}
-          value={money(result?.plainTotalInterest)}
-        />
-        <ResultRow
-          label={C.form.graceInterestLabel}
-          value={money(result?.graceInterest)}
-        />
-        <ResultRow
-          label={C.form.amortizingMonthsLabel}
-          value={
-            result
-              ? `${formatDecimal(result.amortizingMonths, 0)} ${C.form.monthsUnit}`
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.totalPaidLabel}
-          value={money(result?.totalPaid)}
-        />
-      </ResultGroup>
-
-      {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.form.table.caption}
-          columns={[
-            // `numeric` + `nowrap` on the period column, which is what keeps
-            // the 8,5rem PROSE floor off it. That floor exists so a metric
-            // label cannot be squeezed to one word per line by wide figures;
-            // on a column holding "1", "2", "3" it was pure waste — measured
-            // at 136 px for content needing 32, a third of the table's budget.
-            // `result-table-render.test.ts` already asserts a period column
-            // gets no floor; this table simply never declared itself as one.
-            { label: C.form.table.yearColumn, numeric: true, nowrap: true },
-            { label: C.form.table.interestColumn, numeric: true },
-            { label: C.form.table.principalColumn, numeric: true },
-            { label: C.form.table.balanceColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
-      ) : null}
+            {tableRows.length > 0 ? (
+              <ResultTable
+                className="mt-8"
+                caption={C.form.table.caption}
+                columns={[
+                  // `numeric` + `nowrap` on the period column, which is what
+                  // keeps the 8,5rem PROSE floor off it. That floor exists so a
+                  // metric label cannot be squeezed to one word per line by wide
+                  // figures; on a column holding "1", "2", "3" it was pure waste
+                  // — measured at 136 px for content needing 32, a third of the
+                  // table's budget. `result-table-render.test.ts` already asserts
+                  // a period column gets no floor; this table simply never
+                  // declared itself as one.
+                  { label: C.form.table.yearColumn, numeric: true, nowrap: true },
+                  { label: C.form.table.interestColumn, numeric: true },
+                  { label: C.form.table.principalColumn, numeric: true },
+                  { label: C.form.table.balanceColumn, numeric: true },
+                ]}
+                rows={tableRows}
+              />
+            ) : null}
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

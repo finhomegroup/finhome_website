@@ -4,6 +4,8 @@ import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { DetailFigures } from "@/components/calc/detail-figures";
 import {
@@ -53,8 +55,25 @@ import { INTEREST_ONLY as C } from "@/content/calculators/interest-only";
  * month, in the first month that repays principal, and the jump between the
  * last two. The two dates, the balances and the totals are second views of the
  * same computation and sit in `live={false}` groups, per docs §4.
+ *
+ * CSV row 17 ("Hai cột"): the JUMP when the grace period ends leads the answer
+ * — it is what the reader has to survive, not the low first instalment — and
+ * the two charts sit in the result column, ahead of the assumption list. The
+ * emphasis follows the row that is actually mounted: on a loan with no grace
+ * period there is no jump, and the first instalment takes it instead. Docs §8.
  */
-export function InterestOnlyCalculator() {
+const FORM_ID = "chi-tra-lai-nhap";
+const RESULT_ID = "chi-tra-lai-ket-qua";
+
+export function InterestOnlyCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const initial = {
     amount: C.form.defaultAmount,
     term: C.form.defaultTerm,
@@ -165,208 +184,271 @@ export function InterestOnlyCalculator() {
     result.graceEndMonth !== null &&
     result.postResetPayment !== null;
 
+  /**
+   * The jump row is mounted only when there IS one, so the emphasis has to
+   * follow it rather than being hard-coded to a row that may not render.
+   */
+  const jumpShown = result === null || result.graceJump !== null;
+
   return (
     <CalculatorCard>
-      <ExampleNotice
-        pristine={pristine}
-        onReset={fields.reset}
-        className="mb-6"
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <ExampleNotice
+              pristine={pristine}
+              onReset={fields.reset}
+              className="mb-6"
+            />
+
+            <FieldGroup title={C.form.loanGroup}>
+              <NumberField
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
+
+            {/* The primary framing, in its own group with its own heading. */}
+            <FieldGroup title={C.form.graceGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("grace")}
+                label={C.form.graceLabel}
+                unit={C.form.graceUnit}
+                help={C.form.graceHelp}
+                error={C.form.graceInvalid}
+                invalid={graceInvalid}
+              />
+            </FieldGroup>
+
+            {/* The rate path, in a SEPARATE group from the grace period,
+                because the two are separate terms of the contract with separate
+                end dates. That separation is the whole point of original row
+                14. */}
+            <FieldGroup title={C.form.rateGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("promoMonths")}
+                label={C.form.promoMonthsLabel}
+                unit={C.form.promoMonthsUnit}
+                help={C.form.promoMonthsHelp}
+                error={C.form.promoMonthsInvalid}
+                invalid={promoMonthsInvalid}
+              />
+              <NumberField
+                {...fields.bind("promoRate")}
+                label={C.form.promoRateLabel}
+                unit={C.form.promoRateUnit}
+                help={C.form.promoRateHelp}
+                error={C.form.promoRateInvalid}
+                invalid={promoRateInvalid}
+              />
+              <NumberField
+                {...fields.bind("postRate")}
+                label={C.form.postRateLabel}
+                unit={C.form.postRateUnit}
+                help={C.form.postRateHelp}
+                error={C.form.postRateInvalid}
+                invalid={postRateInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={!usable}
+            // Measured at 1440×1000 with the last rate field focused at
+            // y 529–575: the first result row sat at y −373,75. Seven inputs
+            // across three groups put the answer furthest off screen of the
+            // three cost pages in this repair.
+            //
+            // THE PIN FOLLOWS `jumpShown`, not a fixed row: the jump row is
+            // mounted only when there is a jump, and on a loan with no grace
+            // period the emphasised answer is the first payment instead.
+            // Hard-coding either one would pin a figure the result panel is
+            // not leading with — and on the no-grace path, one that is not
+            // rendered at all.
+            sticky
+            answer={
+              jumpShown
+                ? {
+                    label: C.form.graceJumpLabel,
+                    value: money(result?.graceJump),
+                  }
+                : {
+                    label: C.form.firstPaymentLabel,
+                    value: money(result?.firstPayment),
+                  }
+            }
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {jumpShown ? (
+                <ResultRow
+                  label={C.form.graceJumpLabel}
+                  value={money(result?.graceJump)}
+                  emphasis
+                />
+              ) : null}
+              <ResultRow
+                label={C.form.firstPaymentLabel}
+                value={money(result?.firstPayment)}
+                emphasis={!jumpShown}
+              />
+              {/* Mounted only when there IS a grace period: a dash against
+                  "tháng cuối còn ân hạn gốc" on a loan with none would be a row
+                  about nothing. */}
+              {result === null || result.lastGracePayment !== null ? (
+                <ResultRow
+                  label={C.form.lastGracePaymentLabel}
+                  value={money(result?.lastGracePayment)}
+                />
+              ) : null}
+              <ResultRow
+                label={C.form.firstAmortizingLabel}
+                value={money(result?.firstAmortizingPayment)}
+              />
+            </ResultGroup>
+
+            {result !== null && result.graceEndMonth === null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.noGraceNotice}
+              </p>
+            ) : null}
+            {resetInGrace ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.resetInGraceNotice}
+              </p>
+            ) : null}
+            {changesTwice ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.resetAfterGraceNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          <>
+            {/* Charts straight after the answer and before the assumption list,
+                both outside every ResultGroup so neither is re-announced on a
+                keystroke. */}
+            <ChartFigure model={paymentChart}>
+              <BarChart model={paymentChart} />
+            </ChartFigure>
+
+            <ChartFigure model={balanceChart}>
+              <LineChart model={balanceChart} />
+            </ChartFigure>
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <>
+            {/* THE TWO DATES, side by side and never merged. `live={false}`:
+                this is a second reading of the same computation. */}
+            <ResultGroup title={C.form.datesTitle} live={false}>
+              <ResultRow
+                label={C.form.graceEndLabel}
+                value={months(result?.graceEndMonth)}
+              />
+              <ResultRow
+                label={C.form.promoEndLabel}
+                value={months(result?.promoEndMonth)}
+              />
+              <ResultRow
+                label={C.form.balanceAtGraceEndLabel}
+                value={money(result?.balanceAtGraceEnd)}
+              />
+              <ResultRow
+                label={C.form.balanceAtPromoEndLabel}
+                value={money(result?.balanceAtPromoEnd)}
+              />
+              {result === null || result.postResetPayment !== null ? (
+                <ResultRow
+                  label={C.form.postResetLabel}
+                  value={money(result?.postResetPayment)}
+                />
+              ) : null}
+            </ResultGroup>
+
+            <DetailDisclosure
+              title={C.form.detailTitle}
+              hint={C.form.detailHint}
+              className="mt-8"
+            >
+              <DetailFigures
+                title={C.form.figuresTitle}
+                figures={[
+                  {
+                    label: C.form.totalInterestLabel,
+                    value: cash(result?.totalInterest),
+                  },
+                  {
+                    label: C.form.totalPaidLabel,
+                    value: cash(result?.totalPaid),
+                  },
+                  {
+                    label: C.form.comparableLabel,
+                    value: cash(result?.comparableTotalInterest),
+                  },
+                  {
+                    label: C.form.extraInterestLabel,
+                    value: cash(result?.extraInterest),
+                  },
+                  {
+                    label: C.form.highestPaymentLabel,
+                    value: cash(result?.highestPayment),
+                  },
+                ]}
+              />
+
+              {/* A comparison that could not be built is said out loud,
+                  because two blank rows would otherwise read as "the grace
+                  period is free". */}
+              {result !== null && result.comparableTotalInterest === null ? (
+                <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                  {C.form.comparableUnavailableNotice}
+                </p>
+              ) : null}
+
+              {tableRows.length > 0 ? (
+                <ResultTable
+                  className="mt-6"
+                  caption={C.form.table.caption}
+                  mobileCards
+                  columns={[
+                    { label: C.form.table.phaseColumn, nowrap: true },
+                    { label: C.form.table.rateColumn, numeric: true },
+                    { label: C.form.table.paymentColumn, numeric: true },
+                    { label: C.form.table.interestColumn, numeric: true },
+                    { label: C.form.table.principalColumn, numeric: true },
+                    { label: C.form.table.balanceColumn, numeric: true },
+                  ]}
+                  rows={tableRows}
+                />
+              ) : null}
+            </DetailDisclosure>
+
+            <ExampleNoticeDetail className="mt-6" />
+          </>
+        }
       />
-
-      <FieldGroup title={C.form.loanGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
-
-      {/* The primary framing, in its own group with its own heading. */}
-      <FieldGroup title={C.form.graceGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("grace")}
-          label={C.form.graceLabel}
-          unit={C.form.graceUnit}
-          help={C.form.graceHelp}
-          error={C.form.graceInvalid}
-          invalid={graceInvalid}
-        />
-      </FieldGroup>
-
-      {/* The rate path, in a SEPARATE group from the grace period, because the
-          two are separate terms of the contract with separate end dates. That
-          separation is the whole point of original row 14. */}
-      <FieldGroup title={C.form.rateGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("promoMonths")}
-          label={C.form.promoMonthsLabel}
-          unit={C.form.promoMonthsUnit}
-          help={C.form.promoMonthsHelp}
-          error={C.form.promoMonthsInvalid}
-          invalid={promoMonthsInvalid}
-        />
-        <NumberField
-          {...fields.bind("promoRate")}
-          label={C.form.promoRateLabel}
-          unit={C.form.promoRateUnit}
-          help={C.form.promoRateHelp}
-          error={C.form.promoRateInvalid}
-          invalid={promoRateInvalid}
-        />
-        <NumberField
-          {...fields.bind("postRate")}
-          label={C.form.postRateLabel}
-          unit={C.form.postRateUnit}
-          help={C.form.postRateHelp}
-          error={C.form.postRateInvalid}
-          invalid={postRateInvalid}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.firstPaymentLabel}
-          value={money(result?.firstPayment)}
-        />
-        {/* Mounted only when there IS a grace period: a dash against "tháng
-            cuối còn ân hạn gốc" on a loan with none would be a row about
-            nothing. */}
-        {result === null || result.lastGracePayment !== null ? (
-          <ResultRow
-            label={C.form.lastGracePaymentLabel}
-            value={money(result?.lastGracePayment)}
-          />
-        ) : null}
-        <ResultRow
-          label={C.form.firstAmortizingLabel}
-          value={money(result?.firstAmortizingPayment)}
-        />
-        {result === null || result.graceJump !== null ? (
-          <ResultRow
-            label={C.form.graceJumpLabel}
-            value={money(result?.graceJump)}
-          />
-        ) : null}
-      </ResultGroup>
-
-      {result !== null && result.graceEndMonth === null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.noGraceNotice}
-        </p>
-      ) : null}
-      {resetInGrace ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.resetInGraceNotice}
-        </p>
-      ) : null}
-      {changesTwice ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.resetAfterGraceNotice}
-        </p>
-      ) : null}
-
-      {/* THE TWO DATES, side by side and never merged. `live={false}`: this is
-          a second reading of the same computation. */}
-      <ResultGroup title={C.form.datesTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.graceEndLabel}
-          value={months(result?.graceEndMonth)}
-        />
-        <ResultRow
-          label={C.form.promoEndLabel}
-          value={months(result?.promoEndMonth)}
-        />
-        <ResultRow
-          label={C.form.balanceAtGraceEndLabel}
-          value={money(result?.balanceAtGraceEnd)}
-        />
-        <ResultRow
-          label={C.form.balanceAtPromoEndLabel}
-          value={money(result?.balanceAtPromoEnd)}
-        />
-        {result === null || result.postResetPayment !== null ? (
-          <ResultRow
-            label={C.form.postResetLabel}
-            value={money(result?.postResetPayment)}
-          />
-        ) : null}
-      </ResultGroup>
-
-      {/* Charts straight after the answer and before the detail ledger, both
-          outside every ResultGroup so neither is re-announced on a keystroke. */}
-      <ChartFigure model={paymentChart}>
-        <BarChart model={paymentChart} />
-      </ChartFigure>
-
-      <ChartFigure model={balanceChart}>
-        <LineChart model={balanceChart} />
-      </ChartFigure>
-
-      <DetailDisclosure
-        title={C.form.detailTitle}
-        hint={C.form.detailHint}
-        className="mt-8"
-      >
-        <DetailFigures
-          title={C.form.figuresTitle}
-          figures={[
-            {
-              label: C.form.totalInterestLabel,
-              value: cash(result?.totalInterest),
-            },
-            { label: C.form.totalPaidLabel, value: cash(result?.totalPaid) },
-            {
-              label: C.form.comparableLabel,
-              value: cash(result?.comparableTotalInterest),
-            },
-            {
-              label: C.form.extraInterestLabel,
-              value: cash(result?.extraInterest),
-            },
-            {
-              label: C.form.highestPaymentLabel,
-              value: cash(result?.highestPayment),
-            },
-          ]}
-        />
-
-        {/* A comparison that could not be built is said out loud, because two
-            blank rows would otherwise read as "the grace period is free". */}
-        {result !== null && result.comparableTotalInterest === null ? (
-          <p className="mt-3 text-sm leading-relaxed text-ink-2">
-            {C.form.comparableUnavailableNotice}
-          </p>
-        ) : null}
-
-        {tableRows.length > 0 ? (
-          <ResultTable
-            className="mt-6"
-            caption={C.form.table.caption}
-            mobileCards
-            columns={[
-              { label: C.form.table.phaseColumn, nowrap: true },
-              { label: C.form.table.rateColumn, numeric: true },
-              { label: C.form.table.paymentColumn, numeric: true },
-              { label: C.form.table.interestColumn, numeric: true },
-              { label: C.form.table.principalColumn, numeric: true },
-              { label: C.form.table.balanceColumn, numeric: true },
-            ]}
-            rows={tableRows}
-          />
-        ) : null}
-      </DetailDisclosure>
-
-      <ExampleNoticeDetail className="mt-6" />
     </CalculatorCard>
   );
 }

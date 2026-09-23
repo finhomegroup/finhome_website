@@ -33,9 +33,14 @@ import {
   STROKE_DASH,
 } from "@/components/calc/chart/chart-figure";
 import {
+  TEXTURE_KINDS,
+  textureKind,
+} from "@/components/calc/chart/chart-texture";
+import {
   PALETTE_SLOTS,
   paletteIndexByKey,
   paletteSlot,
+  seriesIndex,
 } from "@/lib/calc/charts/palette";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import type {
@@ -212,21 +217,42 @@ describe("a line series' legend mark", () => {
 });
 
 describe("a fill segment's legend mark", () => {
-  it("stays the solid swatch, because a bar segment is a fill", () => {
+  /**
+   * CORRECTED: it is a filled shape WITH the segment's texture.
+   *
+   * This asserted a bare `bg-*` dot, which is the fill half of the very
+   * defect the stroke branch above fixed for lines. An independent visual
+   * review measured it on the stacked bars: the segment was a colour and
+   * nothing else, the mark was a dot of the same shape as every other dot,
+   * and two of the four palette slots are greens 1,75:1 apart. So the plot
+   * now draws each segment with its slot's texture and the mark draws the
+   * same `textureKind` at swatch size — `chart-texture.tsx`.
+   *
+   * It is still NOT a stroke mark: a fill is not a line, and `legendMarks`
+   * (the dashed-line marks) must stay empty for a bar model.
+   */
+  it("is a filled shape carrying the slot's own texture", () => {
     const model = barModel();
     const html = renderToStaticMarkup(
       // See `renderLines` for why `children` is a prop here.
       // eslint-disable-next-line react/no-children-prop
       createElement(ChartFigure, { model, children: null }),
     );
-    // Unchanged shape, and `chart-render.test.ts` maps `fill-*` plot classes
-    // onto exactly this `bg-*` string — so changing it would silently disable
-    // that test rather than fail it.
+    // One mark per legend entry, each a 10-unit swatch box carrying a
+    // palette fill. `chart-render.test.ts` reads the same shape to check
+    // that every plot fill is one a legend mark also draws.
     const swatches = [
-      ...html.matchAll(/class="size-2\.5 shrink-0 rounded-sm (bg-[\w-/]+)"/g),
+      ...html.matchAll(/viewBox="0 0 10 10"[\s\S]*?class="(fill-[\w-/]+)"/g),
     ].map((m) => m[1]);
     expect(swatches).toHaveLength(model.legend.length);
+    expect(new Set(swatches).size).toBe(model.legend.length);
     expect(legendMarks(html)).toHaveLength(0);
+
+    // The second channel, in the key: slot 0 is the plain one by design, and
+    // slot 1 carries marks. So exactly one of these two entries is textured,
+    // which is what makes them tellable apart without colour.
+    const marks = [...html.matchAll(/<g class="stroke-ink"|<g class="fill-ink"/g)];
+    expect(marks).toHaveLength(1);
   });
 });
 
@@ -251,25 +277,52 @@ describe("a fill segment's legend mark", () => {
  * "`paletteSlots` reports the count so a caller can assert it has not quietly
  * grown past what the palette can distinguish." This is that assertion.
  *
- * IT IS A RATCHET, NOT A PASS. `monthlyAllocation` is recorded below as known
- * debt so the gate stays green on a pre-existing defect while a NEW model that
- * exhausts the palette fails immediately. Unlike a line series, a bar segment
- * has no second channel available — `STROKE_DASH` applies to strokes, not
- * fills — so the fix is a product decision (fewer segments, a texture, or a
- * wider palette) rather than something to slip in here. Recorded in docs §6
- * beside the palette-contrast entry, which is the same brand decision.
+ * IT IS A RATCHET, NOT A PASS, FOR COLOUR. `monthlyAllocation` is recorded
+ * below as a model whose legend is wider than the palette, so the gate stays
+ * green on the brand's four colours while a new model that widens further is
+ * still noticed. The palette itself is a brand decision (docs §6, beside the
+ * palette-contrast entry) and is not changed here.
+ *
+ * WHAT CLOSED, AND WHEN. The first version of this paragraph said the texture
+ * channel "does NOT close this: the texture is keyed to the same four slots".
+ * That was true of that implementation and was measured as a live defect at
+ * 390×844 — series 4 repeated series 0's colour AND its plain fill, series 5
+ * repeated series 1's colour and its hatch. The texture is now keyed to
+ * `seriesIndex`, the UNWRAPPED position in the declared legend order, and
+ * `TEXTURE_KINDS` is eight long against a widest real legend of seven. So the
+ * COLOUR still exhausts at four — the assertion below is unchanged and still
+ * true — while the (colour, texture) PAIR does not, which is what a reader
+ * matches a segment to its label with. `chart-texture.test.ts` asserts the
+ * pairs on the exact six-segment shape the review measured.
+ *
+ * The ratchet that matters now is the second test in this block: no model's
+ * legend may outgrow the non-colour channel. It compares the HAND-RECORDED
+ * widths in `KNOWN_EXHAUSTED` against `TEXTURE_KINDS.length`, so it fails when
+ * a ninth entry is recorded, not when a model grows one unrecorded. See the
+ * comment inside that test.
  */
 describe("the palette cannot distinguish more entries than it has slots", () => {
   /**
-   * Models known to exceed `PALETTE_SLOTS` today. Add nothing to this list:
-   * the point of the list is that it does not grow.
+   * Models whose legend is wider than `PALETTE_SLOTS` today, with the widest
+   * entry fixing the required width of the non-colour channel.
+   *
+   * `vehicleBudget` was ADDED when the six-series repair surveyed every
+   * `finishBars`/`legend` site in `lib/calc/charts/` instead of trusting this
+   * list: it lists seven entries when running costs are included and had been
+   * colour-exhausted since it was written, unrecorded. Nothing about that model
+   * changed — the list did, because it was incomplete. Every other legend in
+   * the suite is four or fewer (rental waterfall 4, deposit 4, loan compare 4,
+   * compound areas 3, grace/loan columns/education 2).
    */
   const KNOWN_EXHAUSTED: Record<string, number> = {
     // 6 segments: essentials, debts, buffer, housing P+I, other housing, left.
     monthlyAllocation: 6,
+    // 7 entries: income, essentials, other debts, reserve, instalment,
+    // running costs (conditional), leftover.
+    vehicleBudget: 7,
   };
 
-  it("holds for every legend built here, and names the one that does not", () => {
+  it("holds for every legend built here, and names the ones that do not", () => {
     // The three-series line model is inside the palette, and must stay so.
     const lines = threeSeriesModel();
     expect(lines.series.length).toBeLessThanOrEqual(PALETTE_SLOTS);
@@ -286,7 +339,43 @@ describe("the palette cannot distinguish more entries than it has slots", () => 
     expect(
       Object.keys(KNOWN_EXHAUSTED),
       "a model was added to KNOWN_EXHAUSTED — fix the model instead",
-    ).toEqual(["monthlyAllocation"]);
+    ).toEqual(["monthlyAllocation", "vehicleBudget"]);
+  });
+
+  it("never lets a legend outgrow the NON-COLOUR channel", () => {
+    // The ratchet that replaced the colour one as the live constraint. A
+    // segment's identity is the (colour, texture) pair, and the pair stays
+    // unique only while every simultaneous series has its own texture.
+    //
+    // WHAT THIS ACTUALLY FAILS ON, stated accurately: the counts below are
+    // HAND-RECORDED in `KNOWN_EXHAUSTED`, not read from `lib/calc/charts/`, so
+    // this test fails when someone RECORDS a ninth entry — not when a model
+    // silently grows one. A widened model that leaves its recorded number
+    // stale is caught by neither test in this block; the roster assertion
+    // above only catches a model being ADDED to the list.
+    for (const [model, count] of Object.entries(KNOWN_EXHAUSTED)) {
+      expect(
+        count,
+        `${model}'s legend needs more encodings than TEXTURE_KINDS has`,
+      ).toBeLessThanOrEqual(TEXTURE_KINDS.length);
+    }
+    // And the channel is genuinely wider than the palette — the thing that
+    // was not true when the six-series defect was measured.
+    expect(TEXTURE_KINDS.length).toBeGreaterThan(PALETTE_SLOTS);
+  });
+
+  it("assigns a different texture to every entry a wide legend declares", () => {
+    // The mechanism, through the real map: the colours collide in pairs and
+    // the textures do not, so the pairs are unique.
+    const legend = ["a", "b", "c", "d", "e", "f", "g"].map((key) => ({ key }));
+    const slots = paletteIndexByKey({ legend, segmentKeys: [] });
+    const pairs = legend.map(
+      (entry, index) =>
+        `${paletteSlot(slots, entry.key, index)}|${textureKind(
+          seriesIndex(slots, entry.key, index),
+        )}`,
+    );
+    expect(new Set(pairs).size).toBe(legend.length);
   });
 
   it("collides once the legend passes four entries, which is why the list exists", () => {

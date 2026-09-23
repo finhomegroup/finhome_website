@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { UnitsCalculator } from "@/components/units-calculator";
 import { UNITS_CONTENT as C } from "@/content/calculators/units";
@@ -26,6 +27,11 @@ export default function UnitsPage() {
       // Sào and mẫu differ by region by nearly 39%. On a plot of a few mẫu
       // that is thousands of square metres.
       notice={C.regionNotice}
+      // §5: the regional values and the 39% gap between them. They were open
+      // above the first field, which is a page of history before a reader can
+      // convert one number.
+      noticeDetail={C.regionNoticeDetail}
+      noticeDetailTitle={C.regionNoticeDetailTitle}
       intro={C.form.table.intro}
       prose={C.formula}
       faq={C.faq}
@@ -35,9 +41,13 @@ export default function UnitsPage() {
       disclaimer={C.disclaimer}
       // No property-search step: there is no verified area-aware destination,
       // so the next questions are the money ones. See next-steps.ts.
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <UnitsCalculator />
+      {/* The guidance list moved under the answer. No `wide`: row 73 is a
+          "Gọn" row — three selects, one number box, two narrow tables. */}
+      <UnitsCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

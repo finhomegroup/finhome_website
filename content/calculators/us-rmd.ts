@@ -102,8 +102,23 @@ export const US_RMD = {
     resultTitle: "Năm nay",
     requiredLabel: "Phải rút tối thiểu",
     requiredPercentLabel: "Tương đương phần trăm số dư",
+    // The obligation, the tax on it and what the reader intends to take are
+    // three different numbers. The shortfall row below is a subtraction
+    // between two of them, so both of its operands are on the page.
+    plannedResultLabel: "Bạn dự định rút",
     taxLabel: "Thuế trên khoản rút",
     shortfallLabel: "Còn thiếu so với dự định",
+
+    // THREE EMPTY ROWS, three causes, so none of them is a bare dash:
+    // below the required age there is no divisor at all; with a zero prior
+    // balance there is a divisor but no denominator for the percentage; and
+    // a projection that shrinks from year one has no peak age to name.
+    noBalanceValue: "Không có số dư",
+    noBalanceNotice:
+      "Số dư ngày 31 tháng 12 năm trước bằng 0, nên mức bắt buộc của năm nay là 0 và không có số nào để lấy phần trăm. Dòng phần trăm không có mẫu số, chứ không phải thiếu số liệu.",
+    noPeakValue: "Không có, số dư giảm ngay",
+    decliningNotice:
+      "Ở mức lợi suất này số dư giảm ngay từ năm đầu của kỳ dự phóng, nên không có tuổi nào là đỉnh. Dòng đó nói “không có”, không phải là một ô còn trống.",
 
     penaltyTitle: "Nếu rút thiếu",
     penaltyLabel: "Thuế phạt 25% trên phần thiếu",
@@ -114,6 +129,10 @@ export const US_RMD = {
     startAgeLabel: "Tuổi bắt buộc bắt đầu rút",
     yearsUntilLabel: "Còn bao nhiêu năm nữa",
     yearsUnit: "năm",
+    // "0 năm" is not an answer for someone already past the start age, and
+    // the start age itself comes from the birth year, not from the table.
+    alreadyStartedValue: "Đã bắt đầu",
+    startAgeFromBirthYear: "Tuổi này do năm sinh quyết định: sinh từ 1960 trở đi là 75, từ 1951 đến 1959 là 73, trước đó là 72. Bảng hệ số của IRS có dòng từ tuổi 72, nhưng có dòng trong bảng và có nghĩa vụ rút là hai chuyện khác nhau.",
 
     horizonTitle: "Cả kỳ dự phóng",
     totalRequiredLabel: "Tổng phải rút",
@@ -147,7 +166,12 @@ export const US_RMD = {
       "Một ô nhập chưa hợp lệ. Tuổi dự phóng phải lớn hơn tuổi hiện tại, và toàn kỳ không quá 60 năm.",
   },
 
+  // The RULE and the model's limit stay above the tool; the worked default
+  // case is five figures of arithmetic, so it moved into the disclosure.
   risingNotice:
+    "Tỷ lệ buộc phải rút tăng mỗi năm vì hệ số chia giảm theo tuổi, nhưng khoản rút bắt buộc không làm cạn tài khoản: trong khoảng mười năm đầu số dư vẫn tăng, và điều thực sự xảy ra là tiền chuyển dần từ phía hoãn thuế sang phía chịu thuế của bạn cùng một hóa đơn thuế mỗi năm. Diễn biến số dư là một phép dự phóng theo đúng mức lợi suất và thuế suất bạn nhập, giữ không đổi cả kỳ, dùng Bảng Tuổi thọ Thống nhất và không mô hình hóa tài khoản thừa kế.",
+  risingNoticeDetailTitle: "Cụ thể: trên các số mặc định",
+  risingNoticeDetail:
     "Với các giá trị mặc định, mức bắt buộc năm nay là 30.188,68 USD — 3,77% số dư — và nó sẽ tăng lên 6,25% ở tuổi 85 rồi 15,63% ở tuổi 100. Nhưng đây là điều đáng chú ý hơn: số dư vẫn tăng cho đến tuổi 85, đạt đỉnh 1.010.339 USD, và đến tuổi 94 vẫn còn 846.673 USD — cao hơn 800.000 USD ban đầu, sau khi đã rút ra tổng cộng 1.309.790 USD và nộp 288.154 USD tiền thuế. Khoản rút bắt buộc không làm cạn tài khoản; nó chuyển tiền sang phía chịu thuế của bảng cân đối của bạn, mỗi năm một ít, dù bạn có cần đến số tiền đó hay không.",
 
   formula: {
