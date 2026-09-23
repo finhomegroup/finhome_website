@@ -99,13 +99,13 @@ export type Post = {
 const EDUCATION_ENTRIES: Post[] = [
   {
     slug: "co-600-trieu-nen-tim-nha-tam-gia-nao",
-    title: "Có 600 triệu, nên tìm nhà trong tầm giá nào?",
+    title: "Trước khi đi xem nhà, hãy tính xem mỗi tháng mình còn bao nhiêu",
     category: "Mua nhà bằng con số",
     topics: [],
     kind: "education",
     excerpt:
-      "Phép tính ba bước từ khoản trả hằng tháng ra tầm giá, và vì sao “có 600 triệu” không có nghĩa là 600 triệu đều đi vào giá nhà.",
-    readingTime: "6 phút đọc",
+      "Từ thu nhập, chi tiêu và 600 triệu tích lũy, xem cách ước tính tầm giá nhà. Có ví dụ, biểu đồ và công cụ miễn phí để tự thử.",
+    readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
   {
@@ -121,12 +121,12 @@ const EDUCATION_ENTRIES: Post[] = [
   },
   {
     slug: "het-uu-dai-khoan-tra-tang-bao-nhieu",
-    title: "Hết lãi suất ưu đãi, tiền trả hằng tháng có thể tăng bao nhiêu?",
+    title: "Vay mua nhà: đừng chỉ tính tháng đầu, hãy tính tháng hết ưu đãi",
     category: "Mua nhà bằng con số",
     topics: [],
     kind: "education",
     excerpt:
-      "Lãi tăng 3,5 điểm phần trăm và khoản trả tăng 27% là hai con số khác nhau. Bài giải thích vì sao, và cách tự thử kịch bản của mình.",
+      "Ví dụ vay 2 tỷ: khoản trả đổi thế nào sau ưu đãi? Đọc biểu đồ, so với ngân sách và tự thử kịch bản trên công cụ FinHome.",
     readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
@@ -176,13 +176,13 @@ const EDUCATION_ENTRIES: Post[] = [
   },
   {
     slug: "tiep-tuc-thue-hay-mua-nha",
-    title: "Tiếp tục thuê hay mua nhà: cần so những chi phí nào?",
+    title: "Thuê 15 triệu, trả góp khoảng 18 triệu: có nên mua luôn?",
     category: "Mua nhà bằng con số",
     topics: [],
     kind: "education",
     excerpt:
-      "So tiền thuê với khoản trả nợ là phép so sai. Bài liệt kê ba thứ bị bỏ qua và chỉ ra kết luận nhạy với biến nào nhất.",
-    readingTime: "7 phút đọc",
+      "Cùng căn nhà, đổi giả định tăng giá có thể đảo kết luận thuê–mua. Xem ví dụ và tự so chi phí ròng trên công cụ FinHome.",
+    readingTime: "6 phút đọc",
     date: "2026-09-14",
   },
   {

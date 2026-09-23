@@ -170,13 +170,6 @@ export const GLOSSARY: readonly GlossaryTerm[] = [
       "tham chiếu cộng biên",
       "tính lại theo mức mới",
     ],
-    exemptions: [
-      {
-        body: "edu:C03",
-        reason:
-          "Lần xuất hiện duy nhất là trong tên công cụ ở bước thực hành (“Mở công cụ Khoản vay lãi thả nổi”). Bước thực hành phải gọi đúng tên người đọc sẽ thấy trên màn hình; bài này dạy chuyện khác và trang công cụ đó tự giải thích cơ chế.",
-      },
-    ],
   },
   {
     term: "biên lãi suất",

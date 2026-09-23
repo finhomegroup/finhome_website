@@ -10,19 +10,13 @@
 // is generated from the declared hypothetical and cannot disagree with itself.
 
 import type { EducationArticle } from "@/content/education/types";
+import { APPROVED_C08 } from "@/content/education/approved-tool-guides";
 
 const SRC_CFPB_COMPARE = {
   label: "CFPB — Compare and negotiate your loan offers",
   url: "https://www.consumerfinance.gov/owning-a-home/compare/compare-loan-estimates/",
   note:
     "Khái niệm dùng ở đây: so các báo giá trên cùng số tiền vay và cùng một khoảng thời gian đã nêu rõ; khoản trả hằng tháng thấp hơn không phải toàn bộ quyết định. Số liệu thống kê trong trang đó là của Hoa Kỳ và không được dùng ở đây.",
-};
-
-const SRC_CFPB_DOWN_PAYMENT = {
-  label: "CFPB — How to decide how much to spend on your down payment",
-  url: "https://www.consumerfinance.gov/archive/blog/how-decide-how-much-spend-your-down-payment/",
-  note:
-    "Khái niệm dùng ở đây: tiền đã đưa vào nhà thì không còn dùng được cho việc khẩn cấp. Tài liệu giáo dục đã lưu trữ của cơ quan bảo vệ người tiêu dùng Hoa Kỳ, không phải quy định tại Việt Nam.",
 };
 
 const SRC_BIDV_FEE = {
@@ -171,177 +165,7 @@ export const ARTICLES_2: EducationArticle[] = [
   },
 
   // ------------------------------------------------------------------ C08
-  {
-    slug: "tiep-tuc-thue-hay-mua-nha",
-    group: "CHOICE",
-    planId: "C08",
-    question: "Tiếp tục thuê hay mua nhà: cần so những chi phí nào?",
-    shortAnswer: [
-      "So tiền thuê với khoản trả nợ có ích để xem dòng tiền tháng nhưng chưa đủ để chọn thuê hay mua, vì còn ba thứ: tiền tự có của bạn nếu không mua thì làm gì, chi phí sở hữu ngoài khoản vay, và giá nhà thay đổi thế nào.",
-      "Kết luận của phép tính này rất nhạy với thời gian bạn ở và với giả định giá nhà. Đổi hai thứ đó là kết luận có thể đảo chiều — nên điều đáng làm là thử, không phải tin một con số.",
-    ],
-    // The distinction: a month's cash flow is not the net cost. The two
-    // conditions that can reverse the answer are emphasised with it, so the
-    // conclusion never travels without them.
-    shortAnswerEmphasis: [
-      "So tiền thuê với khoản trả nợ có ích để xem dòng tiền tháng nhưng chưa đủ để chọn thuê hay mua",
-    ],
-    household: {
-      title: "Tình huống giả lập trong bài",
-      items: [
-        { label: "Giá nhà", value: "2.500.000.000 ₫" },
-        { label: "Tiền tự có", value: "600.000.000 ₫" },
-        { label: "Chi phí mua ngoài giá", value: "75.000.000 ₫" },
-        { label: "Lãi suất vay", value: "8,5%/năm, 240 tháng" },
-        { label: "Chi phí sở hữu hằng tháng", value: "2.500.000 ₫" },
-        {
-          label: "Giá nhà tăng (ba kịch bản)",
-          value: "0%, 3% và 5%/năm",
-        },
-        { label: "Phí bán khi thoát", value: "2% giá trị" },
-        { label: "Tiền thuê hiện tại", value: "12.000.000 ₫/tháng" },
-        { label: "Tiền thuê tăng (giả định)", value: "4%/năm" },
-        { label: "Tiền tự có nếu không mua sinh lời", value: "6%/năm" },
-        { label: "Khoảng thời gian so sánh", value: "120 tháng (10 năm)" },
-      ],
-      note:
-        "Toàn bộ là giả định để minh họa cách so sánh, không phải dự báo giá nhà, tiền thuê hay lợi suất đầu tư. Không có con số nào trong đây là khuyến nghị.",
-    },
-    sections: [
-      {
-        heading: "Hai phương án phải bắt đầu từ cùng một số tiền",
-        paragraphs: [
-          "Sai sót phổ biến nhất khi tự so thuê với mua: chỉ tính tiền của người mua. Người mua bỏ ra 600 triệu tiền tự có cộng 75 triệu chi phí mua; người thuê không bỏ ra khoản đó, nên khoản đó vẫn là của họ và đang làm việc gì.",
-          "Nếu hai bên không bắt đầu từ cùng 675 triệu, hoặc bỏ sót tài sản và dòng tiền của một bên, so sánh bị lệch. Mức lệch còn phụ thuộc cách ghi nhận vốn, lợi suất và thời gian; không thể nói luôn bằng đúng tiền trả trước.",
-          "Bảng dưới vì vậy tính phần tiền tự có của người mua như là số tiền người thuê đem đi đầu tư ở mức bạn nhập. Mức đó là giả định của bạn: đặt 0 nếu bạn biết mình sẽ không đầu tư gì.",
-        ],
-        emphasis: [
-          "chỉ tính tiền của người mua",
-          "Nếu hai bên không bắt đầu từ cùng 675 triệu",
-          "Mức đó là giả định của bạn",
-        ],
-      },
-      {
-        heading: "Sở hữu có chi phí không nằm trong khoản trả nợ",
-        paragraphs: [
-          "Phí quản lý, bảo hiểm tài sản, sửa chữa, và thuế phí liên quan đến tài sản đều là tiền ra khỏi ví hằng tháng hoặc hằng năm, và không có khoản nào trong số đó nằm trong con số ngân hàng thu.",
-          "Hợp đồng thuê quyết định ai trả phí quản lý, bảo trì và các khoản liên quan; một phần có thể đã nằm trong tiền thuê. Chỉ tính phần mỗi bên thực sự chịu, không cộng trùng. Chi phí người thuê trả riêng cần được đưa vào tổng chi phí thuê.",
-          "Chiều ngược lại: người mua trả nợ thì một phần là gốc, tức là tiền chuyển thành tài sản của chính mình. Bảng dưới tính cả phần này, nên nó không coi khoản trả nợ là chi phí toàn bộ.",
-        ],
-        emphasis: [
-          "không có khoản nào trong số đó nằm trong con số ngân hàng thu",
-          "Chỉ tính phần mỗi bên thực sự chịu, không cộng trùng",
-          "một phần là gốc, tức là tiền chuyển thành tài sản của chính mình",
-        ],
-      },
-      {
-        // The heading carries the CONDITION as well as the claim, because the
-        // section's whole point is that the crossing month is scoped.
-        heading: "Thời gian ở là biến quan trọng nhất, và mốc “có lợi” chỉ đúng trong khoảng bạn chọn",
-        paragraphs: [
-          "Chi phí mua ngoài giá và phí bán khi thoát là hai khoản trả một lần. Ở càng ngắn thì hai khoản đó càng khó được bù lại; ở càng dài thì chúng càng bị dàn mỏng.",
-          // SPLIT. This was ONE paragraph carrying three separate facts — the
-          // definition of the crossing month, its scope, and what a blank
-          // horizon field means. At 390 px it filled more than a phone screen
-          // on its own, which an independent reading review measured. Nothing
-          // is removed: each fact now has its own short paragraph, in the same
-          // order, with the same words.
-          "Dòng “tháng mua bắt đầu có lợi hơn” có một nghĩa rất cụ thể trong công cụ: đó là tháng đầu tiên mà mua rẻ hơn VÀ giữ được lợi thế đó đến hết đúng khoảng thời gian bạn đã chọn. Công cụ dò từ cuối kỳ về đầu, nên nó không báo một mốc sớm rồi sau đó bị đảo lại trong kỳ.",
-          "Nhưng mốc đó chỉ nói về khoảng thời gian bạn đã chọn. Đổi “So sánh trong” hoặc đổi giả định giá nhà thì nó có thể dịch chuyển, có thể biến mất, và không có gì bảo đảm lợi thế còn giữ được ở những tháng ngoài khoảng đó.",
-          // CORRECTED while splitting this paragraph. The old sentence said
-          // "nếu ô So sánh trong để trống" — but that box is the REQUIRED
-          // horizon input, and clearing it withholds every result and both
-          // charts. The nullable thing is the RESULT row, so that is what
-          // this now names.
-          "Còn nếu dòng kết quả “Mua bắt đầu có lợi từ tháng” để trống trong khi bạn đã nhập khoảng thời gian hợp lệ mà biểu đồ vẫn có chỗ hai đường giao nhau, nghĩa là mua có rẻ hơn trong một quãng giữa kỳ rồi bị đảo lại trước cuối kỳ. Khi đó hãy đọc chênh lệch tại đúng thời điểm bạn dự định ở hoặc bán, chứ không đọc mốc giao.",
-          "Hãy thử đổi khoảng thời gian so sánh và giả định giá nhà. Nếu kết luận đảo chiều chỉ vì đổi giá nhà từ 3% lên 5%/năm, thì bạn biết kết luận đó đang dựa vào một con số không ai biết chắc.",
-          "Biểu đồ dưới đây vẽ đúng điều đó: mỗi đường là một giả định tăng giá — 0%, 3% và 5%/năm — và giá trị trên trục dọc là “mua lợi hơn thuê bao nhiêu” ở từng tháng. Dưới đường 0 là những tháng thuê đang rẻ hơn; đường nào cắt lên trên đường 0 thì tháng cắt đó là tháng mua bắt đầu có lợi trong kịch bản ấy. Ba đường tách nhau ra theo thời gian, và khoảng cách giữa chúng ở tháng cuối chính là phần kết luận phụ thuộc vào một con số không ai biết trước.",
-          "Có một biến thứ hai cũng đủ sức đảo kết luận: mức sinh lời bạn giả định cho tiền tự có nếu không mua. Đặt 0% thì phương án mua trông tốt hơn nhiều, vì khi đó tiền của người thuê không làm gì cả. Đặt 8% thì ngược lại. Con số trung thực là con số bạn thực sự làm được với tiền đó — không phải mức cao nhất bạn từng nghe.",
-        ],
-        emphasis: [
-          "giữ được lợi thế đó đến hết đúng khoảng thời gian bạn đã chọn",
-          "mốc đó chỉ nói về khoảng thời gian bạn đã chọn",
-          "kết luận đó đang dựa vào một con số không ai biết chắc",
-          "Con số trung thực là con số bạn thực sự làm được với tiền đó",
-        ],
-      },
-      {
-        heading: "Những thứ phép tính này không đo được",
-        paragraphs: [
-          "Bảng chỉ đo tiền. Nó không đo việc con bạn không phải chuyển trường, việc bạn được sửa nhà theo ý mình, hay việc chủ nhà có thể không gia hạn hợp đồng thuê vào lúc bất tiện nhất.",
-          "Chiều ngược lại cũng có: thuê cho bạn khả năng đổi chỗ khi đổi việc, và không buộc bạn gánh một khoản nợ 20 năm trong giai đoạn thu nhập còn chưa ổn định.",
-          "Cách dùng phép tính này cho đúng: để nó cho bạn biết cái giá tài chính của mỗi lựa chọn, rồi tự quyết định những thứ không đo được có đáng cái giá đó hay không. Một con số không thay bạn ra quyết định, nhưng nó cho bạn biết mình đang trả bao nhiêu cho điều mình muốn.",
-        ],
-        emphasis: [
-          "Bảng chỉ đo tiền",
-          "Một con số không thay bạn ra quyết định",
-        ],
-      },
-    ],
-    visual: {
-      // The plan's own words: "so dòng tiền/tài sản theo thời gian, ít nhất
-      // hai kịch bản giá". Three named rates over 120 months, with the exact
-      // endpoint figures as the figure's accessible table.
-      kind: "rentBuyScenarios",
-      title: "Mua lợi hơn thuê bao nhiêu, theo thời gian và theo giả định giá",
-      growthPercents: [0, 3, 5],
-      input: {
-        price: 2_500_000_000,
-        downPayment: 600_000_000,
-        purchaseCosts: 75_000_000,
-        annualRatePercent: 8.5,
-        termMonths: 240,
-        monthlyOwnerCosts: 2_500_000,
-        // Overridden once per scenario; kept here as the middle assumption so
-        // the declared hypothetical is complete on its own.
-        priceGrowthPercent: 3,
-        sellingCostPercent: 2,
-        monthlyRent: 12_000_000,
-        rentGrowthPercent: 4,
-        investmentReturnPercent: 6,
-        horizonMonths: 120,
-      },
-    },
-    visualReading:
-      "Mỗi đường là một giả định tăng giá nhà — 0%, 3% và 5%/năm — và trục dọc là “mua lợi hơn thuê bao nhiêu” ở từng tháng. Số dương nghĩa là mua có chi phí ròng thấp hơn, số âm nghĩa là thuê thấp hơn, nên chỗ một đường cắt lên trên mức 0 chính là tháng mua bắt đầu có lợi TRONG kịch bản đó; ở giả định 0%/năm, mua không rẻ hơn ở tháng nào trong khoảng này. Đến tháng 120 ba đường cách nhau khoảng 1,5 tỷ, và khoảng cách đó là phần kết luận phụ thuộc vào một con số không ai biết trước. Ba đường là KỊCH BẢN, không phải khoảng tin cậy: không đường nào được gán xác suất.",
-    exercise: {
-      title: "Thử với số của bạn",
-      intro:
-        "Mở công cụ Thuê hay mua nhà. Các bước dùng đúng tên ô nhập trên công cụ.",
-      steps: [
-        "Trong nhóm “Những con số bạn đã biết”, nhập “Giá nhà”, “Tiền trả trước” và “Tiền thuê mỗi tháng” theo tình huống của bạn.",
-        "Vẫn trong nhóm đó, nhập “Lãi suất vay”, “Kỳ hạn vay”, rồi “So sánh trong” bằng số tháng bạn thực sự dự định ở; 10 năm là 120 tháng.",
-        "Mở nhóm “Giả định và chi phí kèm theo”. Trong “Giả định phía mua” nhập “Giá nhà tăng”, “Phí mua một lần”, “Chi phí sở hữu mỗi tháng” và “Phí khi bán”.",
-        "Trong “Giả định phía thuê” nhập “Tiền thuê tăng”, “Tiền cọc thuê” và “Lợi nhuận đầu tư” — mức sinh lời bạn thực sự đạt được với số tiền đó.",
-        "Đọc biểu đồ “Chi phí ròng của hai phương án theo thời gian” để thấy hai đường cắt nhau ở tháng nào, rồi đọc biểu đồ “Kết luận đổi thế nào theo giả định tăng giá nhà” ngay dưới đó.",
-      ],
-      toolSlug: "thue-hay-mua",
-      change:
-        "Đổi “So sánh trong” từ 60 lên 120 rồi 180 tháng. Xem dòng “Mua bắt đầu có lợi từ tháng” và hai biểu đồ đổi thế nào — kết luận có đảo chiều không, và ở mốc nào.",
-      check:
-        "Với số của bạn: trên biểu đồ kịch bản, đường ứng với giả định 0% có cắt lên trên đường 0 trong khoảng thời gian bạn chọn không? Nếu chỉ những đường tăng giá cao mới cắt, thì kết luận của bạn đang dựa vào một dự báo.",
-    },
-    limits: {
-      title: "Bài này không trả lời được gì",
-      items: [
-        "Giá nhà, tiền thuê hay lợi suất đầu tư trong tương lai. Cả ba là ô nhập, không phải dự báo.",
-        "Giá trị phi tài chính: ổn định chỗ ở cho con đi học, được sửa nhà theo ý mình, hay sự linh hoạt khi đổi việc. Không có con số nào ở đây đo được những thứ đó.",
-        "Thuế và phí khi bán, ngoài phần bạn nhập.",
-        "Việc bạn có được duyệt vay hay không.",
-      ],
-    },
-    sources: {
-      title: "Nguồn tham khảo cho khái niệm",
-      intro: "Dùng cho KHÁI NIỆM, không phải cho một dự báo hay một tỷ lệ.",
-      items: [SRC_CFPB_DOWN_PAYMENT, SRC_CFPB_COMPARE],
-    },
-    provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
-    nextSlugs: [
-      "duoc-vay-khong-co-nghia-nen-vay-het",
-      "hai-goi-vay-thang-thap-co-re-hon",
-    ],
-  },
+  APPROVED_C08,
 
   // ------------------------------------------------------------------ C09
   {

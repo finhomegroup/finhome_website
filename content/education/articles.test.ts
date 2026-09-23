@@ -90,7 +90,9 @@ describe("every article is a real article, not a stub", () => {
   it.each(EDUCATION_ARTICLES.map((a) => [a.slug, a] as const))(
     "%s has a question, an answer and a declared hypothetical",
     (_slug, article) => {
-      expect(article.question.trim().endsWith("?")).toBe(true);
+      // A reader-facing decision can be a question or an instructional title.
+      // Do not append punctuation to the approved headline just to fit data.
+      expect(article.question.trim().length).toBeGreaterThan(30);
       expect(article.shortAnswer.length).toBeGreaterThanOrEqual(2);
       for (const paragraph of article.shortAnswer) {
         expect(paragraph.length).toBeGreaterThan(60);
@@ -225,7 +227,7 @@ describe("every article's visual computes from its own hypothetical", () => {
     for (const series of model.series) {
       expect(series.points.length).toBeGreaterThan(2);
       expect(series.points[0].period).toBe(0);
-      expect(series.label).toMatch(/0%|3%|5%/);
+      expect(series.label).toMatch(/0%|5%|8%/);
     }
     // Zero is inside the plot, so "which side is ahead" is readable, and a
     // renting-ahead month is drawn below it rather than clamped away.
@@ -347,21 +349,20 @@ describe("the figures the prose quotes", () => {
       ...article.shortAnswer,
       ...article.sections.flatMap((s) => s.paragraphs),
     ].join(" ");
-    expect(prose).toContain("3,5 ĐIỂM PHẦN TRĂM");
-    expect(prose).toContain("46,67%");
+    expect(prose).toContain("3,5 điểm phần trăm");
     expect(prose).toContain("27,11%");
-    expect(prose).toContain("28,13%");
-    // The corrected causal claim: a lower rate retires MORE principal.
-    expect(prose).toContain("3.611.864");
-    expect(prose).toContain("2.310.435");
+    expect(prose).toContain("không thể lấy khoản trả cũ cộng đơn giản 3,5%");
+    expect(prose).toContain("Dư nợ là phần tiền vay bạn chưa trả hết");
+    expect(prose).toContain("số tháng còn lại");
   });
 
   it("C03 does not repeat the old backwards explanation", () => {
     const article = getEducationArticle("het-uu-dai-khoan-tra-tang-bao-nhieu")!;
     const prose = article.sections.flatMap((s) => s.paragraphs).join(" ");
     // The reviewed defect: blaming the low promotional rate for slow principal
-    // reduction. It says the opposite now, explicitly.
-    expect(prose).toContain("Lãi cao hơn trả được ÍT gốc hơn");
+    // reduction. The approved rewrite avoids that causal claim entirely.
+    expect(prose).not.toContain("vì lãi ưu đãi thấp nên chưa trả được gốc");
+    expect(prose).toContain("không nhân khoản trả cũ với mức tăng của lãi suất");
   });
 
   it("C07 quotes both terms' instalments and the interest gap", () => {

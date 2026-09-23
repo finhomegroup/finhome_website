@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { AreaChart } from "@/components/calc/chart/area-chart";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
@@ -104,6 +105,25 @@ export function EducationArticleBody({
               </p>
             ))}
           </div>
+          {section.results ? (
+            <div className="mt-5 rounded-xl bg-bg-soft p-4">
+              <h3 className="font-medium text-ink">{section.results.caption}</h3>
+              <dl className="mt-3 space-y-3">
+                {section.results.rows.map((row) => (
+                  <div key={row.label} className="flex flex-col gap-1 border-b border-ink-4/15 pb-2 last:border-0 sm:flex-row sm:justify-between sm:gap-5">
+                    <dt className="text-sm text-ink-2">{row.label}</dt>
+                    <dd className="text-sm font-medium tabular-nums text-ink sm:text-right">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
+          {section.media ? (
+            <figure className="mt-5">
+              <Image src={section.media.src} alt={section.media.alt} width={section.media.width} height={section.media.height} unoptimized className="h-auto w-full rounded-xl border border-ink-4/15" />
+              <figcaption className="mt-3 text-sm leading-relaxed text-ink-3">{section.media.caption}</figcaption>
+            </figure>
+          ) : null}
         </section>
       ))}
 

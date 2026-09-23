@@ -4050,3 +4050,43 @@ the 30 triệu household is walkable as a sequence through its five groups.
   override, which is its own change.
 - **No copy was rewritten for style.** The review found the prose strong and
   changed it only where it disagreed with a figure, a statute or itself.
+
+## 2026-09-23 — Approved C01/C03/C08 publication revision
+
+The founder approved the three review drafts for publication, then requested
+"explain like I'm 5" language. Only these existing article URLs are revised:
+`co-600-trieu-nen-tim-nha-tam-gia-nao`,
+`het-uu-dai-khoan-tra-tang-bao-nhieu`, and `tiep-tuc-thue-hay-mua-nha`.
+The accepted headlines, original publication dates, related links and free-web
+tool destinations remain. Plain Vietnamese explains the money before financial
+terms; assumptions and model limitations remain explicit. This is editorial
+approval, not independent financial-professional review or measured acquisition.
+
+Implementation lives in `content/education/approved-tool-guides.ts`, referenced
+from the original article arrays, not a second set of routes. Declared inputs,
+computed charts, text summaries and regression fixtures use the same scenarios.
+No calculator formulas, tool defaults, logo, header or unrelated news changed.
+
+Independent screenshot review found the earlier review-artifact captures showed
+forms instead of the claimed results. They are not publication assets. Four new
+captures were taken from the actual public tools with the declared inputs and
+visually inspected. The browser returns JPEG bytes despite an earlier PNG file
+extension assumption; the published `.jpg` assets preserve those bytes. Tests
+check signature and actual 753×1004 dimensions. Screenshots supplement readable
+text results and computed SVG/table figures; they are not the only access to data.
+
+Verification on this source: native full check under Node 24 passed at
+2026-09-23T16:47:36.994Z: 6,494 tests / 297 files, TypeScript, lint with 3 expected
+baseline issues and 0 new, production build (280 pages), rendered markup checks
+(76 live calculators / 194 non-calculator pages). Re-derive counts on later runs.
+The initial full check caught stale glossary metadata and exercise field labels;
+these were repaired without weakening the existing calculator-field label test.
+
+Independent browser verification used the built export on loopback port 3237.
+All three articles were inspected at measured 390×844 and 1280×900: no page-level
+horizontal overflow; four screenshots loaded with correct natural dimensions;
+captions, readable results, and SVG figures present. Screenshots of each article
+were visually inspected. Free tool CTAs lead to affordability, floating-rate and
+rent/buy tools. This does not establish real-user comprehension or conversion lift.
+Production publication is separately verified against the merged release and live
+URLs; a local pass alone is not a publication claim.
