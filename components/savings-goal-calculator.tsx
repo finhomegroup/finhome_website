@@ -1,6 +1,7 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -12,6 +13,7 @@ import {
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -60,7 +62,37 @@ const MODES = {
   { needsTarget: boolean; needsContribution: boolean; needsMonths: boolean }
 >;
 
-export function SavingsGoalCalculator() {
+const FORM_ID = "muc-tieu-tiet-kiem-nhap";
+const RESULT_ID = "muc-tieu-tiet-kiem-ket-qua";
+
+/*
+ * CSV row 5, "Hai cột": "Cho chọn mục tiêu trước; đưa số cần góp mỗi tháng và
+ * ngày đạt mục tiêu lên đầu kết quả."
+ *
+ * The first clause was ALREADY SATISFIED and is left as it stands, not
+ * reimplemented: the two radio groups — which figure to solve for, and whether
+ * the goal is an amount or a house composition — are the first thing in the
+ * form, and the boxes that follow are only the ones the chosen question needs.
+ * The §8 test asserts that ordering rather than assuming it.
+ *
+ * The second clause is the change. The contribution and the attainment date
+ * both existed, but the date sat third behind a composition row and the
+ * headline group was followed by eight notices, three of which are about a
+ * comparison the reader has not asked for yet. Now the group leads with the
+ * solved figure — emphasised, the one emphasised row on the page — and the
+ * calendar date is the row directly under it; everything conditional follows.
+ * In the two modes where the monthly contribution is TYPED rather than solved
+ * it stays an input beside the answer instead of being restated as a result.
+ */
+export function SavingsGoalCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const initialValues = {
     mode: C.form.defaultMode,
     goalSource: C.form.defaultGoalSource,
@@ -283,6 +315,24 @@ export function SavingsGoalCalculator() {
       : `${C.form.monthsOrdinalUnit} ${formatDecimal(value, 0)}`;
 
   /**
+   * THE one answer, by mode — computed once so the emphasised row and the
+   * pinned CTA restate the same formatted string rather than formatting the
+   * same quantity twice.
+   */
+  const answerLabel =
+    mode === "contribution"
+      ? C.form.contributionResultLabel
+      : mode === "months"
+        ? C.form.monthsResultLabel
+        : C.form.targetResultLabel;
+  const answerValue =
+    mode === "contribution"
+      ? money(result?.contribution)
+      : mode === "months"
+        ? monthsOrdinal(schedule?.fundedMonth)
+        : money(result?.target);
+
+  /**
    * Reads the clock — the ONE place in this tool that may, and only on a
    * click. `lib/calc/` stays pure so the prerendered HTML and the hydrated
    * HTML agree.
@@ -355,454 +405,476 @@ export function SavingsGoalCalculator() {
         className="mb-6"
       />
 
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "contribution", label: C.form.modeContribution },
-            { value: "months", label: C.form.modeMonths },
-            { value: "target", label: C.form.modeTarget },
-          ]}
-        />
-        {/* Only where there is a goal to compose. */}
-        {needs.needsTarget ? (
-          <RadioGroupField
-            {...fields.bind("goalSource")}
-            legend={C.form.goalSourceLegend}
-            help={C.form.goalSourceHelp}
-            options={[
-              { value: "amount", label: C.form.goalSourceAmount },
-              { value: "house", label: C.form.goalSourceHouse },
-            ]}
-          />
-        ) : null}
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "contribution", label: C.form.modeContribution },
+                  { value: "months", label: C.form.modeMonths },
+                  { value: "target", label: C.form.modeTarget },
+                ]}
+              />
+              {/* Only where there is a goal to compose. */}
+              {needs.needsTarget ? (
+                <RadioGroupField
+                  {...fields.bind("goalSource")}
+                  legend={C.form.goalSourceLegend}
+                  help={C.form.goalSourceHelp}
+                  options={[
+                    { value: "amount", label: C.form.goalSourceAmount },
+                    { value: "house", label: C.form.goalSourceHouse },
+                  ]}
+                />
+              ) : null}
+            </FieldGroup>
 
-      {fromHouse ? (
-        <FieldGroup title={C.form.houseGroup} className="mt-8">
-          <NumberField
-            {...fields.bind("price")}
-            label={C.form.priceLabel}
-            unit={C.form.priceUnit}
-            help={C.form.priceHelp}
-            error={C.form.priceInvalid}
-            invalid={priceInvalid}
-          />
-          <NumberField
-            {...fields.bind("downPercent")}
-            label={C.form.downPercentLabel}
-            unit={C.form.downPercentUnit}
-            help={C.form.downPercentHelp}
-            error={C.form.downPercentInvalid}
-            invalid={downPercentInvalid}
-          />
-          <NumberField
-            {...fields.bind("costPercent")}
-            label={C.form.costPercentLabel}
-            unit={C.form.costPercentUnit}
-            help={C.form.costPercentHelp}
-            error={C.form.costPercentInvalid}
-            invalid={costPercentInvalid}
-          />
-          <NumberField
-            {...fields.bind("reserve")}
-            label={C.form.reserveLabel}
-            unit={C.form.reserveUnit}
-            help={C.form.reserveHelp}
-            error={C.form.reserveInvalid}
-            invalid={reserveInvalid}
-          />
-        </FieldGroup>
-      ) : null}
+            {fromHouse ? (
+              <FieldGroup title={C.form.houseGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("price")}
+                  label={C.form.priceLabel}
+                  unit={C.form.priceUnit}
+                  help={C.form.priceHelp}
+                  error={C.form.priceInvalid}
+                  invalid={priceInvalid}
+                />
+                <NumberField
+                  {...fields.bind("downPercent")}
+                  label={C.form.downPercentLabel}
+                  unit={C.form.downPercentUnit}
+                  help={C.form.downPercentHelp}
+                  error={C.form.downPercentInvalid}
+                  invalid={downPercentInvalid}
+                />
+                <NumberField
+                  {...fields.bind("costPercent")}
+                  label={C.form.costPercentLabel}
+                  unit={C.form.costPercentUnit}
+                  help={C.form.costPercentHelp}
+                  error={C.form.costPercentInvalid}
+                  invalid={costPercentInvalid}
+                />
+                <NumberField
+                  {...fields.bind("reserve")}
+                  label={C.form.reserveLabel}
+                  unit={C.form.reserveUnit}
+                  help={C.form.reserveHelp}
+                  error={C.form.reserveInvalid}
+                  invalid={reserveInvalid}
+                />
+              </FieldGroup>
+            ) : null}
 
-      <FieldGroup title={C.form.group} className="mt-8">
-        <NumberField
-          {...fields.bind("initial")}
-          label={C.form.initialLabel}
-          unit={C.form.initialUnit}
-          help={C.form.initialHelp}
-          error={C.form.initialInvalid}
-          invalid={initialInvalid}
-        />
-        {/* Only the two inputs the mode needs are rendered: showing the box
-            the tool is solving for would invite the user to fill it in. The
-            typed target also disappears in home mode, where it is derived. */}
-        {needs.needsTarget && !fromHouse ? (
-          <NumberField
-            {...fields.bind("target")}
-            label={C.form.targetLabel}
-            unit={C.form.targetUnit}
-            help={C.form.targetHelp}
-            error={C.form.targetInvalid}
-            invalid={targetInvalid}
-          />
-        ) : null}
-        {needs.needsContribution ? (
-          <NumberField
-            {...fields.bind("contribution")}
-            label={C.form.contributionLabel}
-            unit={C.form.contributionUnit}
-            help={C.form.contributionHelp}
-            error={C.form.contributionInvalid}
-            invalid={contributionInvalid}
-          />
-        ) : null}
-        {needs.needsMonths ? (
-          <NumberField
-            {...fields.bind("months")}
-            label={C.form.monthsLabel}
-            help={C.form.monthsHelp}
-            error={C.form.monthsInvalid}
-            invalid={monthsInvalid}
-          />
-        ) : null}
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-      </FieldGroup>
+            <FieldGroup title={C.form.group} className="mt-8">
+              <NumberField
+                {...fields.bind("initial")}
+                label={C.form.initialLabel}
+                unit={C.form.initialUnit}
+                help={C.form.initialHelp}
+                error={C.form.initialInvalid}
+                invalid={initialInvalid}
+              />
+              {/* Only the two inputs the mode needs are rendered: showing the
+                  box the tool is solving for would invite the user to fill it
+                  in. The typed target also disappears in home mode, where it
+                  is derived. */}
+              {needs.needsTarget && !fromHouse ? (
+                <NumberField
+                  {...fields.bind("target")}
+                  label={C.form.targetLabel}
+                  unit={C.form.targetUnit}
+                  help={C.form.targetHelp}
+                  error={C.form.targetInvalid}
+                  invalid={targetInvalid}
+                />
+              ) : null}
+              {needs.needsContribution ? (
+                <NumberField
+                  {...fields.bind("contribution")}
+                  label={C.form.contributionLabel}
+                  unit={C.form.contributionUnit}
+                  help={C.form.contributionHelp}
+                  error={C.form.contributionInvalid}
+                  invalid={contributionInvalid}
+                />
+              ) : null}
+              {needs.needsMonths ? (
+                <NumberField
+                  {...fields.bind("months")}
+                  label={C.form.monthsLabel}
+                  help={C.form.monthsHelp}
+                  error={C.form.monthsInvalid}
+                  invalid={monthsInvalid}
+                />
+              ) : null}
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+            </FieldGroup>
 
-      {/* The calendar and the extra-saving comparison. Both are original row
-          19 requirements: "46 tháng" is not a plan and "July 2030" is. */}
-      <FieldGroup title={C.form.dateGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("startDay")}
-          label={C.form.startDayLabel}
-          help={C.form.startDayHelp}
-          error={C.form.startDayInvalid}
-          invalid={start.dayBad}
-        />
-        <NumberField
-          {...fields.bind("startMonth")}
-          label={C.form.startMonthLabel}
-          help={C.form.startMonthHelp}
-          error={C.form.startMonthInvalid}
-          invalid={start.monthBad}
-        />
-        <NumberField
-          {...fields.bind("startYear")}
-          label={C.form.startYearLabel}
-          help={C.form.startYearHelp}
-          error={C.form.startYearInvalid}
-          invalid={start.yearBad}
-        />
-        <div>
-          <button
-            type="button"
-            onClick={fillToday}
-            className={cn(
-              "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
-              "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
-              FH_POINTER,
-            )}
+            {/* The calendar and the extra-saving comparison. Both are original
+                row 19 requirements: "46 tháng" is not a plan and "July 2030"
+                is. */}
+            <FieldGroup title={C.form.dateGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("startDay")}
+                label={C.form.startDayLabel}
+                help={C.form.startDayHelp}
+                error={C.form.startDayInvalid}
+                invalid={start.dayBad}
+              />
+              <NumberField
+                {...fields.bind("startMonth")}
+                label={C.form.startMonthLabel}
+                help={C.form.startMonthHelp}
+                error={C.form.startMonthInvalid}
+                invalid={start.monthBad}
+              />
+              <NumberField
+                {...fields.bind("startYear")}
+                label={C.form.startYearLabel}
+                help={C.form.startYearHelp}
+                error={C.form.startYearInvalid}
+                invalid={start.yearBad}
+              />
+              <div>
+                <button
+                  type="button"
+                  onClick={fillToday}
+                  className={cn(
+                    "rounded-xl border border-ink-4/40 bg-white px-4 py-2.5 font-display text-base font-medium text-ink transition",
+                    "hover:border-brand-green focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green/30",
+                    FH_POINTER,
+                  )}
+                >
+                  {C.form.todayLabel}
+                </button>
+                <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                  {C.form.todayHelp}
+                </p>
+              </div>
+              {needs.needsTarget ? (
+                <NumberField
+                  {...fields.bind("higherContribution")}
+                  label={C.form.higherContributionLabel}
+                  unit={C.form.higherContributionUnit}
+                  help={C.form.higherContributionHelp}
+                  error={C.form.higherContributionInvalid}
+                  invalid={higherInvalid}
+                />
+              ) : null}
+            </FieldGroup>
+          </>
+        }
+        cta={
+          /* Sticky: eleven controls before the last one in the widest mode —
+             three radios' worth of options, four house fields, the horizon,
+             the rate, three date boxes and the comparison — so on a desktop
+             viewport the answer leaves the screen while the lower half of the
+             form is being edited. */
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={!fieldsUsable}
+            answer={{ label: answerLabel, value: answerValue }}
+            sticky
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {/* THE ANSWER, and the only emphasised row in the tool: the
+                  contribution the plan needs, the cycle it funds at, or the
+                  closing balance, depending on which of the three the reader
+                  asked for. In "months" mode that is the first WHOLE
+                  contribution cycle covering the goal, not the fractional
+                  solve: 0,367 of a contribution is not a payment a standing
+                  order makes. The estimate is in the details, named. */}
+              <ResultRow label={answerLabel} value={answerValue} emphasis />
+              {/* ROW 5: the calendar date directly under the figure, not third
+                  behind a composition row. Null — a dash — whenever there is
+                  no attainment cycle or no readable start date; never a date
+                  derived from a plan that does not fund. */}
+              {needs.needsTarget ? (
+                <ResultRow
+                  label={C.form.fundedDateLabel}
+                  value={showDate(plan?.current.fundedDate ?? null)}
+                />
+              ) : (
+                <ResultRow
+                  label={C.form.horizonEndDateLabel}
+                  value={showDate(horizonEndDate)}
+                />
+              )}
+              {fromHouse ? (
+                <ResultRow
+                  label={C.form.composedTargetLabel}
+                  value={money(composition?.target)}
+                />
+              ) : null}
+            </ResultGroup>
+
+            {/* One notice, and it names the actual state rather than listing
+                three possible causes whenever the solver returns nothing. */}
+            {noResult ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.noResultNotice}
+              </p>
+            ) : null}
+            {status === "alreadyFunded" && result === null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.alreadyFundedNotice}
+              </p>
+            ) : null}
+            {status === "unattainable" ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.unattainableNotice}
+              </p>
+            ) : null}
+            {status === "beyondLimit" ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.beyondLimitNotice}
+              </p>
+            ) : null}
+            {status === "shortOfTarget" ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.shortOfTargetNotice}
+              </p>
+            ) : null}
+            {/* A schedule that could not be built is a FAILURE state, not a
+                plan with a zero balance. */}
+            {status === "invalid" ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.invalidScheduleNotice}
+              </p>
+            ) : null}
+            {fromHouse && composition === null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.houseInvalidNotice}
+              </p>
+            ) : null}
+            {/* The months answer survives an unreadable date; the CALENDAR
+                answer does not, and the page says which. */}
+            {start.date === null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.startDateInvalidNotice}
+              </p>
+            ) : null}
+
+            {fromHouse && composition !== null ? (
+              <ResultGroup
+                title={C.form.compositionTitle}
+                className="mt-4"
+                live={false}
+              >
+                <ResultRow
+                  label={C.form.downPaymentRowLabel}
+                  value={money(composition.downPayment)}
+                />
+                <ResultRow
+                  label={C.form.purchaseCostsRowLabel}
+                  value={money(composition.purchaseCosts)}
+                />
+                <ResultRow
+                  label={C.form.reserveRowLabel}
+                  value={money(composition.reserve)}
+                />
+                <ResultRow
+                  label={C.form.composedTargetLabel}
+                  value={money(composition.target)}
+                />
+              </ResultGroup>
+            ) : null}
+            {fromHouse ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.reserveAssumptionNotice}
+              </p>
+            ) : null}
+
+            {/* The extra-saving comparison: the same projection, run at a
+                figure the reader entered. Never invented, and never a zero
+                difference when the comparison could not be made. */}
+            {higherLeg !== null && plan !== null ? (
+              <ResultGroup
+                title={C.form.comparisonTitle}
+                className="mt-4"
+                live={false}
+              >
+                <ResultRow
+                  label={C.form.comparisonContributionLabel}
+                  value={money(higherLeg.contribution)}
+                />
+                <ResultRow
+                  label={C.form.comparisonMonthsLabel}
+                  value={monthsOrdinal(higherLeg.schedule.fundedMonth)}
+                />
+                <ResultRow
+                  label={C.form.comparisonDateLabel}
+                  value={showDate(higherLeg.fundedDate)}
+                />
+                <ResultRow
+                  label={C.form.monthsEarlierLabel}
+                  value={
+                    plan.monthsEarlier === null
+                      ? null
+                      : `${formatDecimal(plan.monthsEarlier, 0)} ${C.form.monthsUnit}`
+                  }
+                />
+                <ResultRow
+                  label={C.form.comparisonOwnFundsLabel}
+                  value={money(higherLeg.ownFunds)}
+                />
+                <ResultRow
+                  label={C.form.comparisonInterestLabel}
+                  value={money(higherLeg.interest)}
+                />
+              </ResultGroup>
+            ) : null}
+            {/* DERIVED FROM THE FIGURES ABOVE, not asserted. A higher
+                contribution usually means more of the saver's own money and
+                less interest — but at a 0% rate both plans put in exactly the
+                target and both earn nothing, so the strict version of that
+                sentence is false there. */}
+            {higherLeg !== null &&
+            plan !== null &&
+            plan.monthsEarlier !== null ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {higherLeg.interest < plan.current.interest &&
+                higherLeg.ownFunds > plan.current.ownFunds
+                  ? C.form.comparisonTradeOffNotice
+                  : C.form.comparisonNoInterestTradeOffNotice}
+              </p>
+            ) : null}
+            {comparisonNotHigher ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.comparisonNotHigherNotice}
+              </p>
+            ) : null}
+            {comparisonOneLeg ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.comparisonOneLegNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          /* Both figures, outside every ResultGroup. When there is no answer
+             the model comes back `unavailable` and the figure explains itself
+             rather than drawing a curve extended to touch the target line. */
+          <>
+            <ChartFigure model={chart}>
+              <LineChart model={chart} />
+            </ChartFigure>
+
+            {pathsChart !== null ? (
+              <ChartFigure model={pathsChart}>
+                <LineChart model={pathsChart} />
+              </ChartFigure>
+            ) : null}
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <DetailDisclosure
+            title={C.form.detailDisclosureTitle}
+            hint={C.form.detailDisclosureHint}
           >
-            {C.form.todayLabel}
-          </button>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.form.todayHelp}
-          </p>
-        </div>
-        {needs.needsTarget ? (
-          <NumberField
-            {...fields.bind("higherContribution")}
-            label={C.form.higherContributionLabel}
-            unit={C.form.higherContributionUnit}
-            help={C.form.higherContributionHelp}
-            error={C.form.higherContributionInvalid}
-            invalid={higherInvalid}
-          />
-        ) : null}
-      </FieldGroup>
+            {/* Every figure here is the SCHEDULE's, at the cycle the headline
+                names. Using the solver's continuous totals would put a
+                different horizon in the details than on the answer. */}
+            <DetailFigures
+              title={C.form.detailTitle}
+              figures={[
+                {
+                  label: C.form.scheduleBalanceLabel,
+                  value: schedule ? moneyCell(schedule.balance) : null,
+                },
+                // The three parts of the closing balance, separated: what the
+                // reader already had, what they put in afterwards, and what
+                // the assumed rate added.
+                {
+                  label: C.form.initialFundsLabel,
+                  value: initial === null ? null : moneyCell(initial),
+                },
+                {
+                  label: C.form.laterContributionsLabel,
+                  value:
+                    schedule && initial !== null
+                      ? moneyCell(schedule.totalContributed - initial)
+                      : null,
+                },
+                {
+                  label: C.form.totalContributedLabel,
+                  value: schedule ? moneyCell(schedule.totalContributed) : null,
+                },
+                {
+                  label: C.form.interestLabel,
+                  value: schedule ? moneyCell(schedule.interest) : null,
+                },
+                {
+                  // A share, not an amount: never scaled to the block's unit.
+                  label: C.form.interestShareLabel,
+                  value: schedule
+                    ? formatPercent(schedule.interestSharePercent, 1)
+                    : null,
+                },
+              ]}
+            />
 
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        {mode === "contribution" ? (
-          <ResultRow
-            label={C.form.contributionResultLabel}
-            value={money(result?.contribution)}
-          />
-        ) : null}
-        {mode === "months" ? (
-          <ResultRow
-            label={C.form.monthsResultLabel}
-            // The first WHOLE contribution cycle that covers the goal, not the
-            // fractional solve: 0,367 of a contribution is not a payment a
-            // standing order makes. The estimate is in the details, named.
-            value={monthsOrdinal(schedule?.fundedMonth)}
-          />
-        ) : null}
-        {mode === "target" ? (
-          <ResultRow
-            label={C.form.targetResultLabel}
-            value={money(result?.target)}
-          />
-        ) : null}
-        {/* The calendar answer, beside the number of months. Null — a dash —
-            whenever there is no attainment cycle or no readable start date;
-            never a date derived from a plan that does not fund. */}
-        {needs.needsTarget ? (
-          <ResultRow
-            label={C.form.fundedDateLabel}
-            value={showDate(plan?.current.fundedDate ?? null)}
-          />
-        ) : (
-          <ResultRow
-            label={C.form.horizonEndDateLabel}
-            value={showDate(horizonEndDate)}
-          />
-        )}
-        {fromHouse ? (
-          <ResultRow
-            label={C.form.composedTargetLabel}
-            value={money(composition?.target)}
-          />
-        ) : null}
-      </ResultGroup>
+            <DetailFigures
+              title={C.form.scheduleTitle}
+              className="mt-4"
+              figures={[
+                {
+                  // A cycle number, not an amount: never scaled.
+                  label: C.form.fundedMonthLabel,
+                  value:
+                    schedule?.fundedMonth == null
+                      ? null
+                      : countCell(schedule.fundedMonth),
+                },
+                {
+                  label: C.form.startDateLabel,
+                  value: showDate(start.date),
+                },
+                {
+                  label: C.form.firstContributionDateLabel,
+                  value: showDate(plan?.firstContributionDate ?? null),
+                },
+                {
+                  label: C.form.continuousEstimateLabel,
+                  value: result
+                    ? `${formatDecimal(result.months, 3)} ${C.form.monthsUnit}`
+                    : null,
+                },
+              ]}
+            />
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.continuousEstimateNote}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.calendarNotice}
+            </p>
+          </DetailDisclosure>
+        }
+      />
 
-      {/* One notice, and it names the actual state rather than listing three
-          possible causes whenever the solver returns nothing. */}
-      {noResult ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.noResultNotice}
-        </p>
-      ) : null}
-      {status === "alreadyFunded" && result === null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.alreadyFundedNotice}
-        </p>
-      ) : null}
-      {status === "unattainable" ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.unattainableNotice}
-        </p>
-      ) : null}
-      {status === "beyondLimit" ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.beyondLimitNotice}
-        </p>
-      ) : null}
-      {status === "shortOfTarget" ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.shortOfTargetNotice}
-        </p>
-      ) : null}
-      {/* A schedule that could not be built is a FAILURE state, not a plan
-          with a zero balance. */}
-      {status === "invalid" ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.invalidScheduleNotice}
-        </p>
-      ) : null}
-      {fromHouse && composition === null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.houseInvalidNotice}
-        </p>
-      ) : null}
-      {/* The months answer survives an unreadable date; the CALENDAR answer
-          does not, and the page says which. */}
-      {start.date === null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.startDateInvalidNotice}
-        </p>
-      ) : null}
-
-      {fromHouse && composition !== null ? (
-        <ResultGroup
-          title={C.form.compositionTitle}
-          className="mt-4"
-          live={false}
-        >
-          <ResultRow
-            label={C.form.downPaymentRowLabel}
-            value={money(composition.downPayment)}
-          />
-          <ResultRow
-            label={C.form.purchaseCostsRowLabel}
-            value={money(composition.purchaseCosts)}
-          />
-          <ResultRow
-            label={C.form.reserveRowLabel}
-            value={money(composition.reserve)}
-          />
-          <ResultRow
-            label={C.form.composedTargetLabel}
-            value={money(composition.target)}
-          />
-        </ResultGroup>
-      ) : null}
-      {fromHouse ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.reserveAssumptionNotice}
-        </p>
-      ) : null}
-
-      {/* The extra-saving comparison: the same projection, run at a figure the
-          reader entered. Never invented, and never a zero difference when the
-          comparison could not be made. */}
-      {higherLeg !== null && plan !== null ? (
-        <ResultGroup
-          title={C.form.comparisonTitle}
-          className="mt-4"
-          live={false}
-        >
-          <ResultRow
-            label={C.form.comparisonContributionLabel}
-            value={money(higherLeg.contribution)}
-          />
-          <ResultRow
-            label={C.form.comparisonMonthsLabel}
-            value={monthsOrdinal(higherLeg.schedule.fundedMonth)}
-          />
-          <ResultRow
-            label={C.form.comparisonDateLabel}
-            value={showDate(higherLeg.fundedDate)}
-          />
-          <ResultRow
-            label={C.form.monthsEarlierLabel}
-            value={
-              plan.monthsEarlier === null
-                ? null
-                : `${formatDecimal(plan.monthsEarlier, 0)} ${C.form.monthsUnit}`
-            }
-          />
-          <ResultRow
-            label={C.form.comparisonOwnFundsLabel}
-            value={money(higherLeg.ownFunds)}
-          />
-          <ResultRow
-            label={C.form.comparisonInterestLabel}
-            value={money(higherLeg.interest)}
-          />
-        </ResultGroup>
-      ) : null}
-      {/* DERIVED FROM THE FIGURES ABOVE, not asserted. A higher contribution
-          usually means more of the saver's own money and less interest — but
-          at a 0% rate both plans put in exactly the target and both earn
-          nothing, so the strict version of that sentence is false there. */}
-      {higherLeg !== null && plan !== null && plan.monthsEarlier !== null ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {higherLeg.interest < plan.current.interest &&
-          higherLeg.ownFunds > plan.current.ownFunds
-            ? C.form.comparisonTradeOffNotice
-            : C.form.comparisonNoInterestTradeOffNotice}
-        </p>
-      ) : null}
-      {comparisonNotHigher ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.comparisonNotHigherNotice}
-        </p>
-      ) : null}
-      {comparisonOneLeg ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.comparisonOneLegNotice}
-        </p>
-      ) : null}
-
-      {/* The chart right after the answer, and outside every ResultGroup. When
-          there is no answer the model comes back `unavailable` and the figure
-          explains itself rather than drawing a curve extended to touch the
-          target line. */}
-      <ChartFigure model={chart}>
-        <LineChart model={chart} />
-      </ChartFigure>
-
-      {pathsChart !== null ? (
-        <ChartFigure model={pathsChart}>
-          <LineChart model={pathsChart} />
-        </ChartFigure>
-      ) : null}
-
-      <DetailDisclosure
-        title={C.form.detailDisclosureTitle}
-        hint={C.form.detailDisclosureHint}
-        className="mt-8"
-      >
-        {/* Every figure here is the SCHEDULE's, at the cycle the headline
-            names. Using the solver's continuous totals would put a different
-            horizon in the details than on the answer. */}
-        <DetailFigures
-          title={C.form.detailTitle}
-          figures={[
-            {
-              label: C.form.scheduleBalanceLabel,
-              value: schedule ? moneyCell(schedule.balance) : null,
-            },
-            // The three parts of the closing balance, separated: what the
-            // reader already had, what they put in afterwards, and what the
-            // assumed rate added.
-            {
-              label: C.form.initialFundsLabel,
-              value: initial === null ? null : moneyCell(initial),
-            },
-            {
-              label: C.form.laterContributionsLabel,
-              value:
-                schedule && initial !== null
-                  ? moneyCell(schedule.totalContributed - initial)
-                  : null,
-            },
-            {
-              label: C.form.totalContributedLabel,
-              value: schedule ? moneyCell(schedule.totalContributed) : null,
-            },
-            {
-              label: C.form.interestLabel,
-              value: schedule ? moneyCell(schedule.interest) : null,
-            },
-            {
-              // A share, not an amount: never scaled to the block's unit.
-              label: C.form.interestShareLabel,
-              value: schedule
-                ? formatPercent(schedule.interestSharePercent, 1)
-                : null,
-            },
-          ]}
-        />
-
-        <DetailFigures
-          title={C.form.scheduleTitle}
-          className="mt-4"
-          figures={[
-            {
-              // A cycle number, not an amount: never scaled.
-              label: C.form.fundedMonthLabel,
-              value:
-                schedule?.fundedMonth == null
-                  ? null
-                  : countCell(schedule.fundedMonth),
-            },
-            {
-              label: C.form.startDateLabel,
-              value: showDate(start.date),
-            },
-            {
-              label: C.form.firstContributionDateLabel,
-              value: showDate(plan?.firstContributionDate ?? null),
-            },
-            {
-              label: C.form.continuousEstimateLabel,
-              value: result
-                ? `${formatDecimal(result.months, 3)} ${C.form.monthsUnit}`
-                : null,
-            },
-          ]}
-        />
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.continuousEstimateNote}
-        </p>
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.calendarNotice}
-        </p>
-      </DetailDisclosure>
       {/* The long version of the example-state note, out of the entry flow.
           See ExampleNotice for why it is not above the form. */}
       <ExampleNoticeDetail className="mt-6" />
-
     </CalculatorCard>
   );
 }

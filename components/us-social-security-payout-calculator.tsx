@@ -1,8 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -27,6 +30,9 @@ import { US_SOCIAL_SECURITY_PAYOUT as C } from "@/content/calculators/us-social-
 
 const F = C.form;
 const T = F.table;
+
+const FORM_ID = "chi-tra-an-sinh-xa-hoi-nhap";
+const RESULT_ID = "chi-tra-an-sinh-xa-hoi-ket-qua";
 
 function usd(value: number): string {
   return `${formatMoney(value)} USD`;
@@ -143,215 +149,287 @@ export function UsSocialSecurityPayoutCalculator() {
       ? null
       : benefitFactorPercent(fraMonths, claimAge * 12);
 
+  /*
+   * `sticky`: nine controls in three groups, split and `wide`. The measured
+   * precedent is a six-control form of the same shape at 1143,75 px
+   * (`components/black-scholes-calculator.tsx`), where focusing the last field
+   * left the result region at y −382..−140 — `lg:items-start` holds the result
+   * column at the top of the grid, so the split does not keep the answer on
+   * screen by itself. This form's own height has NOT been measured.
+   *
+   * The pin carries the HOUSEHOLD total only, which is the emphasised row. The
+   * two personal amounts stay in their own group where the survivor decision
+   * is legible; restating them in a pinned strip is what would merge them back
+   * into one undifferentiated summary.
+   */
+  // Formatted ONCE, for the emphasised row and the pinned restatement both.
+  const answerValue =
+    household === null ? null : usd(household.householdMonthly);
+
   return (
     <CalculatorCard>
-      <FieldGroup title={F.workerGroup}>
-        <NumberField
-          {...fields.bind("pia")}
-          label={F.piaLabel}
-          unit={F.piaUnit}
-          help={F.piaHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.pia}
-        />
-        <NumberField
-          {...fields.bind("birthYear")}
-          label={F.birthYearLabel}
-          help={F.birthYearHelp}
-          error={F.yearInvalid}
-          invalid={invalid.birthYear}
-        />
-        <NumberField
-          {...fields.bind("claimAge")}
-          label={F.claimAgeLabel}
-          unit={F.claimAgeUnit}
-          help={F.claimAgeHelp}
-          error={F.claimAgeInvalid}
-          invalid={invalid.claimAge}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        form={
+          <>
+            <FieldGroup title={F.workerGroup}>
+              <NumberField
+                {...fields.bind("pia")}
+                label={F.piaLabel}
+                unit={F.piaUnit}
+                help={F.piaHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.pia}
+              />
+              <NumberField
+                {...fields.bind("birthYear")}
+                label={F.birthYearLabel}
+                help={F.birthYearHelp}
+                error={F.yearInvalid}
+                invalid={invalid.birthYear}
+              />
+              <NumberField
+                {...fields.bind("claimAge")}
+                label={F.claimAgeLabel}
+                unit={F.claimAgeUnit}
+                help={F.claimAgeHelp}
+                error={F.claimAgeInvalid}
+                invalid={invalid.claimAge}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={F.spouseGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("spousePia")}
-          label={F.spousePiaLabel}
-          unit={F.spousePiaUnit}
-          help={F.spousePiaHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.spousePia}
-        />
-        <NumberField
-          {...fields.bind("spouseBirthYear")}
-          label={F.spouseBirthYearLabel}
-          help={F.spouseBirthYearHelp}
-          error={F.yearInvalid}
-          invalid={invalid.spouseBirthYear}
-        />
-        <NumberField
-          {...fields.bind("spouseClaimAge")}
-          label={F.spouseClaimAgeLabel}
-          unit={F.spouseClaimAgeUnit}
-          help={F.spouseClaimAgeHelp}
-          error={F.claimAgeInvalid}
-          invalid={invalid.spouseClaimAge}
-        />
-      </FieldGroup>
+            <FieldGroup title={F.spouseGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("spousePia")}
+                label={F.spousePiaLabel}
+                unit={F.spousePiaUnit}
+                help={F.spousePiaHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.spousePia}
+              />
+              <NumberField
+                {...fields.bind("spouseBirthYear")}
+                label={F.spouseBirthYearLabel}
+                help={F.spouseBirthYearHelp}
+                error={F.yearInvalid}
+                invalid={invalid.spouseBirthYear}
+              />
+              <NumberField
+                {...fields.bind("spouseClaimAge")}
+                label={F.spouseClaimAgeLabel}
+                unit={F.spouseClaimAgeUnit}
+                help={F.spouseClaimAgeHelp}
+                error={F.claimAgeInvalid}
+                invalid={invalid.spouseClaimAge}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={F.earningsGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("earnings")}
-          label={F.earningsLabel}
-          unit={F.earningsUnit}
-          help={F.earningsHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.earnings}
-        />
-        <NumberField
-          {...fields.bind("exemptUnderFra")}
-          label={F.exemptUnderFraLabel}
-          unit={F.exemptUnderFraUnit}
-          help={F.exemptUnderFraHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.exemptUnderFra}
-        />
-        <NumberField
-          {...fields.bind("exemptFraYear")}
-          label={F.exemptFraYearLabel}
-          unit={F.exemptFraYearUnit}
-          help={F.exemptFraYearHelp}
-          error={F.moneyInvalid}
-          invalid={invalid.exemptFraYear}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.householdMonthlyLabel}
-          value={household === null ? null : usd(household.householdMonthly)}
-        />
-        <ResultRow
-          label={F.householdAnnualLabel}
-          value={household === null ? null : usd(household.householdAnnual)}
-        />
-        <ResultRow
-          label={F.workerMonthlyLabel}
-          value={household === null ? null : usd(household.workerMonthly)}
-        />
-        <ResultRow
-          label={F.spouseMonthlyLabel}
-          value={
-            household === null ? null : usd(household.spouseReceivesMonthly)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.spouseTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.spouseOwnLabel}
-          value={household === null ? null : usd(household.spouseOwnMonthly)}
-        />
-        <ResultRow
-          label={F.spousalLabel}
-          value={household === null ? null : usd(household.spousalMonthly)}
-        />
-        <ResultRow
-          label={F.spouseReceivesLabel}
-          value={
-            household === null ? null : usd(household.spouseReceivesMonthly)
-          }
-        />
-        <ResultRow
-          label={F.survivorLabel}
-          value={household === null ? null : usd(household.survivorMonthly)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.earningsTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.exemptAppliedLabel}
-          value={test === null || test.exempt ? null : usd(test.exemptAmount)}
-        />
-        <ResultRow
-          label={F.excessLabel}
-          value={test === null ? null : usd(test.excessEarnings)}
-        />
-        <ResultRow
-          label={F.withheldLabel}
-          value={test === null ? null : usd(test.withheld)}
-        />
-        <ResultRow
-          label={F.paidLabel}
-          value={test === null ? null : usd(test.paid)}
-        />
-        <ResultRow
-          label={F.effectiveMonthlyLabel}
-          value={test === null ? null : usd(test.paid / 12)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.ageTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.yourFraLabel}
-          value={fraMonths === null ? null : ageLabel(fraMonths)}
-        />
-        <ResultRow
-          label={F.spouseFraLabel}
-          value={spouseFraMonths === null ? null : ageLabel(spouseFraMonths)}
-        />
-        <ResultRow
-          label={F.yourFactorLabel}
-          value={workerFactor === null ? null : formatPercent(workerFactor, 2)}
-        />
-      </ResultGroup>
-
-      {rows.length > 0 ? (
-        <>
-          <p className="mt-8 text-sm leading-relaxed text-ink-3">{T.intro}</p>
-          {/* Five columns, so `mobileCards` — docs §3 sets that from five up,
-              and the sibling analysis table measured 596 px inside a 300 px
-              frame at a verified 390x844 viewport with six. The table intro
-              tells the reader to "đọc ba cột cuối cùng lúc" — read the last
-              three columns together — which a scrolling frame at 390 px
-              cannot deliver: one block per claiming age can. */}
-          <ResultTable
-            className="mt-4"
-            caption={T.caption}
-            columns={[
-              { label: T.ageColumn },
-              { label: T.workerColumn, numeric: true },
-              { label: T.spousalColumn, numeric: true },
-              { label: T.householdColumn, numeric: true },
-              { label: T.survivorColumn, numeric: true },
-            ]}
-            rows={rows}
-            mobileCards
+            <FieldGroup title={F.earningsGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("earnings")}
+                label={F.earningsLabel}
+                unit={F.earningsUnit}
+                help={F.earningsHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.earnings}
+              />
+              <NumberField
+                {...fields.bind("exemptUnderFra")}
+                label={F.exemptUnderFraLabel}
+                unit={F.exemptUnderFraUnit}
+                help={F.exemptUnderFraHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.exemptUnderFra}
+              />
+              <NumberField
+                {...fields.bind("exemptFraYear")}
+                label={F.exemptFraYearLabel}
+                unit={F.exemptFraYearUnit}
+                help={F.exemptFraYearHelp}
+                error={F.moneyInvalid}
+                invalid={invalid.exemptFraYear}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            sticky
+            answer={{ label: F.householdMonthlyLabel, value: answerValue }}
           />
-        </>
-      ) : null}
+        }
+        primary={
+          <>
+            {/* The household total is the answer; who inside the household
+                receives it is the next question, not the same one. Keeping
+                them in two groups is what stops the survivor decision from
+                disappearing into a single number. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={F.householdMonthlyLabel}
+                value={answerValue}
+                emphasis
+              />
+              <ResultRow
+                label={F.householdAnnualLabel}
+                value={household === null ? null : usd(household.householdAnnual)}
+              />
+            </ResultGroup>
 
-      <p className="mt-6 text-sm leading-relaxed text-ink-3">
-        {F.exemptNotice}
-      </p>
+            <ResultGroup title={F.individualTitle} className="mt-4" live={false}>
+              <ResultRow
+                label={F.workerMonthlyLabel}
+                value={household === null ? null : usd(household.workerMonthly)}
+              />
+              <ResultRow
+                label={F.spouseMonthlyLabel}
+                value={
+                  household === null ? null : usd(household.spouseReceivesMonthly)
+                }
+              />
+            </ResultGroup>
 
-      {household !== null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {household.spouseOnSpousalBenefit
-            ? F.spousalTopUpNotice
-            : F.ownRecordNotice}
-        </p>
-      ) : null}
+            <ResultGroup title={F.spouseTitle} className="mt-4" live={false}>
+              <ResultRow
+                label={F.spouseOwnLabel}
+                value={household === null ? null : usd(household.spouseOwnMonthly)}
+              />
+              <ResultRow
+                label={F.spousalLabel}
+                value={household === null ? null : usd(household.spousalMonthly)}
+              />
+              <ResultRow
+                label={F.spouseReceivesLabel}
+                value={
+                  household === null ? null : usd(household.spouseReceivesMonthly)
+                }
+              />
+              <ResultRow
+                label={F.survivorLabel}
+                value={household === null ? null : usd(household.survivorMonthly)}
+              />
+            </ResultGroup>
 
-      {test !== null && test.withheld > 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.withheldNotice}
-        </p>
-      ) : null}
+            {/* Which record the spouse is paid on decides whether waiting
+                buys them anything, so it sits under the group that shows
+                both records rather than after the nine-row table. */}
+            {household !== null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {household.spouseOnSpousalBenefit
+                  ? F.spousalTopUpNotice
+                  : F.ownRecordNotice}
+              </p>
+            ) : null}
 
-      {household === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
+            {household === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        detail={
+          <>
+            <ResultGroup title={F.earningsTitle} live={false}>
+              <ResultRow
+                label={F.exemptAppliedLabel}
+                value={
+                  test === null
+                    ? null
+                    : test.exempt
+                      ? F.exemptNotApplicableValue
+                      : usd(test.exemptAmount)
+                }
+              />
+              <ResultRow
+                label={F.excessLabel}
+                value={test === null ? null : usd(test.excessEarnings)}
+              />
+              <ResultRow
+                label={F.withheldLabel}
+                value={test === null ? null : usd(test.withheld)}
+              />
+              <ResultRow
+                label={F.paidLabel}
+                value={test === null ? null : usd(test.paid)}
+              />
+              <ResultRow
+                label={F.effectiveMonthlyLabel}
+                value={test === null ? null : usd(test.paid / 12)}
+              />
+            </ResultGroup>
+
+            {/* Both earnings-test notices belong to the group above: one says
+                why its first row has no amount, the other what the withheld
+                figure does and does not mean. */}
+            {test !== null && test.exempt ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.exemptNotApplicableNotice}
+              </p>
+            ) : null}
+
+            {test !== null && test.withheld > 0 ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.withheldNotice}
+              </p>
+            ) : null}
+
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">
+              {F.exemptNotice}
+            </p>
+
+            {rows.length > 0 ? (
+              <>
+                <p className="mt-8 text-sm leading-relaxed text-ink-3">
+                  {T.intro}
+                </p>
+                {/* Five columns, so `mobileCards` — docs §3 sets that from
+                    five up, and the sibling analysis table measured 596 px
+                    inside a 300 px frame at a verified 390x844 viewport with
+                    six. The table intro tells the reader to "đọc ba cột cuối
+                    cùng lúc" — read the last three columns together — which a
+                    scrolling frame at 390 px cannot deliver: one block per
+                    claiming age can. */}
+                <ResultTable
+                  className="mt-4"
+                  caption={T.caption}
+                  columns={[
+                    { label: T.ageColumn },
+                    { label: T.workerColumn, numeric: true },
+                    { label: T.spousalColumn, numeric: true },
+                    { label: T.householdColumn, numeric: true },
+                    { label: T.survivorColumn, numeric: true },
+                  ]}
+                  rows={rows}
+                  mobileCards
+                />
+              </>
+            ) : null}
+
+            {/* Reference: neither figure changes a decision on this page, and
+                both are derivable from the birth years above. */}
+            <DetailDisclosure title={F.ageDisclosureTitle} className="mt-8">
+              <ResultGroup title={F.ageTitle} live={false}>
+                <ResultRow
+                  label={F.yourFraLabel}
+                  value={fraMonths === null ? null : ageLabel(fraMonths)}
+                />
+                <ResultRow
+                  label={F.spouseFraLabel}
+                  value={spouseFraMonths === null ? null : ageLabel(spouseFraMonths)}
+                />
+                <ResultRow
+                  label={F.yourFactorLabel}
+                  value={workerFactor === null ? null : formatPercent(workerFactor, 2)}
+                />
+              </ResultGroup>
+            </DetailDisclosure>
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

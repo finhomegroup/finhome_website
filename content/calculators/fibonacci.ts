@@ -83,7 +83,7 @@ export const FIBONACCI = {
   // claim without moving anything out would have pushed the form off the
   // first screens on a phone (see `calculator-page.tsx` on `noticeDetail`).
   noSignalNotice:
-    "Một mức Fibonacci không bảo đảm giá sẽ đảo chiều ở đó: không có bằng chứng thống kê thuyết phục nào cho thấy các tỷ lệ này có tính chất đặc biệt. Giá thường phản ứng quanh chúng vì nhiều người cùng đặt lệnh ở đó — đó là hành vi của người tham gia thị trường, không phải giá trị của tài sản. Hãy đọc chúng như những vùng cần chú ý, và nhớ rằng chiều của đợt biến động là ô quyết định kết quả: nhập sai chiều cho ra các mức nằm sai phía thị trường.",
+    "Một mức Fibonacci không bảo đảm giá sẽ đảo chiều ở đó: không có bằng chứng thống kê nào cho thấy các tỷ lệ này đặc biệt, và giá phản ứng quanh chúng vì nhiều người cùng đặt lệnh ở đó — hành vi của người tham gia thị trường, không phải giá trị của tài sản. Chiều của đợt biến động là ô quyết định kết quả.",
 
   directionDetailTitle: "Ví dụ: cùng một tỷ lệ, hai chiều",
   directionDetail:

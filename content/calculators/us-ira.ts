@@ -63,7 +63,7 @@ export const US_IRA = {
     "So sánh IRA truyền thống với Roth trên cùng một chi phí sau thuế, kèm tài khoản thường cho phần hoàn thuế, và tính mức thuế suất khi rút làm hai phương án ngang nhau. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Góp 7.500 USD vào IRA truyền thống và góp 7.500 USD vào Roth không phải hai giao dịch giống nhau: khoản đầu được trừ thuế nên nó tốn ít tiền lương về nhà hơn. Đặt hai con số đó cạnh nhau là so sánh hai lượng tiền khác nhau — và luôn kết luận Roth thắng, vì bên đó đã bỏ vào nhiều hơn. Trang này cân bằng hai vế trước khi so.",
+    "Góp 7.500 USD vào IRA truyền thống và góp 7.500 USD vào Roth không phải hai giao dịch giống nhau: khoản đầu được trừ thuế nên nó tốn ít tiền lương về nhà hơn. Đặt hai con số đó cạnh nhau là so sánh hai lượng tiền khác nhau — và luôn kết luận Roth thắng, vì bên đó đã bỏ vào nhiều hơn, nên trang này cân bằng hai vế trước khi so.",
 
   form: {
     contributionGroup: "Khoản góp",
@@ -121,10 +121,15 @@ export const US_IRA = {
     },
 
     resultTitle: "Kết quả",
-    verdictLabel: "Nên chọn",
-    verdictRoth: "Roth",
-    verdictTraditional: "Truyền thống",
-    verdictEqual: "Ngang nhau",
+    // Conditional, not categorical: the tool compares two numbers under the
+    // assumptions in the form, and the label has to say so. The old
+    // "Nên chọn" + "Roth" read as advice about a reader's whole tax future
+    // from a guessed withdrawal rate. Same strings serve the table's last
+    // column, so both call sites change together.
+    verdictLabel: "Theo giả định bạn nhập",
+    verdictRoth: "Roth cao hơn",
+    verdictTraditional: "Truyền thống cao hơn",
+    verdictEqual: "Hai bên ngang nhau",
     differenceLabel: "Roth hơn truyền thống",
     breakEvenLabel: "Thuế suất khi rút làm hai bên ngang nhau",
     balanceLabel: "Số dư trước thuế, cả hai loại",
@@ -142,6 +147,7 @@ export const US_IRA = {
     extraCostLabel: "Nhưng Roth tốn thêm mỗi năm",
     preTaxEquivalentLabel: "Khoản góp Roth quy về trước thuế",
 
+    detailDisclosureTitle: "Trần góp và tài khoản thường của phần hoàn thuế",
     detailTitle: "Chi tiết",
     limitLabel: "Trần góp IRA",
     catchUpLabel: "Phần bù tuổi trong trần đó",
@@ -156,11 +162,19 @@ export const US_IRA = {
       traditionalColumn: "Truyền thống, tổng",
       rothColumn: "Roth",
       differenceColumn: "Roth hơn",
-      verdictColumn: "Kết luận",
+      verdictColumn: "Bên cao hơn",
       intro:
         "Đây là bảng nên dùng thay cho một con số duy nhất. Toàn bộ quyết định nằm ở một dòng của bảng này, và bạn không biết mình sẽ ở dòng nào trong ba mươi năm nữa — nên câu hỏi thực tế không phải “bên nào thắng” mà “tôi sai bao nhiêu nếu chọn sai”.",
     },
 
+    // TWO DIFFERENT EMPTY ROWS, two causes. The break-even is unavailable
+    // when there is no balance to compare (no contribution, or a return that
+    // wipes it out); the pre-tax equivalent is unavailable only at a 100%
+    // rate, where the division has no denominator. Neither is a bad input.
+    noBreakEvenNotice:
+      "Số dư khi rút bằng 0 — không có khoản góp nào, hoặc lợi suất đã triệt tiêu nó — nên không có thuế suất nào làm hai bên ngang nhau, và dòng đó để trống thay vì hiện 0. Hai phương án bằng nhau ở đây chỉ vì cả hai đều bằng 0.",
+    noPreTaxEquivalentNotice:
+      "Với thuế suất hôm nay đúng 100%, mọi đồng trước thuế đều bị thu hết, nên không có khoản góp trước thuế nào tương đương khoản góp Roth: dòng đó để trống vì phép chia không còn mẫu số, chứ không phải vì thiếu số liệu.",
     excessNotice:
       "Khoản góp vượt trần IRA của năm. Phần vượt bị tính phạt 6% mỗi năm cho đến khi được rút ra, nên hãy giảm khoản góp hoặc rút phần vượt trước thời hạn khai thuế.",
     deductibilityNotice:
@@ -169,8 +183,13 @@ export const US_IRA = {
       "Một ô nhập chưa hợp lệ, hoặc năm bạn chọn chưa có số liệu trong công cụ. Thuế lãi vốn dài hạn chỉ nhận 0, 15 hoặc 20 — luật không có mức nào khác.",
   },
 
+  // The RULE and the model's limit stay above the tool; the worked default
+  // case is arithmetic, so it moved into the disclosure below.
   equalCostNotice:
-    "Với các giá trị mặc định, thuế suất khi rút được đặt ở 22% — THẤP HƠN mức 24% hôm nay — và Roth vẫn thắng, hơn 4.029 USD. Lý do là mức hoàn vốn không nằm ở 24% mà ở 21,47%: phần hoàn thuế của phương án truyền thống phải nằm trong một tài khoản thường và chịu thuế lãi vốn, nên nó không theo kịp. Nói cách khác, để phương án truyền thống thắng thì thuế suất khi rút của bạn phải thấp hơn mức hôm nay ít nhất 2,53 điểm phần trăm, chứ không chỉ “thấp hơn”. Nếu bạn không đầu tư phần hoàn thuế mà tiêu nó, phương án truyền thống mất luôn phần bù đó và khoảng cách rộng ra rất nhiều.",
+    "“Thuế suất khi rút thấp hơn hôm nay” chưa đủ để phương án truyền thống thắng: phần hoàn thuế của nó phải nằm trong một tài khoản thường và chịu thuế lãi vốn, nên mức hoàn vốn luôn thấp hơn thuế suất hôm nay một khoảng. Kết quả là một phép so sánh giữa hai lựa chọn dưới đúng những giả định bạn nhập — trong đó có một phỏng đoán về thuế suất của vài chục năm sau — chứ không phải một dự báo.",
+  equalCostNoticeDetailTitle: "Cụ thể: các số mặc định nói gì",
+  equalCostNoticeDetail:
+    "Với các giá trị mặc định, thuế suất khi rút được đặt ở 22% — THẤP HƠN mức 24% hôm nay — và Roth vẫn cao hơn 4.029 USD. Lý do là mức hoàn vốn không nằm ở 24% mà ở 21,47%: phần hoàn thuế của phương án truyền thống phải nằm trong một tài khoản thường và chịu thuế lãi vốn, nên nó không theo kịp. Nói cách khác, để phương án truyền thống cao hơn thì thuế suất khi rút của bạn phải thấp hơn mức hôm nay ít nhất 2,53 điểm phần trăm, chứ không chỉ “thấp hơn”. Nếu bạn không đầu tư phần hoàn thuế mà tiêu nó, phương án truyền thống mất luôn phần bù đó và khoảng cách rộng ra rất nhiều. Công cụ tính khoảng hoàn vốn đó từ chính các số bạn nhập và hiển thị nó thành một dòng riêng trong kết quả, nên hãy đọc dòng đó trước khi kết luận.",
 
   formula: {
     title: "Cách tính",

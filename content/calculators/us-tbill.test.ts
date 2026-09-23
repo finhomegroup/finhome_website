@@ -181,9 +181,16 @@ describe("tin-phieu-kho-bac-hoa-ky at its shipped defaults", () => {
     expect(pct(r.bondEquivalentYieldPercent!)).toBe("5,1674%");
     expect(pct(r.effectiveAnnualYieldPercent!)).toBe("5,2341%");
     expect(formatDecimal(r.quoteUnderstatementPoints!, 4)).toBe("0,1343");
+    // REPOINTED by row 75's entry pass: the worked pricing moved into
+    // `quoteNoticeDetail`, the disclosure the route passes under
+    // `quoteNoticeDetailTitle`. The RULE it teaches stays visible.
     for (const figure of ["9.873,61", "126,39", "5,1343%", "0,1343"]) {
-      expect(C.quoteNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.quoteNoticeDetail,
+        `the worked pricing is missing ${figure}`,
+      ).toContain(figure);
     }
+    expect(C.quoteNotice).toContain("luôn thấp hơn lợi suất thực nhận");
   });
 
   it("splits the understatement into its two causes, each isolated", () => {
@@ -203,9 +210,16 @@ describe("tin-phieu-kho-bac-hoa-ky at its shipped defaults", () => {
     // Neither cause alone reaches the combined figure, and both together do.
     expect(causeOne).toBeLessThan(r.investmentYieldPercent!);
     expect(causeTwo).toBeLessThan(r.investmentYieldPercent!);
+    // Same move: the per-cause figures are in the disclosure now, while the
+    // two causes themselves are still named in the visible notice.
     for (const figure of ["5,0640%", "5,0694%"]) {
-      expect(C.quoteNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.quoteNoticeDetail,
+        `the worked pricing is missing ${figure}`,
+      ).toContain(figure);
     }
+    expect(C.quoteNotice).toContain("360 ngày");
+    expect(C.quoteNotice).toContain("giá mua thấp hơn");
   });
 
   it("prices the state-tax exemption at the two rates the FAQ names", () => {

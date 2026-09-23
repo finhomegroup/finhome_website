@@ -145,6 +145,13 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   scroll-padding-top: 6.5rem;
+  /* The pinned CTA's ceiling and its offset off the viewport bottom, declared
+     once here because two rules in the `.fh-cta-pin` block below must agree on
+     them — see that block's comment. Inherited, so both read the same value,
+     and declaring them outside `:has()` keeps the pinning itself working on a
+     browser that does not support the selector. */
+  --fh-cta-pin-offset: 1rem;
+  --fh-cta-pin-max: min(17rem, 30vh);
 }
 
 body {
@@ -332,6 +339,64 @@ body {
    Degradation is safe. A browser without `:has()` applies only the first rule,
    so the table stays in its compact reading and the checkbox does nothing —
    the same state a reader who never touches the control sees. */
+/* ---- The pinned current-answer block (components/calc/result-cta.tsx) ----
+   Three rules that MUST agree, which is why they are one block and not three
+   Tailwind variants: when the CTA is allowed to pin, what it looks like pinned,
+   and how much room a focused field must keep clear of it.
+
+   WHY A HEIGHT THRESHOLD. `position: sticky` paints over the siblings it has
+   scrolled past, and the block's siblings are the form's own inputs. Measured
+   at 1024x768 on /cong-cu/vay-mua-nha/: the block ran y 548.5..752 — 204px, a
+   quarter of the viewport — and a Tab press from the rate field moved focus to
+   the term input at y 541.75..587.75, which is almost entirely underneath it.
+   A focused input nobody can see is the failure; the affordance is only worth
+   having on a viewport with the height to spare for it. Below 900px the block
+   stays in flow at the end of the form column, where it covers nothing at all,
+   and the answer is still one CTA press away.
+
+   WHY SCROLL PADDING, AND WHY SCOPED. Above the threshold the block does float,
+   so the browser's own scrolling has to know it is there — `scroll-padding-top`
+   above does exactly this for the sticky header, and this is its companion for
+   sequential focus navigation, which is the path that failed. `:has()` keeps it
+   off the 200-odd pages with no pinned block, whose anchor scrolling should not
+   move; a browser without `:has()` loses the padding and keeps the pinning,
+   which is the state this fix started from rather than a worse one.
+
+   WHY THE RESERVE IS BOUNDED RATHER THAN MEASURED. A flat 15rem was read off
+   the shortest pilot and the block is not a fixed height: its answer line wraps
+   when the answer is a sentence ("Chưa bù đủ trong mốc đã chọn") and its note
+   under the button is longer in the invalid state. An independent pass measured
+   231,5px against the 240px reserve at 1024×900 — a focused disclosure summary
+   ending at y 660 under a block starting at 652,5. Raising the number would fix
+   that one state and leave the next one to be found.
+
+   So the block gets a CEILING and the reserve is computed from that same
+   ceiling: whatever the content, the block cannot be taller than the space
+   below a focused field. `--fh-cta-pin-max` — declared once on `html` above —
+   is the only number to change, both rules follow it, and they cannot drift
+   apart. The `vh` term keeps the
+   reservation proportionate when the viewport is short or the page is zoomed,
+   where a fixed `rem` would eat the screen. Clamping scrolls the block's own
+   content in the extreme case rather than covering a focused field — the answer
+   and the button both stay reachable. */
+@media (min-width: 64rem) and (min-height: 56.25rem) {
+  .fh-cta-pin {
+    position: sticky;
+    bottom: var(--fh-cta-pin-offset);
+    z-index: 10;
+    max-height: var(--fh-cta-pin-max);
+    overflow-y: auto;
+  }
+
+  /* The ceiling, its offset off the viewport bottom, and half a rem so the
+     focus ring has somewhere to land. */
+  html:has(.fh-cta-pin) {
+    scroll-padding-bottom: calc(
+      var(--fh-cta-pin-max) + var(--fh-cta-pin-offset) + 0.5rem
+    );
+  }
+}
+
 .fh-rt-exact {
   display: none;
 }

@@ -170,6 +170,186 @@ describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
 
 });
 
+/**
+ * The 2026-09-21 UX pass on this route, which is audit CSV row 46: "Desktop:
+ * form trái, kết luận và chart phải; ưu tiên đủ/thiếu, tuổi cạn tiền và khoản
+ * cần điều chỉnh."
+ *
+ * The financial contracts above are untouched by it and are what prove that:
+ * the funded verdict, the boundary residue, the one live region and the single
+ * figure all still hold, on the same defaults, at the same values. Nothing in
+ * this section changes a number.
+ *
+ * NONE of it is a visual check. The class assertion says a class is emitted.
+ */
+describe("row 46's layout and CTA", () => {
+  it("renders form, then result, then detail", async () => {
+    const html = await render();
+    expect(
+      [...html.matchAll(/data-calc-region="([a-z]+)"/g)].map((m) => m[1]),
+    ).toEqual(["form", "result", "detail"]);
+  });
+
+  it("asks for the 40/60 split, because this is the suite's longest form", async () => {
+    // Eleven fields across four groups. The split is why the verdict can be
+    // seen while one of them is edited; `max-w-3xl` could not hold it, which
+    // is why the route also opts into the shell's `wide`.
+    expect(await render()).toContain("lg:col-span-2");
+  });
+
+  it("puts the verdict and the figure in the result region, the ledger below", async () => {
+    const html = await render();
+    const result = html.slice(
+      html.indexOf('data-calc-region="result"'),
+      html.indexOf('data-calc-region="detail"'),
+    );
+    const detail = html.slice(html.indexOf('data-calc-region="detail"'));
+
+    // The answer and its drawing, beside the form.
+    expect(result).toContain(C.form.verdictLabel);
+    expect(result).toContain("<figure");
+
+    // The ledger groups, full width underneath. Every figure in them was on
+    // the page before and none was dropped — they moved, they did not go.
+    expect(detail).toContain(C.form.nominalTitle);
+    expect(detail).toContain(C.form.flowTitle);
+    expect(detail).toContain(C.form.balanceAtRetirementLabel);
+    expect(detail).toContain(C.form.totalContributedLabel);
+    expect(detail).toContain(C.form.sustainableLabel);
+    expect(detail).toContain(C.form.initialRateLabel);
+  });
+
+  it("leads with the three figures the CSV action names", async () => {
+    // Enough-or-short, the depletion age, and the amount to adjust. The third
+    // one MOVED UP: `shortfallLabel` used to be the eighth figure on the page,
+    // in the cash-flow group.
+    const html = await render();
+    const live = liveRegion(html);
+    expect(live).not.toBeNull();
+    expect(live).toContain(C.form.verdictLabel);
+    expect(live).toContain(C.form.depletionLabel);
+    expect(live).toContain(C.form.shortfallLabel);
+  });
+
+  it("does not render the shortfall twice", async () => {
+    // One quantity, one place. Two copies is how a page comes to show the same
+    // figure with two different roundings.
+    const html = await render();
+    expect(count(html, C.form.shortfallLabel)).toBe(1);
+  });
+
+  it("emphasises the verdict and only the verdict", async () => {
+    const html = await render();
+    expect(count(html, "md:text-3xl")).toBe(1);
+    // And it is the verdict's row, not some other figure that happens to be
+    // first: the emphasised size appears after the verdict label and before
+    // the next row's label.
+    const emphasisAt = html.indexOf("md:text-3xl");
+    expect(html.indexOf(C.form.verdictLabel)).toBeLessThan(emphasisAt);
+    expect(emphasisAt).toBeLessThan(html.indexOf(C.form.depletionLabel));
+  });
+
+  it("wires the CTA to the region that carries the verdict", async () => {
+    const html = await render();
+    const anchor = 'aria-controls="ke-hoach-huu-tri-ket-qua"';
+    expect(html).toContain(anchor);
+    expect(html).toContain('id="ke-hoach-huu-tri-ket-qua"');
+    expect(html).toContain('aria-labelledby="ke-hoach-huu-tri-ket-qua-title"');
+    // The CTA is in the FORM region, after the inputs — not next to the
+    // answer, which would be a control pointing at itself.
+    const form = html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+    expect(form).toContain('data-calc-cta="true"');
+  });
+
+  it("names the promoted shortfall as an annual spend in today's money", async () => {
+    // A browser pass read `20.942.597 ₫` beside a capital figure as the whole
+    // plan's shortfall. Same value, same formula — the label now carries the
+    // period and the price basis. The unit words are what is asserted, not the
+    // sentence, so the copy can be reworded without this going stale.
+    const html = await render();
+    expect(C.form.shortfallLabel).toContain("mỗi năm");
+    expect(C.form.shortfallLabel).toContain("theo giá hôm nay");
+    expect(html).toContain(C.form.shortfallLabel);
+  });
+
+  it("puts the years short beside the depletion age, not in the detail", async () => {
+    const html = await render();
+    const live = liveRegion(html);
+    expect(live).not.toBeNull();
+    expect(live).toContain(C.form.depletionLabel);
+    expect(live).toContain(C.form.yearsShortLabel);
+    // `yearsShort` is 3 on the shipped defaults, in years.
+    expect(live).toContain(`3 ${C.form.yearsUnit}`);
+    // One place only.
+    expect(count(html, C.form.yearsShortLabel)).toBe(1);
+  });
+
+  it("pins a short current-answer block without a second live region", async () => {
+    const html = await render();
+    // The verdict, restated on the CTA block for a long form.
+    expect(html).toContain('data-calc-answer="true"');
+    // Height-gated in `app/globals.css` — see `calculator-layout.test.ts`.
+    expect(html).toContain("fh-cta-pin");
+    // Hidden from assistive technology: the live region owns the
+    // announcement, and a duplicate would report one recomputation twice.
+    const block = html.slice(html.indexOf('data-calc-answer="true"') - 200);
+    expect(block).toContain('aria-hidden="true"');
+    // Still exactly one live region and one id for it.
+    expect(count(html, 'data-results-live="true"')).toBe(1);
+    expect(count(html, 'id="ke-hoach-huu-tri-ket-qua"')).toBe(1);
+  });
+
+  it("says the same thing in the pinned block as in the verdict row", async () => {
+    // One formatted string, read twice — never two formattings of one value.
+    const html = await render();
+    expect(count(html, C.form.verdictNo)).toBe(2);
+    expect(html).not.toContain(C.form.verdictYes);
+  });
+
+  it("keeps the reading guidance to one sentence, rest disclosed", async () => {
+    // The "long narrative before plot": both verdict notices were
+    // three-sentence paragraphs between the answer and the figure.
+    const html = await render();
+    expect(C.form.depletionNotice.length).toBeLessThan(180);
+    expect(C.form.fundedNotice.length).toBeLessThan(180);
+    expect(html).toContain(C.form.verdictDetailTitle);
+    expect(html).toContain(C.form.verdictDetail);
+    // Disclosed, not deleted, and the disclosure is labelled.
+    expect(html.indexOf(C.form.verdictDetailTitle)).toBeLessThan(
+      html.indexOf(C.form.verdictDetail),
+    );
+  });
+
+  it("moves the figure's worked arithmetic out of its caption", async () => {
+    const html = await render();
+    // All three amounts still reported with the figure, behind its own label.
+    expect(html).toContain(C.chart.partialTitle);
+    expect(html).toContain(C.form.partialPlannedLabel);
+    // The caption keeps the two readings of the capital and the depletion age.
+    expect(html).toContain(C.chart.readingNote);
+  });
+
+  it("shortens the lede to one purpose sentence", async () => {
+    // Measured first numeric input was 794,5 px down a 390×844 viewport, most
+    // of it heading and intro prose. The rest is `ledeDetail`, disclosed.
+    expect(C.lede.length).toBeLessThan(110);
+    expect(C.ledeDetail.length).toBeGreaterThan(C.lede.length);
+    expect(C.ledeDetailTitle.length).toBeGreaterThan(10);
+  });
+
+  it("positions the next-step node it is handed, and invents none", async () => {
+    // `LongTermViews` is passed in from the route, so a bare render gets
+    // nothing — which is the assertion: this component adds no next step of
+    // its own, no save button, and no handoff. It only places the node.
+    const html = await render();
+    expect(html).not.toContain("Bước tiếp theo");
+    expect(html).not.toContain("Lưu");
+  });
+});
+
 describe("the funded boundary, on the rendered page", () => {
   it("calls a float-residue depletion FUNDED, as fundedAtBoundary decides", async () => {
     // THE DEFECT THIS FILE EXISTS FOR. `depletionAge` is 84 here and the plan

@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { AffordabilityCalculator } from "@/components/affordability-calculator";
 import { SocialHousingConditions } from "@/components/social-housing-conditions";
@@ -57,14 +58,19 @@ export default function SocialHousingPage() {
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}
-      afterCalculator={
-        <>
-          <SocialHousingConditions />
-          <ToolNextSteps slug={SLUG} />
-        </>
-      }
+      // ROW 2's FIRST CLAUSE, "tách điều kiện chương trình khỏi phép tính tầm
+      // giá": the three-condition checklist stays OUTSIDE the calculator, as
+      // its own page section, rather than becoming one more block in the
+      // tool's result flow. Only the next-step links move inside, beside the
+      // answer.
+      afterCalculator={<SocialHousingConditions />}
+      wide
     >
-      <AffordabilityCalculator programme="social-housing" />
+      <AffordabilityCalculator
+        programme="social-housing"
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

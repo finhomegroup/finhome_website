@@ -175,22 +175,28 @@ export const LOAN = {
   // 20-year instalment. Two words changed on purpose: the payment MAY change,
   // not WILL rise — nothing here knows the reader's contract or where a base
   // rate goes. The longer explanation sits behind a disclosure.
+  // Condensed 2026-09-21. The limitation itself is intact — fixed rate, and the
+  // payment MAY change, not WILL rise. What moved into `floatingRateDetail` is
+  // the "ask the bank and recalculate" instruction, which that panel already
+  // spelled out at length.
   floatingRateNotice:
-    "Công cụ giả định lãi suất không đổi suốt kỳ hạn. Nếu hợp đồng của bạn có lãi ưu đãi rồi thả nổi, khoản trả có thể thay đổi khi hết ưu đãi — hãy hỏi ngân hàng mức lãi sau ưu đãi và tính lại với mức đó.",
+    "Công cụ giả định lãi suất không đổi suốt kỳ hạn. Nếu hợp đồng của bạn có lãi ưu đãi rồi thả nổi, khoản trả có thể thay đổi khi hết ưu đãi.",
 
   // ORIGINAL ROW 11 asks for the after-promotion view to be a PROMINENT
   // connected mode of the mortgage tool. The notice already said the payment
   // may change; a reader then had to find the other tool themselves. The route
   // is now in the notice, named for what it does — and it says plainly that
   // opening it is a new page with nothing carried over, because it is.
-  floatingRateLinkLabel:
-    "Mở công cụ sau ưu đãi: nhập mức lãi mới, hoặc thử kịch bản +1/+2/+3 điểm %",
+  // Both condensed 2026-09-21. The route stays visible in the notice, which is
+  // what CSV row 3 requires; the no-transfer truth stays complete in one
+  // sentence instead of three.
+  floatingRateLinkLabel: "Mở công cụ lãi sau ưu đãi",
   floatingRateLinkNote:
-    "Đó là một trang khác. Số bạn đang nhập ở đây KHÔNG được chuyển sang — trang này không lưu và không gửi gì đi, nên hãy nhập lại số tiền vay, kỳ hạn và lãi suất.",
+    "Trang khác, và số bạn nhập ở đây KHÔNG chuyển sang — trang này không lưu, không gửi gì đi.",
 
   floatingRateDetailTitle: "Vì sao điều này quan trọng",
   floatingRateDetail:
-    "Nhiều hợp đồng vay mua nhà áp dụng một mức lãi ưu đãi trong giai đoạn đầu, sau đó chuyển sang lãi thả nổi theo lãi suất cơ sở của ngân hàng cộng biên độ. Khi đó khoản trả được tính lại và có thể cao hơn, thấp hơn hoặc gần như không đổi, tùy lãi suất cơ sở lúc ấy và tùy cách hợp đồng quy định. Công cụ này không dự báo được điều đó. Cách dùng thực tế: chạy một lần với mức ưu đãi, một lần với mức lãi cao hơn mà bạn vẫn trả được, và lấy mức giá thấp hơn trong hai lần. Công cụ “Khoản vay lãi thả nổi” cho bạn thử từng mốc đổi lãi.",
+    "Nhiều hợp đồng vay mua nhà áp dụng một mức lãi ưu đãi trong giai đoạn đầu, sau đó chuyển sang lãi thả nổi theo lãi suất cơ sở của ngân hàng cộng biên độ. Khi đó khoản trả được tính lại và có thể cao hơn, thấp hơn hoặc gần như không đổi, tùy lãi suất cơ sở lúc ấy và tùy cách hợp đồng quy định. Công cụ này không dự báo được điều đó. Cách dùng thực tế: hỏi ngân hàng mức lãi áp dụng sau ưu đãi, rồi chạy một lần với mức ưu đãi, một lần với mức lãi cao hơn mà bạn vẫn trả được, và lấy mức giá thấp hơn trong hai lần. Công cụ “Khoản vay lãi thả nổi” cho bạn thử từng mốc đổi lãi, kể cả kịch bản +1, +2 hoặc +3 điểm phần trăm.",
 
   pmiNotice:
     "PMI (private mortgage insurance) là loại bảo hiểm khoản vay theo quy định của Hoa Kỳ. Các trường này có để đối chiếu với công cụ tham khảo; ngân hàng tại Việt Nam không thu PMI. Nếu bạn vay trong nước, hãy để tỷ lệ PMI bằng 0.",

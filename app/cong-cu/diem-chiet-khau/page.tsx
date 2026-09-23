@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { PointsCalculator } from "@/components/points-calculator";
 import { POINTS as C } from "@/content/calculators/points";
@@ -23,6 +24,10 @@ export default function PointsPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // The prefilled offer and the Vietnamese structure it stands for: both
+      // were visible prose ahead of the first field, and both are still here.
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // Visible: whether this offer structure exists for the reader at all,
       // which decides whether the tool applies. The methodology — why this
       // page's verdict differs from the break-even every other calculator
@@ -32,9 +37,12 @@ export default function PointsPage() {
       noticeDetailTitle={C.methodNoticeTitle}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <PointsCalculator />
+      <PointsCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

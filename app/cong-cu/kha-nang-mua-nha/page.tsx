@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { AffordabilityCalculator } from "@/components/affordability-calculator";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
@@ -33,9 +34,15 @@ export default function AffordabilityPage() {
       // The shared notice says fees are excluded; the entered purchase-cost
       // percentage is modelled here. Tool-owned text, mandatory opening kept.
       disclaimer={C.disclaimer}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <AffordabilityCalculator />
+      {/* Handed to the calculator so the split layout can put it beside the
+          answer rather than below the whole tool; still rendered from the page,
+          so it ships no client JavaScript. */}
+      <AffordabilityCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

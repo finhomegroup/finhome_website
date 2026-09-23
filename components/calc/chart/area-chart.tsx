@@ -1,10 +1,20 @@
+import { useId } from "react";
 import { SERIES_FILL } from "@/components/calc/chart/chart-figure";
+import {
+  TextureDefs,
+  textureFill,
+} from "@/components/calc/chart/chart-texture";
 import {
   PLOT as BOX,
   stackedAreaPaths,
   xFor,
   yForFraction,
 } from "@/lib/calc/charts/geometry";
+import {
+  paletteIndexByKey,
+  paletteSlot,
+  seriesIndex,
+} from "@/lib/calc/charts/palette";
 import type { AreaChartModel } from "@/lib/calc/charts/types";
 
 /**
@@ -16,16 +26,30 @@ import type { AreaChartModel } from "@/lib/calc/charts/types";
  * sum to the top edge. Three filled lines would each fill from zero instead,
  * overlap, and tell the reader nothing about any single band.
  *
- * Every band is also outlined, and the bands are ORDERED, so the picture still
- * separates in monochrome or at low contrast: colour is never the only channel
- * here either.
+ * Every band is also outlined, and the bands are ORDERED, so the picture
+ * separates in monochrome or at low contrast. An independent visual review
+ * nonetheless found the stacked fills across this suite identifiable by colour
+ * alone — an outline says where a band ENDS, not which quantity it is — so
+ * each band now also carries its SERIES' texture from `chart-texture.tsx`,
+ * the same one the legend's mark draws — keyed to the unwrapped series index,
+ * so band 5 does not inherit band 1's encoding when the palette wraps.
  *
  * The x axis carries REAL elapsed time from the model, which may be
  * fractional. Computes nothing: `aria-hidden` is `ChartFigure`'s contract.
  */
 export function AreaChart({ model }: { model: AreaChartModel }) {
   const { bands, xMax, yMax } = model;
+  // Before the early return: a hook cannot sit behind a condition.
+  const prefix = useId();
   if (bands.length === 0 || yMax <= 0 || xMax <= 0) return null;
+
+  // Bands are a fixed set in the model's own order, which IS the legend's
+  // order, so a slot per index is already stable here — this goes through the
+  // shared map anyway, so the one rule holds in all three stacked renderers.
+  const paletteSlots = paletteIndexByKey({
+    legend: model.legend,
+    segmentKeys: bands.map((band) => band.key),
+  });
 
   const paths = stackedAreaPaths(bands, xMax, yMax, BOX);
 
@@ -36,43 +60,50 @@ export function AreaChart({ model }: { model: AreaChartModel }) {
       aria-hidden="true"
       focusable="false"
     >
-      {/* Value grid and ticks. */}
+      {/* The non-colour channel for the bands. */}
+      <TextureDefs prefix={prefix} tile={6} />
+
+      {/* Value grid. The labels are HTML, in `PlotFrame`. */}
       {model.yAxis.ticks.map((tick) => {
         const y = yForFraction(tick.at, BOX);
         return (
-          <g key={`y-${tick.at}`}>
-            <line
-              x1={BOX.left}
-              x2={BOX.right}
-              y1={y}
-              y2={y}
-              className="stroke-ink-4/30"
-              strokeWidth={0.5}
-            />
-            <text
-              x={BOX.left - 4}
-              y={y + 3}
-              textAnchor="end"
-              className="fill-ink-3 text-[9px]"
-            >
-              {tick.label}
-            </text>
-          </g>
+          <line
+            key={`y-${tick.at}`}
+            x1={BOX.left}
+            x2={BOX.right}
+            y1={y}
+            y2={y}
+            className="stroke-ink-4/30"
+            strokeWidth={0.5}
+          />
         );
       })}
 
-      {/* The bands, bottom first, each with its own outline. */}
-      {paths.map((path, index) => (
-        <path
-          key={bands[index].key}
-          d={path}
-          className={SERIES_FILL[index % SERIES_FILL.length]}
-          fill="currentColor"
-          fillOpacity={0.55}
-          stroke="currentColor"
-          strokeWidth={0.75}
-        />
-      ))}
+      {/* The bands, bottom first, each with its own outline and its slot's
+          texture. The texture is a SECOND path over the same shape: the fill
+          here is `currentColor` through a Tailwind class, and a pattern
+          cannot resolve `currentColor` from the element referencing it. */}
+      {paths.map((path, index) => {
+        const slot = paletteSlot(paletteSlots, bands[index].key, index);
+        // Colour wraps at four slots; the texture reads the unwrapped index.
+        const texture = textureFill(
+          prefix,
+          seriesIndex(paletteSlots, bands[index].key, index),
+        );
+        return (
+          <g key={bands[index].key}>
+            <path
+              d={path}
+              className={SERIES_FILL[slot]}
+              fill="currentColor"
+              fillOpacity={0.55}
+              stroke="currentColor"
+              strokeWidth={0.75}
+            />
+            {texture ? <path d={path} fill={texture} stroke="none" /> : null}
+          </g>
+        );
+      })}
 
       {/* Vertical markers — the end of the credited term, say. */}
       {model.markers.map((marker) => (
@@ -96,19 +127,6 @@ export function AreaChart({ model }: { model: AreaChartModel }) {
         className="stroke-ink-4"
         strokeWidth={0.75}
       />
-
-      {/* Period ticks. */}
-      {model.xAxis.ticks.map((tick) => (
-        <text
-          key={`x-${tick.at}`}
-          x={BOX.left + tick.at * (BOX.right - BOX.left)}
-          y={BOX.bottom + 12}
-          textAnchor={tick.at === 0 ? "start" : tick.at === 1 ? "end" : "middle"}
-          className="fill-ink-3 text-[9px]"
-        >
-          {tick.label}
-        </text>
-      ))}
     </svg>
   );
 }

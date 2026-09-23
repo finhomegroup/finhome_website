@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { CalculatorHeading } from "@/components/calc/calculator-heading";
 import { ProseText } from "@/components/ui/prose-text";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { BiweeklyCalculator } from "@/components/biweekly-calculator";
 import { BIWEEKLY as C } from "@/content/calculators/biweekly";
@@ -75,19 +76,45 @@ export default function BiweeklyPage() {
       <SiteHeader />
       <main className="flex-1 py-16 md:py-24">
         <Container>
-          <CalculatorHeading title={C.pageTitle} lede={C.lede} />
+          <CalculatorHeading
+            title={C.pageTitle}
+            lede={C.lede}
+            ledeDetail={C.ledeDetail}
+            ledeDetailTitle={C.ledeDetailTitle}
+          />
 
           {/* Above the calculator, not below: a borrower should learn that the
               tool assumes a fixed rate BEFORE they read a 20-year instalment
-              off it, because their real loan almost certainly floats. */}
+              off it, because their real loan almost certainly floats.
+              What stays visible is what can invalidate the figure — the fee is
+              uncounted, and the schedule may not be on offer. The questions to
+              put to the bank collapse: they are an action to take later, not
+              something to read before the first input. `CalculatorPage`'s
+              `noticeDetail` does this for shell routes; this one renders its
+              own body, so the same two elements are placed by hand. */}
           <div className="mx-auto mt-8 max-w-3xl">
-            <p className="rounded-xl border border-red-400/40 bg-bg-soft p-4 text-sm leading-relaxed text-ink-2">
-              {C.prepaymentNotice}
-            </p>
+            <div className="rounded-xl border border-red-400/40 bg-bg-soft p-4">
+              <p className="text-sm leading-relaxed text-ink-2">
+                {C.prepaymentNotice}
+              </p>
+              <details className="mt-2">
+                <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+                  {C.prepaymentDetailTitle}
+                </summary>
+                <p className="mt-2 text-sm leading-relaxed text-ink-2">
+                  {C.prepaymentDetail}
+                </p>
+              </details>
+            </div>
           </div>
 
           <div className="mx-auto mt-6 max-w-3xl">
-            <BiweeklyCalculator />
+            {/* The two actions go INSIDE the card, above its detail region:
+                the decomposition and the two schedule groups otherwise stand
+                between the answer and the action. */}
+            <BiweeklyCalculator
+              actions={<ResultActions slug="tra-no-hai-tuan" />}
+            />
           </div>
 
           <div className="mx-auto mt-12 max-w-3xl space-y-10">
@@ -102,7 +129,7 @@ export default function BiweeklyPage() {
                 pages: 98,2% of the saving is the extra principal, and
                 `vay-mua-nha`'s extra-payment mode is where a reader whose
                 bank has no fortnightly schedule can actually get it. */}
-            <ToolNextSteps slug="tra-no-hai-tuan" />
+            <ToolNextSteps slug="tra-no-hai-tuan" promoted />
 
             <Prose
               title={C.formula.title}

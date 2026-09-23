@@ -33,7 +33,10 @@ export const APR_ADVANCED = {
     "Tính APR với từng khoản phí riêng, phân biệt phí trả ngay và phí gộp vào khoản vay, và tính lại APR nếu bạn tất toán trước hạn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Ba thứ mà công cụ APR cơ bản không làm: liệt kê từng khoản phí, tách phí trả ngay khỏi phí gộp vào khoản vay vì hai loại tác động khác nhau, và tính lại APR cho trường hợp bạn tất toán trước hạn — điều mà phần lớn người vay mua nhà thực sự làm.",
+    "Liệt kê từng khoản phí, và tính lại APR cho trường hợp bạn tất toán trước hạn.",
+  ledeDetailTitle: "Ba thứ công cụ APR cơ bản không làm",
+  ledeDetail:
+    "Liệt kê từng khoản phí, tách phí trả ngay khỏi phí gộp vào khoản vay vì hai loại tác động khác nhau, và tính lại APR cho trường hợp bạn tất toán trước hạn — điều mà phần lớn người vay mua nhà thực sự làm.",
 
   form: {
     loanGroup: "Khoản vay",
@@ -177,8 +180,15 @@ export const APR_ADVANCED = {
       "Tổng phí trả ngay đang bằng hoặc vượt số tiền vay, nên bạn sẽ không thực nhận được gì. Hãy kiểm tra lại các khoản phí đã nhập.",
   },
 
+  // Visible: the assumption APR is defined on, which row to read, and the fee
+  // this page does NOT count. The worked three-figure illustration is what the
+  // tool itself now shows the reader, so it reads behind the disclosure — a
+  // browser pass at 390 px measured the first control 885,75 px down.
   payoffNotice:
-    "Điểm quan trọng nhất của trang này: APR theo định nghĩa giả định bạn trả đến hết kỳ hạn, và người vay mua nhà tại Việt Nam thường không làm vậy. Phí là một khoản cố định — trả sớm nghĩa là khoản phí đó được trải trên ít tháng hơn, nên chi phí thực cao hơn. Với khoản vay mặc định, APR đến hết kỳ hạn là 8,7081%; tất toán ở tháng 60 tương đương 8,8923%; tất toán ở tháng 36 tương đương 9,0902%. Nếu bạn có ý định trả trước hạn, hãy đọc dòng thứ hai chứ đừng đọc dòng thứ nhất — và đừng quên phí trả nợ trước hạn, khoản này chưa nằm trong phép tính.",
+    "Điểm quan trọng nhất của trang này: APR theo định nghĩa giả định bạn trả đến hết kỳ hạn, và người vay mua nhà tại Việt Nam thường không làm vậy. Nếu bạn có ý định trả trước hạn, hãy đọc dòng APR khi tất toán sớm chứ đừng đọc dòng đến hết kỳ hạn — và đừng quên phí trả nợ trước hạn, khoản này chưa nằm trong phép tính.",
+  payoffDetailTitle: "Trả sớm thì APR cao lên bao nhiêu",
+  payoffDetail:
+    "Phí là một khoản cố định — trả sớm nghĩa là khoản phí đó được trải trên ít tháng hơn, nên chi phí thực cao hơn. Với khoản vay mặc định, APR đến hết kỳ hạn là 8,7081%; tất toán ở tháng 60 tương đương 8,8923%; tất toán ở tháng 36 tương đương 9,0902%.",
 
   formula: {
     title: "Cách tính",

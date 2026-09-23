@@ -241,8 +241,17 @@ export const CARD_PAYOFF = {
     strategyMinimumFlat: "Giữ nguyên khoản trả tháng đầu ({payment})",
   },
 
+  // §5: the two things a reader must not miss stay visible — this is a MODEL
+  // of daily compounding, and the reader's own card contract may compute it
+  // differently. The 30% → 2,5305% arithmetic and the list of contract terms
+  // that move it are the labelled disclosure; `card-payoff.test.ts` still
+  // derives 2,5305% from the module.
   dailyInterestNotice:
-    "MÔ HÌNH NÀY giả định lãi được cộng dồn theo NGÀY trên số dư rồi tính vào cuối kỳ — tức lãi kép theo ngày. Theo giả định đó, thẻ 30%/năm tương đương 2,5305% một tháng chứ không phải 2,5%: nhỏ về mặt con số nhưng cộng dồn đáng kể qua nhiều năm. Hợp đồng thẻ của bạn có thể tính khác — số ngày trong kỳ, thời điểm nhập lãi, điều khoản miễn lãi và mốc bắt đầu tính lãi đều do biểu phí của từng thẻ quy định — nên hãy đọc đúng phần đó trước khi tin một con số nào ở đây.",
+    "MÔ HÌNH NÀY giả định lãi được cộng dồn theo NGÀY trên số dư rồi tính vào cuối kỳ — tức lãi kép theo ngày. Hợp đồng thẻ của bạn có thể tính khác, nên hãy đọc đúng phần đó trong biểu phí trước khi tin một con số nào ở đây.",
+  dailyInterestNoticeDetailTitle:
+    "Theo mô hình này, 30%/năm là bao nhiêu một tháng?",
+  dailyInterestNoticeDetail:
+    "Theo giả định đó, thẻ 30%/năm tương đương 2,5305% một tháng chứ không phải 2,5%: nhỏ về mặt con số nhưng cộng dồn đáng kể qua nhiều năm. Những gì có thể làm con số của bạn khác đi đều do biểu phí của từng thẻ quy định — số ngày trong kỳ, thời điểm nhập lãi, điều khoản miễn lãi và mốc bắt đầu tính lãi.",
 
   formula: {
     title: "Cách tính",

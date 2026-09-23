@@ -1,10 +1,17 @@
+import { useId } from "react";
 import { SERIES_FILL } from "@/components/calc/chart/chart-figure";
-import { PLOT, stackSegments } from "@/lib/calc/charts/geometry";
+import {
+  TextureDefs,
+  textureFill,
+} from "@/components/calc/chart/chart-texture";
+import { stackSegments } from "@/lib/calc/charts/geometry";
 import {
   paletteIndexByKey,
   paletteSlot,
+  seriesIndex,
 } from "@/lib/calc/charts/palette";
 import type { BarChartModel } from "@/lib/calc/charts/types";
+import { cn } from "@/lib/cn";
 
 /**
  * Horizontal stacked bars: composition, and comparison across a few items.
@@ -22,13 +29,34 @@ import type { BarChartModel } from "@/lib/calc/charts/types";
  * an earlier segment — see `lib/calc/charts/palette.ts` for the defect an
  * independent review found on the vehicle-budget figure.
  *
- * THE BAR LABELS AND TOTALS ARE HTML, NOT SVG TEXT. A fixed 10-unit `<text>`
+ * EVERY PIECE OF TEXT HERE IS HTML, NOT SVG TEXT. A fixed 10-unit `<text>`
  * inside a 360-unit viewBox scales with the box, so at a 300 px plot on a
  * phone it renders around 8 px — the review measured exactly that and called
- * the labels and the nine-digit totals visibly tiny. HTML above each bar
- * reflows, wraps, respects the reader's own font size, and is why the axis
- * TITLES already live outside the SVG (see `geometry.ts`). Only the tick
- * numbers stay inside, because only they must line up with the plot.
+ * the labels and the nine-digit totals visibly tiny. HTML reflows, wraps and
+ * respects the reader's own font size, and is why the axis TITLES already live
+ * outside the SVG (see `geometry.ts`).
+ *
+ * The TICK NUMBERS were the last ones left inside, on the argument that only
+ * they must line up with the plot. They do not have to be SVG to do that: a
+ * bar's track spans the full container width, so a tick at fraction `at` is at
+ * `at`% of it, which is exactly how `PlotFrame` positions the axis labels on
+ * every line and column chart. Their old `text-[9px]` was 9 USER UNITS, so it
+ * rendered near 9 px on a phone and near 15 px on a wide desktop column —
+ * smaller than the body text where reading is hardest and larger where it is
+ * easiest. As HTML they are `text-xs` everywhere, like every other axis in the
+ * suite.
+ *
+ * COLOUR IS NOT THE ONLY CHANNEL ANY MORE. Each segment also carries its
+ * SERIES' texture from `chart-texture.tsx`, mirrored in the legend's mark. The
+ * texture is keyed to the UNWRAPPED series index, not to the four-colour slot:
+ * a second review measured the six-segment allocation bar at 390 px, where the
+ * wrapped version gave series 0/4 the same grey plain fill and series 1/5 the
+ * same green hatch. An independent visual review before that had found a
+ * segment identifiable by fill colour alone, with two of the four fills being
+ * greens a reader may not be able to separate. The
+ * patterns are tiled, so a segment's length — the thing that carries the data
+ * — is untouched, and the model's own summary and table are still where the
+ * numbers are read.
  *
  * Computes nothing financial: the model arrives resolved and the stacking
  * comes from the tested `stackSegments`. `aria-hidden` is `ChartFigure`'s
@@ -36,6 +64,10 @@ import type { BarChartModel } from "@/lib/calc/charts/types";
  */
 export function BarChart({ model }: { model: BarChartModel }) {
   const { bars, max } = model;
+  // `useId` before the early return: a hook cannot sit behind a condition.
+  // It namespaces this drawing's pattern ids, so two figures on one page
+  // cannot define the same id — see `TextureDefs`.
+  const prefix = useId();
   if (bars.length === 0 || max <= 0) return null;
 
   // One map for the whole model, in the legend's order, with any unlisted
@@ -45,14 +77,28 @@ export function BarChart({ model }: { model: BarChartModel }) {
     segmentKeys: bars.flatMap((bar) => bar.segments.map((s) => s.key)),
   });
 
-  // Only the tick row is still positioned in viewBox units. The bars and
-  // their labels are laid out by CSS now — no per-bar row arithmetic, and no
-  // total SVG height to keep in step with the number of bars.
-  const left = 2;
-  const width = PLOT.width - 2 - left;
-
   return (
     <div>
+      {/* The patterns, once for every bar's track. A paint server is resolved
+          by document id, so it does not have to live in the `<svg>` that uses
+          it — and each track is its own `<svg>`, so defining them per track
+          would repeat the same ids. Zero-sized: this draws nothing itself.
+          The tile is in the TRACK's units, where the box is 100 wide.
+
+          Out of flow and zero-sized rather than `hidden`: a paint server
+          inside a `display: none` subtree is not reliably resolvable, and an
+          in-flow inline `<svg>` would still occupy a line box. The size is
+          CSS, not `width`/`height` attributes — every `<svg>` in this suite is
+          sized by CSS and `chart-render.test.ts` asserts that none carries a
+          pixel attribute. */}
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        className="pointer-events-none absolute size-0"
+      >
+        <TextureDefs prefix={prefix} tile={2.6} />
+      </svg>
+
       {/* Labels and totals as real text, one block per bar, above its own
           track. Readable at 390 px and scalable with the reader's settings. */}
       <ul className="space-y-3">
@@ -82,33 +128,36 @@ export function BarChart({ model }: { model: BarChartModel }) {
               bar={bar}
               max={max}
               paletteSlots={paletteSlots}
+              texturePrefix={prefix}
               className="mt-1.5"
             />
           </li>
         ))}
       </ul>
 
-      {/* The axis, drawn once under the last bar. */}
-      <svg
-        viewBox={`0 0 ${PLOT.width} 16`}
-        className="mt-1 h-auto w-full"
-        aria-hidden="true"
-        focusable="false"
-      >
+      {/* The axis, once under the last bar. A row in the flow rather than an
+          overlay, so its height comes from the layout and not from the bars —
+          the same shape as `PlotFrame`'s x-axis row. */}
+      <div aria-hidden="true" className="relative mt-1.5 h-4">
         {model.axis.ticks.map((tick) => (
-          <text
+          <span
             key={`tick-${tick.at}`}
-            x={left + tick.at * width}
-            y={11}
-            textAnchor={
-              tick.at === 0 ? "start" : tick.at === 1 ? "end" : "middle"
-            }
-            className="fill-ink-3 text-[9px]"
+            style={{ left: `${tick.at * 100}%` }}
+            className={cn(
+              "absolute top-0 whitespace-nowrap text-xs leading-none tabular-nums text-ink-3",
+              // Anchored by POSITION: a label on an end of the axis is pulled
+              // inside so it cannot overhang the figure.
+              tick.at === 0
+                ? ""
+                : tick.at === 1
+                  ? "-translate-x-full"
+                  : "-translate-x-1/2",
+            )}
           >
             {tick.label}
-          </text>
+          </span>
         ))}
-      </svg>
+      </div>
     </div>
   );
 }
@@ -125,11 +174,14 @@ function BarTrack({
   bar,
   max,
   paletteSlots,
+  texturePrefix,
   className,
 }: {
   bar: BarChartModel["bars"][number];
   max: number;
   paletteSlots: Map<string, number>;
+  /** Namespace for the shared pattern ids — see `BarChart`. */
+  texturePrefix: string;
   className?: string;
 }) {
   const stacked = stackSegments(
@@ -149,19 +201,37 @@ function BarTrack({
       {bar.segments.map((segment, segmentIndex) => {
         const { offset, size } = stacked[segmentIndex];
         if (size <= 0) return null;
+        const slot = paletteSlot(paletteSlots, segment.key, segmentIndex);
+        // The COLOUR wraps at four and the TEXTURE does not: a sixth segment
+        // is the second colour but the sixth texture, which is what keeps it
+        // tellable apart from the second segment. See `chart-texture.tsx`.
+        const texture = textureFill(
+          texturePrefix,
+          seriesIndex(paletteSlots, segment.key, segmentIndex),
+        );
         return (
-          <rect
-            key={segment.key}
-            x={offset * 100}
-            y={0}
-            width={size * 100}
-            height={6}
-            className={
-              SERIES_FILL[
-                paletteSlot(paletteSlots, segment.key, segmentIndex)
-              ]
-            }
-          />
+          <g key={segment.key}>
+            <rect
+              x={offset * 100}
+              y={0}
+              width={size * 100}
+              height={6}
+              className={SERIES_FILL[slot]}
+            />
+            {/* The same rectangle again, carrying only the slot's texture:
+                the colour is a Tailwind class and a pattern cannot resolve
+                `currentColor` from the element referencing it. A segment
+                whose slot is the plain one gets nothing drawn over it. */}
+            {texture ? (
+              <rect
+                x={offset * 100}
+                y={0}
+                width={size * 100}
+                height={6}
+                fill={texture}
+              />
+            ) : null}
+          </g>
         );
       })}
       {bar.emphasis ? (

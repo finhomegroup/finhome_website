@@ -90,7 +90,14 @@ export const RETIREMENT_INCOME = {
     "Từ số vốn kế hoạch hưu trí của bạn tích lũy được, công cụ tính mức chi mỗi năm giữ được đến hết kỳ dự phóng — bằng đồng, theo giá hôm nay — rồi đặt nó cạnh mức bạn mong muốn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Câu hỏi ngược của một kế hoạch hưu trí: với số vốn bạn sẽ có, mỗi năm tiêu được bao nhiêu? Con số chính được tính theo giá hôm nay, vì đó là đơn vị duy nhất bạn so được với chi phí sinh hoạt hiện tại. Và nó là một lựa chọn chứ không phải một con số duy nhất, nên trang này vẽ nó cạnh hai nhánh khác: mức bạn mong muốn, và cùng mức đó nếu bạn sống lâu hơn dự tính.",
+    // The unit stays visible — a figure in today's money read as tomorrow's
+    // is the wrong number. The two comparison branches are described where
+    // they are drawn, not in the entry copy above the form.
+    "Câu hỏi ngược của một kế hoạch hưu trí: với số vốn bạn sẽ có, mỗi năm tiêu được bao nhiêu? Con số chính được tính theo giá hôm nay, vì đó là đơn vị duy nhất bạn so được với chi phí sinh hoạt hiện tại.",
+
+  ledeDetailTitle: "Vì sao có ba mức chi chứ không phải một",
+  ledeDetail:
+    "Mức chi là một lựa chọn, không phải một con số duy nhất, nên trang này vẽ con số chính cạnh hai nhánh khác: mức bạn mong muốn, và cùng mức đó nếu bạn sống lâu hơn dự tính. Khoảng cách giữa ba nhánh cho biết kế hoạch chịu được bao nhiêu sai số.",
 
   form: {
     resultTitle: "Mức chi giữ được đến hết kỳ",
@@ -114,8 +121,16 @@ export const RETIREMENT_INCOME = {
      * of the defect `omit` exists to prevent, so the page states it and says
      * where it comes from.
      */
+    /*
+     * Third sentence dropped for CSV row 52 ("giải thích … ngắn hơn"). It said
+     * the other three pages have the box and share these assumptions — which
+     * is now the `LongTermViews` control sitting beside the answer, naming all
+     * four views. The two sentences that remain are the ones a reader cannot
+     * get anywhere else: where the figure comes from, and why this page does
+     * not ask for it.
+     */
     desiredNote:
-      "Mức chi mong muốn ở trên là giả định dùng chung của kế hoạch hưu trí, không phải một ô trên trang này: trang này giải ra mức chi giữ được, nên nó hỏi mọi thứ khác và không hỏi con số đó. Ba trang còn lại của kế hoạch đều có ô đó, và cả bốn trang dùng chung một bộ giả định.",
+      "Mức chi mong muốn ở trên là giả định dùng chung của kế hoạch hưu trí, không phải một ô trên trang này: trang này giải ra mức chi giữ được, nên nó hỏi mọi thứ khác và không hỏi con số đó.",
 
     pathsTitle: "Ba nhánh của cùng một số vốn",
     /**

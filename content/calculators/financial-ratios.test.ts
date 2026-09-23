@@ -234,11 +234,13 @@ describe("cac-chi-so-tai-chinh's notice, and the lesson that was missing", () =>
     expect(C.oneRatioNotice).toContain("Một chỉ số không kết luận được");
     expect(C.oneRatioNotice).toContain("cùng nhau");
     // Argued with the page's own figures rather than asserted, so a reader can
-    // check it against the table below.
-    expect(C.oneRatioNotice).toContain(
-      formatPercent(r.returnOnEquityPercent!, 1),
-    );
-    expect(C.oneRatioNotice).toContain(formatDecimal(r.currentRatio!, 1));
+    // check it against the table below. §5 moved the two-company example into
+    // `ledeDetail` — it is still on the page, and still the page's own
+    // figures, which is what asserting the pair together proves.
+    const entry = `${C.oneRatioNotice} ${C.ledeDetail}`;
+    expect(entry).toContain(formatPercent(r.returnOnEquityPercent!, 1));
+    expect(entry).toContain(formatDecimal(r.currentRatio!, 1));
+    expect(C.ledeDetailTitle.length).toBeGreaterThan(0);
   });
 
   it("keeps the closing-balance caveat, which MOVED rather than vanished", () => {

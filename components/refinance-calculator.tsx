@@ -9,6 +9,8 @@ import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { DetailFigures } from "@/components/calc/detail-figures";
 import { ExampleNotice, ExampleNoticeDetail } from "@/components/calc/example-notice";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -20,7 +22,24 @@ import { fill } from "@/lib/calc/charts/labels";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { REFINANCE as C } from "@/content/calculators/refinance";
 
-export function RefinanceCalculator() {
+/**
+ * CSV row 7 ("Hai cột"): the break-even month and the switching fee lead the
+ * answer, and the cost/cash-flow distinction stays beside them. The fee total
+ * moves up out of the disclosure — it is half of what the row asks to
+ * emphasise — so it is no longer repeated below. Docs §8.
+ */
+const FORM_ID = "tai-cap-von-nhap";
+const RESULT_ID = "tai-cap-von-ket-qua";
+
+export function RefinanceCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const initial = {
     balance: C.form.defaultBalance, currentRate: C.form.defaultCurrentRate,
     remaining: C.form.defaultRemaining, newRate: C.form.defaultNewRate,
@@ -58,58 +77,96 @@ export function RefinanceCalculator() {
   const field = (key: keyof typeof initial, label: string, help: string, error: string, unit?: string) => (
     <NumberField key={key} {...fields.bind(key)} label={label} help={help} error={error} unit={unit} invalid={invalid[key]} />
   );
+  // A month number is a figure and takes the emphasis; "chưa hòa vốn" is a
+  // sentence and must stay body type, because `emphasis` is ignored with `prose`.
+  const breakEven = result ? crossing(result.breakEvenMonths) : null;
+  const breakEvenIsFigure = !!result && result.breakEvenMonths !== null
+    && !(result.breakEvenMonths === 0 && result.closingCosts === 0);
   return (
     <CalculatorCard>
-      <ExampleNotice pristine={pristine} onReset={fields.reset} />
-      <FieldGroup title={C.form.currentGroup} className="mt-6">
-        {field("balance", C.form.balanceLabel, C.form.balanceHelp, C.form.balanceInvalid, C.form.moneyUnit)}
-        {field("currentRate", C.form.currentRateLabel, C.form.currentRateHelp, C.form.rateInvalid, C.form.rateUnit)}
-        {field("remaining", C.form.remainingLabel, C.form.remainingHelp, C.form.monthsInvalid, C.form.monthsUnit)}
-      </FieldGroup>
-      <FieldGroup title={C.form.newGroup} className="mt-6">
-        {field("newRate", C.form.newRateLabel, C.form.newRateHelp, C.form.rateInvalid, C.form.rateUnit)}
-        {field("newTerm", C.form.newTermLabel, C.form.newTermHelp, C.form.monthsInvalid, C.form.monthsUnit)}
-        {field("horizon", C.form.horizonLabel, C.form.horizonHelp, C.form.horizonInvalid, C.form.monthsUnit)}
-      </FieldGroup>
-      <AdvancedFields title={C.form.feesTitle} emptySummary={C.form.feesNone} className="mt-6" settings={[
-        { key: "oldFee", label: C.form.oldFeeLabel, value: invalid.oldFee ? C.form.costsInvalid : money(oldFee!)!, active: invalid.oldFee || oldFee !== 0 },
-        { key: "costs", label: C.form.costsLabel, value: invalid.costs ? C.form.costsInvalid : money(costs!)!, active: invalid.costs || costs !== 0 },
-      ]}>
-        <FieldGroup title={C.form.feesGroup}>
-          {field("oldFee", C.form.oldFeeLabel, C.form.oldFeeHelp, C.form.costsInvalid, C.form.moneyUnit)}
-          {field("costs", C.form.costsLabel, C.form.costsHelp, C.form.costsInvalid, C.form.moneyUnit)}
-        </FieldGroup>
-      </AdvancedFields>
-      <ResultGroup title={fill(C.form.resultTitle, { month: result?.horizonMonths ?? "—" })} className="mt-8">
-        <ResultRow label={C.form.costSavingLabel} value={money(result?.horizonCostSaving)} />
-        <ResultRow label={C.form.cashSavingLabel} value={money(result?.horizonCashFlowSaving)} />
-        <ResultRow label={C.form.breakEvenLabel} value={result ? crossing(result.breakEvenMonths) : null} prose />
-      </ResultGroup>
-      <p className="mt-3 text-sm leading-relaxed text-ink-2">{C.form.signNote}</p>
-      <ChartFigure model={chart}><LineChart model={chart} /></ChartFigure>
-      <p className="mt-4 text-sm leading-relaxed text-ink-3">{C.form.crossingNote}</p>
-      {result?.costTurnsNegativeAgain ? <p className="mt-2 text-sm leading-relaxed text-ink-2">{C.form.reversalNote}</p> : null}
-      {result ? (
-        <DetailDisclosure title={C.form.detailToggle} className="mt-6">
-          <DetailFigures title={C.form.detailTitle} figures={[
-            { label: C.form.currentPaymentLabel, value: moneyCell(result.currentPayment) },
-            { label: C.form.newPaymentLabel, value: moneyCell(result.newPayment) },
-            { label: C.form.monthlySavingLabel, value: moneyCell(result.monthlySaving) },
-            { label: C.form.currentPaidLabel, value: moneyCell(result.horizon.currentPaid) },
-            { label: C.form.newPaidLabel, value: moneyCell(result.horizon.newPaid) },
-            { label: C.form.currentInterestLabel, value: moneyCell(result.horizon.currentInterest) },
-            { label: C.form.newInterestLabel, value: moneyCell(result.horizon.newInterest) },
-            { label: C.form.currentBalanceLabel, value: moneyCell(result.horizon.currentBalance) },
-            { label: C.form.newBalanceLabel, value: moneyCell(result.horizon.newBalance) },
-            { label: C.form.feesLabel, value: moneyCell(result.closingCosts) },
-            { label: C.form.lifetimeLabel, value: moneyCell(result.lifetimeSaving) },
-            { label: C.form.cashBreakEvenLabel, value: crossing(result.cashFlowBreakEvenMonths), prose: true },
-            { label: C.form.termChangeLabel, value: months(result.termChangeMonths) },
-          ]} />
-        </DetailDisclosure>
-      ) : null}
-      <p className="mt-4 text-sm leading-relaxed text-ink-3">{C.form.assumptions}</p>
-      <ExampleNoticeDetail className="mt-4" />
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <ExampleNotice pristine={pristine} onReset={fields.reset} />
+            <FieldGroup title={C.form.currentGroup} className="mt-6">
+              {field("balance", C.form.balanceLabel, C.form.balanceHelp, C.form.balanceInvalid, C.form.moneyUnit)}
+              {field("currentRate", C.form.currentRateLabel, C.form.currentRateHelp, C.form.rateInvalid, C.form.rateUnit)}
+              {field("remaining", C.form.remainingLabel, C.form.remainingHelp, C.form.monthsInvalid, C.form.monthsUnit)}
+            </FieldGroup>
+            <FieldGroup title={C.form.newGroup} className="mt-6">
+              {field("newRate", C.form.newRateLabel, C.form.newRateHelp, C.form.rateInvalid, C.form.rateUnit)}
+              {field("newTerm", C.form.newTermLabel, C.form.newTermHelp, C.form.monthsInvalid, C.form.monthsUnit)}
+              {field("horizon", C.form.horizonLabel, C.form.horizonHelp, C.form.horizonInvalid, C.form.monthsUnit)}
+            </FieldGroup>
+            <AdvancedFields title={C.form.feesTitle} emptySummary={C.form.feesNone} className="mt-6" settings={[
+              { key: "oldFee", label: C.form.oldFeeLabel, value: invalid.oldFee ? C.form.costsInvalid : money(oldFee!)!, active: invalid.oldFee || oldFee !== 0 },
+              { key: "costs", label: C.form.costsLabel, value: invalid.costs ? C.form.costsInvalid : money(costs!)!, active: invalid.costs || costs !== 0 },
+            ]}>
+              <FieldGroup title={C.form.feesGroup}>
+                {field("oldFee", C.form.oldFeeLabel, C.form.oldFeeHelp, C.form.costsInvalid, C.form.moneyUnit)}
+                {field("costs", C.form.costsLabel, C.form.costsHelp, C.form.costsInvalid, C.form.moneyUnit)}
+              </FieldGroup>
+            </AdvancedFields>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={Object.values(invalid).some(Boolean)}
+            sticky
+            answer={{ label: C.form.breakEvenLabel, value: breakEven }}
+          />
+        }
+        primary={
+          <>
+            <ResultGroup title={fill(C.form.resultTitle, { month: result?.horizonMonths ?? "—" })} anchorId={RESULT_ID}>
+              <ResultRow label={C.form.breakEvenLabel} value={breakEven} emphasis={breakEvenIsFigure} prose={!breakEvenIsFigure} />
+              <ResultRow label={C.form.feesLabel} value={money(result?.closingCosts)} />
+              <ResultRow label={C.form.costSavingLabel} value={money(result?.horizonCostSaving)} />
+              <ResultRow label={C.form.cashSavingLabel} value={money(result?.horizonCashFlowSaving)} />
+            </ResultGroup>
+            {/* The cost-versus-cash-flow distinction, beside the two rows it
+                distinguishes rather than under the chart. */}
+            <p className="mt-3 text-sm leading-relaxed text-ink-2">{C.form.signNote}</p>
+          </>
+        }
+        chart={
+          <>
+            <ChartFigure model={chart}><LineChart model={chart} /></ChartFigure>
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">{C.form.crossingNote}</p>
+            {result?.costTurnsNegativeAgain ? <p className="mt-2 text-sm leading-relaxed text-ink-2">{C.form.reversalNote}</p> : null}
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <>
+            {result ? (
+              <DetailDisclosure title={C.form.detailToggle}>
+                <DetailFigures title={C.form.detailTitle} figures={[
+                  { label: C.form.currentPaymentLabel, value: moneyCell(result.currentPayment) },
+                  { label: C.form.newPaymentLabel, value: moneyCell(result.newPayment) },
+                  { label: C.form.monthlySavingLabel, value: moneyCell(result.monthlySaving) },
+                  { label: C.form.currentPaidLabel, value: moneyCell(result.horizon.currentPaid) },
+                  { label: C.form.newPaidLabel, value: moneyCell(result.horizon.newPaid) },
+                  { label: C.form.currentInterestLabel, value: moneyCell(result.horizon.currentInterest) },
+                  { label: C.form.newInterestLabel, value: moneyCell(result.horizon.newInterest) },
+                  { label: C.form.currentBalanceLabel, value: moneyCell(result.horizon.currentBalance) },
+                  { label: C.form.newBalanceLabel, value: moneyCell(result.horizon.newBalance) },
+                  { label: C.form.lifetimeLabel, value: moneyCell(result.lifetimeSaving) },
+                  { label: C.form.cashBreakEvenLabel, value: crossing(result.cashFlowBreakEvenMonths), prose: true },
+                  { label: C.form.termChangeLabel, value: months(result.termChangeMonths) },
+                ]} />
+              </DetailDisclosure>
+            ) : null}
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">{C.form.assumptions}</p>
+            <ExampleNoticeDetail className="mt-4" />
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

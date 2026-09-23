@@ -22,6 +22,9 @@ export default function BondPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // CSV row 25 is "Hai cột": the calculator renders `columns="split"`,
+      // and `wide` is what gives that grid room to be worth splitting.
+      wide
       // Three numbers are all called "lợi suất" and a seller will quote the
       // flattering one. Which is which, before any of them is read.
       // Every yield on this page assumes the issuer pays. That is the thing

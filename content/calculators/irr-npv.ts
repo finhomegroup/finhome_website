@@ -69,6 +69,16 @@ export const IRR_NPV = {
     irrLabel: "IRR",
     mirrLabel: "MIRR",
 
+    // CSV row 24's second clause is "ghi rõ kỳ". IRR and MIRR are rates PER
+    // KỲ, and a kỳ on this page is whatever unit the discount rate was
+    // entered in — the tool cannot know whether that was a year or a month.
+    // So the period travels with the figure instead of being left to the
+    // form's help text: "15,2382%" and "15,2382%/kỳ" are different claims,
+    // and only the second one is the one this tool can make.
+    perPeriodSuffix: "/kỳ",
+    periodBasisNote:
+      "IRR và MIRR ở trên là mức mỗi kỳ, cùng đơn vị kỳ với lãi suất chiết khấu bạn đã nhập. Nếu dòng tiền của bạn theo tháng thì đây là mức mỗi tháng, không phải mỗi năm.",
+
     detailTitle: "Chi tiết",
     piLabel: "Chỉ số sinh lời",
     paybackLabel: "Thời gian hoàn vốn",
@@ -84,12 +94,22 @@ export const IRR_NPV = {
       "Dòng tiền đổi dấu nhiều hơn một lần, nên có thể có vài mức lãi suất khác nhau đều làm NPV bằng 0. Không có “IRR” duy nhất, và công cụ để trống ô đó thay vì chọn bừa một nghiệm. Hãy dùng NPV để ra quyết định, và dùng MIRR nếu cần một con số tỷ lệ.",
     noIrrSameSign:
       "Tất cả dòng tiền cùng dấu, nên không có điểm hòa vốn nào để tính IRR. Nếu bạn định nhập một dự án, hãy đảm bảo kỳ 0 là số âm.",
+    // MIRR's own refusal. `computeIrrNpv` returns null for it when there is
+    // no discounted outflow or no compounded inflow, which the all-positive
+    // flow set reaches with every field legal — so the blank needs a reason
+    // beside it exactly as the IRR blank does.
+    noMirr:
+      "MIRR cần cả kỳ âm và kỳ dương: nó quy các dòng tiền âm về hiện tại và gộp các dòng tiền dương về cuối kỳ, nên thiếu một trong hai chiều thì không có tỷ lệ nào để tính. Dòng tiền bạn nhập chỉ có một chiều, vì vậy ô MIRR để trống — đây không phải lỗi nhập liệu.",
     noPayback:
       "Dòng tiền tích lũy không bao giờ dương, nghĩa là dự án không thu hồi được vốn trong số kỳ bạn đã nhập.",
   },
 
+  // The rule stays visible; the two worked rates move behind the disclosure.
   npvFirstNotice:
-    "Hãy đọc NPV trước, không phải IRR. NPV dương nghĩa là dự án tạo ra giá trị vượt trên chi phí vốn của bạn, và nó cộng được giữa các dự án. IRR thì không: nó ngầm giả định mọi dòng tiền thu được đều được tái đầu tư ở đúng mức IRR — với dự án mặc định là 15,2382%/kỳ, một mức khó duy trì — nên nó thường phóng đại. MIRR sửa đúng điểm đó bằng cách dùng mức tái đầu tư bạn khai báo, và cho 12,8659%. Ngoài ra IRR còn có thể không tồn tại hoặc không duy nhất; NPV thì luôn có một giá trị.",
+    "Hãy đọc NPV trước, không phải IRR: NPV dương nghĩa là dự án tạo ra giá trị vượt trên chi phí vốn của bạn, và nó cộng được giữa các dự án. IRR thì không cộng được, ngầm giả định mọi dòng tiền thu được đều tái đầu tư ở đúng mức IRR nên thường phóng đại, và còn có thể không tồn tại hoặc không duy nhất.",
+  npvFirstNoticeDetailTitle: "Con số cụ thể: IRR 15,2382% so với MIRR 12,8659%",
+  npvFirstNoticeDetail:
+    "Với dự án mặc định, IRR là 15,2382%/kỳ — một mức tái đầu tư khó duy trì, nên IRR phóng đại. MIRR sửa đúng điểm đó bằng cách dùng mức tái đầu tư bạn khai báo, và cho 12,8659%. NPV thì luôn có một giá trị.",
 
   formula: {
     title: "Cách tính",
@@ -97,7 +117,7 @@ export const IRR_NPV = {
       "NPV = tổng của dòng tiền kỳ t chia (1 + lãi suất chiết khấu)^t, với t chạy từ 0. Kỳ 0 không bị chiết khấu vì nó xảy ra ngay hôm nay. Với dự án mặc định ở mức chiết khấu 10%: NPV là 137.236.031 ₫.",
       "IRR là mức lãi suất làm NPV bằng 0. Không có công thức đóng, nên công cụ giải bằng phương pháp chia đôi khoảng trong dải từ gần −100% đến 1000% mỗi kỳ. IRR của dự án mặc định là 15,2382%/kỳ — cao hơn mức chiết khấu 10%, khớp với việc NPV dương.",
       "Công cụ chỉ đưa ra IRR khi dòng tiền đổi dấu đúng một lần. Đổi dấu hai lần trở lên có thể cho nhiều nghiệm, và gọi một trong số đó là “IRR” là sai; khi đó ô IRR để trống và số lần đổi dấu được hiển thị để bạn biết lý do.",
-      "MIRR gộp các dòng tiền dương về cuối kỳ theo lãi suất tái đầu tư, quy các dòng tiền âm về hiện tại theo lãi suất chiết khấu, rồi tìm mức lãi nối hai đầu: MIRR = (giá trị cuối kỳ ÷ giá trị hiện tại)^(1 ÷ số kỳ) − 1. Vì nó không giả định tái đầu tư ở mức IRR, MIRR luôn tồn tại và duy nhất — kể cả khi IRR thì không.",
+      "MIRR gộp các dòng tiền dương về cuối kỳ theo lãi suất tái đầu tư, quy các dòng tiền âm về hiện tại theo lãi suất chiết khấu, rồi tìm mức lãi nối hai đầu: MIRR = (giá trị cuối kỳ ÷ giá trị hiện tại)^(1 ÷ số kỳ) − 1. Vì nó không giả định tái đầu tư ở mức IRR, MIRR là duy nhất khi dòng tiền có cả kỳ âm và kỳ dương — kể cả khi IRR không tồn tại vì đổi dấu nhiều lần. Nhưng nó không phải lúc nào cũng tồn tại: nếu mọi dòng tiền cùng dấu thì một trong hai đầu của phép chia bằng 0 và ô MIRR để trống, giống ô IRR.",
       "Chỉ số sinh lời = giá trị hiện tại của dòng tiền vào chia giá trị hiện tại của dòng tiền ra. Lớn hơn 1 đúng khi NPV dương. Nó hữu ích khi so hai dự án có quy mô vốn khác nhau: 1,1372 nghĩa là mỗi đồng bỏ ra tạo ra 1,1372 đồng theo giá trị hôm nay.",
       "Thời gian hoàn vốn là kỳ đầu tiên dòng tiền tích lũy chuyển sang không âm, có nội suy trong kỳ: 3,33 kỳ nghĩa là một phần ba đường vào kỳ thứ tư. Bản có chiết khấu tính trên dòng tiền đã chiết khấu, nên luôn dài hơn — 4,26 kỳ với dự án mặc định. Cả hai đều bỏ qua mọi dòng tiền sau thời điểm hoàn vốn, nên đừng dùng chúng làm tiêu chí quyết định.",
     ],
@@ -113,7 +133,7 @@ export const IRR_NPV = {
     emphasis: [
       "Kỳ 0 không bị chiết khấu",
       "đổi dấu đúng một lần",
-      "luôn tồn tại và duy nhất",
+      "duy nhất khi dòng tiền có cả kỳ âm và kỳ dương",
     ],
   },
 

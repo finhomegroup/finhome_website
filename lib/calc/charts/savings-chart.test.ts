@@ -538,3 +538,47 @@ describe("the accessible table", () => {
     expect(show(last[2])).toBe("500,0");
   });
 });
+
+describe("the month axis names the month it points at", () => {
+  /** Every tick label is the month at its own position, to the đồng of a month. */
+  function assertMonthTicks(model: {
+    xMax: number;
+    xAxis: { ticks: { at: number; label: string }[] };
+  }) {
+    for (const tick of model.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * model.xMax,
+        9,
+      );
+    }
+    expect(model.xAxis.ticks.at(-1)!.at).toBe(1);
+  }
+
+  it("holds on a 37-month goal", () => {
+    // Equal quarter intervals plus a rounding formatter named months the ticks
+    // do not sit on. See `countTicks` in `types.ts`.
+    const odd = computeSavingsGoal({
+      mode: "contribution",
+      initial: 100_000_000,
+      target: 500_000_000,
+      months: 37,
+      annualRatePercent: 6,
+    })!;
+    const model = savingsChartModel(odd, 0, L);
+    expect(model.xMax).toBe(37);
+    assertMonthTicks(model);
+  });
+
+  it("holds on the two-path view, which ends at a funded cycle of 43", () => {
+    const model = savingsPathsModel(
+      [
+        pathFor("base", "Mức hiện tại", 8_000_000),
+        pathFor("higher", "Sau khi góp thêm", 10_000_000),
+      ],
+      500_000_000,
+      PATH_LABELS,
+    );
+    expect(model.xMax).toBe(43);
+    assertMonthTicks(model);
+  });
+});

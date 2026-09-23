@@ -53,6 +53,22 @@ export const WAGE = {
     weeksInvalid: "Vui lòng nhập số tuần lớn hơn 0.",
     defaultWeeks: "52",
 
+    // ROW 64 — "Ưu tiên đơn vị lương người dùng muốn biết; các đơn vị còn lại
+    // để trong bảng gọn."
+    //
+    // A SECOND UNIT SELECT, and the two are easy to confuse, so they are
+    // worded as a pair of opposite questions rather than as "đơn vị" twice.
+    // `unitLabel` above is "Tính theo" — the unit of the number being typed
+    // IN. This one is what the reader wants OUT, and it defaults to "tháng"
+    // because that is the unit the page is named for and the one a reader
+    // arrives wanting. It changes nothing about the conversion: `convertWage`
+    // still returns all five figures from the same single hourly rate, and
+    // this only picks which of them is the headline.
+    outputLabel: "Bạn muốn biết theo",
+    outputHelp:
+      "Chỉ đổi cách trình bày. Bốn đơn vị còn lại vẫn ở bảng ngay dưới kết quả, và mọi con số vẫn tính từ cùng một mức lương giờ.",
+    defaultOutput: "monthly",
+
     resultTitle: "Quy đổi (lương gộp)",
     hourlyLabel: "Theo giờ",
     dailyLabel: "Theo ngày",
@@ -68,6 +84,16 @@ export const WAGE = {
     /** `{hours}`, `{days}`, `{weeks}` substituted. */
     scheduleEchoFormat:
       "{hours} giờ/tuần · {days} ngày/tuần · {weeks} tuần được trả lương mỗi năm",
+  },
+
+  // The remaining four units, plus the hours behind them. Two columns, so it
+  // stays a short block rather than a table to scroll.
+  table: {
+    caption: "Bốn đơn vị còn lại",
+    unitColumn: "Đơn vị",
+    amountColumn: "Mức lương gộp",
+    /** For the hours figure, which is not a wage and so not a table row. */
+    basisTitle: "Cơ sở quy đổi",
   },
 
   monthNotice:

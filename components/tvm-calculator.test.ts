@@ -187,3 +187,71 @@ describe("the advanced mode is preserved, with its own notice", () => {
     }
   });
 });
+
+describe("§8 row 21: exactly one emphasised answer, in either mode", () => {
+  it("emphasises only the solved quantity, whichever it is", async () => {
+    for (const mode of [
+      "balanceAfter",
+      "monthsNeeded",
+      "contributionNeeded",
+      "advanced",
+    ]) {
+      const html = await render({ defaultMode: mode });
+      expect(
+        (html.match(/md:text-3xl/g) ?? []).length,
+        `mode ${mode}`,
+      ).toBe(1);
+      // And it is the FIRST row of the live region, not a supporting one.
+      expect(
+        html.indexOf("md:text-3xl"),
+        `mode ${mode}`,
+      ).toBeLessThan(html.indexOf(Q.paidLabel) === -1
+        ? html.indexOf(TVM.form.netInterestLabel)
+        : html.indexOf(Q.paidLabel));
+    }
+  });
+
+  it("drops the emphasis when the answer is a sentence, not a figure", async () => {
+    // `ResultRow` ignores `emphasis` whenever `prose` is set, so an
+    // already-funded plan — whose answer is "đã đủ, không cần góp thêm" —
+    // must not be asked for both. Nothing is emphasised there rather than a
+    // supporting figure taking the emphasis by accident.
+    const html = await render({
+      defaultMode: "contributionNeeded",
+      defaultSavings: "900.000.000",
+      defaultGoal: "800.000.000",
+      defaultMonths: "36",
+      defaultRate: "6",
+    });
+    expect(html).toContain(Q.alreadyEnoughLabel);
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(0);
+  });
+
+  it("wires the CTA from the form region to the answer", async () => {
+    const html = await render();
+    expect(html).toContain('aria-controls="gia-tri-tien-te-ket-qua"');
+    expect(html).toContain('id="gia-tri-tien-te-ket-qua"');
+    const form = html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+    expect(form).toContain('data-calc-cta="true"');
+    // The mode radio is inside the form region and ahead of the CTA: "chọn
+    // đại lượng cần tìm trước".
+    expect(form.indexOf(Q.modeLegend)).toBeGreaterThan(-1);
+    expect(form.indexOf(Q.modeLegend)).toBeLessThan(
+      form.indexOf('data-calc-cta="true"'),
+    );
+  });
+
+  it("puts the per-mode detail block below, in the detail region", async () => {
+    for (const [mode, title] of [
+      ["balanceAfter", Q.detailTitle],
+      ["advanced", TVM.form.detailTitle],
+    ] as const) {
+      const html = await render({ defaultMode: mode });
+      const detail = html.slice(html.indexOf('data-calc-region="detail"'));
+      expect(detail, `mode ${mode}`).toContain(title);
+    }
+  });
+});

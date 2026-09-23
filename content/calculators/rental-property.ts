@@ -39,7 +39,10 @@ export const RENTAL_PROPERTY = {
     "Tính dòng tiền hằng tháng, tỷ suất gộp, cap rate, tỷ suất trên vốn tự có và hệ số trả nợ của một căn cho thuê, kèm thuế cho thuê tại Việt Nam. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Bốn con số cùng được gọi là “tỷ suất” nhưng trả lời bốn câu hỏi khác nhau, và lẫn chúng với nhau là cách một căn hộ lỗ tiền mỗi tháng được mô tả thành khoản đầu tư 6%. Công cụ tính cả bốn và nói rõ mỗi con số nghĩa là gì.",
+    "Bốn con số cùng được gọi là “tỷ suất” nhưng trả lời bốn câu hỏi khác nhau. Công cụ tính cả bốn và nói rõ mỗi con số nghĩa là gì.",
+  ledeDetailTitle: "Lẫn bốn con số đó dẫn tới đâu",
+  ledeDetail:
+    "Lẫn chúng với nhau là cách một căn hộ lỗ tiền mỗi tháng được mô tả thành khoản đầu tư 6%: tỷ suất gộp chỉ chia tiền thuê cho giá nhà, không trừ chi phí vận hành và không nhắc tới khoản trả nợ.",
 
   form: {
     purchaseGroup: "Mua nhà",
@@ -89,6 +92,13 @@ export const RENTAL_PROPERTY = {
     vacancyInvalid: "Vui lòng nhập một số từ 0 đến 100.",
     defaultVacancy: "5",
 
+    /*
+     * Its own group for CSV row 18, which asks the form to read as Giá mua /
+     * Thuê / Chi phí / Khoản vay. The operating cost used to sit under "Cho
+     * thuê" beside the rent and the vacancy, where it read as a property of
+     * the letting rather than as the second half of the cash flow.
+     */
+    costGroup: "Chi phí vận hành",
     expensesLabel: "Chi phí vận hành mỗi tháng",
     expensesUnit: "₫",
     expensesHelp:
@@ -319,8 +329,16 @@ export const RENTAL_PROPERTY = {
   // distinction is between the property's OPERATING cash and the owner's cash
   // AFTER debt service; a negative monthly figure says the owner tops it up
   // each month, not that the investment loses money overall.
+  // Visible: that the four numbers can disagree about the same flat, and the
+  // two things this page does NOT count — both are limits a reader needs before
+  // reading a figure. The worked default walk-through reads behind the
+  // disclosure; a browser pass at 390 px measured the first control 882,5 px
+  // down with the whole paragraph above it.
   fourNumbersNotice:
-    "Với các con số mặc định, căn hộ này có tỷ suất gộp 6,00% và cap rate 4,90% — nghe như một khoản đầu tư ổn. Nhưng tỷ suất trên vốn tự có là −3,51% và DSCR là 0,76: tiền thuê chỉ bù được khoảng ba phần tư khoản trả nợ, nên mỗi tháng bạn phải bỏ thêm 3.945.067 ₫ từ thu nhập khác. Tiền thuê ĐỦ để vận hành căn nhà, nhưng KHÔNG đủ để trả nợ — đó là hai câu khác nhau, và dòng tiền âm ở đây không có nghĩa là toàn bộ khoản đầu tư lỗ, vì trang này không cộng phần gốc bạn trả dần thành vốn chủ sở hữu và không giả định giá nhà tăng. Đây là điều tỷ suất gộp không bao giờ cho bạn thấy, và là lý do cần đọc cả bốn dòng.",
+    "Bốn con số có thể nói bốn điều khác nhau về cùng một căn: với các con số mặc định, tỷ suất gộp là 6,00% nhưng tỷ suất trên vốn tự có là −3,51%. Dòng tiền âm ở đây không có nghĩa là toàn bộ khoản đầu tư lỗ: trang này không cộng phần gốc bạn trả dần thành vốn chủ sở hữu và không giả định giá nhà tăng.",
+  fourNumbersDetailTitle: "Bốn con số đó nói gì, với số mặc định",
+  fourNumbersDetail:
+    "Với các con số mặc định, căn hộ này có tỷ suất gộp 6,00% và cap rate 4,90% — nghe như một khoản đầu tư ổn. Nhưng tỷ suất trên vốn tự có là −3,51% và DSCR là 0,76: tiền thuê chỉ bù được khoảng ba phần tư khoản trả nợ, nên mỗi tháng bạn phải bỏ thêm 3.945.067 ₫ từ thu nhập khác. Tiền thuê ĐỦ để vận hành căn nhà, nhưng KHÔNG đủ để trả nợ — đó là hai câu khác nhau. Đây là điều tỷ suất gộp không bao giờ cho bạn thấy, và là lý do cần đọc cả bốn dòng.",
 
   taxVintageNotice:
     "Mức thuế trên đang tính theo ngưỡng 1.000.000.000 ₫ doanh thu mỗi năm cho CẢ HAI loại thuế: thuế GTGT 5% trên toàn bộ doanh thu khi vượt ngưỡng, và thuế TNCN 5% chỉ trên phần vượt mức được trừ. Con số 1 tỷ theo Nghị định 141/2026/NĐ-CP — Điều 1 nâng ngưỡng của Nghị định 68 từ 500 triệu lên 1 tỷ, hiệu lực 01/01/2026 — và hướng dẫn ngày 12/06/2026 về cho thuê nhà áp cho cả hai loại thuế dưới mức doanh thu này. Hai con số vẫn nằm ở hai ô riêng vì đây là hai loại thuế với hai căn cứ khác nhau: hôm nay cùng là 1 tỷ, nhưng mức được trừ của thuế TNCN còn tính CHUNG cho các hợp đồng cho thuê của một người (văn bản trả lời của Bộ Tài chính ngày 14/07/2026, xếp cho thuê nhà không phải lưu trú vào thu nhập kinh doanh theo Luật 109/2025/QH15), nên nếu bạn cho thuê nhiều nơi thì phần được trừ cho riêng căn này nhỏ hơn 1 tỷ. Ngưỡng đã đổi nhiều lần — từ 100 lên 200, lên 500 triệu rồi lên 1 tỷ — nên nếu bạn đọc trang này về sau, hãy tra lại con số hiện hành. Ngoài ra Nghị quyết 43/2026/QH16 (hiệu lực 24/08/2026) giảm 30% thuế TNCN phải nộp của cá nhân cư trú có thu nhập kinh doanh trong năm 2026–2027 nếu doanh thu trong năm không quá 10 tỷ; nghị quyết này không giảm thuế GTGT, và công cụ chỉ áp dụng mức giảm khi bạn tự chọn ở phần thuế. Trang này rà soát ở mức văn bản công bố, không xác định trường hợp cụ thể của bạn và không phải xác nhận nghĩa vụ thuế — xem phần nguồn ở cuối trang.",

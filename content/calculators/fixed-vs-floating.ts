@@ -102,8 +102,28 @@ export const FIXED_VS_FLOATING = {
     // source was verified for that, and docs record the rule that this suite
     // makes no unverified population claim. What IS supportable is the scope
     // of the prefilled figure itself, which is all the reader needs.
+    // ONE VISIBLE SENTENCE. This box sits between the reader and the first
+    // field: at 390×844 the second browser round measured the first input
+    // starting at 887 px with the two-sentence version. The decisive claim —
+    // the scope of the prefilled figure — stays visible; the instruction for
+    // replacing it moves into the disclosure below, which is where a reader
+    // goes once they have their own quote in hand. Nothing is deleted, and no
+    // warning is traded for the number: the page's horizon-and-rate
+    // assumptions are a different element (`reframeNotice`) and are untouched.
     exampleNotice:
-      "Mức lãi cố định 9,5%/năm cho cả 20 năm điền sẵn ở đây là SỐ GIẢ ĐỊNH để minh họa phép so, không phải báo giá của ngân hàng nào và không phải xác nhận rằng có sản phẩm như vậy. Hãy thay bằng đúng báo giá bạn đang có: đúng mức lãi, và đúng thời gian giữ mức lãi đó. Nếu báo giá của bạn là cố định vài năm rồi đổi lãi, bên này nhập được cả hai giai đoạn — xem hướng dẫn ngay dưới.",
+      "Mức lãi cố định 9,5%/năm cho cả 20 năm điền sẵn ở đây là SỐ GIẢ ĐỊNH để minh họa, không phải báo giá của ngân hàng nào và không phải xác nhận rằng có sản phẩm như vậy.",
+    exampleDetailTitle: "Thay bằng báo giá của bạn",
+    exampleDetail:
+      "Hãy thay bằng đúng báo giá bạn đang có: đúng mức lãi, và đúng thời gian giữ mức lãi đó. Nếu báo giá chỉ cố định vài năm rồi đổi, đó là một khoản vay hai giai đoạn — cách nhập ở ngay trong phần của bên đó.",
+    /**
+     * CSV row 15 asks the post-ưu-đãi risk and the cost at the common horizon
+     * to be readable IMMEDIATELY. Both figures already existed — as two of
+     * fifteen rows inside "Xem bảng so sánh từng chỉ tiêu" — so this is the
+     * title of the block that lifts them out beside the answer, not new
+     * arithmetic. The row labels themselves stay in `loan-compare.ts`: it is
+     * the same tool and the same metrics.
+     */
+    riskTitle: "Khoản trả sau ưu đãi và chi phí tại mốc bạn chọn",
     fixedSideHint:
       "Để trống hai ô ưu đãi và điền một mức lãi duy nhất, thì cả kỳ hạn chạy ở mức đó. Nếu báo giá của bạn cố định vài năm rồi đổi lãi, hãy nhập số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi suất ưu đãi”, và mức sau đó vào “Lãi suất” — tên của bên này sẽ đổi theo đúng cấu trúc bạn vừa nhập.",
   },
@@ -125,11 +145,16 @@ export const FIXED_VS_FLOATING = {
   // holding horizon. The break-even framing lives on in the education article,
   // where the table it comes from is drawn — and this notice keeps the part
   // that was always the real point: the verdict is a scenario, not an answer.
+  // THE VISIBLE LINE IS THE LIMIT ITSELF. A browser pass at 390 px measured the
+  // first control 1134 px down this page, with a twelve-line notice above it.
+  // What a reader must know before reading a figure is that the verdict is a
+  // scenario built on a rate they typed; the two-run test for it, and the
+  // pricing of certainty, are what to do next and read behind the disclosure.
   reframeNotice:
-    "Đừng đọc dòng “rẻ nhất tại mốc bạn chọn” như một câu trả lời cuối cùng: nó chỉ đúng với mức lãi sau ưu đãi mà chính bạn vừa nhập, và với đúng mốc bạn vừa chọn. Hãy chạy ít nhất hai lần — một lần với mức lãi sau ưu đãi bạn cho là hợp lý, một lần với mức cao hơn 2–3 điểm phần trăm — rồi xem kết luận có đổi chiều. Nếu có, quyết định của bạn phụ thuộc vào một điều không ai biết trước, và khi đó nên chọn theo khoản trả cao nhất mà bạn gánh được chứ không theo tổng chi phí.",
-  reframeDetailTitle: "Giá của sự chắc chắn, nói bằng con số của bạn",
+    "Đừng đọc dòng “rẻ nhất tại mốc bạn chọn” như một câu trả lời cuối cùng: nó chỉ đúng với mức lãi sau ưu đãi mà chính bạn vừa nhập, và với đúng mốc bạn vừa chọn.",
+  reframeDetailTitle: "Cách thử kết luận, và giá của sự chắc chắn",
   reframeDetail:
-    "Lãi cố định về bản chất là bạn trả thêm một khoản để biết trước khoản trả. Cách định giá khoản đó bằng số của chính bạn: đọc “Chênh lệch với phương án đắt nhất” ở mốc bạn chọn — đó là phần bạn trả thêm (hoặc tiết kiệm được) trong kịch bản này — rồi mở bảng chi tiết và so hai dòng khoản trả. Phần chênh về chi phí là điều chưa chắc; mức tăng khoản trả khi hết ưu đãi thì gần như chắc chắn. Nếu khoản trả cao nhất của bên thả nổi vượt ngân sách của bạn, thì phần chênh của bên cố định đang mua một thứ có giá trị — kể cả khi về tổng chi phí nó đắt hơn.",
+    "Hãy chạy ít nhất hai lần — một lần với mức lãi sau ưu đãi bạn cho là hợp lý, một lần với mức cao hơn 2–3 điểm phần trăm — rồi xem kết luận có đổi chiều. Nếu có, quyết định của bạn phụ thuộc vào một điều không ai biết trước, và khi đó nên chọn theo khoản trả cao nhất mà bạn gánh được chứ không theo tổng chi phí. Lãi cố định về bản chất là bạn trả thêm một khoản để biết trước khoản trả. Cách định giá khoản đó bằng số của chính bạn: đọc “Chênh lệch với phương án đắt nhất” ở mốc bạn chọn — đó là phần bạn trả thêm (hoặc tiết kiệm được) trong kịch bản này — rồi mở bảng chi tiết và so hai dòng khoản trả. Phần chênh về chi phí là điều chưa chắc; mức tăng khoản trả khi hết ưu đãi thì gần như chắc chắn. Nếu khoản trả cao nhất của bên thả nổi vượt ngân sách của bạn, thì phần chênh của bên cố định đang mua một thứ có giá trị — kể cả khi về tổng chi phí nó đắt hơn.",
 
   formula: {
     title: "Cách tính",

@@ -43,10 +43,19 @@ describe("refinance chart: two signed ledgers, kept apart", () => {
     expect(result.breakEvenMonths).not.toBe(result.cashFlowBreakEvenMonths);
     expect(markers).toContain(`Chi phí bù đủ phí lần đầu: tháng ${result.breakEvenMonths}`);
     expect(markers).toContain(`Tiền đã chi bù đủ phí lần đầu: tháng ${result.cashFlowBreakEvenMonths}`);
-    // And the summary says they are two different months, so one cannot be
-    // read as the other.
-    expect(model.summary).toContain("Hai mốc khác nhau");
+    // And the two months are still stated as two, so one cannot be read as
+    // the other — in the figure's labelled disclosure, §8b, because the
+    // caption above the plot was five sentences. What stays visible is the
+    // pair of markers above and what a negative value means on each line.
+    expect(model.detail?.title).toBe(labels.detailTitle);
+    expect(model.detail?.body).toContain("Hai mốc khác nhau");
+    expect(model.detail?.body).toContain("Chênh lệch tiền đã chi tại mốc đó");
+    expect(model.detail?.body).not.toMatch(/\{\w+\}/);
+    expect(model.summary).not.toContain("Hai mốc khác nhau");
     expect(model.summary).not.toMatch(/\{\w+\}/);
+    // The sign guard is NOT in the disclosure: it decides how the picture is
+    // read at all.
+    expect(model.summary).toContain("chưa nói gì về lợi ích kinh tế");
   });
   it("all-negative costs remain negative, with a centered zero line", () => {
     const result = compareRefinance({ ...base, currentRatePercent: 8.5, remainingMonths: 120, newTermMonths: 240 })!;
@@ -99,14 +108,19 @@ describe("shared signed line geometry with zero-default compatibility", () => {
     expect(yFor(100, 100, PLOT, -100)).toBe(PLOT.top);
     expect(yFor(0, 100, PLOT)).toBe(PLOT.bottom);
   });
+  // The literals below moved with `PLOT` on 2026-09-21, when the box grew into
+  // the space the svg tick glyphs used to need: bottom 168 → 210, so the
+  // midpoint is 110 rather than 89. Kept LITERAL rather than recomputed from
+  // `yFor`, which is the function under test — the point is that a real path
+  // string comes out with the negative end at the floor and zero in the middle.
   it("draws negative and positive points, not a clipped negative flatline", () => {
     const p = [{ period: 0, value: -100 }, { period: 1, value: 0 }, { period: 2, value: 100 }];
-    expect(linePath(p, 2, 100, PLOT, false, -100)).toBe("M 42 168 L 197 89 L 352 10");
-    expect(linePath(p, 2, 100, PLOT, true, -100)).toBe("M 42 168 L 197 168 L 197 89 L 352 89 L 352 10");
-    expect(areaPath(p, 2, 100, PLOT, false, -100)).toContain("L 352 89 L 42 89 Z");
+    expect(linePath(p, 2, 100, PLOT, false, -100)).toBe("M 42 210 L 197 110 L 352 10");
+    expect(linePath(p, 2, 100, PLOT, true, -100)).toBe("M 42 210 L 197 210 L 197 110 L 352 110 L 352 10");
+    expect(areaPath(p, 2, 100, PLOT, false, -100)).toContain("L 352 110 L 42 110 Z");
   });
   it("also maps an all-negative domain ending at zero", () => {
-    expect(yFor(-50, 0, PLOT, -100)).toBe(89);
-    expect(linePath([{ period: 0, value: -100 }, { period: 1, value: 0 }], 1, 0, PLOT, false, -100)).toBe("M 42 168 L 352 10");
+    expect(yFor(-50, 0, PLOT, -100)).toBe(110);
+    expect(linePath([{ period: 0, value: -100 }, { period: 1, value: 0 }], 1, 0, PLOT, false, -100)).toBe("M 42 210 L 352 10");
   });
 });

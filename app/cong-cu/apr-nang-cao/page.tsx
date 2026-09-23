@@ -23,14 +23,20 @@ export default function AprAdvancedPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // APR assumes the loan runs to term, and Vietnamese mortgages usually
-      // do not. Which of the two APR rows applies to the reader.
+      // do not. Which of the two APR rows applies to the reader, visibly; the
+      // worked illustration — which the tool itself computes — collapses.
       notice={C.payoffNotice}
+      noticeDetail={C.payoffDetail}
+      noticeDetailTitle={C.payoffDetailTitle}
       // Same tool, same accurate qualification: this page's fees are IN the
       // APR, so the shared "fees excluded" disclaimer would contradict it.
       disclaimer={APR.disclaimer}
       prose={C.formula}
       faq={C.faq}
+      wide
     >
       <AprAdvancedCalculator />
     </CalculatorPage>

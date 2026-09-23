@@ -35,7 +35,7 @@ const LABELS = {
   indexNote: "Sức mua quy về giá hôm nay theo chỉ số trơn.",
   partialNote:
     "Chỉ {full} lần rút được trả đủ: lần cuối cần {planned} nhưng chỉ còn {paid}, thiếu {short}.",
-  noInflationNote: "Lạm phát bằng 0 nên hai đường trùng nhau.",
+  coincidentLinesNote: "Hai đường trùng nhau nên bạn chỉ thấy một đường.",
   itemColumn: "Khoản",
   amountColumn: "Số tiền",
   monthRow: "Tháng",
@@ -146,7 +146,45 @@ describe("the other states", () => {
   it("says the lines coincide when inflation is zero", () => {
     const flat = computeWithdrawal({ ...INPUT, inflationPercent: 0 })!;
     const model = withdrawalChartModel(flat, LABELS);
-    expect(model.summary).toContain(LABELS.noInflationNote);
+    expect(model.summary).toContain(LABELS.coincidentLinesNote);
+  });
+
+  it("says the same thing on an early depletion, and diagnoses nothing", () => {
+    // The defect: the note was worded as "Bạn đang đặt lạm phát bằng 0" and
+    // mounted on `series.every(balance === realBalance)`. A plan that
+    // depletes in month 1 draws only month 0 and a terminal 0, which agree
+    // at ANY inflation — so the page told a reader who entered 4 that they
+    // had entered 0, beside a real return of 3,8462%.
+    const early = computeWithdrawal({
+      ...INPUT,
+      balance: 1_000_000,
+      monthlyWithdrawal: 30_000_000,
+    })!;
+    expect(early.monthsLasted).toBe(1);
+    expect(early.series).toHaveLength(2);
+    expect(early.realReturnPercent).toBeCloseTo(3.8461538, 6);
+    // The condition still holds, so the note still renders...
+    const model = withdrawalChartModel(early, LABELS);
+    expect(model.summary).toContain(LABELS.coincidentLinesNote);
+    // ...and the module never gets the inflation entry, so nothing it emits
+    // may name one. This is why the copy describes the drawing instead.
+    expect(withdrawalChartModel.length).toBe(2);
+  });
+
+  it("reports the last payment as partial rather than as the planned amount", () => {
+    // Same case: the plan asked for the full 30.000.000 ₫ in month 1 — its
+    // FIRST year, so no annual adjustment ever applied — and paid 1.006.434.
+    const early = computeWithdrawal({
+      ...INPUT,
+      balance: 1_000_000,
+      monthlyWithdrawal: 30_000_000,
+    })!;
+    expect(early.lastWithdrawalPlanned).toBe(30_000_000);
+    expect(early.finalMonthlyWithdrawal).toBe(30_000_000);
+    expect(early.fullWithdrawals).toBe(0);
+    const model = withdrawalChartModel(early, LABELS);
+    expect(model.summary).toContain("Chỉ 0 lần rút được trả đủ");
+    expect(model.summary).toContain("1.006.434 ₫");
   });
 
   it("marks the cap instead of an end when the money never runs out", () => {

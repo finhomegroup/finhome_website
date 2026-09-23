@@ -23,9 +23,11 @@
  *   the more likely of the two in a real session. At exactly the bound the
  *   yield solves to 1000%/năm; a hair under it is null.
  *
- * `form.unsolvableNotice` in content/calculators/bond.ts hedges with "thường
- * là do giá quá cao", which covers the first case only — the too-LOW price
- * lands on the same notice.
+ * `form.unsolvableNotice` in content/calculators/bond.ts used to hedge with
+ * "thường là do giá quá cao", which named the unreachable end and left the
+ * reachable one unexplained. It now names the too-LOW price and the unit
+ * mix-up that causes it. Both ends still land on the one notice; that is
+ * fine, because only one of them can be reached by typing.
  *
  * Conventions, all of which change the answer:
  *

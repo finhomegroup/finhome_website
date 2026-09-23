@@ -1,6 +1,8 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -139,7 +141,26 @@ function remedyRows(
  *    states what it forgave. See `retirement-savings-analysis-render.test.ts`
  *    for the reproduction.
  */
-export function RetirementSavingsAnalysisCalculator() {
+/*
+ * CSV row 50 ("Hai cột"): the shortfall and the ways to close it read as one
+ * answer. The remedy table is the first thing under the figure, and the
+ * capital re-statement — reached vs required, real and nominal — drops below
+ * it, because "đọc lại toàn bộ kế hoạch" was the cost of having it second.
+ * Docs §8.
+ */
+const FORM_ID = "phan-tich-tiet-kiem-huu-tri-nhap";
+const RESULT_ID = "phan-tich-tiet-kiem-huu-tri-ket-qua";
+
+export function RetirementSavingsAnalysisCalculator({
+  actions,
+}: {
+  /**
+   * `<LongTermViews current="gap">`, in the `actions` slot — after the answer,
+   * before the figure. See `RetirementPlanCalculator` for why the set crosses
+   * whole rather than being trimmed to two views.
+   */
+  actions?: React.ReactNode;
+}) {
   const fields = useCalcFields(L.defaults);
   const read = readRetirement(fields.values);
   const plan = read.input === null ? null : resolveLongTermPlan(read.input);
@@ -208,145 +229,193 @@ export function RetirementSavingsAnalysisCalculator() {
         }
       : null;
 
+  const shortfall = gap === null ? null : longTermMoney(gap.realShortfall);
+
   return (
     <CalculatorCard>
-      <RetirementFields
-        copy={L.fields}
-        invalid={read.invalid}
-        bind={fields.bind}
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <RetirementFields
+            copy={L.fields}
+            invalid={read.invalid}
+            bind={fields.bind}
+          />
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={read.input === null}
+            // Eleven fields, so the button leaves the first screen while the
+            // form is still being filled.
+            sticky
+            answer={{ label: F.gapRealLabel, value: shortfall }}
+          />
+        }
+        primary={
+          <>
+            {/* The verdict, the coverage, the money missing and the age it runs
+                out sit together on purpose: the last one is what stops the
+                coverage from being read as a comfort level. Optional rows are
+                MOUNTED conditionally rather than nulled — `ResultRow` renders a
+                dash beside its label, which reads as a figure the tool failed
+                to find. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={F.verdictLabel}
+                value={
+                  gap === null ? null : funded ? F.verdictYes : F.verdictNo
+                }
+              />
+              {/* Left out entirely when no capital is needed: other income
+                  already covers the spend, `coveragePercent` is null, and
+                  "100% đáp ứng" and "không có gì phải đáp ứng" are different
+                  statements. */}
+              {gap !== null && gap.coveragePercent !== null ? (
+                <ResultRow
+                  label={F.coverageLabel}
+                  value={formatPercent(gap.coveragePercent, 1)}
+                />
+              ) : null}
+              <ResultRow label={F.gapRealLabel} value={shortfall} emphasis />
+              {depletionAge !== null ? (
+                <ResultRow
+                  label={F.depletionLabel}
+                  value={String(depletionAge)}
+                />
+              ) : null}
+            </ResultGroup>
+
+            {/* The one remedy a reader wants per month, with the label saying
+                which of the two figures it is. `monthlyEquivalent` is
+                `annual / 12` — a budgeting equivalence, not a payment schedule
+                that reaches the same balance, because twelve month-end deposits
+                land behind one January deposit. The model names it that way so
+                a consumer has to notice. Kept BESIDE the shortfall, not in the
+                detail region: it is the cheapest way to act on the figure
+                above it. */}
+            {contributeDetail !== null ? (
+              <ResultGroup
+                title={F.contributeTitle}
+                className="mt-4"
+                live={false}
+              >
+                <ResultRow
+                  label={F.contributeAnnualLabel}
+                  value={longTermMoney(contributeDetail.annual)}
+                />
+                <ResultRow
+                  label={F.contributeMonthlyLabel}
+                  value={longTermMoney(contributeDetail.monthly)}
+                />
+              </ResultGroup>
+            ) : null}
+
+            {gap !== null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {funded ? F.fundedNotice : F.gapNotice}
+              </p>
+            ) : null}
+
+            {/* What the boundary policy forgave, in đồng. Six decimal places:
+                the residue is a fraction of one đồng by construction, and
+                rounding it to the đồng would render the disclosure as
+                "0 ₫". */}
+            {boundary?.residue !== null && boundary?.residue !== undefined ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {fill(F.boundaryNotice, {
+                  residue: formatMoney(boundary.residue, 6),
+                })}
+              </p>
+            ) : null}
+
+            {/* Short, and neither remedy that PRESERVES the spend reaches it —
+                so the only lever left is the spend itself. Read off the same
+                two `available` flags the table's cells are, not a second copy
+                of the rule, and distinct from both a funded plan and an invalid
+                form. */}
+            {gap !== null && !funded && onlySpendLess ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.onlySpendLessNotice}
+              </p>
+            ) : null}
+
+            {gap === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        actions={actions}
+        detail={
+          <>
+            {rows.length > 0 ? (
+              <>
+                <p className="text-sm leading-relaxed text-ink-3">{R.intro}</p>
+                {/* Three columns, and `mobileCards` below `md`. The six-column
+                    age sweep this replaced put nine-digit đồng figures behind a
+                    horizontal scroll at 390 px; the same measurement retired
+                    row 44's seven-column table. A prose first column plus two
+                    money columns still reads better as one block per remedy on
+                    a phone. */}
+                <ResultTable
+                  className="mt-4"
+                  caption={R.caption}
+                  columns={[
+                    { label: R.wayColumn },
+                    { label: R.targetColumn, numeric: true },
+                    { label: R.changeColumn, numeric: true },
+                  ]}
+                  rows={rows}
+                  mobileCards
+                />
+              </>
+            ) : null}
+
+            {/* The plan re-stated. Below the remedies, because a reader who has
+                the shortfall and a way to close it does not need it to act. */}
+            <ResultGroup title={F.capitalTitle} className="mt-8" live={false}>
+              <ResultRow
+                label={F.reachedRealLabel}
+                value={
+                  gap === null ? null : longTermMoney(gap.realBalanceReached)
+                }
+              />
+              <ResultRow
+                label={F.requiredRealLabel}
+                value={
+                  gap === null ? null : longTermMoney(gap.realBalanceRequired)
+                }
+              />
+              <ResultRow
+                label={F.reachedNominalLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.balanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.requiredNominalLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.requiredBalanceAtRetirement)
+                }
+              />
+              {result !== null && !funded && result.yearsShort > 0 ? (
+                <ResultRow
+                  label={F.yearsShortLabel}
+                  value={`${result.yearsShort} ${F.yearsUnit}`}
+                />
+              ) : null}
+            </ResultGroup>
+          </>
+        }
       />
-
-      {/* The verdict, the coverage, the money missing and the age it runs out
-          sit together on purpose: the last one is what stops the coverage from
-          being read as a comfort level. Optional rows are MOUNTED
-          conditionally rather than nulled — `ResultRow` renders a dash beside
-          its label, which reads as a figure the tool failed to find. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.verdictLabel}
-          value={gap === null ? null : funded ? F.verdictYes : F.verdictNo}
-        />
-        {/* Left out entirely when no capital is needed: other income already
-            covers the spend, `coveragePercent` is null, and "100% đáp ứng" and
-            "không có gì phải đáp ứng" are different statements. */}
-        {gap !== null && gap.coveragePercent !== null ? (
-          <ResultRow
-            label={F.coverageLabel}
-            value={formatPercent(gap.coveragePercent, 1)}
-          />
-        ) : null}
-        <ResultRow
-          label={F.gapRealLabel}
-          value={gap === null ? null : longTermMoney(gap.realShortfall)}
-        />
-        {depletionAge !== null ? (
-          <ResultRow label={F.depletionLabel} value={String(depletionAge)} />
-        ) : null}
-      </ResultGroup>
-
-      <ResultGroup title={F.capitalTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.reachedRealLabel}
-          value={gap === null ? null : longTermMoney(gap.realBalanceReached)}
-        />
-        <ResultRow
-          label={F.requiredRealLabel}
-          value={gap === null ? null : longTermMoney(gap.realBalanceRequired)}
-        />
-        <ResultRow
-          label={F.reachedNominalLabel}
-          value={
-            result === null ? null : longTermMoney(result.balanceAtRetirement)
-          }
-        />
-        <ResultRow
-          label={F.requiredNominalLabel}
-          value={
-            result === null
-              ? null
-              : longTermMoney(result.requiredBalanceAtRetirement)
-          }
-        />
-        {result !== null && !funded && result.yearsShort > 0 ? (
-          <ResultRow
-            label={F.yearsShortLabel}
-            value={`${result.yearsShort} ${F.yearsUnit}`}
-          />
-        ) : null}
-      </ResultGroup>
-
-      {/* The one remedy a reader wants per month, with the label saying which
-          of the two figures it is. `monthlyEquivalent` is `annual / 12` — a
-          budgeting equivalence, not a payment schedule that reaches the same
-          balance, because twelve month-end deposits land behind one January
-          deposit. The model names it that way so a consumer has to notice. */}
-      {contributeDetail !== null ? (
-        <ResultGroup title={F.contributeTitle} className="mt-4" live={false}>
-          <ResultRow
-            label={F.contributeAnnualLabel}
-            value={longTermMoney(contributeDetail.annual)}
-          />
-          <ResultRow
-            label={F.contributeMonthlyLabel}
-            value={longTermMoney(contributeDetail.monthly)}
-          />
-        </ResultGroup>
-      ) : null}
-
-      {rows.length > 0 ? (
-        <>
-          <p className="mt-8 text-sm leading-relaxed text-ink-3">{R.intro}</p>
-          {/* Three columns, and `mobileCards` below `md`. The six-column age
-              sweep this replaced put nine-digit đồng figures behind a
-              horizontal scroll at 390 px; the same measurement retired row
-              44's seven-column table. A prose first column plus two money
-              columns still reads better as one block per remedy on a phone. */}
-          <ResultTable
-            className="mt-4"
-            caption={R.caption}
-            columns={[
-              { label: R.wayColumn },
-              { label: R.targetColumn, numeric: true },
-              { label: R.changeColumn, numeric: true },
-            ]}
-            rows={rows}
-            mobileCards
-          />
-        </>
-      ) : null}
-
-      {gap !== null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {funded ? F.fundedNotice : F.gapNotice}
-        </p>
-      ) : null}
-
-      {/* What the boundary policy forgave, in đồng. Six decimal places: the
-          residue is a fraction of one đồng by construction, and rounding it to
-          the đồng would render the disclosure as "0 ₫". */}
-      {boundary?.residue !== null && boundary?.residue !== undefined ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {fill(F.boundaryNotice, {
-            residue: formatMoney(boundary.residue, 6),
-          })}
-        </p>
-      ) : null}
-
-      {/* Short, and neither remedy that PRESERVES the spend reaches it — so
-          the only lever left is the spend itself. Read off the same two
-          `available` flags the table's cells are, not a second copy of the
-          rule, and distinct from both a funded plan and an invalid form. */}
-      {gap !== null && !funded && onlySpendLess ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.onlySpendLessNotice}
-        </p>
-      ) : null}
-
-      {gap === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
     </CalculatorCard>
   );
 }

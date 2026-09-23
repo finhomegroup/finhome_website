@@ -14,7 +14,8 @@
  * Server-rendered with `renderToStaticMarkup`. Nothing here is a visual check.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
+import { markupRegion } from "@/lib/markup-region";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { COMPOUND } from "@/content/calculators/compound";
 import { MAX_COMPOUND_YEARS } from "@/lib/calc/compound";
@@ -23,7 +24,10 @@ const CONTENT = "@/content/calculators/compound";
 
 type FormPatch = Partial<Record<keyof typeof COMPOUND.form, string>>;
 
-async function render(patch?: FormPatch): Promise<string> {
+async function render(
+  patch?: FormPatch,
+  props?: { nextSteps?: ReactNode },
+): Promise<string> {
   vi.resetModules();
   if (patch) {
     vi.doMock(CONTENT, async () => {
@@ -40,7 +44,9 @@ async function render(patch?: FormPatch): Promise<string> {
   }
   try {
     const loaded = await import("@/components/compound-calculator");
-    return renderToStaticMarkup(createElement(loaded.CompoundCalculator));
+    return renderToStaticMarkup(
+      createElement(loaded.CompoundCalculator, props ?? null),
+    );
   } finally {
     vi.doUnmock(CONTENT);
     vi.resetModules();
@@ -188,5 +194,72 @@ describe("the term bound and its recovery", () => {
   it("accepts the bound itself", async () => {
     const html = await render({ defaultYears: String(MAX_COMPOUND_YEARS) });
     expect(html).not.toContain(C.yearsInvalid);
+  });
+});
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the bugs a textual bound
+ * produces, and `detail` is the last region, so a marker-to-marker slice would
+ * run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 19: the three figures beside the form, the chart before the prose", () => {
+  it("puts contributions, interest and the closing balance beside the form", async () => {
+    const html = await render();
+    expect(html).toContain("lg:grid-cols-5");
+    const result = regionOf(html, "result");
+    expect(result).toContain(C.contributedLabel);
+    expect(result).toContain(C.interestLabel);
+    expect(result).toContain(C.futureValueLabel);
+  });
+
+  it("emphasises the closing balance, and only it", async () => {
+    const html = await render();
+    expect(html.split("md:text-3xl").length - 1).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(C.futureValueLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(C.contributedLabel));
+  });
+
+  it("answers with those three only, and explains compounding in detail", async () => {
+    const html = await render();
+    // A browser pass at 390 px read five rows here. The effective rate and the
+    // period count explain how the closing balance was reached rather than
+    // answering "how much will I have", so they read behind a label.
+    const result = regionOf(html, "result");
+    expect(result).not.toContain(C.effectiveRateLabel);
+    expect(result).not.toContain(C.periodsLabel);
+    const detail = regionOf(html, "detail");
+    expect(detail).toContain(C.detailToggle);
+    expect(detail).toContain(C.effectiveRateLabel);
+    expect(detail).toContain(C.periodsLabel);
+  });
+
+  it("keeps the chart inside the tool, above the method prose", async () => {
+    const html = await render();
+    // "Biểu đồ đứng trước giải thích dài": the chart now renders in the tool's
+    // own result region, and `CalculatorPage` renders `children` before both
+    // `intro` and `prose`, so the long explanation cannot precede it.
+    const result = regionOf(html, "result");
+    expect(result).toContain("<figure");
+    expect(result).toContain(COMPOUND.chart.title);
+  });
+
+  it("keeps the next step beside the answer", async () => {
+    const html = await render(undefined, { nextSteps: "NEXT-STEPS-MARKER" });
+    expect(regionOf(html, "result")).toContain("NEXT-STEPS-MARKER");
+  });
+
+  it("gives the route a CTA and exactly one live region", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="lai-kep-ket-qua"');
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
   });
 });

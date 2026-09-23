@@ -2,6 +2,15 @@
 
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
+**And read `docs/finhome-tools-ux-2026-09-21.md` too if you are moving a tool's LAYOUT,
+its result hierarchy, its entry copy or its call to action.** That document owns the
+2026-09-21 audit's region/CTA/readability contracts and the per-tool checklist for all
+76 routes; this one still owns the formulas, the four number grammars, the live-region
+rules and the disclaimer. Where they disagree about arithmetic, a parser, a live region
+or a disclaimer, THIS document wins — that pass changed no formula and no default input.
+Three components gained props on 2026-09-21 and are documented there rather than here:
+`ResultGroup`'s `anchorId`, `ResultRow`'s `emphasis`, and `CalculatorPage`'s `wide`.
+
 Last updated: 2026-09-15
 Branch: `main` at `5096360` — calculator suite integrated on top of the
 2026-09-15 upstream (branding, two new news posts, planning-only homepage).

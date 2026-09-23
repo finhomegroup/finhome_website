@@ -279,21 +279,39 @@ describe.each(TOOLS)(
       // key could be drawn in a colour no swatch carried. Both now read
       // `paletteIndexByKey`, and the palette has four slots — so every fill
       // in the markup must be one the legend is also drawing from.
+      //
+      // The legend's mark is now an `<svg>` of its own — it carries the
+      // slot's TEXTURE as well as its colour, which a `bg-*` background
+      // could not — so the swatch colours are read out of those marks. The
+      // comparison is direct: both sides are `fill-*` classes from the one
+      // `SERIES_FILL` list, with no `bg-`/`fill-` translation in between.
       const swatches = new Set(
-        [...markup.matchAll(/class="size-2\.5 shrink-0 rounded-sm (bg-[\w-/]+)"/g)]
-          .map((match) => match[1]),
+        [
+          ...markup.matchAll(
+            /viewBox="0 0 10 10"[\s\S]*?class="(fill-[\w-/]+)"/g,
+          ),
+        ].map((match) => match[1]),
       );
       const plotFills = new Set(
         [...markup.matchAll(/class="(fill-[\w-/]+)"/g)]
           .map((match) => match[1])
-          // The bar track is chrome, not a data segment.
-          .filter((fill) => fill !== "fill-bg-soft"),
+          // The bar track is chrome, not a data segment; `fill-ink` is the
+          // texture marks, which are a shape channel and not a palette slot.
+          .filter((fill) => fill !== "fill-bg-soft" && fill !== "fill-ink"),
       );
-      for (const fill of plotFills) {
-        const swatch = fill.replace(/^fill-/, "bg-");
+      // Guard against the regexes above silently matching nothing: a figure
+      // that draws palette fills MUST have marks carrying them. A line-only
+      // figure legitimately has neither, and is left alone.
+      if (plotFills.size > 0) {
         expect(
-          swatches.has(swatch),
-          `${fill} is drawn but ${swatch} is in no legend entry`,
+          swatches.size,
+          "plot fills are drawn but no legend mark carries one",
+        ).toBeGreaterThan(0);
+      }
+      for (const fill of plotFills) {
+        expect(
+          swatches.has(fill),
+          `${fill} is drawn but is in no legend entry`,
         ).toBe(true);
       }
     });
@@ -372,9 +390,23 @@ describe("the mortgage chart in detail", () => {
   it("draws one column per year and a balance line", async () => {
     const markup = await loan();
     // 20 years × 2 stacked segments, plus the bar-track rects a bar chart
-    // would add (there are none here) — so exactly 40 rects.
+    // would add (there are none here) — so 40 DATA rects. Counted as a
+    // derivation rather than a literal, because the total is now 62 and a
+    // literal would say nothing about which part moved:
+    //
+    //   40  one per segment, coloured from its palette slot
+    // + 20  the texture overlay on the interest segment: slot 1 is the
+    //       striped one and slot 0 is plain by design, so exactly one of
+    //       each column's two segments gets a second rect
+    // +  2  the two legend marks, which became `<svg>` boxes when they had
+    //       to carry the texture as well as the colour
+    const columns = 20;
+    const segments = 2;
+    const textured = columns; // one of the two slots is the plain one
+    const legendMarks = 2;
     const rects = count(markup, "<rect");
-    expect(rects).toBe(40);
+    expect(rects).toBe(columns * segments + textured + legendMarks);
+    expect(rects).toBe(62);
     // And one dashed overlay path for the balance.
     expect(markup).toMatch(/stroke-dasharray="6 4"/);
   });

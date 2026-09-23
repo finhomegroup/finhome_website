@@ -332,3 +332,163 @@ describe("LoanCalculator — the extra payment is progressive disclosure", () =>
     expect(html).not.toContain("17.356.465 ₫");
   });
 });
+
+/**
+ * The 2026-09-21 UX pass on this route, which is audit CSV row 3: "Đặt khoản
+ * cần trả mỗi tháng và biểu đồ gốc/lãi cạnh form; giữ đường sang lãi sau ưu
+ * đãi."
+ *
+ * Every financial contract in the sections above is untouched by it and is
+ * what proves nothing moved: the instalment, the cash-out sum, the 187th
+ * month, the first-year figures under flat principal and the one live region
+ * all still hold at the same values.
+ *
+ * NOT A VISUAL CHECK. The class assertion says the class is emitted.
+ */
+describe("LoanCalculator — row 3's layout, CTA and hierarchy", () => {
+  /** The instalment at the shipped defaults: 2 tỷ, 8,5%, 240 months, annuity. */
+  const LOAN_MONTHLY = "17.356.465 ₫";
+
+  const regions = (html: string) =>
+    [...html.matchAll(/data-calc-region="([a-z]+)"/g)].map((m) => m[1]);
+
+  it("renders form, then result, then detail", async () => {
+    expect(regions(await render())).toEqual(["form", "result", "detail"]);
+  });
+
+  it("asks for the 40/60 split", async () => {
+    expect(await render()).toContain("lg:col-span-2");
+  });
+
+  it("puts the instalment and the gốc/lãi figure beside the form", async () => {
+    // Both halves of the CSV action's first clause, on rendered markup.
+    const { LOAN } = await vi.importActual<typeof import("@/content/calculators/loan")>(
+      CONTENT,
+    );
+    const html = await render();
+    const result = html.slice(
+      html.indexOf('data-calc-region="result"'),
+      html.indexOf('data-calc-region="detail"'),
+    );
+    expect(result).toContain(LOAN.form.monthlyPaymentLabel);
+    expect(result).toContain("17.356.465 ₫");
+    expect(result).toContain("<figure");
+    // The granularity control travels with the figure, because it changes what
+    // is drawn rather than what is computed.
+    expect(result).toContain(LOAN.chart.granularityLegend);
+  });
+
+  it("keeps the four-column year table full width, out of either column", async () => {
+    // The approved layout is explicit that a wide table may not be squeezed
+    // into a 40% or 60% track. The chart's own `<details>` table stays with
+    // the chart — it is the figure's text alternative, not a schedule — so the
+    // assertion is about the YEAR table specifically, by its caption.
+    const { LOAN } = await vi.importActual<typeof import("@/content/calculators/loan")>(
+      CONTENT,
+    );
+    const html = await render();
+    const detailAt = html.indexOf('data-calc-region="detail"');
+    expect(detailAt).toBeGreaterThan(-1);
+    expect(html.indexOf(LOAN.table.caption)).toBeGreaterThan(detailAt);
+    expect(html.slice(detailAt)).toContain(LOAN.form.detailTitle);
+  });
+
+  it("emphasises the instalment and only the instalment", async () => {
+    const { LOAN } = await vi.importActual<typeof import("@/content/calculators/loan")>(
+      CONTENT,
+    );
+    const html = await render();
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    const emphasisAt = html.indexOf("md:text-3xl");
+    expect(html.indexOf(LOAN.form.monthlyPaymentLabel)).toBeLessThan(
+      emphasisAt,
+    );
+    expect(emphasisAt).toBeLessThan(html.indexOf(LOAN.form.totalInterestLabel));
+  });
+
+  it("wires the CTA from the form region to the answer", async () => {
+    const html = await render();
+    expect(html).toContain('aria-controls="vay-mua-nha-ket-qua"');
+    expect(html).toContain('id="vay-mua-nha-ket-qua"');
+    expect(html).toContain('aria-labelledby="vay-mua-nha-ket-qua-title"');
+    const form = html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+    expect(form).toContain('data-calc-cta="true"');
+  });
+
+  it("switches the CTA note to the recovery on a malformed field", async () => {
+    const { TOOL_SHELL } = await vi.importActual<
+      typeof import("@/content/calculators/tool-shell")
+    >("@/content/calculators/tool-shell");
+    const good = await render();
+    const bad = await render("abc");
+    expect(good).toContain(TOOL_SHELL.cta.autoNote);
+    expect(bad).toContain(TOOL_SHELL.cta.invalidNote);
+    expect(bad).not.toContain(TOOL_SHELL.cta.autoNote);
+  });
+
+  it("invents no next step of its own", async () => {
+    // `ToolNextSteps` is passed in from the route, so a bare render shows
+    // none. The entry in `next-steps.ts` is unchanged and nothing was added.
+    const html = await render();
+    expect(html).not.toContain("Bước tiếp theo");
+  });
+
+  it("pins a short current-answer block carrying the same string", async () => {
+    const { LOAN } = await vi.importActual<typeof import("@/content/calculators/loan")>(
+      CONTENT,
+    );
+    const html = await render();
+    expect(html).toContain('data-calc-answer="true"');
+    // `fh-cta-pin`, not `lg:sticky`: pinning is gated on viewport HEIGHT in
+    // `app/globals.css`, because a 768px-tall desktop had no room for it.
+    expect(html).toContain("fh-cta-pin");
+    // The pinned block carries the instalment, and carries it in the SAME
+    // formatting the primary row uses — one `money()` call site read twice,
+    // never two formattings of one value. Sliced rather than counted: at the
+    // defaults the planned-outflow row legitimately shows the same amount
+    // under its own label, because there is no extra payment.
+    const answerAt = html.indexOf('data-calc-answer="true"');
+    expect(answerAt).toBeGreaterThan(-1);
+    const block = html.slice(answerAt, html.indexOf("</p>", answerAt));
+    expect(block).toContain(LOAN_MONTHLY);
+    expect(block).toContain(LOAN.form.monthlyPaymentLabel);
+    // Hidden from assistive technology: the live region owns the
+    // announcement. Still one live region, one anchor id.
+    expect((html.match(/data-results-live="true"/g) ?? []).length).toBe(1);
+    expect((html.match(/id="vay-mua-nha-ket-qua"/g) ?? []).length).toBe(1);
+  });
+
+  it("condenses the fixed-rate introduction without dropping either truth", async () => {
+    const { LOAN } = await vi.importActual<typeof import("@/content/calculators/loan")>(
+      CONTENT,
+    );
+    // The limitation, intact and still hedged the careful way.
+    expect(LOAN.floatingRateNotice).toContain("thả nổi");
+    expect(LOAN.floatingRateNotice).toContain("có thể thay đổi");
+    expect(LOAN.floatingRateNotice).not.toContain("sẽ tăng");
+    // The no-transfer truth, intact in one sentence instead of three.
+    expect(LOAN.floatingRateLinkNote).toContain("KHÔNG chuyển sang");
+    expect(LOAN.floatingRateLinkNote).toContain("không lưu");
+    expect(LOAN.floatingRateLinkNote.length).toBeLessThan(120);
+    // The instruction that left the visible notice is present in the panel.
+    expect(LOAN.floatingRateDetail).toContain("hỏi ngân hàng");
+  });
+
+  it("keeps the route to the floating-rate tool on the page, twice over", () => {
+    // "Giữ đường sang lãi sau ưu đãi." Asserted on the route's source because
+    // the page imports the site chrome and is not renderable in this
+    // environment: the link inside the fixed-rate notice, where the question
+    // arises, and the next-steps block now rendered under the answer.
+    const page = readFileSync("app/cong-cu/vay-mua-nha/page.tsx", "utf8");
+    expect(page).toContain("FLOATING_LOAN.slug");
+    expect(page).toContain("floatingRateLinkLabel");
+    // Exactly one next-steps element, so moving it into the tool did not leave
+    // a copy behind in the page body.
+    expect((page.match(/<ToolNextSteps/g) ?? []).length).toBe(1);
+    // And the tool's own box is the wide one, which is what the split needs.
+    expect(page).toContain("max-w-6xl");
+  });
+});

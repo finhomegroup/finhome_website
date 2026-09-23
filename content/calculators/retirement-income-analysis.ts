@@ -61,8 +61,14 @@ export const RETIREMENT_INCOME_ANALYSIS = {
   metaDescription:
     "Ghép an sinh xã hội, lương hưu, làm thêm và danh mục đầu tư thành một dòng thu nhập, rồi cho thấy sức mua của từng nguồn thay đổi thế nào qua ba mươi năm. Công cụ miễn phí của FinHome.",
 
+  // §5: one purpose sentence, and the scope that decides whether the page
+  // applies to the reader at all — this is a US/USD model. Why the sources
+  // age at different speeds is teaching, so it goes behind the disclosure.
   lede:
-    "Các nguồn thu nhập khi nghỉ hưu không già đi cùng một tốc độ. An sinh xã hội Hoa Kỳ được điều chỉnh theo giá sinh hoạt; phần lớn lương hưu doanh nghiệp và mọi hợp đồng niên kim cố định thì trả một số tiền không đổi; công việc làm thêm thì dừng hẳn. Trang này tính từng nguồn theo tốc độ của riêng nó, và cho biết phần thiếu rơi vào danh mục đầu tư của bạn nặng dần đến đâu.",
+    "Tính từng nguồn thu nhập khi nghỉ hưu theo tốc độ riêng của nó, rồi cho biết danh mục đầu tư của bạn phải bù phần thiếu nặng dần đến đâu. Công cụ dựng theo bối cảnh Hoa Kỳ và tính bằng USD.",
+  ledeDetailTitle: "Vì sao các nguồn không già đi cùng một tốc độ",
+  ledeDetail:
+    "An sinh xã hội Hoa Kỳ được điều chỉnh theo giá sinh hoạt; phần lớn lương hưu doanh nghiệp và mọi hợp đồng niên kim cố định thì trả một số tiền không đổi; công việc làm thêm thì dừng hẳn. Ba tốc độ đó cộng lại tạo ra khoảng thiếu, và khoảng thiếu là phần danh mục đầu tư phải cấp.",
 
   form: {
     needGroup: "Thời gian và nhu cầu",
@@ -142,12 +148,25 @@ export const RETIREMENT_INCOME_ANALYSIS = {
       inflation: "2,5",
     },
 
+    // ROW 51 — "Tách nguồn thu cố định và phần phải rút từ quỹ; ghi đơn vị
+    // tiền ngay trong tóm tắt."
+    //
+    // The announced group used to hold two coverage percentages AND the two
+    // portfolio draws, which is the mixture the row asks to separate. It now
+    // holds the fixed sources only, and the draws have their own group under
+    // `drawTitle`. The two money labels below are the other half of the row:
+    // the summary states the fixed income as an AMOUNT with its unit — every
+    // figure on this page is USD, and a percentage alone carries no unit at
+    // all.
     resultTitle: "Nguồn cố định lo được bao nhiêu",
     firstCoverageLabel: "Năm đầu",
     lastCoverageLabel: "Năm cuối",
+    fixedFirstLabel: "Nguồn cố định năm đầu",
+    fixedLastLabel: "Nguồn cố định năm cuối, giá năm đầu",
     firstDrawLabel: "Rút từ danh mục năm đầu, giá năm đầu",
     lastDrawLabel: "Rút từ danh mục năm cuối, giá năm đầu",
 
+    drawTitle: "Phần phải rút từ danh mục",
     portfolioTitle: "Danh mục đầu tư",
     initialRateLabel: "Tỷ lệ rút năm đầu",
     depletionLabel: "Danh mục cạn ở tuổi",
@@ -195,7 +214,14 @@ export const RETIREMENT_INCOME_ANALYSIS = {
       "Một ô nhập chưa hợp lệ. Tuổi bắt đầu nhận phải nhỏ hơn tuổi kết thúc, và toàn kỳ không quá 100 năm.",
   },
 
+  // §5: the CLAIM stays visible — nominal figures rise while purchasing power
+  // and coverage fall, and the portfolio can run dry. The four-figure worked
+  // example that proves it is a disclosure; `retirement-income-analysis.test.ts`
+  // still derives every one of those figures, now against visible + detail.
   decayNotice:
+    "Các nguồn thu nhập cố định lo được phần lớn chi tiêu trong năm đầu nhưng kém dần về sau: con số danh nghĩa vẫn tăng, còn phần chi tiêu chúng lo được thì giảm. Phần thiếu dồn sang danh mục đầu tư, nên danh mục có thể cạn trước khi kỳ nghỉ hưu kết thúc.",
+  decayNoticeDetailTitle: "Ví dụ với các giả định mặc định",
+  decayNoticeDetail:
     "Với các giả định mặc định, các nguồn cố định lo được 82,5% chi tiêu trong năm đầu và chỉ 56,6% trong năm cuối — dù mọi con số danh nghĩa đều tăng. Hai nguyên nhân cộng lại: khoản làm thêm dừng ở tuổi 72, và khoản lương hưu 18.000 USD không đổi chỉ còn mua được bằng 9.241 USD giá năm 67, tức giữ lại 51,3% sức mua. Hệ quả rơi vào danh mục: nó phải cấp 14.000 USD trong năm đầu và 34.759 USD trong năm cuối, tính theo cùng một đơn vị tiền. Đó là 2,48 lần, và không đồng nào trong phần tăng đó đến từ việc bạn tiêu nhiều hơn.",
 
   formula: {

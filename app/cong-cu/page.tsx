@@ -40,7 +40,7 @@ export const metadata: Metadata = pageMetadata({
  * search box needs the client.
  *
  * ORDER, since it is no longer the order of this file: search box, then the
- * five question cards, then the full index. The cards and the catalogue's
+ * question cards, then the full index. The cards and the catalogue's
  * heading are handed to `ToolCatalog` as props, so the client island can
  * unmount the cards while a query is active — which is what keeps the results
  * directly beneath the box the reader is typing into.
@@ -93,7 +93,7 @@ export default function CalculatorHubPage() {
           </div>
 
           {/*
-            SEARCH FIRST, THEN THE FIVE QUESTIONS, THEN THE FULL INDEX.
+            SEARCH FIRST, THEN THE QUESTIONS, THEN THE FULL INDEX.
 
             The search box used to sit beside the index at the foot of the page,
             which a browser review measured at 1.022 px below the fold on a
@@ -138,7 +138,7 @@ export default function CalculatorHubPage() {
   );
 }
 
-/** The five first-home-buyer question cards. Server-rendered; see above. */
+/** The first-home-buyer question cards. Server-rendered; see above. */
 function HubQuestions() {
   return (
     <>

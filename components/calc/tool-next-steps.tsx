@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { TOOL_SHELL as C } from "@/content/calculators/tool-shell";
-import { nextStepsFor } from "@/content/calculators/next-steps";
-import { calculatorPath, getCalculator } from "@/content/calculators/registry";
+import { furtherSteps, nextStepsFor } from "@/content/calculators/next-steps";
+import { NextStepCard } from "./next-step-card";
 import { cn } from "@/lib/cn";
-import { FH_POINTER } from "@/lib/interaction-styles";
 
 /**
  * The route from one buying question to the next, plus an honest statement
@@ -22,8 +21,8 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  *    what to do about it. A button that looked like it worked would be the
  *    same defect with better styling.
  *
- * Renders NOTHING for a tool with no entry in `next-steps.ts`, which is 70 of
- * the 75 today. A tip calculator does not get a home-buying funnel, and a
+ * Renders NOTHING for a tool with no entry in `next-steps.ts`, which is most
+ * of the suite — derive the count from the registry, not from this line. A tip calculator does not get a home-buying funnel, and a
  * United States payroll tool does not get an acquisition CTA. `next-steps.test.ts`
  * asserts that shelved tools have no entry.
  *
@@ -31,13 +30,24 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  */
 export function ToolNextSteps({
   slug,
+  promoted = false,
   className,
 }: {
   /** Registry slug of the tool the reader is on. */
   slug: string;
+  /**
+   * The first one or two actions already render beside the answer, in the
+   * layout's `actions` slot (`ResultActions`). So this block drops the intro
+   * that block now carries and lists only `furtherSteps` under
+   * `furtherTitle` — nothing is deleted, it is the same list split by
+   * `NEAR_ANSWER_ACTIONS`. The education link and the retention panel stay
+   * here either way: both are longer guidance, not an action.
+   */
+  promoted?: boolean;
   className?: string;
 }) {
   const steps = nextStepsFor(slug);
+  const tools = promoted ? furtherSteps(slug) : (steps?.tools ?? []);
 
   return (
     <section className={cn("space-y-6", className)}>
@@ -45,44 +55,24 @@ export function ToolNextSteps({
         {C.nextSteps.title}
       </h2>
 
-      {steps ? (
+      {steps && (tools.length > 0 || steps.education || !promoted) ? (
         <div>
-          <p className="text-base leading-relaxed text-ink-2">{steps.intro}</p>
+          {promoted ? null : (
+            <p className="text-base leading-relaxed text-ink-2">{steps.intro}</p>
+          )}
 
-          <h3 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-3">
-            {C.nextSteps.toolsTitle}
-          </h3>
-          <ul className="mt-2 grid gap-3 md:grid-cols-2">
-            {steps.tools.map((step) => {
-              const entry = getCalculator(step.slug);
-              if (!entry) {
-                // A dead next step is worse than none: the reader got there
-                // because we told them to. Failing the build is the cheap end.
-                throw new Error(
-                  `components/calc/tool-next-steps.tsx: "${slug}" links to ` +
-                    `"${step.slug}", which is not in the registry.`,
-                );
-              }
-              return (
-                <li key={step.slug}>
-                  <Link
-                    href={`${calculatorPath(step.slug)}/`}
-                    className={cn(
-                      "flex h-full flex-col rounded-2xl border border-ink-4/15 bg-white p-4 transition-colors hover:border-brand-green/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
-                      FH_POINTER,
-                    )}
-                  >
-                    <span className="text-sm leading-relaxed text-ink">
-                      {step.why}
-                    </span>
-                    <span className="mt-2 text-sm font-medium text-brand-green-ink">
-                      {entry.title}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          {tools.length > 0 ? (
+            <>
+              <h3 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-3">
+                {promoted ? C.nextSteps.furtherTitle : C.nextSteps.toolsTitle}
+              </h3>
+              <ul className="mt-2 grid gap-3 md:grid-cols-2">
+                {tools.map((step) => (
+                  <NextStepCard key={step.slug} step={step} from={slug} />
+                ))}
+              </ul>
+            </>
+          ) : null}
 
           {/* The education seam. Undefined for every tool today: the articles
               do not exist yet, and `next-steps.test.ts` fails on an href with

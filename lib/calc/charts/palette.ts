@@ -33,6 +33,20 @@
  * and labelled, series carry stroke patterns, and every model ships a table),
  * and `paletteSlots` reports the count so a caller can assert it has not
  * quietly grown past what the palette can distinguish.
+ *
+ * TWO NUMBERS COME OUT OF THE SAME MAP. The map holds an UNWRAPPED index — a
+ * key's position in the model's declared order — and the wrap is applied by
+ * the reader, not the map:
+ *
+ * - `paletteSlot` wraps at `PALETTE_SLOTS`, because there are four colours;
+ * - `seriesIndex` does not wrap, because the non-colour channel
+ *   (`chart-texture.tsx`) has more encodings than the palette has colours.
+ *
+ * That split is the fix for a defect an independent review measured at 390 px
+ * on `kha-nang-mua-nha`'s six-segment allocation bar: with the texture keyed to
+ * the WRAPPED slot, series 4 repeated series 0's colour AND its texture, and
+ * series 5 repeated series 1's — in the plot and in the legend — so two pairs
+ * of the six quantities had no channel at all that told them apart.
  */
 
 /** How many distinct fills/swatches the shared palette actually has. */
@@ -75,4 +89,26 @@ export function paletteSlot(
   fallback: number,
 ): number {
   return (slots.get(key) ?? fallback) % PALETTE_SLOTS;
+}
+
+/**
+ * The key's position in the model's declared order, WITHOUT the palette's wrap.
+ *
+ * The same map and the same fallback rule as `paletteSlot`, minus the
+ * `% PALETTE_SLOTS`. It is what the non-colour channel indexes: a sixth series
+ * has to be a sixth TEXTURE even though it is only the second colour, and
+ * feeding it the wrapped slot is precisely how six series ended up with four
+ * encodings.
+ *
+ * Deliberately NOT clamped to the texture list's length here: this module owns
+ * the model's ordering and knows nothing about how many encodings exist.
+ * `textureKind` decides what to do past its own end, and
+ * `legend-render.test.ts` ratchets that no real model gets there.
+ */
+export function seriesIndex(
+  slots: Map<string, number>,
+  key: string,
+  fallback: number,
+): number {
+  return slots.get(key) ?? fallback;
 }

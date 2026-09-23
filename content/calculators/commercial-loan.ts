@@ -123,8 +123,15 @@ export const COMMERCIAL_LOAN = {
   balloonSourceNotice:
     "Cột gốc của năm đầu bằng 0 — đó là kỳ ân hạn, và dư nợ không giảm một đồng nào. Cột dư nợ ở cuối bảng dừng tại 1.000.000.000 ₫ thay vì 0, vì đó là phần gốc trả cuối kỳ. Câu hỏi phải trả lời trước khi ký là lấy tiền ở đâu cho khoản đó. Có ba đường: dòng tiền tích lũy của doanh nghiệp, bán tài sản, hoặc tái cấp vốn bằng một khoản vay mới. Đường thứ ba mang rủi ro lớn nhất, vì nó phụ thuộc vào việc ngân hàng khi đó còn muốn cho vay và lãi suất khi đó ở đâu — hai điều bạn không kiểm soát được, và cả hai đều có thể đã khác vào tháng thứ 84.",
 
+  // The trade-off itself stays visible — it is the thing to know before the
+  // small monthly figure is read. The worked default comparison moves behind
+  // the disclosure: a browser pass at 390 px measured the first control
+  // 814,25 px down this page.
   structureNotice:
-    "Hai cấu trúc này không làm khoản vay rẻ hơn, chúng chỉ dịch chuyển thời điểm trả. Với ví dụ mặc định, tổng lãi là 2.691.814.752 ₫ so với 2.191.423.303 ₫ của một khoản vay trả góp phẳng cùng số tiền, cùng lãi suất, cùng kỳ hạn — tốn thêm 500.391.450 ₫. Đổi lại, năm đầu bạn chỉ trả 45.833.333 ₫ mỗi tháng thay vì 85.612.182 ₫. Đó là đánh đổi hợp lý nếu dòng tiền của doanh nghiệp cần thời gian hình thành; nó là cái bẫy nếu bạn dùng nó chỉ để khoản vay trông vừa sức.",
+    "Hai cấu trúc này không làm khoản vay rẻ hơn, chúng chỉ dịch chuyển thời điểm trả: mỗi tháng nhẹ hơn, tổng chi phí cao hơn. Đó là đánh đổi hợp lý nếu dòng tiền của doanh nghiệp cần thời gian hình thành; nó là cái bẫy nếu bạn dùng nó chỉ để khoản vay trông vừa sức.",
+  structureDetailTitle: "Đắt thêm bao nhiêu, với ví dụ mặc định",
+  structureDetail:
+    "Với ví dụ mặc định, tổng lãi là 2.691.814.752 ₫ so với 2.191.423.303 ₫ của một khoản vay trả góp phẳng cùng số tiền, cùng lãi suất, cùng kỳ hạn — tốn thêm 500.391.450 ₫. Đổi lại, năm đầu bạn chỉ trả 45.833.333 ₫ mỗi tháng thay vì 85.612.182 ₫.",
 
   formula: {
     title: "Cách tính",

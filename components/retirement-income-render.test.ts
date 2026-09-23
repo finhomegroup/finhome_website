@@ -29,7 +29,7 @@
  */
 import { describe, expect, it, vi } from "vitest";
 import { markupRegion } from "@/lib/markup-region";
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readRetirement } from "@/components/calc/retirement-fields";
 import { withdrawalChartLabels } from "@/components/retirement-income-calculator";
@@ -60,6 +60,7 @@ function planAtDefaults() {
 /** Render the calculator, optionally on a patched default scenario. */
 async function render(
   defaults?: Partial<Record<string, string>>,
+  props?: { actions?: ReactNode },
 ): Promise<string> {
   vi.resetModules();
   if (defaults) {
@@ -82,7 +83,7 @@ async function render(
     // (`withdrawalChartLabels`). Row 45's render test hit exactly that error.
     const loaded = await import("@/components/retirement-income-calculator");
     return renderToStaticMarkup(
-      createElement(loaded.RetirementIncomeCalculator),
+      createElement(loaded.RetirementIncomeCalculator, props ?? null),
     );
   } finally {
     vi.doUnmock(CONTENT_PATH);
@@ -383,5 +384,76 @@ describe("the funded boundary, on the rendered page", () => {
     const html = await render(FUNDED_BOUNDARY);
     expect(html).toContain(fill(F.pathRunsOut, { age: "84" }));
     expect(html).toContain(fill(C.chart.outcomeShort, { short: "6" }));
+  });
+});
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the three bugs the hand-rolled
+ * bound produced, and `detail` is the last region, so a marker-to-marker slice
+ * would run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 52: the monthly spend leads, the three paths beside it", () => {
+  it("leads with the sustainable spend per month", async () => {
+    const html = await render();
+    expect(html).toContain("lg:grid-cols-5");
+    expect(count(html, "md:text-3xl")).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(F.monthlyLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(F.annualLabel));
+  });
+
+  it("labels the monthly figure as the same money, and keeps the exact annual one", async () => {
+    const C2 = C.form;
+    // The monthly figure is `annual / 12` — a display of the SAME answer, not
+    // a second computation, so its label says so and the annual figure the
+    // engine actually returns stays directly below it.
+    expect(C2.monthlyLabel).toContain("Cùng mức đó");
+    expect(C2.annualLabel).toContain("theo giá hôm nay");
+    const result = regionOf(await render(), "result");
+    expect(result.indexOf(C2.monthlyLabel)).toBeLessThan(
+      result.indexOf(C2.annualLabel),
+    );
+  });
+
+  it("puts the three age paths beside the answer, not below the page", async () => {
+    const result = regionOf(await render(), "result");
+    expect(result).toContain(F.pathsTitle);
+  });
+
+  it("keeps the nominal readings in the detail region", async () => {
+    const html = await render();
+    // The real/nominal distinction stays BESIDE the figures it applies to —
+    // every headline row carries "theo giá hôm nay" in its own label, and the
+    // nominal counterparts are a collapsed second reading below.
+    const detail = regionOf(html, "detail");
+    expect(detail).toContain(F.nominalBalanceLabel);
+    expect(detail).toContain(F.realBalanceLabel);
+    expect(regionOf(html, "result")).not.toContain(F.nominalBalanceLabel);
+  });
+
+  it("restates the monthly figure on the pinned button", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="thu-nhap-huu-tri-ket-qua"');
+    expect(html).toContain('data-calc-answer="true"');
+  });
+
+  it("keeps the family's other views beside the answer, and one live region", async () => {
+    const html = await render(undefined, { actions: "VIEWS-MARKER" });
+    const result = regionOf(html, "result");
+    expect(result).toContain("VIEWS-MARKER");
+    // BEFORE the figure, not after it: P2 asks for the action immediately
+    // after the answer, and the plot is 800 px of what it is not.
+    expect(result.indexOf("VIEWS-MARKER")).toBeLessThan(
+      result.indexOf("<figure"),
+    );
+    expect(count(html, 'data-results-live="true"')).toBe(1);
   });
 });

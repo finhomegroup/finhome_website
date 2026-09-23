@@ -26,6 +26,12 @@ export default function UsHsaPage() {
       // not get, and which is forfeited entirely by contributing outside
       // payroll. Most write-ups omit it.
       notice={C.ficaNotice}
+      // The rule stays above; the worked default case is a paragraph of
+      // arithmetic, so it sits behind this summary.
+      noticeDetailTitle={C.ficaNoticeDetailTitle}
+      noticeDetail={C.ficaNoticeDetail}
+      // Row 30's split result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       // The contribution ceilings, the age-55 catch-up and the 20% penalty

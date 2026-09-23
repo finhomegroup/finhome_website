@@ -84,10 +84,15 @@ describe("phan-tich-an-sinh-xa-hoi at its shipped defaults", () => {
     // The claim that makes the notice: 70 is worth LESS than 68 here.
     expect(at(r, 70).presentValue).toBeLessThan(at(r, 68).presentValue);
     for (const figure of ["540.960", "624.960", "403.341", "395.607"]) {
-      expect(C.twoAnswersNotice, `notice is missing ${figure}`).toContain(
+      // REPOINTED by row 56's entry pass: the four worked totals moved from
+      // the visible notice into its disclosure. They are still asserted, one
+      // level down; the visible rule keeps the two-measure warning.
+      expect(C.twoAnswersNoticeDetail, `notice is missing ${figure}`).toContain(
         figure,
       );
     }
+    expect(C.twoAnswersNotice).toContain("hai câu trả lời");
+    expect(C.twoAnswersNotice).toContain("dự phóng");
   });
 
   it("quotes the monthly amounts at both ends", () => {
@@ -103,7 +108,7 @@ describe("phan-tich-an-sinh-xa-hoi at its shipped defaults", () => {
     expect(years(months)).toBe("80,37");
     expect(Math.floor(months / 12)).toBe(80);
     expect(Math.round(months) % 12).toBe(4);
-    expect(C.twoAnswersNotice).toContain("80 tuổi 4 tháng");
+    expect(C.twoAnswersNoticeDetail).toContain("80 tuổi 4 tháng");
   });
 
   it("pins the whole break-even column, dip included", () => {

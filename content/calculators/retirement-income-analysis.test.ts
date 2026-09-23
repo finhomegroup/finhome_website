@@ -23,6 +23,16 @@ import {
 const D = C.form.defaults;
 
 /**
+ * The entry notice as a READER can reach it: the visible claim plus the
+ * disclosure under it.
+ *
+ * §5 moved the four-figure worked example out of `decayNotice` and into
+ * `decayNoticeDetail`, so the numeric contract below reads both. Nothing was
+ * deleted; asserting the pair is what proves that.
+ */
+const ENTRY = `${C.decayNotice} ${C.decayNoticeDetail}`;
+
+/**
  * The component's own parse and wiring, reproduced field by field — docs §6.
  * Two things are under test here that no module test can see: that each
  * default string is read by the parser its FIELD KIND needs, and that the
@@ -123,8 +133,13 @@ describe("phan-tich-thu-nhap-huu-tri at its shipped defaults", () => {
     // The nominal figure GOES UP while the coverage goes down, which is the
     // sentence the notice makes.
     expect(r.last.fixedIncome).toBeGreaterThan(r.first.fixedIncome);
-    expect(C.decayNotice).toContain("82,5%");
-    expect(C.decayNotice).toContain("56,6%");
+    expect(ENTRY).toContain("82,5%");
+    expect(ENTRY).toContain("56,6%");
+    // And the CLAIM those figures prove stays where no click is needed.
+    // This module bans emphasis-by-capitals ("shouts nowhere mid-sentence"),
+    // so the nominal/real distinction is carried by the words themselves.
+    expect(C.decayNotice).toContain("danh nghĩa");
+    expect(C.decayNotice).toContain("cạn");
   });
 
   it("quotes the real draw at both ends and the ratio between them", () => {
@@ -133,9 +148,9 @@ describe("phan-tich-thu-nhap-huu-tri at its shipped defaults", () => {
     expect(usdCents(r.last.realWithdrawal)).toBe("34.758,80");
     const ratio = r.last.realWithdrawal / r.first.realWithdrawal;
     expect(formatDecimalRatio(ratio)).toBe("2,48");
-    expect(C.decayNotice).toContain(usd(r.first.realWithdrawal));
-    expect(C.decayNotice).toContain(usd(r.last.realWithdrawal));
-    expect(C.decayNotice).toContain("2,48");
+    expect(ENTRY).toContain(usd(r.first.realWithdrawal));
+    expect(ENTRY).toContain(usd(r.last.realWithdrawal));
+    expect(ENTRY).toContain("2,48");
     expect(C.faq.items[1].a).toContain("2,48");
   });
 
@@ -143,8 +158,8 @@ describe("phan-tich-thu-nhap-huu-tri at its shipped defaults", () => {
     const r = run();
     expect(formatPercent(r.realValueKeptPercent.pension!, 1)).toBe("51,3%");
     expect(usd(r.last.realBySource.pension)).toBe("9.241");
-    expect(C.decayNotice).toContain("51,3%");
-    expect(C.decayNotice).toContain("9.241");
+    expect(ENTRY).toContain("51,3%");
+    expect(ENTRY).toContain("9.241");
     expect(C.formula.body[3]).toContain("51,3%");
   });
 

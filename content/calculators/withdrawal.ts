@@ -103,7 +103,13 @@ export const WITHDRAWAL = {
     detailTitle: "Chi tiết",
     rateLabel: "Tỷ lệ rút so với danh mục",
     firstReturnLabel: "Lợi nhuận tháng đầu",
-    lastWithdrawalLabel: "Khoản rút của năm cuối",
+    // NAMED AS NOMINAL IN THE LABEL. CSV row 28's second clause is "không
+    // được lẫn danh nghĩa với thực". This row climbs with inflation every
+    // year, so on any plausible plan it is a much larger number than the
+    // withdrawal the reader typed — and read beside that entry with nothing
+    // marking the difference, it says "your income grew". It did not: in
+    // purchasing power the two are the same amount by construction.
+    lastWithdrawalLabel: "Khoản rút của năm cuối, theo giá danh nghĩa",
     totalWithdrawnLabel: "Tổng số tiền đã rút",
     finalBalanceLabel: "Số dư còn lại",
     // The partial last payment, as its own rows. "Cạn sau 245 tháng" counts
@@ -115,6 +121,39 @@ export const WITHDRAWAL = {
     lastShortfallLabel: "Lần rút cuối: còn thiếu",
     partialLastNotice:
       "Số tháng ở trên tính cả tháng danh mục cạn, và tháng đó thường chỉ trả được một phần. Bốn dòng ngay trên cho biết có bao nhiêu lần rút được trả đủ, lần cuối cần bao nhiêu và thiếu bao nhiêu — nên đừng đọc số tháng như số lần rút trọn vẹn.",
+
+    // The rest of row 28's "không lẫn danh nghĩa với thực". Naming the final
+    // withdrawal as nominal in its label says what the figure IS; this says
+    // what it is WORTH, and does the same for the total, which is the other
+    // row on this page that adds up money from different years as if it were
+    // one pile. Neither needs engine work: the withdrawal is stepped up by
+    // exactly the inflation rate the reader entered, so the equal-purchasing-
+    // power claim is true by the model's own construction.
+    //
+    // NO COMPARISON AT ALL, AND THAT IS THE REPAIR — SECOND ATTEMPT.
+    //
+    // The first version asserted the final withdrawal and the nominal total
+    // are LARGER. That is false at inflation 0 (the final withdrawal is
+    // exactly the 30.000.000 ₫ typed) and inverted at −4 (527.197 ₫), and
+    // `inflationInvalid` only rejects ≤ −100, so both are legal entries.
+    //
+    // The second version moved the direction into three clauses chosen from
+    // the inflation SIGN. A browser pass then found the sign is not enough
+    // either: 1.000.000 ₫ with a 30.000.000 ₫ monthly draw at 8% and 4%
+    // depletes in MONTH 1, so there is never a second year to step up — the
+    // final planned withdrawal is still 30.000.000 ₫, equal to the first,
+    // while the positive-inflation clause claimed it was larger. A zero draw
+    // has the same problem from the other end.
+    //
+    // So this states the MECHANISM — a once-a-year adjustment, and two
+    // nominal figures being on different scales — and makes no strict
+    // comparison between any two numbers. It is true at every sign and at
+    // every horizon, including a plan that ends before its first adjustment.
+    // It also does not promise that every payment ACTUALLY made preserves
+    // purchasing power: the claim is scoped to the planned schedule, because
+    // the last payment can be a fraction of it.
+    nominalVsRealNote:
+      "Kế hoạch này điều chỉnh khoản rút một bậc mỗi năm, theo đúng giả định lạm phát bạn nhập, nên khoản rút của những năm khác nhau là những con số danh nghĩa ở những thời điểm khác nhau: chênh lệch giữa chúng là chênh lệch của thước đo tiền, không phải vì thu nhập của bạn thay đổi. Tính theo sức mua thì mọi khoản rút THEO KẾ HOẠCH đều tương đương khoản rút năm đầu — riêng lần rút cuối có thể chỉ trả được một phần nên không còn tương đương. Muốn so sánh sức mua của tổng số tiền đã rút, cần quy các khoản về cùng một thời điểm.",
 
     drawingDownNotice:
       "Khoản rút của bạn đã lớn hơn lợi nhuận của tháng đầu tiên, nghĩa là bạn bắt đầu tiêu vào gốc ngay từ tháng đầu. Danh mục sẽ cạn, và cạn nhanh hơn nhiều so với trường hợp khoản rút nằm trong phần lợi nhuận.",
@@ -137,7 +176,7 @@ export const WITHDRAWAL = {
       "Mọi con số do bạn nhập: số dư, khoản rút, lợi nhuận và lạm phát.",
       "Lợi nhuận là mức bình quân đều đặn bạn giả định. Thị trường không đi đều như vậy, và một chuỗi năm xấu ngay đầu giai đoạn rút tiền gây thiệt hại lớn hơn cùng chuỗi đó ở cuối.",
       "Khoản rút tăng MỘT BẬC vào mỗi năm và giữ nguyên trong năm đó.",
-      "Đường sức mua là số dư quy về giá hôm nay theo chỉ số trơn (1 + lạm phát)^(tháng ÷ 12) — khác nhịp với khoản rút, nên hai đường không song song.",
+      "Đường sức mua là số dư quy về giá hôm nay theo chỉ số trơn (1 + lạm phát)^(tháng ÷ 12), còn khoản rút theo kế hoạch điều chỉnh mỗi năm. Hai nhịp đó khác nhau, nên hai đường có thể trùng hoặc tách tùy dữ liệu bạn nhập.",
       "Không có thuế, phí quản lý hay phí giao dịch trong phép tính này.",
     ],
     tableCaption: "Số dư và sức mua tại các mốc",
@@ -157,11 +196,18 @@ export const WITHDRAWAL = {
     summarySurvived:
       "Sau {months} tháng mô phỏng vẫn còn {nominal}, tương đương {real} theo giá hôm nay.",
     indexNote:
-      "Đường sức mua dùng chỉ số trơn theo tháng, còn khoản rút tăng một bậc mỗi năm — hai nhịp khác nhau nên hai đường không song song.",
+      "Đường sức mua quy số dư về giá hôm nay theo từng tháng; khoản rút theo kế hoạch điều chỉnh mỗi năm. Hai đường có thể trùng hoặc tách tùy dữ liệu.",
     partialNote:
       "Chỉ {full} lần rút được trả đủ: lần cuối cần {planned} nhưng chỉ còn {paid}, thiếu {short}.",
-    noInflationNote:
-      "Bạn đang đặt lạm phát bằng 0, nên sức mua bằng đúng số dư và hai đường trùng nhau.",
+    // DESCRIBES WHAT IS DRAWN, AND INFERS NOTHING ABOUT THE ENTRY. This used
+    // to read "Bạn đang đặt lạm phát bằng 0", which the chart cannot know:
+    // its condition is that the two series coincide at every drawn point, and
+    // a plan that depletes in month 1 satisfies that with 1.000.000 ₫ at
+    // month 0 and 0 at month 1 while inflation is 4. The note now states the
+    // coincidence the reader can see and names BOTH ways it happens, without
+    // claiming which one applies. See `lib/calc/charts/withdrawal-chart.ts`.
+    coincidentLinesNote:
+      "Ở đồ thị này hai đường trùng nhau nên bạn chỉ thấy một đường: tại mọi mốc được vẽ, sức mua bằng đúng số dư. Điều đó xảy ra khi lạm phát bằng 0, và cũng xảy ra khi danh mục cạn quá sớm để chỉ số giá kịp tách hai đường.",
     itemColumn: "Khoản",
     amountColumn: "Số tiền",
     monthRow: "Tháng",
@@ -173,7 +219,11 @@ export const WITHDRAWAL = {
   // It is a modelled figure under stated assumptions, and the sentence says
   // that before it quotes the number.
   realReturnNotice:
-    "Con số cần đọc là mức rút giữ được sức mua THEO GIẢ ĐỊNH bạn nhập — một kết quả của phép tính, không phải thu nhập được bảo đảm — và nó nhỏ hơn nhiều so với dự đoán. Danh mục 5 tỷ sinh lời 8%/năm nghe như có thể trả 33 triệu mỗi tháng — nhưng nếu khoản rút phải tăng 4% mỗi năm theo lạm phát thì nó được cấp bởi lợi nhuận THỰC 3,8462%/năm, và mức duy trì được mãi chỉ là 15.749.891 ₫/tháng. Ví dụ mặc định minh họa điều này theo cách đáng chú ý: 30 triệu vẫn NHỎ HƠN lợi nhuận tháng đầu (32.170.151 ₫), nên tháng đầu bạn chưa tiêu vào gốc đồng nào — mà danh mục vẫn cạn sau 245 tháng, tức 20,4 năm. Phép so “khoản rút với lợi nhuận tháng này” không phải là phép kiểm tra tính bền vững.",
+    "Con số cần đọc là mức rút giữ được sức mua THEO GIẢ ĐỊNH bạn nhập — một kết quả của phép tính, không phải thu nhập được bảo đảm — và nó nhỏ hơn nhiều so với dự đoán. Phép so “khoản rút với lợi nhuận tháng này” không phải là phép kiểm tra tính bền vững.",
+  realReturnNoticeDetailTitle:
+    "Con số cụ thể: 8%/năm nhưng rút được 15.749.891 ₫",
+  realReturnNoticeDetail:
+    "Danh mục 5 tỷ sinh lời 8%/năm nghe như có thể trả 33 triệu mỗi tháng — nhưng nếu khoản rút phải tăng 4% mỗi năm theo lạm phát thì nó được cấp bởi lợi nhuận THỰC 3,8462%/năm, và mức duy trì được mãi chỉ là 15.749.891 ₫/tháng. Ví dụ mặc định minh họa điều này theo cách đáng chú ý: 30 triệu vẫn NHỎ HƠN lợi nhuận tháng đầu (32.170.151 ₫), nên tháng đầu bạn chưa tiêu vào gốc đồng nào — mà danh mục vẫn cạn sau 245 tháng, tức 20,4 năm.",
 
   formula: {
     title: "Cách tính",
@@ -184,7 +234,7 @@ export const WITHDRAWAL = {
       "Lợi nhuận thực = (1 + lợi nhuận danh nghĩa) ÷ (1 + lạm phát) − 1, tức 3,8462% với mặc định. Không phải 8% − 4% = 4%; phép trừ là xấp xỉ và luôn cho ra số cao hơn thực tế.",
       "Mức rút giữ được sức mua = danh mục × lợi nhuận thực quy về tháng. Nó được cấp bởi lợi nhuận thực vì khoản rút cũng phải tăng theo lạm phát — nếu dùng lợi nhuận danh nghĩa, số dư sẽ teo dần theo sức mua. Khi lợi nhuận thực bằng 0 hoặc âm, không có mức rút nào giữ được sức mua và công cụ để trống ô đó. Lưu ý cách đọc: con số này nói “nếu lợi nhuận và lạm phát đúng bằng mức bạn nhập và giữ nguyên như vậy thì số dư không teo đi theo sức mua” — nó là một phép tính trong mô hình, không phải một mức thu nhập được bảo đảm suốt đời.",
       "Mô phỏng dừng ở 100 năm và báo “không cạn” thay vì một con số rất lớn. Khoản rút cuối cùng được cắt bằng đúng số dư còn lại, nên số dư kết thúc ở đúng 0 — và vì vậy tháng cuối cùng thường KHÔNG trả đủ khoản rút theo kế hoạch. Phần chi tiết ghi rõ có bao nhiêu lần rút được trả đủ, lần cuối cần bao nhiêu và thiếu bao nhiêu.",
-      "Đường “sức mua” trong biểu đồ là số dư quy về giá hôm nay, chia cho (1 + lạm phát)^(số tháng ÷ 12). Đây là một chỉ số TRƠN theo thời gian, khác với khoản rút — khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm. Hai nhịp khác nhau là có chủ đích: một cái là lịch chi trả thật, một cái là câu hỏi “số tiền còn lại này mua được bao nhiêu theo giá hôm nay”. Vì vậy hai đường trong hình không song song, và đó không phải lỗi tính.",
+      "Đường “sức mua” trong biểu đồ là số dư quy về giá hôm nay, chia cho (1 + lạm phát)^(số tháng ÷ 12). Đây là một chỉ số TRƠN theo thời gian, khác với khoản rút — khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm. Hai nhịp khác nhau là có chủ đích: một cái là lịch chi trả thật, một cái là câu hỏi “số tiền còn lại này mua được bao nhiêu theo giá hôm nay”. Vì vậy hai đường trong hình có thể trùng nhau hoặc tách ra tùy dữ liệu bạn nhập, và việc chúng không đi cùng nhịp không phải lỗi tính.",
     ],
   },
 

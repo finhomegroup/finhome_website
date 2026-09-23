@@ -25,6 +25,10 @@ export default function PivotPage() {
       // These levels predict nothing. Four conventions from one data set,
       // disagreeing — which is itself the argument.
       notice={C.notAPredictionNotice}
+      // The four-conventions-disagree argument. It is evidence for the claim
+      // above, not the claim, so it reads as well from a disclosure.
+      noticeDetailTitle={C.notAPredictionNoticeDetailTitle}
+      noticeDetail={C.notAPredictionNoticeDetail}
       intro={C.form.table.intro}
       prose={C.formula}
       faq={C.faq}

@@ -1,6 +1,13 @@
 /**
  * Rendered-markup contracts for the three United States Social Security
- * routes — plan rows 53, 54 and 55.
+ * routes — plan rows 55, 56 and 57.
+ *
+ * EXTENDED, not replaced, by the U-group layout pass: the original file
+ * covered the three tables and their card fallback, and the blocks at the
+ * bottom add the shell contracts (regions, split, CTA, one emphasis) and the
+ * nullable/ineligible states each route reaches through its own form. The
+ * matrix listing an action as outstanding did not mean the table work here
+ * was absent, so the table blocks above are untouched.
  *
  * `/cong-cu/uoc-tinh-an-sinh-xa-hoi/`, `/cong-cu/phan-tich-an-sinh-xa-hoi/`
  * and `/cong-cu/chi-tra-an-sinh-xa-hoi/`.
@@ -35,10 +42,15 @@
  * What this file CANNOT check is appearance. Nothing here may be reported as
  * a visual check; the 390 px figures above are the browser review's, quoted.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { markupRegion } from "@/lib/markup-region";
+import { PLACEHOLDER } from "@/lib/calc/number";
+import { TOOL_SHELL } from "@/content/calculators/tool-shell";
+import { US_SOCIAL_SECURITY_ESTIMATE } from "@/content/calculators/us-social-security-estimate";
+import { US_SOCIAL_SECURITY_ANALYSIS } from "@/content/calculators/us-social-security-analysis";
+import { US_SOCIAL_SECURITY_PAYOUT } from "@/content/calculators/us-social-security-payout";
 import { UsSocialSecurityEstimateCalculator } from "@/components/us-social-security-estimate-calculator";
 import { UsSocialSecurityAnalysisCalculator } from "@/components/us-social-security-analysis-calculator";
 import { UsSocialSecurityPayoutCalculator } from "@/components/us-social-security-payout-calculator";
@@ -226,5 +238,463 @@ describe("the Social Security card labels do not starve beside a figure", () => 
           `(${value.length} chars) has only ${available} px of label track`,
       ).toBeLessThanOrEqual(available);
     }
+  });
+});
+
+/**
+ * The same three routes, re-rendered with patched form defaults.
+ *
+ * `vi.doMock` on the CONTENT module is the only lever this suite has for a
+ * non-default state: the components read `form.defaults` through
+ * `useCalcFields` and nothing else reaches them from outside. Each route
+ * keeps its own literal import so the paths stay statically analysable.
+ */
+type Defaults = Record<string, string>;
+
+type ShellRoute = {
+  slug: string;
+  formId: string;
+  resultId: string;
+  /** Replace `form.defaults` and render, or render as shipped. */
+  render: (defaults?: Defaults) => Promise<string>;
+  /** How many `emphasis` rows this route is supposed to have. */
+  emphasisRows: number;
+  /** Whether this form is long enough to pin a short current answer. */
+  pins: boolean;
+};
+
+function shellRoute(
+  slug: string,
+  contentPath: string,
+  contentExport: string,
+  load: () => Promise<ComponentType>,
+  emphasisRows: number,
+  pins: boolean,
+): ShellRoute {
+  return {
+    slug,
+    formId: `${slug}-nhap`,
+    resultId: `${slug}-ket-qua`,
+    emphasisRows,
+    pins,
+    render: async (defaults) => {
+      vi.resetModules();
+      if (defaults !== undefined) {
+        vi.doMock(contentPath, async () => {
+          const actual = (await vi.importActual(contentPath)) as Record<
+            string,
+            { form: { defaults: Defaults } }
+          >;
+          const content = actual[contentExport];
+          return {
+            [contentExport]: {
+              ...content,
+              form: {
+                ...content.form,
+                defaults: { ...content.form.defaults, ...defaults },
+              },
+            },
+          };
+        });
+      }
+      try {
+        return renderToStaticMarkup(createElement(await load()));
+      } finally {
+        vi.doUnmock(contentPath);
+        vi.resetModules();
+      }
+    },
+  };
+}
+
+const ESTIMATE = shellRoute(
+  "uoc-tinh-an-sinh-xa-hoi",
+  "@/content/calculators/us-social-security-estimate",
+  "US_SOCIAL_SECURITY_ESTIMATE",
+  () =>
+    import("@/components/us-social-security-estimate-calculator").then(
+      (m) => m.UsSocialSecurityEstimateCalculator,
+    ),
+  1,
+  // CORRECTED BY MEASUREMENT. This was `false` on the control-count heuristic
+  // — five controls, under the six of the only form measured at the time. An
+  // independent pass at 1440×1000 then clicked this route's own last field
+  // (claim age, y 529–575) and found the monthly figure AND the chosen age
+  // above the viewport, with only the replacement rate and the supporting rows
+  // left. A measurement of the route beats a heuristic about it, so it pins,
+  // and it pins the amount WITH the age.
+  true,
+);
+
+const ANALYSIS = shellRoute(
+  "phan-tich-an-sinh-xa-hoi",
+  "@/content/calculators/us-social-security-analysis",
+  "US_SOCIAL_SECURITY_ANALYSIS",
+  () =>
+    import("@/components/us-social-security-analysis-calculator").then(
+      (m) => m.UsSocialSecurityAnalysisCalculator,
+    ),
+  // Deliberately zero: two co-equal answers, and an enlarged figure on
+  // either one would read as the recommendation row 56 forbids.
+  0,
+  // CORRECTED BY MEASUREMENT, and the old reason was answered rather than
+  // overruled. It said the strip carries ONE figure while this page has two;
+  // the fix is a labelled PAIR, the shape `black-scholes` already uses for the
+  // same reason, not a promotion of either age. The measurement: at 1440×1000
+  // with the last discount-rate field focused (y 529–575) the total-money
+  // optimum was above the viewport and the present-value optimum sat on the
+  // top edge — while the field being edited is the one that moves the second
+  // figure. `emphasisRows` stays 0; a pin is not an emphasis.
+  true,
+);
+
+const PAYOUT = shellRoute(
+  "chi-tra-an-sinh-xa-hoi",
+  "@/content/calculators/us-social-security-payout",
+  "US_SOCIAL_SECURITY_PAYOUT",
+  () =>
+    import("@/components/us-social-security-payout-calculator").then(
+      (m) => m.UsSocialSecurityPayoutCalculator,
+    ),
+  1,
+  // Nine controls in three groups — larger than the form measured at
+  // 1143,75 px, so it pins the household total.
+  true,
+);
+
+const SHELL_ROUTES: readonly ShellRoute[] = [ESTIMATE, ANALYSIS, PAYOUT];
+
+const regionOrder = (html: string): string[] =>
+  [...html.matchAll(/data-calc-region="([a-z]+)"/g)].map((m) => m[1]);
+
+const resultRegion = (html: string): string =>
+  html.slice(
+    html.indexOf('data-calc-region="result"'),
+    html.indexOf('data-calc-region="detail"'),
+  );
+
+const detailRegion = (html: string): string =>
+  html.slice(html.indexOf('data-calc-region="detail"'));
+
+/** The pinned restatement's own paragraph — its label and its value. */
+const pinnedStrip = (html: string): string => {
+  const at = html.indexOf('data-calc-answer="true"');
+  return at === -1 ? "" : html.slice(at, html.indexOf("</p>", at));
+};
+
+/** One `ResultRow`'s markup, from its label to the end of its wrapper. */
+const rowOf = (region: string, label: string): string => {
+  const at = region.indexOf(label);
+  return at === -1 ? "" : region.slice(at, region.indexOf("</div>", at));
+};
+
+describe("the three Social Security routes get the shell contracts", () => {
+  it.each(SHELL_ROUTES)(
+    "$slug renders form, result and detail in that order",
+    async (route) => {
+      expect(regionOrder(await route.render())).toEqual([
+        "form",
+        "result",
+        "detail",
+      ]);
+    },
+  );
+
+  it.each(SHELL_ROUTES)("$slug takes the two-column split", async (route) => {
+    const html = await route.render();
+    expect(html).toContain("lg:grid-cols-5");
+    expect(html).toContain("lg:col-span-2");
+  });
+
+  it.each(SHELL_ROUTES)(
+    "$slug puts the CTA in the form region, pointing at the answer",
+    async (route) => {
+      const html = await route.render();
+      const form = html.slice(
+        html.indexOf(`id="${route.formId}"`),
+        html.indexOf('data-calc-region="result"'),
+      );
+      expect(form).toContain('data-calc-cta="true"');
+      expect(form).toContain(`aria-controls="${route.resultId}"`);
+      expect(html).toContain(TOOL_SHELL.cta.autoNote);
+    },
+  );
+
+  it.each(SHELL_ROUTES)("$slug pins its answer only if its form is long", async (route) => {
+    // CORRECTED. This block used to assert no pin on all three, reasoning that
+    // `.fh-cta-pin` acts only from 1024x900 up, which is where the split
+    // already puts the answer beside the form. That reasoning is refuted:
+    // `lg:items-start` holds the result column at the TOP of the grid, and a
+    // browser pass on a split, `wide` six-control form measured it at
+    // 1143,75 px with the result region at y -382..-140 while the last field
+    // was focused (`components/black-scholes-calculator.tsx`). The split does
+    // not keep the answer on screen; form height decides.
+    const html = await route.render();
+    if (!route.pins) {
+      expect(html, `${route.slug} gained a pin`).not.toContain("fh-cta-pin");
+      expect(html).not.toContain('data-calc-answer="true"');
+      return;
+    }
+    expect(html).toContain("fh-cta-pin");
+    expect(html).toContain('data-calc-answer="true"');
+    // Decorative by contract: `ResultGroup` owns the page's one live region,
+    // so the restatement must not announce the same recomputation twice.
+    const at = html.indexOf('data-calc-answer="true"');
+    expect(html.slice(html.lastIndexOf("<p", at), at)).toContain(
+      'aria-hidden="true"',
+    );
+  });
+
+  it.each(SHELL_ROUTES)(
+    "$slug emphasises exactly the rows it should",
+    async (route) => {
+      const html = await route.render();
+      expect(count(html, "md:text-3xl")).toBe(route.emphasisRows);
+      expect(count(html, 'data-results-live="true"')).toBe(1);
+    },
+  );
+});
+
+describe("row 55: the estimate says what it is and where it cannot compare", () => {
+  const F = US_SOCIAL_SECURITY_ESTIMATE.form;
+
+  it("keeps the estimate warning beside the figure, not after the table", async () => {
+    const html = await ESTIMATE.render();
+    expect(resultRegion(html)).toContain(F.estimateNotice);
+    expect(detailRegion(html)).not.toContain(F.estimateNotice);
+  });
+
+  it.each([62, 70])(
+    "answers for a claiming age of %i without flagging a field",
+    async (age) => {
+      const html = await ESTIMATE.render({ claimAge: String(age) });
+      expect(html).not.toContain('aria-invalid="true"');
+      expect(html).not.toContain(F.invalidNotice);
+      // The chosen age is the first row of the answer group, so a reader
+      // cannot read the monthly figure without it.
+      expect(resultRegion(html)).toContain(`${age} ${F.yearsUnitShort}`);
+    },
+  );
+
+  it.each([61, 71])("refuses a claiming age of %i by the field", async (age) => {
+    const html = await ESTIMATE.render({ claimAge: String(age) });
+    expect(html).toContain('aria-invalid="true"');
+    expect(html).toContain(F.claimAgeInvalid);
+    expect(resultRegion(html)).toContain(F.invalidNotice);
+    expect(html).not.toContain(F.table.caption);
+  });
+
+  it("pins the monthly amount WITH the chosen age, both from the rows", async () => {
+    // The repair for the measured defect: at 1440×1000 with the last
+    // claim-age field focused (y 529–575), the monthly figure and the chosen
+    // age had both scrolled above the viewport and only the replacement rate
+    // and supporting rows were left. A monthly amount alone would not restore
+    // the answer — the nine ages differ by a factor of 1,77, so the same
+    // number means a different decision at 62 than at 70.
+    const html = await ESTIMATE.render({ claimAge: "70" });
+    const strip = pinnedStrip(html);
+    expect(strip).toContain(F.pinnedLabel);
+
+    const age = `70 ${F.yearsUnitShort}`;
+    const amount = strip.match(/([\d.]+ USD)/)?.[1];
+    expect(amount, "pinned strip carries no monthly amount").toBeTruthy();
+    expect(strip, "the amount is not marked as a monthly one").toContain(
+      F.pinnedMonthlySuffix,
+    );
+    expect(strip, "the age is not attached to the amount").toContain(
+      `${F.pinnedAgePrefix} ${age}`,
+    );
+
+    // `ResultCta`'s `answer` contract: the SAME formatted strings the rows
+    // render. Both halves are formatted once in the component and shared.
+    const result = resultRegion(html);
+    expect(rowOf(result, F.claimAgeLabel)).toContain(age);
+    expect(rowOf(result, F.monthlyLabel)).toContain(amount!);
+    expect(rowOf(result, F.monthlyLabel)).toContain("md:text-3xl");
+  });
+
+  it("pins the placeholder, not half a pair, when a field is unusable", async () => {
+    const html = await ESTIMATE.render({ claimAge: "71" });
+    const strip = pinnedStrip(html);
+    expect(strip).toContain(F.pinnedLabel);
+    expect(strip).toContain(PLACEHOLDER);
+    // Neither half survives on its own: an amount with no age, or an age with
+    // no amount, would read as an answer this state does not have.
+    expect(strip).not.toContain(F.pinnedMonthlySuffix);
+    expect(strip).not.toContain(F.pinnedAgePrefix);
+  });
+
+  it("names the missing replacement rate instead of a dash", async () => {
+    // A zero career average is a valid zero, not a bad field: there is no
+    // income to compare the benefit against, so the ratio has no denominator.
+    const html = await ESTIMATE.render({ earnings: "0" });
+    expect(html).not.toContain('aria-invalid="true"');
+    const result = resultRegion(html);
+    expect(result).toContain(F.noReplacementValue);
+    expect(result).toContain(F.noReplacementNotice);
+  });
+});
+
+describe("row 56: two answers, and no break-even left unexplained", () => {
+  const F = US_SOCIAL_SECURITY_ANALYSIS.form;
+
+  it("names both objectives and merges neither", async () => {
+    const html = await ANALYSIS.render();
+    const result = resultRegion(html);
+    expect(result).toContain(F.bestNominalLabel);
+    expect(result).toContain(F.bestPvLabel);
+    expect(result).toContain(F.twoMeasuresHint);
+    // The shipped defaults are the disagreeing case — 70 on total money, 68
+    // on present value — and the notice that says so sits beside the pair
+    // rather than after the nine-row table.
+    expect(result).toContain(F.disagreeNotice);
+    expect(result).not.toContain(F.agreeNotice);
+    expect(result).toContain(F.interiorNotice);
+    expect(detailRegion(html)).not.toContain(F.disagreeNotice);
+  });
+
+  it("labels the age-62 row as the baseline rather than a dash", async () => {
+    const html = await ANALYSIS.render();
+    const detail = detailRegion(html);
+    // One row lacks a break-even on the defaults and it is the comparison
+    // baseline, rendered once in the table and once in the mobile card.
+    expect(count(detail, F.breakEvenBaselineValue)).toBe(2);
+    expect(detail).not.toContain(">—<");
+  });
+
+  it("explains a tie instead of blanking the headline row", async () => {
+    // A zero basic benefit is a valid zero: every claiming age pays nothing,
+    // so no age overtakes age 62 and there is no crossing to report.
+    const html = await ANALYSIS.render({ pia: "0" });
+    expect(html).not.toContain('aria-invalid="true"');
+    const result = resultRegion(html);
+    expect(result).toContain(F.breakEvenTieValue);
+    expect(result).toContain(F.breakEvenTieNotice);
+    // Both measures now pick the same age, so the page says so.
+    expect(result).toContain(F.agreeNotice);
+  });
+
+  it("pins BOTH optima, with neither promoted over the other", async () => {
+    // The measured defect: at 1440×1000 with the last discount-rate field
+    // focused (y 529–575), the total-money optimum was above the viewport and
+    // the present-value optimum sat on the top edge — while that field is
+    // exactly the one that moves the second figure. The pin restates both,
+    // because a pin carrying one of them would manufacture the recommendation
+    // `twoMeasuresHint` refuses.
+    const html = await ANALYSIS.render();
+    const strip = pinnedStrip(html);
+    expect(strip).toContain(F.pinnedPairLabel);
+
+    const ages = [
+      ...strip.matchAll(new RegExp(`(\\d+) ${F.endAgeUnit}`, "g")),
+    ].map((m) => m[1]);
+    expect(ages, "the pin does not carry two ages").toHaveLength(2);
+    // The shipped defaults are the disagreeing case, so a collapse to one
+    // figure would be visible here rather than silent.
+    expect(new Set(ages).size).toBe(2);
+
+    // Each half named inline, in the rows' order, and each the same value its
+    // row renders.
+    expect(strip.indexOf(F.pinnedNominalPrefix)).toBeLessThan(
+      strip.indexOf(F.pinnedPvPrefix),
+    );
+    const result = resultRegion(html);
+    expect(rowOf(result, F.bestNominalLabel)).toContain(ages[0]);
+    expect(rowOf(result, F.bestPvLabel)).toContain(ages[1]);
+    // A pin is not an emphasis: still no enlarged figure anywhere.
+    expect(count(html, "md:text-3xl")).toBe(0);
+  });
+
+  it("pins the placeholder rather than one optimum when the horizon is unusable", async () => {
+    const html = await ANALYSIS.render({ endAge: "62" });
+    const strip = pinnedStrip(html);
+    expect(strip).toContain(F.pinnedPairLabel);
+    expect(strip).toContain(PLACEHOLDER);
+    expect(strip).not.toContain(F.pinnedNominalPrefix);
+    expect(strip).not.toContain(F.pinnedPvPrefix);
+  });
+
+  it("explains a group-level refusal with no field flagged", async () => {
+    const html = await ANALYSIS.render({ endAge: "62" });
+    expect(resultRegion(html)).toContain(F.invalidNotice);
+    expect(html).not.toContain(F.table.caption);
+  });
+});
+
+describe("row 57: household and individual stay separate", () => {
+  const F = US_SOCIAL_SECURITY_PAYOUT.form;
+
+  it("splits the household total from the two personal amounts", async () => {
+    const html = await PAYOUT.render();
+    const result = resultRegion(html);
+    expect(result).toContain(F.resultTitle);
+    expect(result).toContain(F.individualTitle);
+    expect(result).toContain(F.spouseTitle);
+    // The emphasised figure is the household one, and it is the only one.
+    const household = result.slice(
+      result.indexOf(F.householdMonthlyLabel),
+      result.indexOf(F.householdAnnualLabel),
+    );
+    expect(household).toContain("md:text-3xl");
+    // Own record, spousal top-up and the survivor figure each keep a row:
+    // the survivor asymmetry is the page's lesson and cannot be summarised
+    // away.
+    for (const label of [
+      F.spouseOwnLabel,
+      F.spousalLabel,
+      F.spouseReceivesLabel,
+      F.survivorLabel,
+    ]) {
+      expect(result).toContain(label);
+    }
+  });
+
+  it("puts the record notice under the group that shows both records", async () => {
+    const html = await PAYOUT.render();
+    const result = resultRegion(html);
+    // On the defaults the spouse is paid the spousal top-up, not their own
+    // record, so waiting past full retirement age buys them nothing.
+    expect(result).toContain(F.spousalTopUpNotice);
+    expect(result).not.toContain(F.ownRecordNotice);
+    expect(detailRegion(html)).not.toContain(F.spousalTopUpNotice);
+  });
+
+  it("switches to the own-record notice when the record is higher", async () => {
+    const html = await PAYOUT.render({ spousePia: "3.000" });
+    const result = resultRegion(html);
+    expect(result).toContain(F.ownRecordNotice);
+    expect(result).not.toContain(F.spousalTopUpNotice);
+  });
+
+  it("says the earnings test does not apply instead of leaving a dash", async () => {
+    // Claiming after the full retirement age year: the test stops, so there
+    // is no exempt amount to show and the full benefit is paid.
+    const html = await PAYOUT.render({ claimAge: "68", earnings: "40.000" });
+    expect(html).not.toContain('aria-invalid="true"');
+    const detail = detailRegion(html);
+    expect(detail).toContain(F.exemptNotApplicableValue);
+    expect(detail).toContain(F.exemptNotApplicableNotice);
+    expect(detail).not.toContain(F.withheldNotice);
+  });
+
+  it("explains the withholding when there is some", async () => {
+    const html = await PAYOUT.render({ claimAge: "62", earnings: "40.000" });
+    const detail = detailRegion(html);
+    expect(detail).toContain(F.withheldNotice);
+    expect(detail).not.toContain(F.exemptNotApplicableNotice);
+    expect(detail).toContain(F.exemptNotice);
+  });
+
+  it("treats the zero-earnings default as a valid zero", async () => {
+    const html = await PAYOUT.render();
+    expect(html).not.toContain('aria-invalid="true"');
+    expect(html).not.toContain(F.invalidNotice);
+  });
+
+  it("marks a claiming age outside 62 to 70 on its own field", async () => {
+    const html = await PAYOUT.render({ spouseClaimAge: "61" });
+    expect(html).toContain('aria-invalid="true"');
+    expect(html).toContain(F.claimAgeInvalid);
+    expect(resultRegion(html)).toContain(F.invalidNotice);
   });
 });

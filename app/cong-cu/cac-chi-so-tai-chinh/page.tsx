@@ -22,6 +22,11 @@ export default function FinancialRatiosPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // §5: the two-company worked example that argues `oneRatioNotice`. It
+      // lands in the LEDE disclosure because `noticeDetail` on this route is
+      // the closing-balance caveat and the shell has one slot each.
+      ledeDetail={C.ledeDetail}
+      ledeDetailTitle={C.ledeDetailTitle}
       // The row's lesson, in the one slot above the calculator: a single
       // ratio does not conclude a company's health. It replaced the
       // closing-balance caveat here, which is five sentences of technical
@@ -33,6 +38,10 @@ export default function FinancialRatiosPage() {
       intro={C.form.ratioTable.intro}
       prose={C.formula}
       faq={C.faq}
+      // ROW 67 is "Theo nhóm + kết quả": the tool now renders `columns="split"`
+      // with the derived statement and the twenty-row ratio table in the
+      // full-width band below.
+      wide
     >
       <FinancialRatiosCalculator />
     </CalculatorPage>

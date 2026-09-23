@@ -22,9 +22,17 @@ export default function IrrNpvPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // The calculator renders `columns="split"` again after an independent
+      // review restored the approved long-form desktop layout for CSV row 24,
+      // and `wide` is what gives that grid room to be worth splitting.
+      wide
       // Read NPV first. IRR is the number people quote and the one that
       // overstates, because it assumes reinvestment at its own rate.
       notice={C.npvFirstNotice}
+      // The two worked rates for the default project. The RULE stays visible
+      // above the form; the figures that prove it collapse.
+      noticeDetailTitle={C.npvFirstNoticeDetailTitle}
+      noticeDetail={C.npvFirstNoticeDetail}
       prose={C.formula}
       faq={C.faq}
     >

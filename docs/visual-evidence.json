@@ -1,227 +1,235 @@
 {
-  "generatedAt": "2026-09-16",
-  "what": "Rendered-layout evidence for every live calculator route, at two measured viewports. This is the artifact behind criterion B of `pnpm check:done`: AGENTS.md states that nothing in the test suite checks appearance, so a green suite says nothing about layout, and 'someone looked at it' does not survive a session ending.",
+  "generatedAt": "2026-09-23",
+  "export": "2026-09-22T23:20:44.315Z",
+  "what": "Rendered-layout evidence for every live calculator route. This is the artifact behind criterion B of `pnpm check:done`: AGENTS.md states that nothing in the test suite checks appearance, so a green suite says nothing about layout, and 'someone looked at it' does not survive a session ending. The CURRENT record is the three-viewport sweep below; the 2026-09-16/17 iframe sweep is kept under `historical` and is NOT a current claim.",
+  "supersedes": "The 2026-09-16 iframe sweep at 390 and 1280 and the 2026-09-17 single-row pass. Their findings are retained verbatim under `historical` with their own dates, because several of them are still the clearest record of WHY a rule exists. Nothing under `historical` was re-measured on this export.",
   "method": {
-    "tool": "in-app browser, same-origin iframes at an explicit width against the BUILT export served from out/",
-    "why": "An iframe with width=390 gives the document a real 390px layout viewport, so the page's own media queries apply. Measurements are taken from the iframe's contentDocument after two animation frames.",
-    "rejectedApproach": "chrome --headless --screenshot --window-size=390,844 . On this machine the headless window clamps to a minimum somewhere between 500 and 560 CSS px: captures at 390 and at 500 came back PIXEL-IDENTICAL in their left 390 columns, while 560 and above reflowed. So a 390-wide file from that path is a wider layout CROPPED, not a phone layout. It looks like valid evidence and is not. Any future harness must verify the layout width it claims, not just the image width.",
-    "verified": "Every row's iframe reported contentWindow.innerWidth exactly equal to the requested viewport; that assertion is recorded per viewport below as viewportVerifiedForAll."
+    "tool": "Live pages in the CODEX in-app browser against the BUILT export served on loopback 3022. Codex, the independent verifier, performed this UI proof; the implementation owner (Claude) did not. Any earlier wording attributing the current sweep to a Claude in-app browser was wrong.",
+    "notThis": "NOT same-origin iframes (the 2026-09-16 method), NOT screenshots generated from code, NOT mock DOM, NOT headless cropped windows. The distinction is load-bearing: see `rejectedApproachDated2026-09-16`.",
+    "viewports": ["390x844", "768x1024", "1440x1000"],
+    "verified": "Every row's window.innerWidth was read at capture time and equalled the requested width. 76 routes x 3 viewports = 228 observations, 0 viewport mismatches.",
+    "scope": "76 unique calculator routes, enumerated from the links the rendered hub actually emits, listed individually in `rows` below. Derive the count from `content/calculators/registry.ts`, never from prose.",
+    "geometryIsNotAppearance": "This sweep measured geometry and interacted with controls. Appearance is backed by the per-group screenshots that were captured AND inspected in earlier rounds, plus the four final mode-copy screenshots named in `appearanceEvidence`. A geometry pass is not visual acceptance.",
+    "rejectedApproachDated2026-09-16": "chrome --headless --screenshot --window-size=390,844 . On this machine the headless window clamps to a minimum somewhere between 500 and 560 CSS px: captures at 390 and at 500 came back PIXEL-IDENTICAL in their left 390 columns, while 560 and above reflowed. So a 390-wide file from that path is a wider layout CROPPED, not a phone layout. It looks like valid evidence and is not. Any future harness must verify the layout width it claims, not just the image width."
   },
-  "findings": {
-    "noPageLevelOverflow": "At 390 and at 1280, no route produced documentElement.scrollWidth greater than the viewport. Where a table is wider than the screen, the horizontal scroll is contained by the ResultTable wrapper, which is the intended behaviour.",
-    "ruleVersusSymptom": "docs section 3 requires mobileCards from five columns up. Measurement shows column count and rendered overflow are independent: lai-kep has 5 columns and does NOT overflow at 390, while vay-thuong-mai and lai-suat-thuc-te have 4 columns each and DO overflow. The threshold is a proxy for the symptom and is wrong in both directions. The two 4-column rows are deliberately NOT added to WIDE_TABLE_PENDING, because that list is the allowlist for the RULE and is checked both ways — a non-violator listed there would be reported as a stale entry. RE-MEASURED 2026-09-16 AFTER THE FIX: both 4-column rows now report ZERO elements over 390 and are removed from elementsWiderThanViewport above (11 rows -> 9). vay-thuong-mai went 485px -> 300px inside its 300px frame; lai-suat-thuc-te moved to mobileCards, so below md it renders no table at all. NARROW_OVERFLOW_MEASURED is now empty. The finding itself still stands and should NOT be deleted: the column threshold remains a proxy that is wrong in both directions, and lai-kep still has 5 columns without overflowing.",
-    "emphasisStableAcrossViewports": "The same 30 rows ship at least one <strong> at both viewports, with identical counts, so reading emphasis does not vary with layout.",
-    "causeWasHalfWrong": "The earlier record said the cause on both 4-column rows was Vietnamese header length. Per-column measurement showed that held only for lai-suat-thuc-te. On vay-thuong-mai the headers merely matched the width of the cells beside them; the binding constraints were an 8.5rem prose label floor misapplied to a column of 1,2,3 (136px for content needing 32px) and untyped money cells, which opted the table out of the compact reading and pinned each amount column at the width of 5.000.000.000 (125px). Shortening its headers alone moved the table 380px -> 380px, i.e. no gain. Widest-text-in-column is not the same as the reason the column is that wide.",
-    "loanCompareRoutesFixed": "so-sanh-khoan-vay and lai-co-dinh-hay-tha-noi are two routes over one component (LoanCompareCalculator), so one change to costBarsModel cleared the six-column docs-section-3 violation on both. Re-measured at a verified 390px viewport on 2026-09-16: both report ZERO elements over 390 and are removed from elementsWiderThanViewport (9 rows -> 7). The recorded design objection to carding the comparison table did not survive measurement: its rows are OFFERS and its columns are metrics, so a card per row is a per-offer cost summary, and the metric-across-offers view a comparison wants already exists on the same page as the 281px So sanh tung chi tieu table. Fixing that table then exposed a second overflow on the fixed-vs-floating route only: a FOUR-column payment table at 427px, caused by a composed option label held on one line by nowrap. Letting it wrap puts it at exactly 300px on both routes.",
-    "noRowOverflows390": "As of 2026-09-16 NO live calculator route has an element wider than the 390px viewport. The list went 11 -> 9 -> 7 -> 0 across three changes: the two four-column rows, the two loan-comparison routes, and finally the seven-row P3/P4 shelf (eight tables: diem-pivot, gop-401k, toi-da-401k, ira-truyen-thong-hay-roth, nien-kim, rut-toi-thieu-bat-buoc and both tables on phan-tich-thu-nhap-huu-tri). Removed slugs and their last recorded counts: diem-pivot=9, gop-401k=13, toi-da-401k=31, phan-tich-thu-nhap-huu-tri=25, ira-truyen-thong-hay-roth=13, rut-toi-thieu-bat-buoc=27, nien-kim=10. An EMPTY list here is the goal state, not a broken sweep — the guard in components/calc/wide-table-pending.test.ts had a non-vacuity floor asserting more than five overflowing rows, which would have gone red on completion, and it was removed for the same reason STATUTORY_UNDECLARED and NARROW_OVERFLOW_MEASURED lost theirs.",
-    "remainingRuleDebt": "WIDE_TABLE_PENDING still holds ONE entry, lai-kep: five columns, so it violates docs section 3, and measured to FIT at 390px. It is a rule debt with no rendered symptom, which is the clearest surviving evidence that column count and rendered overflow are independent."
+  "coverage": {
+    "pageOverflow": "No route produced a page-level horizontal overflow at any of the three viewports, in the default state.",
+    "desktopDisposition": "At 1440x1000: 56 split and 20 single-column, per `rows[].desktopLayout`. At 768x1024 and 390x844 every route is one column.",
+    "regionWidths": "At 1440, split rows measure 415.2px form / 638.8px result / 1086px full-width detail where present; single rows measure 702px. At 768 every form/result is 662px; at 390, 300px. Absent default detail on `ty-suat-loi-nhuan-roi`, `tinh-phan-tram`, `margin-va-markup` and the fuel trip purpose is intentional, not a missing bound.",
+    "ctaErrorRecovery": "All 76 routes at 390x844, with real interactions: the default CTA focuses its own aria-controls target; the first visible numeric textbox was cleared with the keyboard and the CTA then focused an aria-invalid=\"true\" control; the input was restored to its displayed original value and every live-result text was restored exactly. THIS IS FIRST-FIELD COVERAGE — not every invalid field, and not every mathematical domain.",
+    "finalOfficialGatePassed": "The independent full AIWS native check on finhome-website ran `pnpm gate` (vitest run, tsc --noEmit, check:lint, next build, check:markup) on Node 24 in this root and PASSED with exit 0, completing at 2026-09-22T23:38:32.689Z in 56.8s: 296 test files / 6487 tests, tsc clean, '3 problem(s) total; 3 expected at baseline; 0 new', 276 static pages generated, and check:markup reporting 76 live and 0 planned calculator pages plus 190 non-calculator pages with all rendered contracts holding. Output was untruncated with no pipes, so these are unmasked tool exits. It is a test/build receipt only: it says nothing about appearance, zoom, clipboard delivery or assistive technology, and NOTHING IS DEPLOYED OR PUBLISHED.",
+    "ctaPairs": "77 CTA/answer pairs over 76 routes, ALL RERUN DIRECTLY ON THIS 23:20:44.315Z EXPORT rather than inferred from unchanged source: `quy-tac-72` intentionally has two independent input/answer/CTA pairs and both were exercised, the second also at 1440x1000 (target, blank-invalid focus, restored result). `tinh-ngay`'s primary caption is `Xem số ngày` and was tested by that caption — a caption, not a missing CTA. All other primary captions are `Xem kết quả`.",
+    "firstNumericBelowFold": "35 of 76 routes still have their first numeric input below 844px, against 58 at audit time. This is NOT a claim that every first numeric input is above the fold, and it is NOT a reason to move or hide a safety notice: critical limits and earlier interactive choices legitimately precede the first field. The Y values in `rows` are document-Y of the first numeric input rounded to the nearest px; the start of the form is NOT inferred from them.",
+    "appearanceEvidence": "Per-group inspected screenshots from the earlier rounds, plus the four final mode-copy images (fuel trip desktop, fuel commute mobile, allocation study desktop, allocation mobile) and the eight placement images of the preceding round. Provenance is in the audit artifact's `implementation-proof/`; those paths are references only and nothing in this repository or its CI may depend on them existing."
+  },
+  "notProven": {
+    "acceptedWithTheseTwoExceptions": "The owner accepted this work after being told that true browser zoom and delivered clipboard text remained unverified. The acceptance is therefore real AND those two items are still unproven: acceptance is a decision to ship the rest, not evidence. Neither is blocked on a Chrome or manual-verification permission any more — that choice is closed — so they are unmeasured, not pending. Marking either verified requires a new measurement. The acceptance record itself lives outside this repository, in the audit artifact's acceptance-status.md.",
+    "trueBrowserZoom": "UNVERIFIED, accepted as a stated exception. Cmd-plus in the in-app browser changed neither innerWidth nor devicePixelRatio, so no viewport resize may be reported as zoom proof. No permission is outstanding; there is simply no zoom measurement.",
+    "deliveredClipboardText": "UNVERIFIED, accepted as a stated exception. A copy toast fired and the unit-copy equation was correct on screen, but a keyboard paste into the local hub search stayed empty. Treat this as an in-app-browser evidence limitation, not an established application defect. The copy implementation is unchanged.",
+    "assistiveTechnologyAndDevices": "No screen-reader, physical-keyboard or physical-device certification exists at any date in this file.",
+    "otherDomains": "Colour contrast, focus order through long forms, every invalid field and every mathematical domain remain outside this evidence."
+  },
+  "sourcePreservationReceipt": {
+    "measuredOn": "2026-09-23",
+    "engineModules": "88 tracked non-test/non-chart lib/calc modules, 0 executable changes against 2ea781 after comment stripping. Raw digest (path + newline + raw source + newline, git ls-files order): a2635059ff54fdb1f8d4b3e86a0e036f2d6aac7b231889f3eddaa23d22120c4e.",
+    "contentDefaults": "405 baseline properties named default*/initial* across 87 tracked calculator content modules, 0 removed and 0 changed. Four ADDED selectors expose existing defaults — bond yield, fuel trip, margin price, wage monthly — and are not new numerical assumptions.",
+    "scopeCaveat": "This covers named properties and executable module bodies. It does NOT cover arbitrary component literals, wiring, or network behaviour: the absence of fetch/analytics/storage calls in the new and added files is a scoped TEXTUAL scan, not a network or security audit. No protected-file diff."
   },
   "viewports": [
     {
       "viewport": 390,
+      "viewportLabel": "390x844",
       "rowsMeasured": 76,
       "viewportVerifiedForAll": true,
       "noPageOverflowForAll": true,
       "elementsWiderThanViewport": [],
-      "rowsMeasuredNote": "75 from the 2026-09-16 sweep plus `nha-o-xa-hoi`, measured separately on 2026-09-17 — see `measuredSeparately` for its own method and date. The count is the number of live routes measured, not a claim that one sweep covered them all."
+      "rowsMeasuredNote": "Live in-app-browser pages on the 2026-09-22T23:20:44.315Z export, innerWidth read per row. An EMPTY `elementsWiderThanViewport` is the goal state, not a broken sweep — `components/calc/wide-table-pending.test.ts` reads this list and its non-vacuity floor was removed for exactly that reason."
     },
     {
-      "viewport": 1280,
+      "viewport": 768,
+      "viewportLabel": "768x1024",
+      "rowsMeasured": 76,
+      "viewportVerifiedForAll": true,
+      "noPageOverflowForAll": true,
+      "elementsWiderThanViewport": [
+        {
+          "slug": "du-bao-kinh-doanh",
+          "count": 10,
+          "maxElementWidthPx": 1039,
+          "contained": "Inside a 662px container with overflow-x:auto and tabindex=\"0\". This is the report table's own width, NOT page overflow."
+        },
+        {
+          "slug": "phan-tich-bao-cao-tai-chinh",
+          "count": 17,
+          "maxElementWidthPx": 856,
+          "contained": "Inside a 662px container with overflow-x:auto and tabindex=\"0\". Keyboard ArrowRight reached scrollLeft 194, which is its maximum; the screenshot was inspected. NOT page overflow."
+        }
+      ],
+      "rowsMeasuredNote": "DO NOT replace this list with an empty array and DO NOT relabel these two rows as page overflow. They are intentionally scrollable report tables, and `noPageOverflowForAll` above is the separate, passing page-level check."
+    },
+    {
+      "viewport": 1440,
+      "viewportLabel": "1440x1000",
       "rowsMeasured": 76,
       "viewportVerifiedForAll": true,
       "noPageOverflowForAll": true,
       "elementsWiderThanViewport": [],
-      "rowsMeasuredNote": "75 from the 2026-09-16 sweep plus `nha-o-xa-hoi`, measured separately on 2026-09-17 — see `measuredSeparately` for its own method and date. The count is the number of live routes measured, not a claim that one sweep covered them all."
-    }
-  ],
-  "strongCountsByRow": [
-    {
-      "slug": "vay-mua-nha",
-      "count": 1
-    },
-    {
-      "slug": "so-sanh-khoan-vay",
-      "count": 3
-    },
-    {
-      "slug": "tai-cap-von",
-      "count": 2
-    },
-    {
-      "slug": "apr",
-      "count": 2
-    },
-    {
-      "slug": "apr-nang-cao",
-      "count": 2
-    },
-    {
-      "slug": "vay-thuong-mai",
-      "count": 5
-    },
-    {
-      "slug": "kha-nang-mua-nha",
-      "count": 3
-    },
-    {
-      "slug": "thue-hay-mua",
-      "count": 3
-    },
-    {
-      "slug": "lai-suat-tha-noi",
-      "count": 2
-    },
-    {
-      "slug": "tra-no-hai-tuan",
-      "count": 5
-    },
-    {
-      "slug": "muc-tieu-tiet-kiem",
-      "count": 2
-    },
-    {
-      "slug": "irr-npv",
-      "count": 3
-    },
-    {
-      "slug": "trai-phieu",
-      "count": 3
-    },
-    {
-      "slug": "loi-nhuan-co-phieu",
-      "count": 2
-    },
-    {
-      "slug": "co-phieu-tang-truong-deu",
-      "count": 3
-    },
-    {
-      "slug": "co-phieu-tang-truong-khong-deu",
-      "count": 3
-    },
-    {
-      "slug": "capm",
-      "count": 2
-    },
-    {
-      "slug": "loi-nhuan-ky-vong",
-      "count": 2
-    },
-    {
-      "slug": "loi-nhuan-ky-nam-giu",
-      "count": 2
-    },
-    {
-      "slug": "wacc",
-      "count": 6
-    },
-    {
-      "slug": "quyen-chon-black-scholes",
-      "count": 3
-    },
-    {
-      "slug": "diem-pivot",
-      "count": 3
-    },
-    {
-      "slug": "fibonacci",
-      "count": 3
-    },
-    {
-      "slug": "ke-hoach-huu-tri",
-      "count": 8
-    },
-    {
-      "slug": "tinh-huu-tri",
-      "count": 7
-    },
-    {
-      "slug": "phan-tich-tiet-kiem-huu-tri",
-      "count": 12
-    },
-    {
-      "slug": "thu-nhap-huu-tri",
-      "count": 10
-    },
-    {
-      "slug": "du-bao-kinh-doanh",
-      "count": 6
-    },
-    {
-      "slug": "cac-chi-so-tai-chinh",
-      "count": 6
-    },
-    {
-      "slug": "phan-tich-bao-cao-tai-chinh",
-      "count": 6
-    },
-    {
-      "slug": "nha-o-xa-hoi",
-      "count": 3
+      "rowsMeasuredNote": "56 split and 20 single-column layouts; see `rows[].desktopLayout`."
     }
   ],
   "rows": [
-    "apr",
-    "apr-nang-cao",
-    "cac-chi-so-tai-chinh",
-    "capm",
-    "co-phieu-tang-truong-deu",
-    "co-phieu-tang-truong-khong-deu",
-    "diem-pivot",
-    "du-bao-kinh-doanh",
-    "fibonacci",
-    "gop-401k",
-    "ira-truyen-thong-hay-roth",
-    "irr-npv",
-    "ke-hoach-huu-tri",
-    "kha-nang-mua-nha",
-    "lai-co-dinh-hay-tha-noi",
-    "lai-suat-tha-noi",
-    "lai-suat-thuc-te",
-    "loi-nhuan-co-phieu",
-    "loi-nhuan-ky-nam-giu",
-    "loi-nhuan-ky-vong",
-    "muc-tieu-tiet-kiem",
-    "nien-kim",
-    "phan-tich-bao-cao-tai-chinh",
-    "phan-tich-thu-nhap-huu-tri",
-    "phan-tich-tiet-kiem-huu-tri",
-    "quyen-chon-black-scholes",
-    "rut-toi-thieu-bat-buoc",
-    "so-sanh-khoan-vay",
-    "tai-cap-von",
-    "thu-nhap-huu-tri",
-    "thue-hay-mua",
-    "tinh-huu-tri",
-    "toi-da-401k",
-    "tra-no-hai-tuan",
-    "trai-phieu",
-    "vay-mua-nha",
-    "vay-thuong-mai",
-    "wacc"
+    { "slug": "kha-nang-mua-nha", "firstNumericInputY": 1042, "desktopLayout": "split" },
+    { "slug": "nha-o-xa-hoi", "firstNumericInputY": 1111, "desktopLayout": "split" },
+    { "slug": "vay-mua-nha", "firstNumericInputY": 741, "desktopLayout": "split" },
+    { "slug": "lai-suat-tha-noi", "firstNumericInputY": 720, "desktopLayout": "split" },
+    { "slug": "muc-tieu-tiet-kiem", "firstNumericInputY": 1326, "desktopLayout": "split" },
+    { "slug": "so-sanh-khoan-vay", "firstNumericInputY": 786, "desktopLayout": "split" },
+    { "slug": "tai-cap-von", "firstNumericInputY": 546, "desktopLayout": "split" },
+    { "slug": "apr", "firstNumericInputY": 709, "desktopLayout": "split" },
+    { "slug": "apr-nang-cao", "firstNumericInputY": 724, "desktopLayout": "split" },
+    { "slug": "vay-thuong-mai", "firstNumericInputY": 729, "desktopLayout": "split" },
+    { "slug": "phan-tich-khoan-vay", "firstNumericInputY": 772, "desktopLayout": "split" },
+    { "slug": "thue-hay-mua", "firstNumericInputY": 667, "desktopLayout": "split" },
+    { "slug": "tiet-kiem-thue-vay-mua-nha", "firstNumericInputY": 981, "desktopLayout": "split" },
+    { "slug": "diem-chiet-khau", "firstNumericInputY": 731, "desktopLayout": "split" },
+    { "slug": "lai-co-dinh-hay-tha-noi", "firstNumericInputY": 847, "desktopLayout": "split" },
+    { "slug": "tra-no-hai-tuan", "firstNumericInputY": 766, "desktopLayout": "single" },
+    { "slug": "chi-tra-lai", "firstNumericInputY": 745, "desktopLayout": "split" },
+    { "slug": "bat-dong-san-cho-thue", "firstNumericInputY": 727, "desktopLayout": "split" },
+    { "slug": "lai-kep", "firstNumericInputY": 558, "desktopLayout": "split" },
+    { "slug": "quy-tac-72", "firstNumericInputY": 484, "desktopLayout": "single" },
+    { "slug": "gia-tri-tien-te-theo-thoi-gian", "firstNumericInputY": 1096, "desktopLayout": "split" },
+    { "slug": "tien-gui-co-ky-han", "firstNumericInputY": 994, "desktopLayout": "split" },
+    { "slug": "ty-suat-loi-nhuan-roi", "firstNumericInputY": 624, "desktopLayout": "single" },
+    { "slug": "irr-npv", "firstNumericInputY": 745, "desktopLayout": "split" },
+    { "slug": "trai-phieu", "firstNumericInputY": 1027, "desktopLayout": "split" },
+    { "slug": "loi-suat-tuong-duong-thue", "firstNumericInputY": 1000, "desktopLayout": "single" },
+    { "slug": "tiet-kiem-hoc-phi", "firstNumericInputY": 812, "desktopLayout": "split" },
+    { "slug": "thu-nhap-dau-tu", "firstNumericInputY": 775, "desktopLayout": "split" },
+    { "slug": "phi-quy-dau-tu", "firstNumericInputY": 732, "desktopLayout": "split" },
+    { "slug": "tai-khoan-tiet-kiem-y-te-hoa-ky", "firstNumericInputY": 1337, "desktopLayout": "split" },
+    { "slug": "tra-het-the-tin-dung", "firstNumericInputY": 1086, "desktopLayout": "split" },
+    { "slug": "tra-toi-thieu-the-tin-dung", "firstNumericInputY": 1089, "desktopLayout": "split" },
+    { "slug": "vay-mua-xe", "firstNumericInputY": 795, "desktopLayout": "split" },
+    { "slug": "thue-mua-xe", "firstNumericInputY": 970, "desktopLayout": "split" },
+    { "slug": "loi-nhuan-co-phieu", "firstNumericInputY": 826, "desktopLayout": "split" },
+    { "slug": "co-phieu-tang-truong-deu", "firstNumericInputY": 755, "desktopLayout": "single" },
+    { "slug": "co-phieu-tang-truong-khong-deu", "firstNumericInputY": 797, "desktopLayout": "split" },
+    { "slug": "capm", "firstNumericInputY": 775, "desktopLayout": "single" },
+    { "slug": "loi-nhuan-ky-vong", "firstNumericInputY": 749, "desktopLayout": "split" },
+    { "slug": "loi-nhuan-ky-nam-giu", "firstNumericInputY": 706, "desktopLayout": "single" },
+    { "slug": "wacc", "firstNumericInputY": 729, "desktopLayout": "split" },
+    { "slug": "quyen-chon-black-scholes", "firstNumericInputY": 846, "desktopLayout": "split" },
+    { "slug": "diem-pivot", "firstNumericInputY": 800, "desktopLayout": "single" },
+    { "slug": "fibonacci", "firstNumericInputY": 751, "desktopLayout": "single" },
+    { "slug": "thue-co-tuc", "firstNumericInputY": 905, "desktopLayout": "split" },
+    { "slug": "ke-hoach-huu-tri", "firstNumericInputY": 679, "desktopLayout": "split" },
+    { "slug": "tinh-huu-tri", "firstNumericInputY": 777, "desktopLayout": "split" },
+    { "slug": "gop-401k", "firstNumericInputY": 1189, "desktopLayout": "split" },
+    { "slug": "toi-da-401k", "firstNumericInputY": 1108, "desktopLayout": "split" },
+    { "slug": "phan-tich-tiet-kiem-huu-tri", "firstNumericInputY": 699, "desktopLayout": "split" },
+    { "slug": "phan-tich-thu-nhap-huu-tri", "firstNumericInputY": 913, "desktopLayout": "split" },
+    { "slug": "thu-nhap-huu-tri", "firstNumericInputY": 731, "desktopLayout": "split" },
+    { "slug": "ira-truyen-thong-hay-roth", "firstNumericInputY": 1160, "desktopLayout": "split" },
+    { "slug": "rut-toi-thieu-bat-buoc", "firstNumericInputY": 1028, "desktopLayout": "split" },
+    { "slug": "uoc-tinh-an-sinh-xa-hoi", "firstNumericInputY": 1320, "desktopLayout": "split" },
+    { "slug": "phan-tich-an-sinh-xa-hoi", "firstNumericInputY": 1039, "desktopLayout": "split" },
+    { "slug": "chi-tra-an-sinh-xa-hoi", "firstNumericInputY": 1078, "desktopLayout": "split" },
+    { "slug": "phan-bo-tai-san", "firstNumericInputY": 1058, "desktopLayout": "split" },
+    { "slug": "nien-kim", "firstNumericInputY": 1157, "desktopLayout": "split" },
+    { "slug": "lai-suat-thuc-te", "firstNumericInputY": 1006, "desktopLayout": "single" },
+    { "slug": "tinh-phan-tram", "firstNumericInputY": 765, "desktopLayout": "single" },
+    { "slug": "giam-gia-va-thue", "firstNumericInputY": 774, "desktopLayout": "split" },
+    { "slug": "margin-va-markup", "firstNumericInputY": 944, "desktopLayout": "single" },
+    { "slug": "luong-gio-sang-luong-thang", "firstNumericInputY": 657, "desktopLayout": "single" },
+    { "slug": "tang-luong", "firstNumericInputY": 930, "desktopLayout": "single" },
+    { "slug": "du-bao-kinh-doanh", "firstNumericInputY": 679, "desktopLayout": "split" },
+    { "slug": "cac-chi-so-tai-chinh", "firstNumericInputY": 757, "desktopLayout": "split" },
+    { "slug": "phan-tich-bao-cao-tai-chinh", "firstNumericInputY": 729, "desktopLayout": "split" },
+    { "slug": "phan-phoi-rong", "firstNumericInputY": 932, "desktopLayout": "split" },
+    { "slug": "chi-phi-nhien-lieu", "firstNumericInputY": 886, "desktopLayout": "split" },
+    { "slug": "tinh-tien-tip", "firstNumericInputY": 653, "desktopLayout": "single" },
+    { "slug": "tinh-ngay", "firstNumericInputY": 933, "desktopLayout": "single" },
+    { "slug": "doi-don-vi", "firstNumericInputY": 1502, "desktopLayout": "single" },
+    { "slug": "lam-phat-hoa-ky", "firstNumericInputY": 1229, "desktopLayout": "single" },
+    { "slug": "tin-phieu-kho-bac-hoa-ky", "firstNumericInputY": 934, "desktopLayout": "single" },
+    { "slug": "thue-luong-hoa-ky", "firstNumericInputY": 937, "desktopLayout": "single" }
   ],
-  "measuredSeparately": [
-    {
-      "slug": "nha-o-xa-hoi",
-      "measuredAt": "2026-09-17",
-      "viewports": [
-        390,
-        1280
-      ],
-      "method": "Real viewport emulation in the Claude in-app browser against the built export on localhost, with window.innerWidth read at capture time rather than assumed. NOT the iframe method the 2026-09-16 sweep used. AT 390 THE PANE RENDERS 1:1 AND THE OBSERVATIONS BELOW ARE FROM SCREENSHOTS. At 1280 the pane scales the emulation down and screenshot capture returned blank, so the 1280 evidence for this row is DOM-derived only (innerWidth 1280, no page-level overflow, condition cards 628 px) and is not a visual observation. Recorded that way on purpose.",
-      "innerWidthMatchedRequest": true,
-      "noPageLevelOverflow": true,
-      "observed": [
-        "390, from screenshots: title, lede and the three-condition notice render legibly; the calculator opens at 5,4 / 300 / 80; the LTV help reads “đây là quy định, không phải giả định”; all three condition cards in `SocialHousingConditions` render as readable bg-soft blocks; the five limits render as a bulleted list; the FAQ accordion shows five items; and both decree links render as underlined brand-green-ink (rgb(17,127,54)) anchors with their notes beneath.",
-        "A DEFECT WAS FOUND AND FIXED IN THIS PASS: the limits list shipped as `space-y-1` with no markers and read as one run-on block at 390 px. It now uses `list-disc space-y-1.5 pl-5`, matching `EducationArticleBody`. Every test passed both before and after, because the text was present either way.",
-        "A SECOND, PRE-EXISTING DEFECT WAS FOUND AND NOT FIXED: `monthlyAllocation`'s legend has 6 entries and 4 distinct colours. See docs §6; a ratchet now guards against a new model doing the same.",
-        "ALL EIGHT new article figures were then seen in screenshots at 390 px (2026-09-17, second pass). Two further defects were found and fixed: C17's `visualReading` described THREE bars where the figure draws TWO — the budget-carried loan equals the loan used on that household, so the adapter drops the redundant bar — and C20's prose quoted only the algebraic 27,35 periods while the figure's marker says month 28. Both are prose-vs-figure disagreements that no test could see."
-      ],
-      "notObserved": [
-        "1280 as a visual observation — see `method`. DOM evidence only at that width.",
-        "Colour contrast and focus order through the eleven-field form.",
-        "OPEN, NOT A DEFECT FOUND: C21's figure carries the shared loan-chart assumption that Vietnamese home loans are promotional for 6–24 months then float. That is true of commercial loans and misleading on a social-housing article, where 5,4% is the programme rate. Left alone because that string is shared by every loan figure and is correct for the rest; it needs a per-figure override, which is its own change."
+  "historical": {
+    "note": "Everything below was measured on the dates it states, by the 2026-09-16 iframe method or the 2026-09-17 single-row pass. It was NOT re-measured on the 23:20:44.315Z export. Keep it for the findings it records; do not read any of it as a current claim.",
+    "iframeSweep2026_09_16": {
+      "method": "In-app browser, same-origin iframes at an explicit width against the BUILT export served from out/. An iframe with width=390 gives the document a real 390px layout viewport, so the page's own media queries apply. Measurements were taken from the iframe's contentDocument after two animation frames, and every row's contentWindow.innerWidth equalled the requested viewport.",
+      "viewports": [390, 1280],
+      "rowsMeasured": 76,
+      "noPageOverflowForAll": true,
+      "elementsWiderThanViewport": "empty at both widths as of 2026-09-16"
+    },
+    "findings2026_09_16": {
+      "noPageLevelOverflow": "At 390 and at 1280, no route produced documentElement.scrollWidth greater than the viewport. Where a table is wider than the screen, the horizontal scroll is contained by the ResultTable wrapper, which is the intended behaviour.",
+      "ruleVersusSymptom": "docs section 3 requires mobileCards from five columns up. Measurement showed column count and rendered overflow are independent: lai-kep has 5 columns and does NOT overflow at 390, while vay-thuong-mai and lai-suat-thuc-te have 4 columns each and DID overflow. The threshold is a proxy for the symptom and is wrong in both directions. The two 4-column rows are deliberately NOT in WIDE_TABLE_PENDING, because that list is the allowlist for the RULE and is checked both ways. RE-MEASURED 2026-09-16 AFTER THE FIX: both report ZERO elements over 390; vay-thuong-mai went 485px -> 300px inside its 300px frame, and lai-suat-thuc-te moved to mobileCards so below md it renders no table at all. The finding itself still stands and should NOT be deleted.",
+      "emphasisStableAcrossViewports": "The same 30 rows shipped at least one <strong> at both viewports, with identical counts, so reading emphasis did not vary with layout. Dated 2026-09-16; not re-measured.",
+      "causeWasHalfWrong": "The earlier record said the cause on both 4-column rows was Vietnamese header length. Per-column measurement showed that held only for lai-suat-thuc-te. On vay-thuong-mai the binding constraints were an 8.5rem prose label floor misapplied to a column of 1,2,3 (136px for content needing 32px) and untyped money cells, which opted the table out of the compact reading and pinned each amount column at the width of 5.000.000.000 (125px). Shortening its headers alone moved the table 380px -> 380px. Widest-text-in-column is not the same as the reason the column is that wide.",
+      "loanCompareRoutesFixed": "so-sanh-khoan-vay and lai-co-dinh-hay-tha-noi are two routes over one component (LoanCompareCalculator), so one change to costBarsModel cleared the six-column docs-section-3 violation on both. Re-measured at a verified 390px viewport on 2026-09-16: both ZERO elements over 390. Fixing that table exposed a second overflow on the fixed-vs-floating route only: a FOUR-column payment table at 427px, caused by a composed option label held on one line by nowrap. Letting it wrap puts it at exactly 300px on both routes.",
+      "noRowOverflows390": "As of 2026-09-16 no live calculator route had an element wider than the 390px viewport. The list went 11 -> 9 -> 7 -> 0 across three changes: the two four-column rows, the two loan-comparison routes, and the seven-row P3/P4 shelf (eight tables: diem-pivot, gop-401k, toi-da-401k, ira-truyen-thong-hay-roth, nien-kim, rut-toi-thieu-bat-buoc and both tables on phan-tich-thu-nhap-huu-tri). Removed slugs and their last recorded counts: diem-pivot=9, gop-401k=13, toi-da-401k=31, phan-tich-thu-nhap-huu-tri=25, ira-truyen-thong-hay-roth=13, rut-toi-thieu-bat-buoc=27, nien-kim=10. An EMPTY list is the goal state, not a broken sweep — the guard in components/calc/wide-table-pending.test.ts had a non-vacuity floor asserting more than five overflowing rows, which would have gone red on completion, and it was removed for the same reason STATUTORY_UNDECLARED and NARROW_OVERFLOW_MEASURED lost theirs. The 2026-09-23 sweep independently found 0 elements over the viewport at 390 and 1440.",
+      "remainingRuleDebt": "WIDE_TABLE_PENDING still holds ONE entry, lai-kep: five columns, so it violates docs section 3, and measured to FIT at 390px. It is a rule debt with no rendered symptom, which is the clearest surviving evidence that column count and rendered overflow are independent."
+    },
+    "strongCountsByRow": {
+      "measuredOn": "2026-09-16",
+      "status": "HISTORICAL RECORD ONLY — these counts were not re-measured on the 23:20:44.315Z export, and several of the rows listed have since changed their result hierarchy. Do not cite them as current emphasis evidence.",
+      "counts": [
+        { "slug": "vay-mua-nha", "count": 1 },
+        { "slug": "so-sanh-khoan-vay", "count": 3 },
+        { "slug": "tai-cap-von", "count": 2 },
+        { "slug": "apr", "count": 2 },
+        { "slug": "apr-nang-cao", "count": 2 },
+        { "slug": "vay-thuong-mai", "count": 5 },
+        { "slug": "kha-nang-mua-nha", "count": 3 },
+        { "slug": "thue-hay-mua", "count": 3 },
+        { "slug": "lai-suat-tha-noi", "count": 2 },
+        { "slug": "tra-no-hai-tuan", "count": 5 },
+        { "slug": "muc-tieu-tiet-kiem", "count": 2 },
+        { "slug": "irr-npv", "count": 3 },
+        { "slug": "trai-phieu", "count": 3 },
+        { "slug": "loi-nhuan-co-phieu", "count": 2 },
+        { "slug": "co-phieu-tang-truong-deu", "count": 3 },
+        { "slug": "co-phieu-tang-truong-khong-deu", "count": 3 },
+        { "slug": "capm", "count": 2 },
+        { "slug": "loi-nhuan-ky-vong", "count": 2 },
+        { "slug": "loi-nhuan-ky-nam-giu", "count": 2 },
+        { "slug": "wacc", "count": 6 },
+        { "slug": "quyen-chon-black-scholes", "count": 3 },
+        { "slug": "diem-pivot", "count": 3 },
+        { "slug": "fibonacci", "count": 3 },
+        { "slug": "ke-hoach-huu-tri", "count": 8 },
+        { "slug": "tinh-huu-tri", "count": 7 },
+        { "slug": "phan-tich-tiet-kiem-huu-tri", "count": 12 },
+        { "slug": "thu-nhap-huu-tri", "count": 10 },
+        { "slug": "du-bao-kinh-doanh", "count": 6 },
+        { "slug": "cac-chi-so-tai-chinh", "count": 6 },
+        { "slug": "phan-tich-bao-cao-tai-chinh", "count": 6 },
+        { "slug": "nha-o-xa-hoi", "count": 3 }
       ]
-    }
-  ]
+    },
+    "measuredSeparately": [
+      {
+        "slug": "nha-o-xa-hoi",
+        "measuredAt": "2026-09-17",
+        "viewports": [390, 1280],
+        "method": "Real viewport emulation in the Claude in-app browser against the built export on localhost, with window.innerWidth read at capture time rather than assumed. NOT the iframe method the 2026-09-16 sweep used. AT 390 THE PANE RENDERS 1:1 AND THE OBSERVATIONS BELOW ARE FROM SCREENSHOTS. At 1280 the pane scaled the emulation down and screenshot capture returned blank, so the 1280 evidence for this row is DOM-derived only (innerWidth 1280, no page-level overflow, condition cards 628 px) and is not a visual observation. Recorded that way on purpose.",
+        "innerWidthMatchedRequest": true,
+        "noPageLevelOverflow": true,
+        "observed": [
+          "390, from screenshots: title, lede and the three-condition notice render legibly; the calculator opens at 5,4 / 300 / 80; the LTV help reads “đây là quy định, không phải giả định”; all three condition cards in `SocialHousingConditions` render as readable bg-soft blocks; the five limits render as a bulleted list; the FAQ accordion shows five items; and both decree links render as underlined brand-green-ink (rgb(17,127,54)) anchors with their notes beneath.",
+          "A DEFECT WAS FOUND AND FIXED IN THIS PASS: the limits list shipped as `space-y-1` with no markers and read as one run-on block at 390 px. It now uses `list-disc space-y-1.5 pl-5`, matching `EducationArticleBody`. Every test passed both before and after, because the text was present either way.",
+          "A SECOND, PRE-EXISTING DEFECT WAS FOUND AND NOT FIXED: `monthlyAllocation`'s legend has 6 entries and 4 distinct colours. See docs §6; a ratchet now guards against a new model doing the same.",
+          "ALL EIGHT new article figures were then seen in screenshots at 390 px (2026-09-17, second pass). Two further defects were found and fixed: C17's `visualReading` described THREE bars where the figure draws TWO — the budget-carried loan equals the loan used on that household, so the adapter drops the redundant bar — and C20's prose quoted only the algebraic 27,35 periods while the figure's marker says month 28. Both are prose-vs-figure disagreements that no test could see."
+        ],
+        "notObserved": [
+          "1280 as a visual observation — see `method`. DOM evidence only at that width.",
+          "Colour contrast and focus order through the eleven-field form.",
+          "OPEN, NOT A DEFECT FOUND: C21's figure carries the shared loan-chart assumption that Vietnamese home loans are promotional for 6–24 months then float. That is true of commercial loans and misleading on a social-housing article, where 5,4% is the programme rate. Left alone because that string is shared by every loan figure and is correct for the rest; it needs a per-figure override, which is its own change."
+        ]
+      }
+    ]
+  }
 }

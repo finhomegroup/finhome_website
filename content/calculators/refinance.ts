@@ -57,6 +57,7 @@ export const REFINANCE = {
     // the cash one arrives FIRST — which is exactly the trap.
     cashSeries: "Chênh lệch tiền đã chi (chưa tính dư nợ)",
     cashBreakEvenMarker: "Tiền đã chi bù đủ phí lần đầu: tháng {month}",
+    detailTitle: "Con số của đường tiền đã chi, và hai mốc bù phí",
     cashNote: "Chênh lệch tiền đã chi tại mốc đó là {cash}; con số này chưa tính dư nợ còn lại nên không phải lợi ích kinh tế.",
     breakEvenGapNote: "Hai mốc khác nhau: chi phí bù đủ phí ở tháng {cost}, còn tiền đã chi ở tháng {cash}. Đừng đọc mốc này thay cho mốc kia.",
     // THE SIGN MEANS DIFFERENT THINGS ON THE TWO LINES. Below zero on the

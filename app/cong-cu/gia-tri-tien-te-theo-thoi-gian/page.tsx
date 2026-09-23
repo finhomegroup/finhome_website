@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { TvmCalculator } from "@/components/tvm-calculator";
 import { TVM as C } from "@/content/calculators/tvm";
@@ -31,11 +32,16 @@ export default function TvmPage() {
       notice={C.question.pageNotice}
       prose={C.formula}
       faq={C.faq}
-      // Original row 18's next step: "mục tiêu tiết kiệm hoặc khoản vay theo
-      // câu hỏi". The entry existed and this route never rendered it.
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <TvmCalculator />
+      {/* Original row 18's next step: "mục tiêu tiết kiệm hoặc khoản vay theo
+          câu hỏi". Handed to the calculator so the split layout can put it
+          beside the answer rather than below the whole tool; still rendered
+          from the page, so it ships no client JavaScript. */}
+      <TvmCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

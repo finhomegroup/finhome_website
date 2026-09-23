@@ -43,6 +43,10 @@ export default function DdmPage() {
       // The value is hypersensitive to the denominator. Read the inversions
       // instead — those are the claims a reader can actually check.
       notice={C.denominatorNotice}
+      // The 7%-versus-1% denominator demonstration and both inversions. The
+      // sensitivity claim itself stays visible.
+      noticeDetailTitle={C.denominatorNoticeDetailTitle}
+      noticeDetail={C.denominatorNoticeDetail}
       afterCalculator={
         <section>
           <h2 className="font-display text-xl font-medium text-ink md:text-2xl">

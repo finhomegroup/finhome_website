@@ -1,9 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -63,7 +65,28 @@ const SOLVE_OPTIONS = [
   { value: "rate", label: C.form.solveRate },
 ] as const;
 
-export function TvmCalculator() {
+/*
+ * CSV row 21 ("Hai cột"). Its first half — "chọn đại lượng cần tìm trước rồi
+ * mới hiện các ô liên quan" — was ALREADY TRUE before this row was actioned,
+ * and is recorded here rather than re-implemented: the mode radio is the first
+ * control on the page, the guided fields mount per question (`needsGoal`,
+ * `needsMonths`, `needsContribution`), and the advanced solver hides the one
+ * quantity it is solving for. What this row adds is the second half, "nhấn duy
+ * nhất câu trả lời cần tìm": the live group used to give its three rows the
+ * same weight, so the solved quantity did not read as the answer. Docs §8.
+ */
+const FORM_ID = "gia-tri-tien-te-nhap";
+const RESULT_ID = "gia-tri-tien-te-ket-qua";
+
+export function TvmCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     mode: C.question.defaultMode,
 
@@ -235,313 +258,384 @@ export function TvmCalculator() {
     }
   };
 
+  /*
+   * The ONE row row 21 asks to be emphasised, and the reason it is computed
+   * rather than written inline: in the "how much per month" question an
+   * already-funded plan answers with a sentence, not a figure, and
+   * `ResultRow` ignores `emphasis` whenever `prose` is set. So the flag has to
+   * follow the value's shape.
+   */
+  const answerValue = advanced ? solvedValue() : guidedValue();
+  const answerLabel = advanced ? solvedLabel : guidedLabel();
+  const answerIsFigure = advanced || !noContributionNeeded;
+
+  const anyInvalid = advanced
+    ? presentInvalid ||
+      futureInvalid ||
+      paymentInvalid ||
+      periodsInvalid ||
+      rateInvalid
+    : savingsInvalid ||
+      contributionInvalid ||
+      goalInvalid ||
+      monthsInvalid ||
+      annualRateInvalid;
+
   return (
     <CalculatorCard>
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.question.modeLegend}
-          help={C.question.modeHelp}
-          options={MODES.map((option) => ({ ...option }))}
-        />
-      </FieldGroup>
-
-      {question !== null ? (
-        <FieldGroup title={C.question.group} className="mt-8">
-          <NumberField
-            {...fields.bind("savings")}
-            label={C.question.savingsLabel}
-            unit={C.question.savingsUnit}
-            help={C.question.savingsHelp}
-            error={C.question.savingsInvalid}
-            invalid={savingsInvalid}
-          />
-          {/* Hidden in the mode that SOLVES for it, exactly as the advanced
-              solver hides the quantity it is finding. */}
-          {needsContribution ? (
-            <NumberField
-              {...fields.bind("contribution")}
-              label={C.question.contributionLabel}
-              unit={C.question.contributionUnit}
-              help={C.question.contributionHelp}
-              error={C.question.contributionInvalid}
-              invalid={contributionInvalid}
-            />
-          ) : null}
-          {needsGoal ? (
-            <NumberField
-              {...fields.bind("goal")}
-              label={C.question.goalLabel}
-              unit={C.question.goalUnit}
-              help={C.question.goalHelp}
-              error={C.question.goalInvalid}
-              invalid={goalInvalid}
-            />
-          ) : null}
-          {needsMonths ? (
-            <NumberField
-              {...fields.bind("months")}
-              label={C.question.monthsLabel}
-              help={C.question.monthsHelp}
-              error={C.question.monthsInvalid}
-              invalid={monthsInvalid}
-            />
-          ) : null}
-          <NumberField
-            {...fields.bind("annualRate")}
-            label={C.question.rateLabel}
-            unit={C.question.rateUnit}
-            help={C.question.rateHelp}
-            error={C.question.rateInvalid}
-            invalid={annualRateInvalid}
-          />
-        </FieldGroup>
-      ) : (
-        <>
-          {/* The sign convention lives HERE, with the only mode it governs. */}
-          <p className="mt-6 text-sm leading-relaxed text-ink-3">
-            {C.signNotice}
-          </p>
-
-          <FieldGroup className="mt-6">
-            <RadioGroupField
-              {...fields.bind("solveFor")}
-              legend={C.form.solveLegend}
-              help={C.form.solveHelp}
-              options={SOLVE_OPTIONS.map((option) => ({ ...option }))}
-            />
-          </FieldGroup>
-
-          <FieldGroup title={C.form.group} className="mt-8">
-            {solveFor !== "presentValue" ? (
-              <NumberField
-                {...fields.bind("present")}
-                label={C.form.presentLabel}
-                unit={C.form.presentUnit}
-                help={C.form.presentHelp}
-                error={C.form.presentInvalid}
-                invalid={presentInvalid}
-              />
-            ) : null}
-            {solveFor !== "futureValue" ? (
-              <NumberField
-                {...fields.bind("future")}
-                label={C.form.futureLabel}
-                unit={C.form.futureUnit}
-                help={C.form.futureHelp}
-                error={C.form.futureInvalid}
-                invalid={futureInvalid}
-              />
-            ) : null}
-            {solveFor !== "payment" ? (
-              <NumberField
-                {...fields.bind("payment")}
-                label={C.form.paymentLabel}
-                unit={C.form.paymentUnit}
-                help={C.form.paymentHelp}
-                error={C.form.paymentInvalid}
-                invalid={paymentInvalid}
-              />
-            ) : null}
-            {solveFor !== "periods" ? (
-              <NumberField
-                {...fields.bind("periods")}
-                label={C.form.periodsLabel}
-                help={C.form.periodsHelp}
-                error={C.form.periodsInvalid}
-                invalid={periodsInvalid}
-              />
-            ) : null}
-            {solveFor !== "rate" ? (
-              <NumberField
-                {...fields.bind("rate")}
-                label={C.form.rateLabel}
-                unit={C.form.rateUnit}
-                help={C.form.rateHelp}
-                error={C.form.rateInvalid}
-                invalid={rateInvalid}
-              />
-            ) : null}
-            <RadioGroupField
-              {...fields.bind("timing")}
-              legend={C.form.timingLegend}
-              help={C.form.timingHelp}
-              options={[
-                { value: "end", label: C.form.timingEnd },
-                { value: "beginning", label: C.form.timingBeginning },
-              ]}
-            />
-          </FieldGroup>
-        </>
-      )}
-
-      {/* EXACTLY ONE live results region on this page (docs §4). Its rows are
-          the active mode's, so both modes are announced. */}
-      <ResultGroup
-        title={advanced ? C.form.resultTitle : C.question.resultTitle}
-        className="mt-8"
-      >
-        {advanced ? (
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
           <>
-            <ResultRow label={solvedLabel} value={solvedValue()} />
-            <ResultRow
-              label={C.form.netInterestLabel}
-              value={money(result?.netInterest)}
-            />
-            <ResultRow
-              label={C.form.totalPaymentsLabel}
-              value={money(result?.totalPayments)}
-            />
+            {/* The quantity to find, FIRST — before any box that depends on
+                which one it is. */}
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.question.modeLegend}
+                help={C.question.modeHelp}
+                options={MODES.map((option) => ({ ...option }))}
+              />
+            </FieldGroup>
+
+            {question !== null ? (
+              <FieldGroup title={C.question.group} className="mt-8">
+                <NumberField
+                  {...fields.bind("savings")}
+                  label={C.question.savingsLabel}
+                  unit={C.question.savingsUnit}
+                  help={C.question.savingsHelp}
+                  error={C.question.savingsInvalid}
+                  invalid={savingsInvalid}
+                />
+                {/* Hidden in the mode that SOLVES for it, exactly as the
+                    advanced solver hides the quantity it is finding. */}
+                {needsContribution ? (
+                  <NumberField
+                    {...fields.bind("contribution")}
+                    label={C.question.contributionLabel}
+                    unit={C.question.contributionUnit}
+                    help={C.question.contributionHelp}
+                    error={C.question.contributionInvalid}
+                    invalid={contributionInvalid}
+                  />
+                ) : null}
+                {needsGoal ? (
+                  <NumberField
+                    {...fields.bind("goal")}
+                    label={C.question.goalLabel}
+                    unit={C.question.goalUnit}
+                    help={C.question.goalHelp}
+                    error={C.question.goalInvalid}
+                    invalid={goalInvalid}
+                  />
+                ) : null}
+                {needsMonths ? (
+                  <NumberField
+                    {...fields.bind("months")}
+                    label={C.question.monthsLabel}
+                    help={C.question.monthsHelp}
+                    error={C.question.monthsInvalid}
+                    invalid={monthsInvalid}
+                  />
+                ) : null}
+                <NumberField
+                  {...fields.bind("annualRate")}
+                  label={C.question.rateLabel}
+                  unit={C.question.rateUnit}
+                  help={C.question.rateHelp}
+                  error={C.question.rateInvalid}
+                  invalid={annualRateInvalid}
+                />
+              </FieldGroup>
+            ) : (
+              <>
+                {/* The sign convention lives HERE, with the only mode it
+                    governs. */}
+                <p className="mt-6 text-sm leading-relaxed text-ink-3">
+                  {C.signNotice}
+                </p>
+
+                <FieldGroup className="mt-6">
+                  <RadioGroupField
+                    {...fields.bind("solveFor")}
+                    legend={C.form.solveLegend}
+                    help={C.form.solveHelp}
+                    options={SOLVE_OPTIONS.map((option) => ({ ...option }))}
+                  />
+                </FieldGroup>
+
+                <FieldGroup title={C.form.group} className="mt-8">
+                  {solveFor !== "presentValue" ? (
+                    <NumberField
+                      {...fields.bind("present")}
+                      label={C.form.presentLabel}
+                      unit={C.form.presentUnit}
+                      help={C.form.presentHelp}
+                      error={C.form.presentInvalid}
+                      invalid={presentInvalid}
+                    />
+                  ) : null}
+                  {solveFor !== "futureValue" ? (
+                    <NumberField
+                      {...fields.bind("future")}
+                      label={C.form.futureLabel}
+                      unit={C.form.futureUnit}
+                      help={C.form.futureHelp}
+                      error={C.form.futureInvalid}
+                      invalid={futureInvalid}
+                    />
+                  ) : null}
+                  {solveFor !== "payment" ? (
+                    <NumberField
+                      {...fields.bind("payment")}
+                      label={C.form.paymentLabel}
+                      unit={C.form.paymentUnit}
+                      help={C.form.paymentHelp}
+                      error={C.form.paymentInvalid}
+                      invalid={paymentInvalid}
+                    />
+                  ) : null}
+                  {solveFor !== "periods" ? (
+                    <NumberField
+                      {...fields.bind("periods")}
+                      label={C.form.periodsLabel}
+                      help={C.form.periodsHelp}
+                      error={C.form.periodsInvalid}
+                      invalid={periodsInvalid}
+                    />
+                  ) : null}
+                  {solveFor !== "rate" ? (
+                    <NumberField
+                      {...fields.bind("rate")}
+                      label={C.form.rateLabel}
+                      unit={C.form.rateUnit}
+                      help={C.form.rateHelp}
+                      error={C.form.rateInvalid}
+                      invalid={rateInvalid}
+                    />
+                  ) : null}
+                  <RadioGroupField
+                    {...fields.bind("timing")}
+                    legend={C.form.timingLegend}
+                    help={C.form.timingHelp}
+                    options={[
+                      { value: "end", label: C.form.timingEnd },
+                      { value: "beginning", label: C.form.timingBeginning },
+                    ]}
+                  />
+                </FieldGroup>
+              </>
+            )}
           </>
-        ) : (
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={anyInvalid}
+            // Measured at 1440×1000 in the default guided mode with the last
+            // visible field focused: the first result row sat at y −263,5.
+            //
+            // THE PIN IS THE ACTIVE MODE'S OWN ANSWER. `answerLabel` and
+            // `answerValue` are already the solved quantity of whichever
+            // question is selected — five guided questions and the advanced
+            // solver — so the pinned line follows a mode change with the row
+            // rather than naming one mode's quantity in all six. That includes
+            // the already-funded case, where the answer is a sentence and not
+            // a figure: restating the row is right, and inventing a figure for
+            // it would not be.
+            sticky
+            answer={{ label: answerLabel, value: answerValue }}
+          />
+        }
+        primary={
           <>
-            <ResultRow label={guidedLabel()} value={guidedValue()} />
-            <ResultRow
-              label={C.question.paidLabel}
-              value={money(answer?.totalContributed)}
-            />
-            <ResultRow
-              label={C.question.interestLabel}
-              value={money(answer?.interest)}
-            />
+            {/* EXACTLY ONE live results region on this page (docs §4). Its rows
+                are the active mode's, so both modes are announced, and the
+                solved quantity is the only emphasised one. */}
+            <ResultGroup
+              title={advanced ? C.form.resultTitle : C.question.resultTitle}
+              anchorId={RESULT_ID}
+            >
+              <ResultRow
+                label={answerLabel}
+                value={answerValue}
+                emphasis={answerIsFigure}
+                prose={!answerIsFigure}
+              />
+              {advanced ? (
+                <>
+                  <ResultRow
+                    label={C.form.netInterestLabel}
+                    value={money(result?.netInterest)}
+                  />
+                  <ResultRow
+                    label={C.form.totalPaymentsLabel}
+                    value={money(result?.totalPayments)}
+                  />
+                </>
+              ) : (
+                <>
+                  <ResultRow
+                    label={C.question.paidLabel}
+                    value={money(answer?.totalContributed)}
+                  />
+                  <ResultRow
+                    label={C.question.interestLabel}
+                    value={money(answer?.interest)}
+                  />
+                </>
+              )}
+            </ResultGroup>
+
+            {/* The distinction original row 18 turns on: an algebraic period is
+                not a month a standing order can be made in. */}
+            {question === "monthsNeeded" && answer?.fundedMonth != null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.exactPeriodsNotice}
+              </p>
+            ) : null}
+
+            {answer?.schedule.status === "alreadyFunded" ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.alreadyFundedNotice}
+              </p>
+            ) : null}
+
+            {answer?.schedule.status === "unattainable" ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.unattainableNotice}
+              </p>
+            ) : null}
+
+            {answer?.schedule.status === "beyondLimit" ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.notReachedNotice}
+              </p>
+            ) : null}
+
+            {/* A solved contribution can come out negative: the money already
+                there covers the goal. That is not a contribution, and the page
+                says so rather than rendering a negative standing order. */}
+            {noContributionNeeded ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.negativeContributionNotice}
+              </p>
+            ) : null}
+
+            {noAnswer ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.question.noAnswerNotice}
+              </p>
+            ) : null}
+
+            {noSolution ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.noSolutionNotice}
+              </p>
+            ) : null}
           </>
-        )}
-      </ResultGroup>
-
-      {/* The guided detail: the monthly rate actually used, and — in the "how
-          long" question — the algebraic period count BESIDE the funded month,
-          never instead of it. */}
-      {question !== null ? (
-        <ResultGroup
-          // The friendly mode's own heading: "Cả năm đại lượng" is the
-          // advanced mode's, where there are five.
-          title={C.question.detailTitle}
-          className="mt-4"
-          live={false}
-        >
-          <ResultRow
-            label={C.question.monthlyRateLabel}
-            value={answer ? formatPercent(answer.monthlyRatePercent, 6) : null}
-          />
-          {question === "monthsNeeded" ? (
-            <ResultRow
-              label={C.question.exactPeriodsLabel}
-              value={
-                answer?.exactPeriods == null
-                  ? null
-                  : `${formatDecimal(answer.exactPeriods, 2)} ${C.question.periodsUnit}`
-              }
-            />
-          ) : null}
-          {/* The signed algebraic solve, mounted only where it says
-              something the headline does not: a plan already funded. */}
-          {noContributionNeeded ? (
-            <ResultRow
-              label={C.question.algebraicContributionLabel}
-              value={money(answer?.requiredMonthlyContribution)}
-            />
-          ) : null}
-        </ResultGroup>
-      ) : (
-        /* All five quantities, so a reader can check the sign of what they
-           entered against what the solver used. */
-        <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-          <ResultRow
-            label={C.form.presentResultLabel}
-            value={money(result?.presentValue)}
-          />
-          <ResultRow
-            label={C.form.futureResultLabel}
-            value={money(result?.futureValue)}
-          />
-          <ResultRow
-            label={C.form.paymentResultLabel}
-            value={money(result?.payment)}
-          />
-          <ResultRow
-            label={C.form.periodsResultLabel}
-            value={result ? formatDecimal(result.periods, 4) : null}
-          />
-          <ResultRow
-            label={C.form.rateResultLabel}
-            value={result ? formatPercent(result.ratePercentPerPeriod, 6) : null}
-          />
-          <ResultRow
-            label={C.form.annualRateLabel}
-            value={
-              result ? formatPercent(result.annualRateIfMonthlyPercent, 4) : null
-            }
-          />
-          <ResultRow
-            label={C.form.timingResultLabel}
-            value={
-              result === null
-                ? null
-                : result.paymentAtBeginning
-                  ? C.form.timingBeginning
-                  : C.form.timingEnd
-            }
-          />
-        </ResultGroup>
-      )}
-
-      {/* The distinction original row 18 turns on: an algebraic period is not
-          a month a standing order can be made in. */}
-      {question === "monthsNeeded" && answer?.fundedMonth != null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.exactPeriodsNotice}
-        </p>
-      ) : null}
-
-      {answer?.schedule.status === "alreadyFunded" ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.alreadyFundedNotice}
-        </p>
-      ) : null}
-
-      {answer?.schedule.status === "unattainable" ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.unattainableNotice}
-        </p>
-      ) : null}
-
-      {answer?.schedule.status === "beyondLimit" ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.notReachedNotice}
-        </p>
-      ) : null}
-
-      {/* A solved contribution can come out negative: the money already there
-          covers the goal. That is not a contribution, and the page says so
-          rather than rendering a negative standing order. */}
-      {noContributionNeeded ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.negativeContributionNotice}
-        </p>
-      ) : null}
-
-      {noAnswer ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.question.noAnswerNotice}
-        </p>
-      ) : null}
-
-      {noSolution ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.noSolutionNotice}
-        </p>
-      ) : null}
-
-      {/* Original row 18's timeline. Guided mode only: the advanced solver
-          allows a payment at the start of a period and a negative rate, and
-          `projectSavings` — the one discrete engine behind every schedule in
-          this suite — models neither. Drawing one of those from a different
-          convention would put the picture and the answer on two models. */}
-      {question !== null ? (
-        <ChartFigure model={chart}>
-          <LineChart model={chart} />
-        </ChartFigure>
-      ) : null}
+        }
+        chart={
+          /* Original row 18's timeline. Guided mode only: the advanced solver
+             allows a payment at the start of a period and a negative rate, and
+             `projectSavings` — the one discrete engine behind every schedule in
+             this suite — models neither. Drawing one of those from a different
+             convention would put the picture and the answer on two models. */
+          question !== null ? (
+            <ChartFigure model={chart}>
+              <LineChart model={chart} />
+            </ChartFigure>
+          ) : undefined
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          question !== null ? (
+            /* The guided detail: the monthly rate actually used, and — in the
+               "how long" question — the algebraic period count BESIDE the
+               funded month, never instead of it. */
+            <ResultGroup
+              // The friendly mode's own heading: "Cả năm đại lượng" is the
+              // advanced mode's, where there are five.
+              title={C.question.detailTitle}
+              live={false}
+            >
+              <ResultRow
+                label={C.question.monthlyRateLabel}
+                value={
+                  answer ? formatPercent(answer.monthlyRatePercent, 6) : null
+                }
+              />
+              {question === "monthsNeeded" ? (
+                <ResultRow
+                  label={C.question.exactPeriodsLabel}
+                  value={
+                    answer?.exactPeriods == null
+                      ? null
+                      : `${formatDecimal(answer.exactPeriods, 2)} ${C.question.periodsUnit}`
+                  }
+                />
+              ) : null}
+              {/* The signed algebraic solve, mounted only where it says
+                  something the headline does not: a plan already funded. */}
+              {noContributionNeeded ? (
+                <ResultRow
+                  label={C.question.algebraicContributionLabel}
+                  value={money(answer?.requiredMonthlyContribution)}
+                />
+              ) : null}
+            </ResultGroup>
+          ) : (
+            /* All five quantities, so a reader can check the sign of what they
+               entered against what the solver used. */
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.presentResultLabel}
+                value={money(result?.presentValue)}
+              />
+              <ResultRow
+                label={C.form.futureResultLabel}
+                value={money(result?.futureValue)}
+              />
+              <ResultRow
+                label={C.form.paymentResultLabel}
+                value={money(result?.payment)}
+              />
+              <ResultRow
+                label={C.form.periodsResultLabel}
+                value={result ? formatDecimal(result.periods, 4) : null}
+              />
+              <ResultRow
+                label={C.form.rateResultLabel}
+                value={
+                  result ? formatPercent(result.ratePercentPerPeriod, 6) : null
+                }
+              />
+              <ResultRow
+                label={C.form.annualRateLabel}
+                value={
+                  result
+                    ? formatPercent(result.annualRateIfMonthlyPercent, 4)
+                    : null
+                }
+              />
+              <ResultRow
+                label={C.form.timingResultLabel}
+                value={
+                  result === null
+                    ? null
+                    : result.paymentAtBeginning
+                      ? C.form.timingBeginning
+                      : C.form.timingEnd
+                }
+              />
+            </ResultGroup>
+          )
+        }
+      />
     </CalculatorCard>
   );
 }

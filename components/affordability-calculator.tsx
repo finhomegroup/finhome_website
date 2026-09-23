@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -14,6 +15,7 @@ import {
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -296,12 +298,52 @@ export function AffordabilityScenarioComparison({
  */
 export type AffordabilityProgramme = "commercial" | "social-housing";
 
+/*
+ * CSV row 1 ("Hai cột"): "đặt tầm giá cạnh dữ liệu" is the split layout, and
+ * the other two clauses are about WHICH figures are visible without opening
+ * anything. "Chỉ rõ yếu tố đang giới hạn" and "làm rõ ngân sách hộ và trần tỷ
+ * lệ" were both true of the page's copy already — the binding limit, the ratio
+ * ceiling, the household residual and the budget all existed, each under its
+ * own name — but they sat inside "Xem chi tiết", four screens below a headline
+ * that reads like a single ceiling. So that block is lifted out of the
+ * disclosure and into the result column, directly under the four headline
+ * rows, in the order the reader needs: which limit bound it, then the ceiling
+ * and the budget it was bound by. The financing ledger stays disclosed; it
+ * answers a different question. Docs §8.
+ */
+/*
+ * One component, two routes, so the region ids are per PROGRAMME rather than
+ * module constants: `#kha-nang-mua-nha-ket-qua` on a page about nhà ở xã hội
+ * would be a link to an answer that is not this page's.
+ */
+const REGION_IDS: Record<AffordabilityProgramme, { form: string; result: string }> =
+  {
+    commercial: {
+      form: "kha-nang-mua-nha-nhap",
+      result: "kha-nang-mua-nha-ket-qua",
+    },
+    "social-housing": {
+      form: "nha-o-xa-hoi-nhap",
+      result: "nha-o-xa-hoi-ket-qua",
+    },
+  };
+
 export function AffordabilityCalculator({
   programme = "commercial",
+  actions,
+  nextSteps,
 }: {
   programme?: AffordabilityProgramme;
-} = {}) {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+  // No `= {}` default on the parameter: an optional PARAMETER makes the
+  // component fail `createElement`'s typed overload, so no test could pass
+  // `programme` to it. React always supplies a props object.
+}) {
   const noxh = programme === "social-housing";
+  const ids = REGION_IDS[programme];
   const initial = {
     mode: C.form.defaultMode,
     netIncome: C.form.defaultNetIncome,
@@ -515,373 +557,456 @@ export function AffordabilityCalculator({
         className="mb-6"
       />
 
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "household", label: C.form.modeHousehold },
-            { value: "ceiling", label: C.form.modeCeiling },
-          ]}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.incomeGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("income")}
-          label={C.form.incomeLabel}
-          unit={C.form.incomeUnit}
-          help={C.form.incomeHelp}
-          error={C.form.incomeInvalid}
-          invalid={incomeInvalid}
-        />
-        <NumberField
-          {...fields.bind("debts")}
-          label={C.form.debtsLabel}
-          unit={C.form.debtsUnit}
-          help={C.form.debtsHelp}
-          error={C.form.debtsInvalid}
-          invalid={debtsInvalid}
-        />
-      </FieldGroup>
-
-      {/* Only in household mode: these three fields have no meaning in a
-          credit-ceiling calculation, and rendering them there would imply the
-          ceiling takes living costs into account. It does not. */}
-      {household ? (
-        <FieldGroup title={C.form.householdGroup} className="mt-8">
-          <NumberField
-            {...fields.bind("netIncome")}
-            label={C.form.netIncomeLabel}
-            unit={C.form.netIncomeUnit}
-            help={C.form.netIncomeHelp}
-            error={C.form.netIncomeInvalid}
-            invalid={netIncomeInvalid}
-          />
-          <NumberField
-            {...fields.bind("essentials")}
-            label={C.form.essentialsLabel}
-            unit={C.form.essentialsUnit}
-            help={C.form.essentialsHelp}
-            error={C.form.essentialsInvalid}
-            invalid={essentialsInvalid}
-          />
-          <NumberField
-            {...fields.bind("buffer")}
-            label={C.form.bufferLabel}
-            unit={C.form.bufferUnit}
-            help={C.form.bufferHelp}
-            error={C.form.bufferInvalid}
-            invalid={bufferInvalid}
-          />
-        </FieldGroup>
-      ) : null}
-
-      <FieldGroup title={C.form.purchaseGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("down")}
-          label={C.form.downLabel}
-          unit={C.form.downUnit}
-          help={C.form.downHelp}
-          error={C.form.downInvalid}
-          invalid={downInvalid}
-        />
-        <NumberField
-          {...fields.bind("reserve")}
-          label={C.form.reserveLabel}
-          unit={C.form.reserveUnit}
-          help={C.form.reserveHelp}
-          error={C.form.reserveInvalid}
-          invalid={reserveInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          // Still overridable on the NOXH route, and the help says why: the
-          // national figure is a DEFAULT TO CONFIRM, because local HĐND
-          // resolutions override it downwards (Hà Nội is 4,8%/năm).
-          help={noxh ? N.rateHelp : C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={noxh ? N.termHelp : C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
-
-      <AdvancedFields
-        title={C.form.ratioGroup}
-        settings={advancedSettings}
-        className="mt-8"
-      >
-        <NumberField
-          {...fields.bind("purchaseCost")}
-          label={C.form.purchaseCostLabel}
-          unit={C.form.purchaseCostUnit}
-          help={C.form.purchaseCostHelp}
-          error={C.form.purchaseCostInvalid}
-          invalid={purchaseCostInvalid}
-        />
-        <NumberField
-          {...fields.bind("housingCosts")}
-          label={C.form.housingCostsLabel}
-          unit={C.form.housingCostsUnit}
-          help={C.form.housingCostsHelp}
-          error={C.form.housingCostsInvalid}
-          invalid={housingCostsInvalid}
-        />
-        <NumberField
-          {...fields.bind("housingRatio")}
-          label={C.form.housingRatioLabel}
-          unit={C.form.housingRatioUnit}
-          help={C.form.housingRatioHelp}
-          error={C.form.housingRatioInvalid}
-          invalid={housingRatioInvalid}
-        />
-        <NumberField
-          {...fields.bind("totalRatio")}
-          label={C.form.totalRatioLabel}
-          unit={C.form.totalRatioUnit}
-          help={C.form.totalRatioHelp}
-          error={C.form.totalRatioInvalid}
-          invalid={totalRatioInvalid}
-        />
-        <NumberField
-          {...fields.bind("ltv")}
-          label={C.form.ltvLabel}
-          unit={C.form.ltvUnit}
-          // THE ONE THAT MATTERS. On the commercial route this is the reader's
-          // own assumption about what a bank might lend; here it is a statutory
-          // ceiling. Rendering the commercial help text on this route would
-          // describe a regulation as a guess.
-          help={noxh ? N.ltvHelp : C.form.ltvHelp}
-          error={C.form.ltvInvalid}
-          invalid={ltvInvalid}
-        />
-      </AdvancedFields>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow label={C.form.maxPriceLabel} value={money(result?.maxPrice)} />
-        <ResultRow label={C.form.maxLoanLabel} value={money(result?.maxLoan)} />
-        {/* THE BUDGET AND THE BILL ARE TWO ROWS. The budget is the ceiling the
-            price was solved from; the instalment is what the loan actually
-            used charges, and they differ whenever the cash bound the price. */}
-        <ResultRow
-          label={C.form.paymentLabel}
-          value={money(result?.affordablePrincipalInterest)}
-        />
-        <ResultRow
-          label={C.form.expectedPaymentLabel}
-          value={money(result?.expectedPrincipalInterest)}
-        />
-      </ResultGroup>
-
-      {/* The notices that qualify the figure sit immediately under it, not at
-          the bottom of the page. A reader who stops at the headline must still
-          have read the caveat that applies to it. */}
-      {result?.conclusionLimited ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-2">
-          {C.form.essentialsUnknownNotice}
-        </p>
-      ) : null}
-
-      {result && !household ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-2">
-          {C.form.ceilingIsNotBudgetNotice}
-        </p>
-      ) : null}
-
-      {/* Why the two monthly figures differ. Mounted only when they actually
-          do: at a payment-bound price they coincide and there is nothing to
-          explain. Half a đồng, because these are two float computations of the
-          same quantity in that case, not a financial allowance. */}
-      {result &&
-      result.affordablePrincipalInterest - result.expectedPrincipalInterest >
-        0.5 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.expectedPaymentBelowBudgetNotice}
-        </p>
-      ) : null}
-
-      {/* The price is capped by the cash rather than by the payment — the
-          buyer's obvious response would be to cut spending, which would not
-          help. Say which constraint it actually is. */}
-      {result && result.maxPrice > 0 && result.priceBinding === "financing" ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.financingBoundNotice}
-        </p>
-      ) : null}
-
-      {result?.financingBlocked ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.financingBlockedNotice}
-        </p>
-      ) : null}
-
-      {result?.infeasible ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.infeasibleNotice}
-        </p>
-      ) : null}
-
-      {result?.noRoom && !result.infeasible && !result.financingBlocked ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.noRoomNotice}
-        </p>
-      ) : null}
-
-      {result && result.purchaseCosts === 0 && result.maxPrice > 0 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.purchaseCostsExcludedNotice}
-        </p>
-      ) : null}
-
-      {/*
-        ORIGINAL ROW 7's "so kịch bản", as a comparison the reader takes
-        rather than a link to a second tool.
-
-        The control is mounted only when there is a result to record: a button
-        that captures nothing is worse than no button. Both buttons are plain
-        `type="button"` inside no form, so neither can submit anything, and
-        nothing here goes into a URL.
-      */}
-      <div className="mt-6 rounded-2xl border border-ink-4/20 p-4">
-        {snapshot === null ? (
+      <CalculatorLayout
+        formId={ids.form}
+        columns="split"
+        form={
           <>
-            <button
-              type="button"
-              disabled={result === null || input === null}
-              onClick={() =>
-                input !== null && result !== null
-                  ? setSnapshot({ input, result })
-                  : undefined
-              }
-              // `-ink`: 16px normal-weight text owes 4.5:1 and the raw brand
-              // green is 3.02:1 on white, 2.91:1 on `bg-soft`.
-              className={`font-display text-base font-medium text-brand-green-ink underline-offset-4 hover:underline disabled:text-ink-4 disabled:no-underline ${FH_POINTER}`}
+            {/* The QUESTION first: a credit ceiling and a household budget are
+                different answers, and which one is on screen governs every
+                field below. */}
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "household", label: C.form.modeHousehold },
+                  { value: "ceiling", label: C.form.modeCeiling },
+                ]}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.incomeGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("income")}
+                label={C.form.incomeLabel}
+                unit={C.form.incomeUnit}
+                help={C.form.incomeHelp}
+                error={C.form.incomeInvalid}
+                invalid={incomeInvalid}
+              />
+              <NumberField
+                {...fields.bind("debts")}
+                label={C.form.debtsLabel}
+                unit={C.form.debtsUnit}
+                help={C.form.debtsHelp}
+                error={C.form.debtsInvalid}
+                invalid={debtsInvalid}
+              />
+            </FieldGroup>
+
+            {/* Only in household mode: these three fields have no meaning in a
+                credit-ceiling calculation, and rendering them there would imply
+                the ceiling takes living costs into account. It does not. */}
+            {household ? (
+              <FieldGroup title={C.form.householdGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("netIncome")}
+                  label={C.form.netIncomeLabel}
+                  unit={C.form.netIncomeUnit}
+                  help={C.form.netIncomeHelp}
+                  error={C.form.netIncomeInvalid}
+                  invalid={netIncomeInvalid}
+                />
+                <NumberField
+                  {...fields.bind("essentials")}
+                  label={C.form.essentialsLabel}
+                  unit={C.form.essentialsUnit}
+                  help={C.form.essentialsHelp}
+                  error={C.form.essentialsInvalid}
+                  invalid={essentialsInvalid}
+                />
+                <NumberField
+                  {...fields.bind("buffer")}
+                  label={C.form.bufferLabel}
+                  unit={C.form.bufferUnit}
+                  help={C.form.bufferHelp}
+                  error={C.form.bufferInvalid}
+                  invalid={bufferInvalid}
+                />
+              </FieldGroup>
+            ) : null}
+
+            <FieldGroup title={C.form.purchaseGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("down")}
+                label={C.form.downLabel}
+                unit={C.form.downUnit}
+                help={C.form.downHelp}
+                error={C.form.downInvalid}
+                invalid={downInvalid}
+              />
+              <NumberField
+                {...fields.bind("reserve")}
+                label={C.form.reserveLabel}
+                unit={C.form.reserveUnit}
+                help={C.form.reserveHelp}
+                error={C.form.reserveInvalid}
+                invalid={reserveInvalid}
+              />
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                // Still overridable on the NOXH route, and the help says why:
+                // the national figure is a DEFAULT TO CONFIRM, because local
+                // HĐND resolutions override it downwards (Hà Nội is 4,8%/năm).
+                help={noxh ? N.rateHelp : C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={noxh ? N.termHelp : C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
+
+            <AdvancedFields
+              title={C.form.ratioGroup}
+              settings={advancedSettings}
+              className="mt-8"
             >
-              {C.form.compareCaptureAction}
-            </button>
-            <p className="mt-2 text-sm leading-relaxed text-ink-3">
-              {C.form.compareCaptureHint}
-            </p>
+              <NumberField
+                {...fields.bind("purchaseCost")}
+                label={C.form.purchaseCostLabel}
+                unit={C.form.purchaseCostUnit}
+                help={C.form.purchaseCostHelp}
+                error={C.form.purchaseCostInvalid}
+                invalid={purchaseCostInvalid}
+              />
+              <NumberField
+                {...fields.bind("housingCosts")}
+                label={C.form.housingCostsLabel}
+                unit={C.form.housingCostsUnit}
+                help={C.form.housingCostsHelp}
+                error={C.form.housingCostsInvalid}
+                invalid={housingCostsInvalid}
+              />
+              <NumberField
+                {...fields.bind("housingRatio")}
+                label={C.form.housingRatioLabel}
+                unit={C.form.housingRatioUnit}
+                help={C.form.housingRatioHelp}
+                error={C.form.housingRatioInvalid}
+                invalid={housingRatioInvalid}
+              />
+              <NumberField
+                {...fields.bind("totalRatio")}
+                label={C.form.totalRatioLabel}
+                unit={C.form.totalRatioUnit}
+                help={C.form.totalRatioHelp}
+                error={C.form.totalRatioInvalid}
+                invalid={totalRatioInvalid}
+              />
+              <NumberField
+                {...fields.bind("ltv")}
+                label={C.form.ltvLabel}
+                unit={C.form.ltvUnit}
+                // THE ONE THAT MATTERS. On the commercial route this is the
+                // reader's own assumption about what a bank might lend; here it
+                // is a statutory ceiling. Rendering the commercial help text on
+                // this route would describe a regulation as a guess.
+                help={noxh ? N.ltvHelp : C.form.ltvHelp}
+                error={C.form.ltvInvalid}
+                invalid={ltvInvalid}
+              />
+            </AdvancedFields>
           </>
-        ) : (
+        }
+        cta={
+          /* Fourteen controls and an advanced panel, so the button pins and
+             restates the price it scrolls to. */
+          <ResultCta
+            formId={ids.form}
+            targetId={ids.result}
+            invalid={!usable}
+            answer={{
+              label: C.form.maxPriceLabel,
+              value: money(result?.maxPrice),
+            }}
+            sticky
+          />
+        }
+        primary={
           <>
-            <AffordabilityScenarioComparison
-              snapshot={snapshot}
-              currentInput={input}
-              result={result}
-              comparison={comparison}
+            <ResultGroup title={C.form.resultTitle} anchorId={ids.result}>
+              {/* The one emphasised row: row 1's "tầm giá". */}
+              <ResultRow
+                label={C.form.maxPriceLabel}
+                value={money(result?.maxPrice)}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.maxLoanLabel}
+                value={money(result?.maxLoan)}
+              />
+              {/* THE BUDGET AND THE BILL ARE TWO ROWS. The budget is the
+                  ceiling the price was solved from; the instalment is what the
+                  loan actually used charges, and they differ whenever the cash
+                  bound the price. */}
+              <ResultRow
+                label={C.form.paymentLabel}
+                value={money(result?.affordablePrincipalInterest)}
+              />
+              <ResultRow
+                label={C.form.expectedPaymentLabel}
+                value={money(result?.expectedPrincipalInterest)}
+              />
+            </ResultGroup>
+
+            {/* The notices that qualify the figure sit immediately under it,
+                not at the bottom of the page. A reader who stops at the
+                headline must still have read the caveat that applies to it. */}
+            {/* CSV row 2, the NOXH route only: a tầm giá computed at the
+                subsidised rate is not an eligibility verdict, and this is the
+                only place a reader who stops at the answer will be told. The
+                checklist of all three conditions stays where it was, below the
+                tool — separate from the calculation, which is the row's first
+                clause. */}
+            {noxh ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {N.resultNotEligibilityNotice}
+              </p>
+            ) : null}
+
+            {result?.conclusionLimited ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {C.form.essentialsUnknownNotice}
+              </p>
+            ) : null}
+
+            {result && !household ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {C.form.ceilingIsNotBudgetNotice}
+              </p>
+            ) : null}
+
+            {/* Why the two monthly figures differ. Mounted only when they
+                actually do: at a payment-bound price they coincide and there is
+                nothing to explain. Half a đồng, because these are two float
+                computations of the same quantity in that case, not a financial
+                allowance. */}
+            {result &&
+            result.affordablePrincipalInterest -
+              result.expectedPrincipalInterest >
+              0.5 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.expectedPaymentBelowBudgetNotice}
+              </p>
+            ) : null}
+
+            {/* The price is capped by the cash rather than by the payment — the
+                buyer's obvious response would be to cut spending, which would
+                not help. Say which constraint it actually is. */}
+            {result &&
+            result.maxPrice > 0 &&
+            result.priceBinding === "financing" ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.financingBoundNotice}
+              </p>
+            ) : null}
+
+            {result?.financingBlocked ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.financingBlockedNotice}
+              </p>
+            ) : null}
+
+            {result?.infeasible ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.infeasibleNotice}
+              </p>
+            ) : null}
+
+            {result?.noRoom && !result.infeasible && !result.financingBlocked ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.noRoomNotice}
+              </p>
+            ) : null}
+
+            {result && result.purchaseCosts === 0 && result.maxPrice > 0 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.purchaseCostsExcludedNotice}
+              </p>
+            ) : null}
+
+            {/* LIFTED OUT OF "Xem chi tiết" for row 1. Which limit bound the
+                answer, then the ratio ceiling, the household residual and the
+                budget it was bound by — the figures the row asks to be made
+                clear, read without opening anything. */}
+            <DetailFigures
+              className="mt-6"
+              title={C.form.monthlyDetailTitle}
+              figures={[
+                // `prose`: this one is a sentence naming which ceiling bound
+                // the answer. Given the figure treatment it cannot shrink and
+                // pushes the row past a 266 px panel.
+                {
+                  label: C.form.bindingLabel,
+                  value: bindingLabel,
+                  prose: true,
+                },
+                {
+                  label: C.form.ratioCeilingLabel,
+                  value: cash(result?.assumedRatioCeiling),
+                },
+                ...(household
+                  ? [
+                      {
+                        label: C.form.householdResidualLabel,
+                        value: cash(result?.householdResidual),
+                      },
+                    ]
+                  : []),
+                {
+                  label: C.form.housingLimitLabel,
+                  value: cash(result?.housingLimit),
+                },
+                {
+                  label: C.form.totalLimitLabel,
+                  value: cash(result?.totalDebtLimit),
+                },
+                {
+                  label: C.form.budgetLabel,
+                  value: cash(result?.affordableHousingPayment),
+                },
+              ]}
             />
-            <button
-              type="button"
-              onClick={() => setSnapshot(null)}
-              className={`mt-2 text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
-            >
-              {C.form.compareClearAction}
-            </button>
           </>
-        )}
-      </div>
+        }
+        chart={
+          <>
+            <ChartFigure model={monthlyChart}>
+              <BarChart model={monthlyChart} />
+            </ChartFigure>
 
-      {/* Charts before the detail ledger, and the ledger collapsed. */}
-      <ChartFigure model={monthlyChart}>
-        <BarChart model={monthlyChart} />
-      </ChartFigure>
+            <ChartFigure model={priceChart}>
+              <BarChart model={priceChart} />
+            </ChartFigure>
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <>
+            {/*
+              ORIGINAL ROW 7's "so kịch bản", as a comparison the reader takes
+              rather than a link to a second tool. Below the answer, full
+              width: it is a second reading of the same computation, and it is
+              only reached after the first one has been read.
 
-      <ChartFigure model={priceChart}>
-        <BarChart model={priceChart} />
-      </ChartFigure>
+              The control is mounted only when there is a result to record: a
+              button that captures nothing is worse than no button. Both
+              buttons are plain `type="button"` inside no form, so neither can
+              submit anything, and nothing here goes into a URL.
+            */}
+            <div className="rounded-2xl border border-ink-4/20 p-4">
+              {snapshot === null ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={result === null || input === null}
+                    onClick={() =>
+                      input !== null && result !== null
+                        ? setSnapshot({ input, result })
+                        : undefined
+                    }
+                    // `-ink`: 16px normal-weight text owes 4.5:1 and the raw
+                    // brand green is 3.02:1 on white, 2.91:1 on `bg-soft`.
+                    className={`font-display text-base font-medium text-brand-green-ink underline-offset-4 hover:underline disabled:text-ink-4 disabled:no-underline ${FH_POINTER}`}
+                  >
+                    {C.form.compareCaptureAction}
+                  </button>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                    {C.form.compareCaptureHint}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <AffordabilityScenarioComparison
+                    snapshot={snapshot}
+                    currentInput={input}
+                    result={result}
+                    comparison={comparison}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSnapshot(null)}
+                    className={`mt-2 text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+                  >
+                    {C.form.compareClearAction}
+                  </button>
+                </>
+              )}
+            </div>
 
-      <DetailDisclosure
-        title={C.form.detailTitle}
-        hint={C.form.detailHint}
-        className="mt-8"
-      >
-        <DetailFigures
-          title={C.form.monthlyDetailTitle}
-          figures={[
-            // `prose`: this one is a sentence naming which ceiling bound the
-            // answer. Given the figure treatment it cannot shrink and pushes
-            // the row past a 266 px panel.
-            { label: C.form.bindingLabel, value: bindingLabel, prose: true },
-            {
-              label: C.form.ratioCeilingLabel,
-              value: cash(result?.assumedRatioCeiling),
-            },
-            ...(household
-              ? [
+            {/* What is left behind the disclosure is the FINANCING side: the
+                three loan figures the review asked to be kept apart — what the
+                payment could service, what is actually used, and what caps it.
+                The monthly block moved up; this one answers a different
+                question and stays optional. */}
+            <DetailDisclosure
+              title={C.form.detailTitle}
+              hint={C.form.detailHint}
+              className="mt-8"
+            >
+              <DetailFigures
+                title={C.form.financingDetailTitle}
+                figures={[
                   {
-                    label: C.form.householdResidualLabel,
-                    value: cash(result?.householdResidual),
+                    label: C.form.paymentSupportedLoanLabel,
+                    value: cash(result?.paymentSupportedLoan),
                   },
-                ]
-              : []),
-            {
-              label: C.form.housingLimitLabel,
-              value: cash(result?.housingLimit),
-            },
-            {
-              label: C.form.totalLimitLabel,
-              value: cash(result?.totalDebtLimit),
-            },
-            {
-              label: C.form.budgetLabel,
-              value: cash(result?.affordableHousingPayment),
-            },
-          ]}
-        />
+                  {
+                    label: C.form.maxLoanUsedLabel,
+                    value: cash(result?.maxLoan),
+                  },
+                  {
+                    // Also a sentence: which of the two ceilings capped the
+                    // price.
+                    label: C.form.priceBindingLabel,
+                    value:
+                      result === null
+                        ? null
+                        : result.priceBinding === "financing"
+                          ? C.form.priceBindingFinancing
+                          : C.form.priceBindingPayment,
+                    prose: true,
+                  },
+                  {
+                    label: C.form.usableCashLabel,
+                    value: cash(result?.usableCash),
+                  },
+                  {
+                    label: C.form.purchaseCostsLabel,
+                    value: cash(result?.purchaseCosts),
+                  },
+                  {
+                    label: C.form.cashToPriceLabel,
+                    value: cash(result?.cashToPrice),
+                  },
+                  {
+                    // A share, not an amount.
+                    label: C.form.downPercentLabel,
+                    value:
+                      result?.downPaymentPercent == null
+                        ? null
+                        : formatPercent(result.downPaymentPercent, 1),
+                  },
+                ]}
+              />
+            </DetailDisclosure>
+          </>
+        }
+      />
 
-        {/* The three loan figures the review asked to be kept apart: what the
-            payment could service, what is actually used, and what caps it. */}
-        <DetailFigures
-          title={C.form.financingDetailTitle}
-          className="mt-4"
-          figures={[
-            {
-              label: C.form.paymentSupportedLoanLabel,
-              value: cash(result?.paymentSupportedLoan),
-            },
-            { label: C.form.maxLoanUsedLabel, value: cash(result?.maxLoan) },
-            {
-              // Also a sentence: which of the two ceilings capped the price.
-              label: C.form.priceBindingLabel,
-              value:
-                result === null
-                  ? null
-                  : result.priceBinding === "financing"
-                    ? C.form.priceBindingFinancing
-                    : C.form.priceBindingPayment,
-              prose: true,
-            },
-            { label: C.form.usableCashLabel, value: cash(result?.usableCash) },
-            {
-              label: C.form.purchaseCostsLabel,
-              value: cash(result?.purchaseCosts),
-            },
-            { label: C.form.cashToPriceLabel, value: cash(result?.cashToPrice) },
-            {
-              // A share, not an amount.
-              label: C.form.downPercentLabel,
-              value:
-                result?.downPaymentPercent == null
-                  ? null
-                  : formatPercent(result.downPaymentPercent, 1),
-            },
-          ]}
-        />
-      </DetailDisclosure>
       {/* The long version of the example-state note, out of the entry flow.
           See ExampleNotice for why it is not above the form. */}
       <ExampleNoticeDetail className="mt-6" />
-
     </CalculatorCard>
   );
 }

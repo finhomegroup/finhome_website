@@ -10,7 +10,8 @@
  * environment. Nothing here is a visual check — docs §6's rule stands.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
+import { markupRegion } from "@/lib/markup-region";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TERM_DEPOSIT } from "@/content/calculators/term-deposit";
 
@@ -18,7 +19,10 @@ const CONTENT = "@/content/calculators/term-deposit";
 
 type FormPatch = Partial<Record<keyof typeof TERM_DEPOSIT.form, string>>;
 
-async function render(patch?: FormPatch): Promise<string> {
+async function render(
+  patch?: FormPatch,
+  props?: { nextSteps?: ReactNode },
+): Promise<string> {
   vi.resetModules();
   if (patch) {
     vi.doMock(CONTENT, async () => {
@@ -35,7 +39,9 @@ async function render(patch?: FormPatch): Promise<string> {
   }
   try {
     const loaded = await import("@/components/term-deposit-calculator");
-    return renderToStaticMarkup(createElement(loaded.TermDepositCalculator));
+    return renderToStaticMarkup(
+      createElement(loaded.TermDepositCalculator, props ?? null),
+    );
   } finally {
     vi.doUnmock(CONTENT);
     vi.resetModules();
@@ -232,6 +238,88 @@ describe("the same-horizon figure is a TOTAL, and says so", () => {
     expect(TERM_DEPOSIT.dateChart.barSameHorizon).toContain("Tổng lãi");
     expect(TERM_DEPOSIT.dateChart.barHeldToMaturity).toContain("Tổng lãi");
     expect(html).toContain("CẢ BA cột đều là TỔNG lãi tới một mốc");
+  });
+});
+
+describe("§8 row 22: the cash and the date lead the answer", () => {
+  /**
+   * One layout region's own markup, bounded by depth rather than by the next
+   * marker — `markupRegion`'s docstring records the bugs a textual bound
+   * produces, and `detail` is the last region, so a marker-to-marker slice
+   * would run to the end of the document.
+   */
+  const regionOf = (html: string, name: string): string => {
+    const region = markupRegion(html, `data-calc-region="${name}"`);
+    expect(region, name).not.toBeNull();
+    return region ?? "";
+  };
+
+  it("emphasises the money in hand, with the need date under it", async () => {
+    const html = await render(DATES);
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    // The emphasised value belongs to the available-cash row: it falls between
+    // that row's label and the need-date row's.
+    expect(html.indexOf("md:text-3xl")).toBeGreaterThan(
+      html.indexOf(C.availableLabel),
+    );
+    expect(html.indexOf("md:text-3xl")).toBeLessThan(
+      html.indexOf(C.needDateLabel),
+    );
+    // And it is the answer's row now, not a line in the collapsed ledger. Not
+    // counted across the page: the timeline marks the same date, and one of
+    // the status sentences opens with the same words.
+    expect(html.indexOf(C.needDateLabel)).toBeLessThan(
+      html.indexOf(TERM_DEPOSIT.dateTimeline.title),
+    );
+    expect(regionOf(html, "detail")).not.toContain(C.needDateLabel);
+  });
+
+  it("leads the months view with the value and the horizon", async () => {
+    const html = await render();
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    expect(html.indexOf("md:text-3xl")).toBeGreaterThan(
+      html.indexOf(C.totalValueLabel),
+    );
+    expect(html.indexOf("md:text-3xl")).toBeLessThan(
+      html.indexOf(C.totalMonthsLabel),
+    );
+    expect(regionOf(html, "result")).toContain(C.totalMonthsLabel);
+    expect(html.split(C.totalMonthsLabel).length - 1).toBe(1);
+  });
+
+  it("keeps the early-exit figures in their own group beside the answer", async () => {
+    // ALREADY SATISFIED, asserted rather than rebuilt: row 22's second clause
+    // is this group, and the fields that drive it are their own field group.
+    const html = await render({ defaultBreak: "3" });
+    const form = regionOf(html, "form");
+    expect(form).toContain(C.earlyGroup);
+    expect(form).toContain(C.breakLabel);
+    const result = regionOf(html, "result");
+    expect(result).toContain(C.earlyTitle);
+    expect(result).toContain(C.earlyLossLabel);
+  });
+
+  it("wires the CTA to the answer it pins", async () => {
+    const html = await render(DATES);
+    expect(html).toContain('id="tien-gui-co-ky-han-nhap"');
+    expect(html).toContain('id="tien-gui-co-ky-han-ket-qua"');
+    expect(html).toContain('aria-controls="tien-gui-co-ky-han-ket-qua"');
+    expect(regionOf(html, "form")).toContain('data-calc-cta="true"');
+    // The pinned line repeats the SAME formatted figure as the emphasised row.
+    const pinned = html.slice(html.indexOf('data-calc-answer="true"'));
+    const shown = html
+      .slice(html.indexOf("md:text-3xl"))
+      .match(/[\d.]+ ₫/)?.[0];
+    expect(shown).toBeTruthy();
+    expect(pinned).toContain(shown as string);
+  });
+
+  it("puts the route's next steps beside the answer", async () => {
+    const html = await render(DATES, {
+      nextSteps: createElement("p", null, "BƯỚC TIẾP THEO"),
+    });
+    expect(regionOf(html, "result")).toContain("BƯỚC TIẾP THEO");
+    expect(regionOf(html, "detail")).toContain(C.dateLedgerTitle);
   });
 });
 

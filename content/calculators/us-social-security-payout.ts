@@ -99,7 +99,13 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
     resultTitle: "Hộ gia đình nhận",
     householdMonthlyLabel: "Mỗi tháng",
     householdAnnualLabel: "Mỗi năm",
-    workerMonthlyLabel: "Trong đó phần của bạn",
+
+    // The household total and the two personal amounts are two different
+    // questions — who the money reaches matters for the survivor decision —
+    // so they are two groups rather than four rows of one undifferentiated
+    // summary.
+    individualTitle: "Từng người nhận",
+    workerMonthlyLabel: "Phần của bạn",
     spouseMonthlyLabel: "Phần của vợ/chồng",
 
     spouseTitle: "Vợ/chồng nhận theo hồ sơ nào",
@@ -110,12 +116,20 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
 
     earningsTitle: "Phép thử thu nhập",
     exemptAppliedLabel: "Mức miễn trừ áp dụng",
+    // NOT a missing figure and NOT a bad input: from full retirement age the
+    // test stops, so no exempt amount applies and there is nothing to show.
+    // `earningsTestWithholding` returns `exempt: true` here and still pays
+    // the full benefit, which is why the rows below it stay populated.
+    exemptNotApplicableValue: "Không áp dụng",
+    exemptNotApplicableNotice:
+      "Bạn bắt đầu nhận từ tuổi hưởng đủ trở đi, nên phép thử thu nhập không còn áp dụng: không có mức miễn trừ nào để hiển thị, và tiền lương dù bao nhiêu cũng không bị giữ lại. Dòng đó trống vì quy tắc không áp dụng, chứ không phải vì thiếu số liệu.",
     excessLabel: "Tiền lương vượt mức miễn trừ",
     withheldLabel: "Bị giữ lại trong năm",
     paidLabel: "Thực nhận trong năm",
     effectiveMonthlyLabel: "Tương đương mỗi tháng",
 
     ageTitle: "Mốc tuổi",
+    ageDisclosureTitle: "Tuổi hưởng đủ và hệ số theo tuổi nhận",
     yourFraLabel: "Tuổi hưởng đủ của bạn",
     spouseFraLabel: "Tuổi hưởng đủ của vợ/chồng",
     yourFactorLabel: "Hệ số của bạn so với mức cơ bản",
@@ -145,7 +159,12 @@ export const US_SOCIAL_SECURITY_PAYOUT = {
       "Một ô nhập chưa hợp lệ. Tuổi bắt đầu nhận của cả hai người phải nằm trong khoảng 62 đến 70.",
   },
 
+  // The rule above the tool; the worked default case one level down, same
+  // words. Nothing about US scope or the model's limits moved.
   asymmetryNotice:
+    "Hai khoản dành cho vợ/chồng theo hai quy tắc trái ngược nhau: trợ cấp theo vợ/chồng tính trên mức cơ bản của bạn, nên bạn nhận sớm không làm nó giảm; trợ cấp cho người còn sống tính trên khoản bạn thực nhận, nên bạn nhận sớm làm nó giảm vĩnh viễn. Đây là quy tắc của an sinh xã hội Hoa Kỳ, không có tương ứng trong BHXH Việt Nam, và công cụ không kiểm tra điều kiện hưởng — nó chỉ tính số tiền sẽ là bao nhiêu.",
+  asymmetryNoticeDetailTitle: "Cụ thể: các số mặc định nói gì",
+  asymmetryNoticeDetail:
     "Với các giá trị mặc định, hộ gia đình nhận 4.200 USD một tháng. Hãy thử đổi tuổi bạn bắt đầu nhận từ 67 xuống 62: khoản của bạn giảm từ 2.800 xuống 1.960 USD — và trợ cấp theo vợ/chồng vẫn ĐÚNG 1.400 USD, không giảm một xu, vì nó tính trên mức cơ bản của bạn chứ không trên khoản bạn thực nhận. Nhưng trợ cấp cho người còn sống thì giảm từ 2.800 xuống 1.960, và nó giảm vĩnh viễn: nếu bạn mất trước, người còn lại sống với con số thấp hơn đó suốt phần đời còn lại. Ở chiều ngược lại, nếu vợ/chồng bạn chờ từ 67 đến 70 thì hồ sơ riêng của họ tăng từ 900 lên 1.116 USD — vẫn dưới mức 1.400 của trợ cấp theo vợ/chồng, nên hộ gia đình nhận thêm đúng 0 đồng cho ba năm chờ đó.",
 
   formula: {

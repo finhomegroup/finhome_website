@@ -42,29 +42,44 @@ export default function Us401kMaxPage() {
       // Front-loading is the mistake a reader arrives ready to make, and
       // whether it costs anything turns on a line in their plan document.
       notice={C.frontLoadNotice}
-      afterCalculator={
-        <section>
-          <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-            {C.relatedTool.title}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-2">
-            {C.relatedTool.why}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed">
-            <Link
-              href={RELATED_HREF}
-              className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
-            >
-              {RELATED_TITLE}
-            </Link>
-          </p>
-        </section>
-      }
+      // The rule stays above; the worked default case behind this summary.
+      noticeDetailTitle={C.frontLoadNoticeDetailTitle}
+      noticeDetail={C.frontLoadNoticeDetail}
+      // Row 49's split result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}
     >
-      <Us401kMaxCalculator />
+      {/* THE LINK MOVED, NOTHING ELSE — measured 426 px (mobile) and
+          1288,5 px (desktop) below the end of the result region while it sat
+          in `afterCalculator`, behind the comparison table. Same destination
+          and copy, in the near-answer `actions` slot, on the same surface as
+          `ResultActions`. See the `gop-401k` route, which is the other half of
+          this reciprocal pair. */}
+      <Us401kMaxCalculator
+        actions={
+          <section
+            data-calc-actions="near-answer"
+            className="mt-6 rounded-2xl bg-bg-soft p-5"
+          >
+            <h2 className="font-display text-base font-medium text-ink">
+              {C.relatedTool.title}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2">
+              {C.relatedTool.why}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed">
+              <Link
+                href={RELATED_HREF}
+                className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
+              >
+                {RELATED_TITLE}
+              </Link>
+            </p>
+          </section>
+        }
+      />
     </CalculatorPage>
   );
 }

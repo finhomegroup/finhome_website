@@ -8,6 +8,7 @@ import { ProseText } from "@/components/ui/prose-text";
 import { JsonLd } from "@/components/json-ld";
 import { CalculatorDisclaimer } from "@/components/calc/disclaimer";
 import { CalculatorHeading } from "@/components/calc/calculator-heading";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { LoanCalculator } from "@/components/loan-calculator";
 import { LOAN as C } from "@/content/calculators/loan";
@@ -69,7 +70,9 @@ export default function LoanCalculatorPage() {
       />
       <JsonLd data={faqSchema(C.faq.items)} />
       <SiteHeader />
-      <main className="flex-1 py-16 md:py-24">
+      {/* Matches `CalculatorPage`'s tightened top padding; this route renders
+          its own body. */}
+      <main className="flex-1 pb-16 pt-8 md:pb-24 md:pt-14">
         <Container>
           <CalculatorHeading
             title={C.pageTitle}
@@ -114,16 +117,25 @@ export default function LoanCalculatorPage() {
             </div>
           </div>
 
-          <div className="mx-auto mt-5 max-w-3xl md:mt-6">
-            <LoanCalculator />
+          {/* `max-w-6xl`, not `max-w-3xl`: the tool now renders a 40/60 split
+              at `lg`, and 48rem cannot hold two columns of form and results.
+              This route does not use `CalculatorPage`, so the width is set
+              here rather than through the shell's `wide` prop — the shell's
+              own comment on that prop is the reasoning. Everything BELOW stays
+              at `max-w-3xl`, because a 1152 px line of body copy reads worse,
+              not better. */}
+          <div className="mx-auto mt-5 max-w-6xl md:mt-6">
+            <LoanCalculator
+              // MOVED into the tool's result column, then split: the two
+              // actions sit directly under the answer and above the figure,
+              // the further question and the retention paragraph below it.
+              // Passed from this server component, so it ships no client JS.
+              actions={<ResultActions slug="vay-mua-nha" />}
+              nextSteps={<ToolNextSteps slug="vay-mua-nha" promoted />}
+            />
           </div>
 
           <div className="mx-auto mt-10 max-w-3xl space-y-10 md:mt-12">
-            {/* The next question comes before the explanatory prose: a reader
-                who has their answer should not scroll past two teaching
-                sections to find where to go. */}
-            <ToolNextSteps slug="vay-mua-nha" />
-
             <p className="text-base leading-relaxed text-ink-2">
               {C.table.intro}
             </p>

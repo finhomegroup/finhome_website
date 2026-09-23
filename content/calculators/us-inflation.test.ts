@@ -253,9 +253,19 @@ describe("lam-phat-hoa-ky at its shipped defaults", () => {
     const tripled = run({ startCpi: 100, endCpi: 300 });
     expect(pct(tripled.cumulativeInflationPercent)).toBe("200,00%");
     expect(pct(tripled.purchasingPowerLostPercent)).toBe("66,67%");
+    // REPOINTED by row 74's entry pass: the worked cases moved into
+    // `conflationNoticeDetail`, the disclosure the route passes under
+    // `conflationNoticeDetailTitle`. Nothing was dropped — the doubling case
+    // is in BOTH, because it is what makes the rule legible in one line.
     for (const figure of ["100%", "50%", "200%", "66,67%"]) {
-      expect(C.conflationNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.conflationNoticeDetail,
+        `the worked cases are missing ${figure}`,
+      ).toContain(figure);
     }
+    // And the rule itself stays where no click is needed.
+    expect(C.conflationNotice).toContain("luôn nhỏ hơn");
+    expect(C.conflationNotice).toContain("không bao giờ đạt 100%");
   });
 
   it("defines the halving year by round trip rather than by its formula", () => {

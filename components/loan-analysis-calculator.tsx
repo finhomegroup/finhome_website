@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { ColumnChart } from "@/components/calc/chart/column-chart";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -9,6 +10,7 @@ import { DetailFigures } from "@/components/calc/detail-figures";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -48,11 +50,32 @@ import { fill } from "@/lib/calc/charts/labels";
  *    figure goes into a URL and no saved context is implied, because there is
  *    none.
  *
- * The live region keeps the eight-row cost-structure summary the page has
- * always led with; the examined month is its own `live={false}` group, because
- * it is a second view of the same schedule.
+ * The live region is the EXAMINED MONTH: its interest share as the one main
+ * answer, the interest and principal amounts it splits into, and the instalment
+ * they sum to. The whole-loan structure is context for that, so it sits in the
+ * labelled disclosure.
  */
-export function LoanAnalysisCalculator() {
+/*
+ * CSV row 11 ("Hai cột"): one result region, and the month the form ends by
+ * asking about is what it leads with. A browser pass at 390 px found the eight
+ * whole-loan rows ahead of it, which made the page answer a question it had not
+ * been asked; those eight moved into the disclosure unchanged. The quarter
+ * table's three-sentence introduction left the page's entry copy (where it
+ * explained a table four screens down, ahead of the chart) and now sits
+ * directly above that table. Docs §8.
+ */
+const FORM_ID = "phan-tich-khoan-vay-nhap";
+const RESULT_ID = "phan-tich-khoan-vay-ket-qua";
+
+export function LoanAnalysisCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     amount: C.form.defaultAmount,
     rate: C.form.defaultRate,
@@ -150,248 +173,326 @@ export function LoanAnalysisCalculator() {
       ])
     : [];
 
+  /*
+   * The route back to the loan being planned, and the truth about it. It is
+   * this page's most specific next step, so it goes in the layout's next-step
+   * slot ahead of the shared library block rather than below the whole tool.
+   * `Link` normalises the trailing slash away in the rendered href.
+   */
+  const returnRoute = (
+    <div className="rounded-2xl border border-ink-4/20 p-4">
+      <p className="text-sm leading-relaxed">
+        <Link
+          href={LOAN.slug}
+          // `-ink`: raw brand green is 3.02:1 on white, below the 4.5:1 this
+          // normal-size link owes.
+          className="font-medium text-brand-green-ink underline-offset-4 hover:underline"
+        >
+          {C.form.returnRouteLabel}
+        </Link>
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-ink-3">
+        {C.form.returnRouteNote}
+      </p>
+    </div>
+  );
+
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.loanGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-        <SelectField
-          {...fields.bind("termUnit")}
-          label={C.form.termUnitLabel}
-          options={[
-            { value: "years", label: C.form.termUnitYears },
-            { value: "months", label: C.form.termUnitMonths },
-          ]}
-        />
-        {/* The same control, and the same two meanings, as the mortgage page.
-            It changes the whole cost structure this page is about. */}
-        <RadioGroupField
-          {...fields.bind("method")}
-          legend={C.form.methodLegend}
-          help={C.form.methodHelp}
-          options={[
-            { value: "annuity", label: C.form.methodAnnuity },
-            { value: "flatPrincipal", label: C.form.methodFlatPrincipal },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.loanGroup}>
+              <NumberField
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
+              />
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+              <SelectField
+                {...fields.bind("termUnit")}
+                label={C.form.termUnitLabel}
+                options={[
+                  { value: "years", label: C.form.termUnitYears },
+                  { value: "months", label: C.form.termUnitMonths },
+                ]}
+              />
+              {/* The same control, and the same two meanings, as the mortgage
+                  page. It changes the whole cost structure this page is
+                  about. */}
+              <RadioGroupField
+                {...fields.bind("method")}
+                legend={C.form.methodLegend}
+                help={C.form.methodHelp}
+                options={[
+                  { value: "annuity", label: C.form.methodAnnuity },
+                  {
+                    value: "flatPrincipal",
+                    label: C.form.methodFlatPrincipal,
+                  },
+                ]}
+              />
+            </FieldGroup>
 
-      {/* Any month in the term, in its own group: this is the page's second
-          question and it deserves its own heading rather than sitting as a
-          fifth loan input. */}
-      <FieldGroup title={C.form.examineGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("examine")}
-          label={C.form.examineLabel}
-          unit={C.form.examineUnit}
-          help={C.form.examineHelp}
-          error={C.form.examineInvalid}
-          invalid={examineInvalid}
-        />
-      </FieldGroup>
-
-      {/* Eight rows is at the top of what a live region should announce, but
-          they are the summary a screen-reader user is here for. The examined
-          month, the chart and the segment table all stay out of it. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.monthlyLabel}
-          value={money(result?.loan.monthlyPrincipalInterest)}
-        />
-        <ResultRow
-          label={C.form.totalInterestLabel}
-          value={money(result?.loan.totalInterest)}
-        />
-        <ResultRow
-          label={C.form.ratioLabel}
-          value={result ? formatPercent(result.interestToPrincipalPercent) : null}
-        />
-        <ResultRow
-          label={C.form.firstShareLabel}
-          value={
-            result
-              ? formatPercent(result.firstPaymentInterestSharePercent)
-              : null
-          }
-        />
-        <ResultRow
-          label={C.form.lastShareLabel}
-          value={
-            result ? formatPercent(result.lastPaymentInterestSharePercent) : null
-          }
-        />
-        <ResultRow
-          label={C.form.crossoverLabel}
-          value={
-            result?.crossoverMonth == null
-              ? null
-              : `${formatDecimal(result.crossoverMonth, 0)} ${C.form.monthsUnit}`
-          }
-        />
-        <ResultRow
-          label={C.form.halfInterestLabel}
-          value={monthWithShare(
-            result?.halfInterestMonth,
-            result?.halfInterestTermSharePercent,
-          )}
-        />
-        <ResultRow
-          label={C.form.halfPrincipalLabel}
-          value={monthWithShare(
-            result?.halfPrincipalMonth,
-            result?.halfPrincipalTermSharePercent,
-          )}
-        />
-      </ResultGroup>
-
-      {noCrossover ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.noCrossoverNotice}
-        </p>
-      ) : null}
-
-      {/* THE EXAMINED MONTH. Its heading names the month three ways — over the
-          term, and as a month of a year — because that is how a borrower
-          holds it. `live={false}`: a second reading of the same schedule. */}
-      <ResultGroup
-        title={fill(C.form.examineTitle, {
-          month: selected ? formatDecimal(selected.month, 0) : "—",
-          year: selected ? formatDecimal(selected.year, 0) : "—",
-          monthOfYear: selected ? formatDecimal(selected.monthOfYear, 0) : "—",
-        })}
-        className="mt-4"
-        live={false}
-      >
-        <ResultRow
-          label={C.form.examinePaymentLabel}
-          value={money(selected?.payment)}
-        />
-        <ResultRow
-          label={C.form.examineInterestLabel}
-          value={money(selected?.interest)}
-        />
-        <ResultRow
-          label={C.form.examinePrincipalLabel}
-          value={money(selected?.principal)}
-        />
-        <ResultRow
-          label={C.form.examineShareLabel}
-          value={
-            selected ? formatPercent(selected.interestSharePercent, 1) : null
-          }
-        />
-        <ResultRow
-          label={C.form.examineBalanceLabel}
-          value={money(selected?.balance)}
-        />
-      </ResultGroup>
-
-      {/* The chart follows the same selection. */}
-      <ChartFigure model={chart}>
-        <ColumnChart model={chart} />
-      </ChartFigure>
-
-      <DetailDisclosure
-        title={C.form.examineGroup}
-        hint={C.form.examineHelp}
-        className="mt-8"
-      >
-        <DetailFigures
-          title={C.form.examineTitle
-            .replace("{month}", selected ? formatDecimal(selected.month, 0) : "—")
-            .replace("{year}", selected ? formatDecimal(selected.year, 0) : "—")
-            .replace(
-              "{monthOfYear}",
-              selected ? formatDecimal(selected.monthOfYear, 0) : "—",
-            )}
-          figures={[
-            {
-              label: C.form.examineCumulativeInterestLabel,
-              value: cash(selected?.cumulativeInterest),
-            },
-            {
-              label: C.form.examineCumulativePrincipalLabel,
-              value: cash(selected?.cumulativePrincipal),
-            },
-            {
-              // A share, not an amount.
-              label: C.form.examineRepaidShareLabel,
-              value:
-                selected === null
-                  ? null
-                  : formatPercent(selected.principalRepaidSharePercent, 1),
-            },
-            {
-              // A count of months, never scaled into a money unit.
-              label: C.form.examineRemainingLabel,
-              value:
-                selected === null
-                  ? null
-                  : `${formatDecimal(selected.remainingMonths, 0)} ${C.form.monthsUnit}`,
-            },
-          ]}
-        />
-
-        {tableRows.length > 0 ? (
-          <ResultTable
-            className="mt-6"
-            caption={C.table.caption}
-            // Five columns are 346 px inside a 266 px panel even in the
-            // COMPACT reading, and the scroll hint only shows in the exact
-            // one — so on a phone this table overflowed with no affordance
-            // saying it did. A block per quarter removes the overflow instead
-            // of explaining it, and keeps the numeric columns full width.
-            mobileCards
-            columns={[
-              { label: C.table.quarterColumn, nowrap: true },
-              { label: C.table.interestColumn, numeric: true },
-              { label: C.table.principalColumn, numeric: true },
-              { label: C.table.shareColumn, numeric: true },
-              { label: C.table.balanceColumn, numeric: true },
-            ]}
-            rows={tableRows}
+            {/* Any month in the term, in its own group: this is the page's
+                second question and it deserves its own heading rather than
+                sitting as a fifth loan input. */}
+            <FieldGroup title={C.form.examineGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("examine")}
+                label={C.form.examineLabel}
+                unit={C.form.examineUnit}
+                help={C.form.examineHelp}
+                error={C.form.examineInvalid}
+                invalid={examineInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={
+              amountInvalid || rateInvalid || termInvalid || examineInvalid
+            }
+            // Measured at 1440×1000 with the examined-month field focused: the
+            // first result row sat at y −283,5, the furthest off screen of the
+            // six long forms in this repair. The restatement is the EMPHASISED
+            // row — the interest share of the examined month — through the same
+            // `formatPercent` call that row makes, and the month is named in
+            // the label because the group heading that resolves "tháng đó" is
+            // not on screen when the block is pinned. `selected` is null on an
+            // unusable form, so the block shows its own placeholder.
+            sticky
+            answer={{
+              label: fill(C.form.pinnedShareLabel, {
+                month: selected ? formatDecimal(selected.month, 0) : "—",
+              }),
+              value: selected
+                ? formatPercent(selected.interestSharePercent, 1)
+                : null,
+            }}
           />
-        ) : null}
-      </DetailDisclosure>
-
-      {/* The route back to the loan being planned, and the truth about it.
-          `Link` normalises the trailing slash away in the rendered href. */}
-      <div className="mt-6 rounded-2xl border border-ink-4/20 p-4">
-        <p className="text-sm leading-relaxed">
-          <Link
-            href={LOAN.slug}
-            // `-ink`: raw brand green is 3.02:1 on white, below the 4.5:1 this
-            // normal-size link owes.
-            className="font-medium text-brand-green-ink underline-offset-4 hover:underline"
+        }
+        primary={
+          /* THE EXAMINED MONTH IS THE ANSWER, and it is the live group.
+             A browser pass at 390 px found eight whole-loan rows leading the
+             result, so the question the form ends with — what does month 152
+             look like — was the ninth thing on the page. The month's own split
+             leads now, with the share it answers emphasised and the two amounts
+             it is made of directly under it; the whole-loan structure moved
+             into the labelled disclosure below, unchanged. */
+          <ResultGroup
+            title={fill(C.form.examineTitle, {
+              month: selected ? formatDecimal(selected.month, 0) : "—",
+              year: selected ? formatDecimal(selected.year, 0) : "—",
+              monthOfYear: selected
+                ? formatDecimal(selected.monthOfYear, 0)
+                : "—",
+            })}
+            anchorId={RESULT_ID}
           >
-            {C.form.returnRouteLabel}
-          </Link>
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-ink-3">
-          {C.form.returnRouteNote}
-        </p>
-      </div>
+            <ResultRow
+              label={C.form.examineShareLabel}
+              value={
+                selected ? formatPercent(selected.interestSharePercent, 1) : null
+              }
+              emphasis
+            />
+            <ResultRow
+              label={C.form.examineInterestLabel}
+              value={money(selected?.interest)}
+            />
+            <ResultRow
+              label={C.form.examinePrincipalLabel}
+              value={money(selected?.principal)}
+            />
+            <ResultRow
+              label={C.form.examinePaymentLabel}
+              value={money(selected?.payment)}
+            />
+          </ResultGroup>
+        }
+        chart={
+          /* The chart follows the same selection. Nothing explains it ahead of
+             time any more: the quarter table's introduction moved down to the
+             table it describes. */
+          <ChartFigure model={chart}>
+            <ColumnChart model={chart} />
+          </ChartFigure>
+        }
+        actions={actions}
+        nextSteps={
+          <>
+            {returnRoute}
+            {nextSteps}
+          </>
+        }
+        detail={
+          <DetailDisclosure
+            title={C.form.detailToggle}
+            hint={C.form.detailHint}
+          >
+            {/* THE WHOLE-LOAN STRUCTURE, moved here from the live group. Same
+                eight figures, same formatters, no calculation changed — they
+                are context for the month above, not the answer to it. */}
+            <DetailFigures
+              title={C.form.resultTitle}
+              figures={[
+                {
+                  label: C.form.monthlyLabel,
+                  value: cash(result?.loan.monthlyPrincipalInterest),
+                },
+                {
+                  label: C.form.totalInterestLabel,
+                  value: cash(result?.loan.totalInterest),
+                },
+                {
+                  label: C.form.ratioLabel,
+                  value: result
+                    ? formatPercent(result.interestToPrincipalPercent)
+                    : null,
+                },
+                {
+                  label: C.form.firstShareLabel,
+                  value: result
+                    ? formatPercent(result.firstPaymentInterestSharePercent)
+                    : null,
+                },
+                {
+                  label: C.form.lastShareLabel,
+                  value: result
+                    ? formatPercent(result.lastPaymentInterestSharePercent)
+                    : null,
+                },
+                {
+                  label: C.form.crossoverLabel,
+                  value:
+                    result?.crossoverMonth == null
+                      ? null
+                      : `${formatDecimal(result.crossoverMonth, 0)} ${C.form.monthsUnit}`,
+                },
+                {
+                  label: C.form.halfInterestLabel,
+                  // Prose: "84 tháng (35,0% kỳ hạn)" is a phrase, and figure
+                  // treatment would make it `shrink-0` at display size.
+                  value: monthWithShare(
+                    result?.halfInterestMonth,
+                    result?.halfInterestTermSharePercent,
+                  ),
+                  prose: true,
+                },
+                {
+                  label: C.form.halfPrincipalLabel,
+                  value: monthWithShare(
+                    result?.halfPrincipalMonth,
+                    result?.halfPrincipalTermSharePercent,
+                  ),
+                  prose: true,
+                },
+              ]}
+            />
+
+            {noCrossover ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {C.form.noCrossoverNotice}
+              </p>
+            ) : null}
+
+            <DetailFigures
+              className="mt-6"
+              title={fill(C.form.examineTitle, {
+                month: selected ? formatDecimal(selected.month, 0) : "—",
+                year: selected ? formatDecimal(selected.year, 0) : "—",
+                monthOfYear: selected
+                  ? formatDecimal(selected.monthOfYear, 0)
+                  : "—",
+              })}
+              figures={[
+                {
+                  label: C.form.examineBalanceLabel,
+                  value: cash(selected?.balance),
+                },
+                {
+                  label: C.form.examineCumulativeInterestLabel,
+                  value: cash(selected?.cumulativeInterest),
+                },
+                {
+                  label: C.form.examineCumulativePrincipalLabel,
+                  value: cash(selected?.cumulativePrincipal),
+                },
+                {
+                  // A share, not an amount.
+                  label: C.form.examineRepaidShareLabel,
+                  value:
+                    selected === null
+                      ? null
+                      : formatPercent(selected.principalRepaidSharePercent, 1),
+                },
+                {
+                  // A count of months, never scaled into a money unit.
+                  label: C.form.examineRemainingLabel,
+                  value:
+                    selected === null
+                      ? null
+                      : `${formatDecimal(selected.remainingMonths, 0)} ${C.form.monthsUnit}`,
+                },
+              ]}
+            />
+
+            {tableRows.length > 0 ? (
+              <>
+                {/* The four-quarter reading, beside the table it is about. It
+                    used to be the page's entry copy, three sentences describing
+                    a table several screens further down and ahead of the
+                    chart. */}
+                <p className="mt-6 text-sm leading-relaxed text-ink-3">
+                  {C.table.intro}
+                </p>
+                <ResultTable
+                  className="mt-4"
+                  caption={C.table.caption}
+                  // Five columns are 346 px inside a 266 px panel even in the
+                  // COMPACT reading, and the scroll hint only shows in the
+                  // exact one — so on a phone this table overflowed with no
+                  // affordance saying it did. A block per quarter removes the
+                  // overflow instead of explaining it, and keeps the numeric
+                  // columns full width.
+                  mobileCards
+                  columns={[
+                    { label: C.table.quarterColumn, nowrap: true },
+                    { label: C.table.interestColumn, numeric: true },
+                    { label: C.table.principalColumn, numeric: true },
+                    { label: C.table.shareColumn, numeric: true },
+                    { label: C.table.balanceColumn, numeric: true },
+                  ]}
+                  rows={tableRows}
+                />
+              </>
+            ) : null}
+          </DetailDisclosure>
+        }
+      />
     </CalculatorCard>
   );
 }

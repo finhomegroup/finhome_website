@@ -72,12 +72,13 @@ export function CalculatorHeading({
 
       {/* Tighter on mobile than on desktop: the vertical rhythm that reads
           well at 1280 px pushed the first input off the first two screens at
-          390 px. */}
-      <div className="mt-5 text-center md:mt-8">
+          390 px. Tightened again 2026-09-21 after a browser pass measured the
+          first numeric input at 794–1021 px on the three pilots. */}
+      <div className="mt-4 text-center md:mt-8">
         <h1 className="font-display text-2xl leading-tight text-ink md:text-4xl lg:text-5xl">
           {title}
         </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-ink-2 md:mt-5">
+        <p className="mx-auto mt-2 max-w-2xl text-base leading-relaxed text-ink-2 md:mt-5">
           {lede}
         </p>
         {ledeDetail && ledeDetailTitle ? (

@@ -120,6 +120,10 @@ export const US_401K_MAX = {
     frontMatchTrueUpLabel: "Đối ứng nếu quỹ bù cuối năm",
     frontLostLabel: "Mất nếu quỹ không bù",
 
+    // Row 49 leads with the per-paycheck amount and treats the front-load
+    // scenario as an expanded comparison, so both of those get a summary.
+    comparisonDisclosureTitle: "So sánh: chia đều so với dồn góp sớm",
+    limitsDisclosureTitle: "Trần cả năm và ngưỡng đối ứng được tính thế nào",
     limitTitle: "Trần và ngưỡng",
     limitLabel: "Trần góp cả năm",
     catchUpLabel: "Phần bù tuổi trong trần đó",
@@ -141,19 +145,54 @@ export const US_401K_MAX = {
 
     unreachableNotice:
       "Không còn đủ kỳ lương để đạt trần: mức cần góp đã vượt toàn bộ tiền lương của một kỳ. Dòng “nhiều nhất còn đưa được trong năm” ở trên là giới hạn thật, và trên thực tế nó còn thấp hơn nữa vì thuế lương và các khoản trừ bắt buộc vẫn phải được lấy từ cùng tấm phiếu lương đó.",
+    // THREE DIFFERENT CAUSES, three sentences. Row 49 asked for them to be
+    // separated, and the engine confirms they are separate: `perPeriodAmount`
+    // is null only when `periodsRemaining <= 0`, `perPeriodPercent` is
+    // additionally null when `payPerPeriod <= 0`, and being at the limit
+    // leaves BOTH rows present at zero — an instruction to stop, not a gap.
+    noPeriodsNotice:
+      "Mọi kỳ lương của năm đã qua, nên không còn kỳ nào để chia số tiền còn trống vào: đó là lý do hai dòng đầu để trống thay vì hiện 0. Dòng “còn được góp trong năm” vẫn là số thật, nhưng trần của một năm không được chuyển sang năm sau — nếu quỹ cho phép một khoản góp bổ sung trước khi chốt kỳ lương cuối, đó là cách duy nhất còn dùng được phần trống này.",
+    noPayPercentNotice:
+      "Lương cả năm bằng 0 nên không có phiếu lương nào để lấy phần trăm: số tiền mỗi kỳ ở trên vẫn tính được, nhưng dòng “tương đương” để trống vì không có mẫu số. Với mức lương này, một khoản trừ lương theo phần trăm cũng không đưa được đồng nào vào quỹ.",
     atLimitNotice:
-      "Bạn đã đạt trần của năm nay, nên không còn gì để chia. Hãy kiểm tra hệ thống nhân sự có tự dừng khoản trừ lương hay không — nếu không, phần vượt trần phải được hoàn trả và nếu để qua thời hạn khai thuế thì nó bị đánh thuế hai lần.",
+      "Bạn đã đạt trần của năm nay, nên không còn gì để chia — số 0 ở hai dòng đầu là một câu trả lời, nghĩa là hãy dừng khoản trừ lương, chứ không phải một giá trị bị thiếu. Hãy kiểm tra hệ thống nhân sự có tự dừng khoản trừ lương hay không — nếu không, phần vượt trần phải được hoàn trả và nếu để qua thời hạn khai thuế thì nó bị đánh thuế hai lần.",
     overLimitNotice:
       "Số bạn đã góp vượt trần của năm. Phần vượt phải được quỹ hoàn trả cho bạn trước thời hạn khai thuế; nếu để quá hạn, số tiền đó bị tính thuế hai lần — một lần trong năm góp và một lần khi rút. Đây là tình huống hay xảy ra với người đổi việc giữa năm, vì hai công ty không biết nhau đã trừ bao nhiêu.",
     lostMatchNotice:
       "Cách góp hiện tại của bạn có những kỳ lương góp dưới ngưỡng đối ứng, nên nếu quỹ tính đối ứng theo từng kỳ thì bạn đang mất một phần. Việc đầu tiên nên làm không phải là đổi mức góp mà là tra một dòng trong tài liệu quỹ: “true-up”. Nếu quỹ có bù cuối năm thì cách chia không quan trọng; nếu không thì nó quan trọng đúng bằng con số trên.",
+
+    // A NOTICE MAY NOT NAME A CAUSE THE ROWS ABOVE IT REPORT AS ZERO. An
+    // independent review read the state elapsed=13 with 24.500 USD đã góp:
+    // room 0, 13 kỳ còn lại, đối ứng 3.900 so với 7.800, mất 3.900 — and
+    // "số kỳ góp dưới ngưỡng" displayed 0, while `lostMatchNotice` asserted
+    // there were such periods. The loss is real and the true-up distinction is
+    // real; the cause is not something this calculation reports, so this
+    // variant describes the difference between the two matching methods and
+    // stops there. No engine or matching-rule change.
+    lostMatchNoUnderPeriodsNotice:
+      "Với cách góp hiện tại, đối ứng tính theo từng kỳ ít hơn đối ứng bù cuối năm, và chênh lệch đó là dòng “mất nếu quỹ không bù” ở trên. Công cụ không ghi nhận kỳ lương nào góp dưới ngưỡng đối ứng — dòng “số kỳ góp dưới ngưỡng” đang là 0 — nên đừng đọc con số kia như hệ quả của việc góp thiếu ở một kỳ nào đó; nó chỉ là khoảng cách giữa hai cách quỹ có thể tính. Việc cần làm vẫn là tra một dòng trong tài liệu quỹ: “true-up”. Nếu quỹ có bù cuối năm thì bạn nhận đủ; nếu không thì phần chênh lệch trên là số thật.",
+
+    // And the same rule for the state with NO period left to divide into
+    // (elapsed = số kỳ lương của năm): the review found the even-division
+    // notice claiming a division "nhận đủ phần đối ứng ... an toàn với mọi tài
+    // liệu quỹ" when there is no division at all. Zero rows there are the
+    // absence of a schedule, not a verdict on one.
+    noDivisionMatchNotice:
+      "Không còn kỳ lương nào để chia vào, nên không có cách chia nào để đánh giá ở đây: các số 0 trong nhóm trên là vì không còn khoản góp nào được xếp lịch, chứ không phải vì một cách chia đã được xác nhận là nhận đủ đối ứng. Những gì đã góp trong các kỳ đã qua vẫn nằm trong hai dòng đối ứng đầu; nếu dòng “mất nếu quỹ không bù” lớn hơn 0 thì “true-up” trong tài liệu quỹ là chỗ cần tra, còn cho phần trống còn lại của năm thì chỉ một khoản góp bổ sung trước khi chốt kỳ lương cuối mới dùng được.",
     evenNotice:
       "Cách chia này nhận đủ phần đối ứng dù quỹ tính theo từng kỳ hay bù cuối năm, nên nó an toàn với mọi tài liệu quỹ. Nếu bạn định dồn góp sớm để tiền vào thị trường sớm hơn, hãy so con số “mất nếu quỹ không bù” với phần lợi nhuận thêm mà việc vào sớm mang lại — với các giá trị mặc định, phần mất là 4.800 USD chắc chắn, còn phần được là vài trăm đô kỳ vọng.",
     invalidNotice:
       "Một ô nhập chưa hợp lệ, hoặc năm bạn chọn chưa có số liệu trong công cụ. Số kỳ đã qua không được lớn hơn số kỳ lương trong năm.",
   },
 
+  // The RULE and what the tool cannot know, before the form. The worked
+  // default case is a paragraph of arithmetic, so it moved into the
+  // disclosure below.
   frontLoadNotice:
+    "Dồn góp sớm để lấp trần trước cuối năm có thể làm mất một phần tiền đối ứng — nhưng chỉ khi quỹ của bạn tính đối ứng theo từng kỳ lương và không có điều khoản bù cuối năm. Công cụ không biết quỹ của bạn thuộc loại nào, nên nó tính cả hai và để bạn so.",
+  frontLoadNoticeDetailTitle:
+    "Cụ thể: dồn sớm đáng bao nhiêu trên các số mặc định",
+  frontLoadNoticeDetail:
     "Với các giá trị mặc định, chia đều cả năm cần 942,31 USD mỗi kỳ lương, tức 18,85% lương, và nhận đủ 7.800 USD đối ứng. Dồn góp ở mức 50% lương thì trần được lấp sau 10 kỳ và 16 kỳ lương cuối năm không còn gì để góp — nếu quỹ tính đối ứng theo từng kỳ, phần đối ứng rơi từ 7.800 xuống 3.000 USD. Mất 4.800 USD với đúng cùng một số tiền bạn đã bỏ vào. Nếu quỹ có điều khoản bù cuối năm thì cả hai cách đều nhận đủ 7.800 USD. Cùng một hành động, hai kết quả cách nhau 4.800 USD, và điều quyết định là một dòng trong tài liệu quỹ chứ không phải một quyết định đầu tư.",
 
   // The authority for the trần this page divides up, as links a reader can

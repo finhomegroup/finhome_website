@@ -46,6 +46,19 @@ export const SOCIAL_HOUSING = {
   notice:
     "Trang này tính được MỘT trong ba điều kiện: thu nhập so với trần quy định. Hai điều kiện còn lại — về nhà ở đang có và về việc đã từng hưởng chính sách nhà ở — là điều kiện giấy tờ, do cơ quan có thẩm quyền xác nhận, và trang này không biết. Đủ trần thu nhập KHÔNG có nghĩa là đủ điều kiện mua.",
 
+  /**
+   * BESIDE THE ANSWER, not above the form — CSV row 2's second clause, "không
+   * trình bày kết quả như xác nhận đủ điều kiện".
+   *
+   * `notice` above the tool is read before there is a figure to misread. This
+   * one is read WITH the figure, by someone who has just been told a tầm giá
+   * under a subsidised rate and has no other cue on screen that the programme
+   * has two conditions this page cannot check. It is deliberately short: the
+   * long version is the checklist below the tool.
+   */
+  resultNotEligibilityNotice:
+    "Con số trên là tầm giá theo tham số của chương trình, KHÔNG phải xác nhận bạn đủ điều kiện mua. Hai điều kiện giấy tờ — về nhà ở đang có và về chính sách đã hưởng — do cơ quan có thẩm quyền xác nhận; xem danh mục ba điều kiện ở dưới.",
+
   /** The three overridden field help strings. */
   rateHelp: `Mặc định ${String(NOXH_LOAN.annualRatePercent).replace(".", ",")}%/năm theo ${NOXH_LOAN.rateInstrument}, áp dụng từ 01/12/2025 theo ${NOXH_LOAN.rateAppliedBy}. Đây là mức của kênh Ngân hàng Chính sách xã hội trên cả nước, không phải mức của tỉnh bạn: một số địa phương có nghị quyết HĐND hạ thấp hơn — Hà Nội áp dụng 4,8%/năm theo Nghị quyết 56/2025/NQ-HĐND. Hãy hỏi mức của nơi bạn mua rồi nhập lại.`,
 

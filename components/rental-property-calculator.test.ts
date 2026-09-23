@@ -208,3 +208,61 @@ describe("the waterfall", () => {
     expect(html).not.toContain("Tiền thuê KHÔNG đủ trả nợ");
   });
 });
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the bugs a textual bound
+ * produces, and `detail` is the last region, so a marker-to-marker slice would
+ * run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 18: the data in named groups, the cash flow beside them", () => {
+  it("splits the thirteen controls into groups the reader can name", async () => {
+    const html = await render();
+    const form = regionOf(html, "form");
+    // "Chia dữ liệu thành Giá mua / Thuê / Chi phí / Khoản vay." The tax group
+    // is the fifth: it was already separate, and the row does not ask for it
+    // to be merged into any of the four.
+    for (const group of [
+      F.purchaseGroup,
+      F.rentGroup,
+      F.costGroup,
+      F.loanGroup,
+      F.taxGroup,
+    ]) {
+      expect(form).toContain(group);
+    }
+  });
+
+  it("keeps the net cash flow beside the form, not below the yields", async () => {
+    const html = await render();
+    const result = regionOf(html, "result");
+    expect(html).toContain("lg:grid-cols-5");
+    expect(result).toContain(F.cashFlowMonthLabel);
+    // One emphasised figure, and it is the monthly cash flow — the owner's own
+    // position, which the four yields then re-describe.
+    expect(html.split("md:text-3xl").length - 1).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(F.cashFlowMonthLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(F.cashFlowYearLabel));
+  });
+
+  it("restates that same figure on the pinned button", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="bat-dong-san-cho-thue-ket-qua"');
+    // The sticky button carries the answer, so the reader sees it while still
+    // in the fields; `aria-hidden` keeps it out of the live announcement.
+    expect(html).toContain('data-calc-answer="true"');
+  });
+
+  it("marks exactly one live region", async () => {
+    const html = await render();
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
+  });
+});

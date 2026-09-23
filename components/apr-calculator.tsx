@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
+import { ResultCta } from "@/components/calc/result-cta";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -64,6 +66,45 @@ const ADVANCED_FEE_COPY: Record<
   other: { label: A.form.otherLabel, help: A.form.otherHelp },
 };
 
+/*
+ * One component, two routes, so the region ids are keyed by the ROUTE — that
+ * is, by `initialMode` and not by the live `mode`. A reader who switches to the
+ * detailed mode on `/cong-cu/apr/` is still on `/cong-cu/apr/`, and the CTA
+ * must go on pointing at that page's own answer.
+ */
+const REGION_IDS: Record<AprMode, { form: string; result: string }> = {
+  basic: { form: "apr-nhap", result: "apr-ket-qua" },
+  advanced: { form: "apr-nang-cao-nhap", result: "apr-nang-cao-ket-qua" },
+};
+
+/*
+ * CSV row 8, "Hai cột": "Kết quả tóm tắt APR dễ đọc; chi tiết phí và độ chính
+ * xác đầy đủ để mở thêm."
+ *
+ * The second clause was ALREADY SATISFIED and is recorded rather than rebuilt:
+ * `DetailDisclosure` already holds the effective APR to four decimals, the
+ * instalment, the net proceeds, the fee total and the points cost, and the
+ * fee itemisation itself is the detailed mode's own panel.
+ *
+ * The first clause is the change. There was no summary: four rate rows of
+ * equal weight, led by the rate the reader had just typed in, so the figure
+ * the tool exists to produce was the second line of a list. The APR is now the
+ * one emphasised row, with the contract rate and the gap under it as support.
+ *
+ * The four decimals STAY. "Dễ đọc" is answered by hierarchy, not by throwing
+ * digits away: this tool's whole subject is a difference that appears in the
+ * second and third digit after the comma, and the spread is quoted in points.
+ *
+ * CSV row 9, "Hai cột": "Gom phí thành nhóm mở rộng; giữ APR và giả định tất
+ * toán cạnh form."
+ *
+ * Its first clause was ALREADY SATISFIED too — the five cash-fee lines, the
+ * points and the financed fee sit inside one `AdvancedFields` panel that
+ * discloses which of them is moving the answer. Its second clause is what the
+ * split layout delivers: the payoff month stays a primary field, and the APR,
+ * the payoff APR and the horizon block now sit in the column beside the form
+ * instead of below it.
+ */
 /**
  * The APR tool, in two modes behind two URLs.
  *
@@ -88,11 +129,18 @@ const ADVANCED_FEE_COPY: Record<
 // an all-optional props type is safe and keeps `<AprCalculator />` valid.
 export function AprCalculator({
   initialMode = "basic",
+  actions,
+  nextSteps,
 }: {
   initialMode?: AprMode;
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
 }) {
   const [mode, setMode] = useState<AprMode>(initialMode);
   const advanced = mode === "advanced";
+  const ids = REGION_IDS[initialMode];
 
   const fields = useCalcFields({
     amount: C.form.defaultAmount,
@@ -262,6 +310,13 @@ export function AprCalculator({
       ? PLACEHOLDER
       : `${formatMoney(figure)} ₫`;
 
+  /**
+   * THE answer, formatted once — so the emphasised row and the pinned CTA
+   * restate the same string rather than formatting the same rate twice.
+   */
+  const aprValue =
+    result?.aprPercent == null ? null : formatPercent(result.aprPercent, 4);
+
   const chart = aprRateBarsModel(result, rate ?? 0, amount ?? 0, {
     ...CHART_UI.money,
     ...C.chart,
@@ -298,398 +353,465 @@ export function AprCalculator({
 
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.loanGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
-
-      {/* The mode, ON the page. Switching keeps every figure, which is the
-          whole difference between a mode and a second tool. */}
-      <FieldGroup className="mt-8">
-        <RadioGroupField
-          value={mode}
-          onValueChange={(next) => setMode(next as AprMode)}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "basic", label: C.form.modeBasic },
-            { value: "advanced", label: C.form.modeAdvanced },
-          ]}
-        />
-      </FieldGroup>
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {advanced ? C.form.modeNoteAdvanced : C.form.modeNoteBasic}
-      </p>
-
-      {advanced ? (
-        <>
-          {/* The payoff month is what the advanced mode is FOR, so it stays in
-              the primary flow while the fee itemisation goes behind a panel
-              that discloses what is active inside it. */}
-          <FieldGroup title={A.form.payoffGroup} className="mt-8">
-            <NumberField
-              {...fields.bind("payoff")}
-              label={A.form.payoffLabel}
-              help={A.form.payoffHelp}
-              error={A.form.payoffInvalid}
-              invalid={payoffInvalid}
-            />
-          </FieldGroup>
-
-          <AdvancedFields
-            title={A.form.feeAllocationTitle}
-            settings={feeSettings}
-            emptySummary={A.form.feeAllocationSummary}
-            className="mt-8"
-          >
-            {FEE_FIELDS.map((field, index) => (
+      <CalculatorLayout
+        formId={ids.form}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.loanGroup}>
               <NumberField
-                key={field.key}
-                {...fields.bind(field.key)}
-                label={ADVANCED_FEE_COPY[field.key].label}
-                unit={A.form.feeUnit}
-                help={ADVANCED_FEE_COPY[field.key].help}
-                error={A.form.feeInvalid}
-                invalid={feeInvalid[index]}
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
               />
-            ))}
-            <NumberField
-              {...fields.bind("points")}
-              label={A.form.pointsLabel}
-              unit={A.form.pointsUnit}
-              help={A.form.pointsHelp}
-              error={A.form.pointsInvalid}
-              invalid={pointsInvalid}
-            />
-            <NumberField
-              {...fields.bind("financed")}
-              label={A.form.financedLabel}
-              unit={A.form.financedUnit}
-              help={A.form.financedHelp}
-              error={A.form.financedInvalid}
-              invalid={financed.invalid}
-            />
-          </AdvancedFields>
-        </>
-      ) : (
-        <FieldGroup title={C.form.feeGroup} className="mt-8">
-          {breakdownActive ? (
-            /* A DERIVED, read-only total. Once a breakdown exists, an
-               editable box labelled "total" would either misdescribe what it
-               holds or discard the other lines on the next keystroke. The
-               figure shown here is the one the model used. */
-            <div>
-              <p className="font-display text-base font-medium text-ink">
-                {C.form.derivedTotalLabel}
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
+
+            {/* The mode, ON the page. Switching keeps every figure, which is
+                the whole difference between a mode and a second tool. */}
+            <FieldGroup className="mt-8">
+              <RadioGroupField
+                value={mode}
+                onValueChange={(next) => setMode(next as AprMode)}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "basic", label: C.form.modeBasic },
+                  { value: "advanced", label: C.form.modeAdvanced },
+                ]}
+              />
+            </FieldGroup>
+
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {advanced ? C.form.modeNoteAdvanced : C.form.modeNoteBasic}
+            </p>
+
+            {advanced ? (
+              <>
+                {/* ROW 9's "giả định tất toán cạnh form": the payoff month is
+                    what the advanced mode is FOR, so it stays a primary field
+                    while the fee itemisation goes behind a panel that
+                    discloses what is active inside it. */}
+                <FieldGroup title={A.form.payoffGroup} className="mt-8">
+                  <NumberField
+                    {...fields.bind("payoff")}
+                    label={A.form.payoffLabel}
+                    help={A.form.payoffHelp}
+                    error={A.form.payoffInvalid}
+                    invalid={payoffInvalid}
+                  />
+                </FieldGroup>
+
+                {/* ROW 9's "gom phí thành nhóm mở rộng", ALREADY SATISFIED
+                    before this batch and left exactly as it stands: one
+                    expandable group for the five cash fees, the points and
+                    the financed fee, summarising which of them is active. */}
+                <AdvancedFields
+                  title={A.form.feeAllocationTitle}
+                  settings={feeSettings}
+                  emptySummary={A.form.feeAllocationSummary}
+                  className="mt-8"
+                >
+                  {FEE_FIELDS.map((field, index) => (
+                    <NumberField
+                      key={field.key}
+                      {...fields.bind(field.key)}
+                      label={ADVANCED_FEE_COPY[field.key].label}
+                      unit={A.form.feeUnit}
+                      help={ADVANCED_FEE_COPY[field.key].help}
+                      error={A.form.feeInvalid}
+                      invalid={feeInvalid[index]}
+                    />
+                  ))}
+                  <NumberField
+                    {...fields.bind("points")}
+                    label={A.form.pointsLabel}
+                    unit={A.form.pointsUnit}
+                    help={A.form.pointsHelp}
+                    error={A.form.pointsInvalid}
+                    invalid={pointsInvalid}
+                  />
+                  <NumberField
+                    {...fields.bind("financed")}
+                    label={A.form.financedLabel}
+                    unit={A.form.financedUnit}
+                    help={A.form.financedHelp}
+                    error={A.form.financedInvalid}
+                    invalid={financed.invalid}
+                  />
+                </AdvancedFields>
+              </>
+            ) : (
+              <FieldGroup title={C.form.feeGroup} className="mt-8">
+                {breakdownActive ? (
+                  /* A DERIVED, read-only total. Once a breakdown exists, an
+                     editable box labelled "total" would either misdescribe
+                     what it holds or discard the other lines on the next
+                     keystroke. The figure shown here is the one the model
+                     used. */
+                  <div>
+                    <p className="font-display text-base font-medium text-ink">
+                      {C.form.derivedTotalLabel}
+                    </p>
+                    <p className="mt-2 font-display text-xl font-medium tabular-nums text-ink">
+                      {upfrontTotal === null
+                        ? PLACEHOLDER
+                        : `${formatMoney(upfrontTotal)} ₫`}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                      {C.form.derivedTotalHelp}
+                    </p>
+                  </div>
+                ) : (
+                  <NumberField
+                    {...fields.bind("arrangement")}
+                    label={FEE_FIELDS[0].basicLabel}
+                    unit={C.form.upfrontUnit}
+                    help={FEE_FIELDS[0].basicHelp}
+                    error={C.form.upfrontInvalid}
+                    invalid={feeInvalid[0]}
+                  />
+                )}
+                <NumberField
+                  {...fields.bind("points")}
+                  label={C.form.pointsLabel}
+                  unit={C.form.pointsUnit}
+                  help={C.form.pointsHelp}
+                  error={C.form.pointsInvalid}
+                  invalid={pointsInvalid}
+                />
+              </FieldGroup>
+            )}
+
+            {/* Everything the compact view is HOLDING but not showing. A
+                layout control that quietly dropped a financed fee is the
+                regression this block exists to make impossible: the
+                assumptions stay in the model and they are named here, with
+                the route to edit them. */}
+            {!advanced && retainedInCompact ? (
+              <div className="mt-4 rounded-2xl border border-ink-4/20 p-4">
+                <p className="font-display text-base font-medium text-ink">
+                  {C.form.retainedTitle}
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {breakdownActive ? (
+                    <li className="text-sm leading-relaxed text-ink-2">
+                      {`${C.form.retainedBreakdown}: ${extraFeeKeys
+                        .map((entry) => ADVANCED_FEE_COPY[entry.field.key].label)
+                        .join(", ")}`}
+                    </li>
+                  ) : null}
+                  {financed.value > 0 || financed.invalid ? (
+                    <li className="text-sm leading-relaxed text-ink-2">
+                      {`${A.form.financedLabel}: ${
+                        financed.invalid
+                          ? C.form.retainedUnreadable
+                          : `${formatMoney(financed.value)} ₫`
+                      }`}
+                    </li>
+                  ) : null}
+                  {(points ?? 0) > 0 || pointsInvalid ? (
+                    <li className="text-sm leading-relaxed text-ink-2">
+                      {`${C.form.pointsLabel}: ${
+                        pointsInvalid
+                          ? C.form.retainedUnreadable
+                          : `${formatDecimal(points ?? 0, 2)}%`
+                      }`}
+                    </li>
+                  ) : null}
+                  {payoffRaw !== "" ? (
+                    <li className="text-sm leading-relaxed text-ink-2">
+                      {`${A.form.payoffLabel}: ${
+                        payoffInvalid
+                          ? C.form.retainedUnreadable
+                          : formatDecimal(payoff ?? 0, 0)
+                      }`}
+                    </li>
+                  ) : null}
+                </ul>
+                <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                  {C.form.retainedEditHint}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setMode("advanced")}
+                  className={`mt-2 text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+                >
+                  {C.form.retainedEditAction}
+                </button>
+              </div>
+            ) : null}
+
+            {/* Naming the field is the difference between "something is wrong
+                somewhere you cannot see" and a reader knowing which box to
+                open the detailed mode for. The edit-details button above is
+                the recovery and stays where it is. */}
+            {hiddenInvalid ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {`${C.form.hiddenInvalidNotice} ${
+                  C.form.hiddenInvalidFields
+                }: ${hiddenInvalidLabels.join(", ")}.`}
               </p>
-              <p className="mt-2 font-display text-xl font-medium tabular-nums text-ink">
-                {upfrontTotal === null
-                  ? PLACEHOLDER
-                  : `${formatMoney(upfrontTotal)} ₫`}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-ink-3">
-                {C.form.derivedTotalHelp}
-              </p>
-            </div>
-          ) : (
-            <NumberField
-              {...fields.bind("arrangement")}
-              label={FEE_FIELDS[0].basicLabel}
-              unit={C.form.upfrontUnit}
-              help={FEE_FIELDS[0].basicHelp}
-              error={C.form.upfrontInvalid}
-              invalid={feeInvalid[0]}
-            />
-          )}
-          <NumberField
-            {...fields.bind("points")}
-            label={C.form.pointsLabel}
-            unit={C.form.pointsUnit}
-            help={C.form.pointsHelp}
-            error={C.form.pointsInvalid}
-            invalid={pointsInvalid}
+            ) : null}
+          </>
+        }
+
+        cta={
+          /* Sticky: the detailed mode puts a payoff month and a seven-field
+             fee panel between the loan boxes and the answer, and the pinned
+             line repeats the APR itself rather than "xem kết quả". */
+          <ResultCta
+            formId={ids.form}
+            targetId={ids.result}
+            invalid={!fieldsUsable}
+            sticky
+            answer={{ label: C.form.aprLabel, value: aprValue }}
           />
-        </FieldGroup>
-      )}
+        }
+        primary={
+          <>
+            {/* ROW 8's summary. The APR is the answer and is the page's one
+                emphasised figure; the rate the reader typed and the gap
+                between the two are support under it. Four decimals in all
+                three, because the gap lives in those digits. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={ids.result}>
+              <ResultRow label={C.form.aprLabel} value={aprValue} emphasis />
+              <ResultRow
+                label={C.form.nominalLabel}
+                value={rate === null ? null : formatPercent(rate, 4)}
+              />
+              {advanced ? (
+                <ResultRow
+                  label={A.form.payoffAprLabel}
+                  value={
+                    result?.payoffAprPercent == null
+                      ? null
+                      : formatPercent(result.payoffAprPercent, 4)
+                  }
+                />
+              ) : null}
+              <ResultRow
+                label={C.form.spreadLabel}
+                value={
+                  result?.aprSpreadPoints == null
+                    ? null
+                    : `${formatDecimal(result.aprSpreadPoints, 4)} ${C.form.pointsSuffix}`
+                }
+              />
+            </ResultGroup>
 
-      {/* Everything the compact view is HOLDING but not showing. A layout
-          control that quietly dropped a financed fee is the regression this
-          block exists to make impossible: the assumptions stay in the model
-          and they are named here, with the route to edit them. */}
-      {!advanced && retainedInCompact ? (
-        <div className="mt-4 rounded-2xl border border-ink-4/20 p-4">
-          <p className="font-display text-base font-medium text-ink">
-            {C.form.retainedTitle}
-          </p>
-          <ul className="mt-2 space-y-1">
-            {breakdownActive ? (
-              <li className="text-sm leading-relaxed text-ink-2">
-                {`${C.form.retainedBreakdown}: ${extraFeeKeys
-                  .map((entry) => ADVANCED_FEE_COPY[entry.field.key].label)
-                  .join(", ")}`}
-              </li>
+            {/*
+              ORIGINAL ROW 4: the MONEY at the chosen payoff month.
+
+              An APR is a rate, and a rate does not tell a borrower what the
+              loan has cost them by the month they actually clear it. Three
+              figures do: interest accrued, that plus every fee, and the
+              principal still owed — each beside its full-term twin, from the
+              same schedule.
+
+              In the DETAILED view only, alongside the payoff APR row and the
+              payoff balance figure, and for the same reason: this is the
+              question `/cong-cu/apr-nang-cao/` exists for. Mode is
+              presentation — the compact view computes the identical figures
+              and names the retained payoff month in its own disclosure block,
+              so switching changes what is on screen and never what the loan
+              costs. A test pins that.
+
+              ROW 9 keeps it HERE, in the column beside the form, rather than
+              moving it behind the disclosure: the settlement assumption is
+              the reason this route exists, so it reads with the APR.
+            */}
+            {advanced && result?.payoffCost != null ? (
+              <>
+                <ResultGroup
+                  title={A.form.horizonTitle}
+                  className="mt-4"
+                  live={false}
+                >
+                  <ResultRow
+                    label={fill(A.form.horizonInterestLabel, {
+                      n: formatDecimal(result.payoffMonths ?? 0, 0),
+                    })}
+                    value={`${money(result.payoffInterest)} → ${money(
+                      result.totalInterest,
+                    )}`}
+                    prose
+                  />
+                  <ResultRow
+                    label={fill(A.form.horizonCostLabel, {
+                      n: formatDecimal(result.payoffMonths ?? 0, 0),
+                    })}
+                    value={`${money(result.payoffCost)} → ${money(
+                      result.totalCost,
+                    )}`}
+                    prose
+                  />
+                  {/* Principal, NOT a cost — its own row, never added in. */}
+                  <ResultRow
+                    label={fill(A.form.horizonBalanceLabel, {
+                      n: formatDecimal(result.payoffMonths ?? 0, 0),
+                    })}
+                    value={money(result.payoffBalance)}
+                  />
+                </ResultGroup>
+                <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                  {A.form.horizonNote}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-ink-2">
+                  {A.form.horizonExcludesNote}
+                </p>
+              </>
             ) : null}
-            {financed.value > 0 || financed.invalid ? (
-              <li className="text-sm leading-relaxed text-ink-2">
-                {`${A.form.financedLabel}: ${
-                  financed.invalid
-                    ? C.form.retainedUnreadable
-                    : `${formatMoney(financed.value)} ₫`
-                }`}
-              </li>
+
+            {feesTooLarge ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {A.form.feesTooLargeNotice}
+              </p>
             ) : null}
-            {(points ?? 0) > 0 || pointsInvalid ? (
-              <li className="text-sm leading-relaxed text-ink-2">
-                {`${C.form.pointsLabel}: ${
-                  pointsInvalid
-                    ? C.form.retainedUnreadable
-                    : `${formatDecimal(points ?? 0, 2)}%`
-                }`}
-              </li>
+
+            {unsolvable ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.unsolvableNotice}
+              </p>
             ) : null}
-            {payoffRaw !== "" ? (
-              <li className="text-sm leading-relaxed text-ink-2">
-                {`${A.form.payoffLabel}: ${
-                  payoffInvalid
-                    ? C.form.retainedUnreadable
-                    : formatDecimal(payoff ?? 0, 0)
-                }`}
+
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {advanced ? A.form.settlementFeeNotice : C.form.payoffNote}
+            </p>
+          </>
+        }
+        chart={
+          <>
+            {/* The visual the original row asked for: the contract rate beside
+                the modelled one, with the fee breakdown in the figure's own
+                table. */}
+            <ChartFigure model={chart}>
+              <BarChart model={chart} />
+            </ChartFigure>
+
+            <p className="mt-3 text-sm leading-relaxed text-ink-3">
+              {C.form.modeledNote}
+            </p>
+          </>
+        }
+        actions={actions}
+        nextSteps={
+          <>
+            {/* The two cross-route links are next steps, so they sit with the
+                route's own next-step block instead of between the answer and
+                the disclosure. They stay HERE rather than in `actions`: they
+                switch mode or open a comparison, which is a further question,
+                and `actions` is reserved for the one or two the plan names. */}
+            <p className="text-sm leading-relaxed text-ink-3">
+              {C.form.crossRouteNote}
+            </p>
+            <ul className="mt-2 space-y-1">
+              <li>
+                <Link
+                  href={advanced ? `${C.slug}/` : `${A.slug}/`}
+                  className={`text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+                >
+                  {advanced ? A.form.basicLinkLabel : C.form.advancedLinkLabel}
+                </Link>
               </li>
-            ) : null}
-          </ul>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.form.retainedEditHint}
-          </p>
-          <button
-            type="button"
-            onClick={() => setMode("advanced")}
-            className={`mt-2 text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+              <li>
+                <Link
+                  href={`${LOAN_COMPARE.slug}/`}
+                  className={`text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+                >
+                  {C.form.compareLinkLabel}
+                </Link>
+              </li>
+            </ul>
+            {nextSteps}
+          </>
+        }
+        detail={
+          /* ROW 8's "chi tiết phí và độ chính xác đầy đủ để mở thêm", which
+             this block ALREADY WAS: the effective APR to four decimals, the
+             instalment, the net proceeds, the fee total and the points cost.
+             The change is only that it is now the full-width detail region
+             below the answer rather than the last thing in one column. */
+          <DetailDisclosure
+            title={C.form.detailDisclosureTitle}
+            hint={C.form.detailDisclosureHint}
           >
-            {C.form.retainedEditAction}
-          </button>
-        </div>
-      ) : null}
-
-      {/* Naming the field is the difference between "something is wrong
-          somewhere you cannot see" and a reader knowing which box to open the
-          detailed mode for. The edit-details button above is the recovery and
-          stays where it is. */}
-      {hiddenInvalid ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {`${C.form.hiddenInvalidNotice} ${
-            C.form.hiddenInvalidFields
-          }: ${hiddenInvalidLabels.join(", ")}.`}
-        </p>
-      ) : null}
-
-      {/* The contract rate first, then the modelled one, then the gap. Four
-          decimals: the whole point of the tool is a difference that shows up
-          in the second and third digit after the comma. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.nominalLabel}
-          value={rate === null ? null : formatPercent(rate, 4)}
-        />
-        <ResultRow
-          label={C.form.aprLabel}
-          value={
-            result?.aprPercent == null
-              ? null
-              : formatPercent(result.aprPercent, 4)
-          }
-        />
-        {advanced ? (
-          <ResultRow
-            label={A.form.payoffAprLabel}
-            value={
-              result?.payoffAprPercent == null
-                ? null
-                : formatPercent(result.payoffAprPercent, 4)
-            }
-          />
-        ) : null}
-        <ResultRow
-          label={C.form.spreadLabel}
-          value={
-            result?.aprSpreadPoints == null
-              ? null
-              : `${formatDecimal(result.aprSpreadPoints, 4)} ${C.form.pointsSuffix}`
-          }
-        />
-      </ResultGroup>
-
-      {/*
-        ORIGINAL ROW 4: the MONEY at the chosen payoff month.
-
-        An APR is a rate, and a rate does not tell a borrower what the loan
-        has cost them by the month they actually clear it. Three figures do:
-        interest accrued, that plus every fee, and the principal still owed —
-        each beside its full-term twin, from the same schedule.
-
-        In the DETAILED view only, alongside the payoff APR row and the payoff
-        balance figure, and for the same reason: this is the question
-        `/cong-cu/apr-nang-cao/` exists for. Mode is presentation — the compact
-        view computes the identical figures and names the retained payoff month
-        in its own disclosure block, so switching changes what is on screen and
-        never what the loan costs. A test pins that.
-      */}
-      {advanced && result?.payoffCost != null ? (
-        <>
-          <ResultGroup
-            title={A.form.horizonTitle}
-            className="mt-4"
-            live={false}
-          >
-            <ResultRow
-              label={fill(A.form.horizonInterestLabel, {
-                n: formatDecimal(result.payoffMonths ?? 0, 0),
-              })}
-              value={`${money(result.payoffInterest)} → ${money(
-                result.totalInterest,
-              )}`}
-              prose
+            <DetailFigures
+              title={C.form.detailTitle}
+              figures={[
+                {
+                  label: C.form.effectiveLabel,
+                  value:
+                    result?.aprEffectivePercent == null
+                      ? null
+                      : formatPercent(result.aprEffectivePercent, 4),
+                },
+                {
+                  label: C.form.paymentLabel,
+                  value: cash(result?.monthlyPayment),
+                },
+                ...(advanced
+                  ? [
+                      {
+                        label: A.form.principalLabel,
+                        value: cash(result?.principal),
+                      },
+                    ]
+                  : []),
+                {
+                  label: C.form.netProceedsLabel,
+                  value: cash(result?.netProceeds),
+                },
+                {
+                  label: C.form.totalFeesLabel,
+                  value: cash(result?.totalFees),
+                },
+                {
+                  label: C.form.pointsCostLabel,
+                  value: cash(result?.pointsCost),
+                },
+                ...(advanced
+                  ? [
+                      {
+                        label: A.form.payoffBalanceLabel,
+                        value: cash(result?.payoffBalance),
+                      },
+                    ]
+                  : []),
+                {
+                  label: C.form.totalInterestLabel,
+                  value: cash(result?.totalInterest),
+                },
+                {
+                  label: C.form.totalCostLabel,
+                  value: cash(result?.totalCost),
+                },
+                {
+                  label: C.form.totalPaidLabel,
+                  value: cash(result?.totalPaid),
+                },
+              ]}
             />
-            <ResultRow
-              label={fill(A.form.horizonCostLabel, {
-                n: formatDecimal(result.payoffMonths ?? 0, 0),
-              })}
-              value={`${money(result.payoffCost)} → ${money(result.totalCost)}`}
-              prose
-            />
-            {/* Principal, NOT a cost — its own row, never added in. */}
-            <ResultRow
-              label={fill(A.form.horizonBalanceLabel, {
-                n: formatDecimal(result.payoffMonths ?? 0, 0),
-              })}
-              value={money(result.payoffBalance)}
-            />
-          </ResultGroup>
-          <p className="mt-3 text-sm leading-relaxed text-ink-3">
-            {A.form.horizonNote}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-ink-2">
-            {A.form.horizonExcludesNote}
-          </p>
-        </>
-      ) : null}
-
-      {/* The visual the original row asked for: the contract rate beside the
-          modelled one, with the fee breakdown in the figure's own table. */}
-      <ChartFigure model={chart}>
-        <BarChart model={chart} />
-      </ChartFigure>
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {C.form.modeledNote}
-      </p>
-
-      {feesTooLarge ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {A.form.feesTooLargeNotice}
-        </p>
-      ) : null}
-
-      {unsolvable ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.unsolvableNotice}
-        </p>
-      ) : null}
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {advanced ? A.form.settlementFeeNotice : C.form.payoffNote}
-      </p>
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-3">
-        {C.form.crossRouteNote}
-      </p>
-      <ul className="mt-2 space-y-1">
-        <li>
-          <Link
-            href={advanced ? `${C.slug}/` : `${A.slug}/`}
-            className={`text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
-          >
-            {advanced ? A.form.basicLinkLabel : C.form.advancedLinkLabel}
-          </Link>
-        </li>
-        <li>
-          <Link
-            href={`${LOAN_COMPARE.slug}/`}
-            className={`text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
-          >
-            {C.form.compareLinkLabel}
-          </Link>
-        </li>
-      </ul>
-
-      <DetailDisclosure
-        title={C.form.detailDisclosureTitle}
-        hint={C.form.detailDisclosureHint}
-        className="mt-8"
-      >
-        <DetailFigures
-          title={C.form.detailTitle}
-          figures={[
-            {
-              label: C.form.effectiveLabel,
-              value:
-                result?.aprEffectivePercent == null
-                  ? null
-                  : formatPercent(result.aprEffectivePercent, 4),
-            },
-            { label: C.form.paymentLabel, value: cash(result?.monthlyPayment) },
-            ...(advanced
-              ? [
-                  {
-                    label: A.form.principalLabel,
-                    value: cash(result?.principal),
-                  },
-                ]
-              : []),
-            {
-              label: C.form.netProceedsLabel,
-              value: cash(result?.netProceeds),
-            },
-            { label: C.form.totalFeesLabel, value: cash(result?.totalFees) },
-            { label: C.form.pointsCostLabel, value: cash(result?.pointsCost) },
-            ...(advanced
-              ? [
-                  {
-                    label: A.form.payoffBalanceLabel,
-                    value: cash(result?.payoffBalance),
-                  },
-                ]
-              : []),
-            {
-              label: C.form.totalInterestLabel,
-              value: cash(result?.totalInterest),
-            },
-            { label: C.form.totalCostLabel, value: cash(result?.totalCost) },
-            { label: C.form.totalPaidLabel, value: cash(result?.totalPaid) },
-          ]}
-        />
-      </DetailDisclosure>
+          </DetailDisclosure>
+        }
+      />
     </CalculatorCard>
   );
 }

@@ -25,6 +25,12 @@ export default function UsSocialSecurityEstimatePage() {
       // The formula is regressive by design, and a reader who assumes it is
       // proportional will misread every figure on the page.
       notice={C.regressiveNotice}
+      // The rule stays above; the three worked income levels behind this
+      // summary.
+      noticeDetailTitle={C.regressiveNoticeDetailTitle}
+      noticeDetail={C.regressiveNoticeDetail}
+      // Row 55's two-column result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       // The 90/32/15 factors are hard-coded with no field, so the reader

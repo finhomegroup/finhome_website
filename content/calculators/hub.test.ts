@@ -103,6 +103,28 @@ describe("the hub's catalogue copy", () => {
     expect(C.journeysNote).toContain("báo giá");
   });
 
+  it("directs the reader by tool name, not by an ordinal", () => {
+    // §12: the note said "câu hỏi số 2 hoặc số 5", which stopped matching the
+    // cards as soon as one was inserted — and an ordinal is not what the card
+    // shows anyway. Every name the note quotes must be a live registry title
+    // that a reader can actually see on a card.
+    expect(C.journeysNote).not.toMatch(/câu hỏi số/);
+    const quoted = [...C.journeysNote.matchAll(/“([^”]+)”/g)].map((m) => m[1]);
+    expect(quoted.length).toBeGreaterThan(0);
+    const titles = HUB_JOURNEYS.map((j) => getCalculator(j.slug)?.title);
+    for (const name of quoted) {
+      expect(titles, `journeysNote quotes "${name}"`).toContain(name);
+    }
+  });
+
+  it("keeps a count out of the question section's title", () => {
+    // It said "Năm câu hỏi" over six cards for long enough to reach the audit.
+    // The cards state their own number; the title does not repeat it.
+    expect(C.journeysTitle).not.toMatch(
+      /\d|một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười/i,
+    );
+  });
+
   it("keeps the tool count out of the page's headline", () => {
     // "Chuyển số lượng công cụ ra khỏi thông điệp chính" — the headline is a
     // question to the visitor, not a statistic about us.

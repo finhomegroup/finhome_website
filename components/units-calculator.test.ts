@@ -9,8 +9,9 @@
  * Server-rendered with `renderToStaticMarkup`. Nothing here is a visual check.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { markupRegion } from "@/lib/markup-region";
 import { UNITS_CONTENT } from "@/content/calculators/units";
 
 const CONTENT = "@/content/calculators/units";
@@ -19,7 +20,10 @@ type FormPatch = Partial<
   Record<keyof typeof UNITS_CONTENT.form, string | object>
 >;
 
-async function render(patch?: FormPatch): Promise<string> {
+async function render(
+  patch?: FormPatch,
+  props?: { actions?: ReactNode; nextSteps?: ReactNode },
+): Promise<string> {
   vi.resetModules();
   if (patch) {
     vi.doMock(CONTENT, async () => {
@@ -36,7 +40,9 @@ async function render(patch?: FormPatch): Promise<string> {
   }
   try {
     const loaded = await import("@/components/units-calculator");
-    return renderToStaticMarkup(createElement(loaded.UnitsCalculator));
+    return renderToStaticMarkup(
+      createElement(loaded.UnitsCalculator, props ?? null),
+    );
   } finally {
     vi.doUnmock(CONTENT);
     vi.resetModules();
@@ -259,6 +265,135 @@ describe("copy that belongs to THIS route", () => {
     // And the shared text is untouched for everyone else.
     expect(TOOL_SHELL.nextSteps.saveBody).toContain("cách duy nhất");
     expect(nextStepsFor("lai-kep")?.saveBody).toBeUndefined();
+  });
+});
+
+/**
+ * ROW 73. "Khi chưa chọn vùng, hiển thị 'Chọn quy ước vùng để xem kết quả'
+ * thay vì chỉ dấu gạch; giữ nút sao chép đã có sau khi tính."
+ */
+describe("the unconfirmed region speaks in the answer slot", () => {
+  /** The `emphasis` treatment `ResultRow` owns. */
+  const HEADLINE = "md:text-3xl";
+
+  it("says what to choose instead of rendering the placeholder", async () => {
+    const html = await render();
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live).not.toBeNull();
+    expect(live!).toContain(C.regionRequiredValue);
+    // The instruction is in the ANSWER row, not only in the paragraph below:
+    // it appears before the conversion-factor label.
+    expect(live!.indexOf(C.regionRequiredValue)).toBeLessThan(
+      live!.indexOf(C.factorLabel),
+    );
+    // No figure is invented, and nothing is flagged as a field error — this
+    // is a decision the reader owes the tool, not a bad input.
+    expect(live!).not.toContain(">360<");
+    expect(html).not.toContain('aria-invalid="true"');
+  });
+
+  it("keeps the long notice, which does a different job", async () => {
+    // The row says what to do; the paragraph says why the tool refuses and
+    // what the deed's own square metres mean. Neither replaces the other.
+    const html = await render();
+    expect(html).toContain(C.regionRequiredNotice);
+  });
+
+  it("emphasises nothing while there is no answer to emphasise", async () => {
+    const html = await render();
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live!).not.toContain(HEADLINE);
+  });
+
+  it("replaces the instruction with the emphasised figure once a region is chosen", async () => {
+    const html = await render({ defaultRegion: "bac", defaultValue: "1" });
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live!).not.toContain(C.regionRequiredValue);
+    expect(live!.split(HEADLINE).length - 1).toBe(1);
+    expect(live!).toContain(">360<");
+  });
+
+  it("does not show the instruction where no unit is region-dependent", async () => {
+    // Gold: a region decides nothing, so there is nothing to choose and the
+    // row must not ask.
+    const html = await render({ defaultCategory: "gold" });
+    expect(html).not.toContain(C.regionRequiredValue);
+    expect(html).not.toContain(C.regionRequiredNotice);
+    expect(html).not.toContain(C.regionLegend);
+  });
+});
+
+describe("the copy button survived the layout change", () => {
+  it("still sits under the equation, after the answer", async () => {
+    const html = await render({ defaultRegion: "trung", defaultValue: "1" });
+    // The baseline's exact copied line for this selection.
+    expect(html).toContain(
+      `1 ${UNITS_CONTENT.units.area.saoTrung} = 499,95 ${UNITS_CONTENT.units.area.m2}`,
+    );
+    expect(html).toContain(C.copyLabel);
+    expect(html.indexOf(C.equationLabel)).toBeLessThan(
+      html.indexOf(C.copyLabel),
+    );
+    // Inside the result half of the layout, not down with the tables.
+    expect(html.indexOf(C.copyLabel)).toBeLessThan(
+      html.indexOf('data-calc-region="detail"'),
+    );
+  });
+
+  it("disappears again when the region goes back to unselected", async () => {
+    // The measured runtime baseline: reverting to "Chưa chọn" removes the
+    // copy button, because there is no equation to copy.
+    const html = await render();
+    expect(html).not.toContain(C.copyLabel);
+    expect(html).not.toContain(C.equationLabel);
+  });
+});
+
+describe("the row 73 layout contracts", () => {
+  it("wires the form, the CTA and the answer together", async () => {
+    const html = await render();
+    expect(html).toContain('id="doi-don-vi-nhap" data-calc-region="form"');
+    expect(html).toContain('id="doi-don-vi-ket-qua"');
+    expect(html).toContain('aria-controls="doi-don-vi-ket-qua"');
+    expect(html).toContain('data-calc-cta="true"');
+    // A "Gọn" row: one column, no chart, no pinned CTA.
+    expect(html).not.toContain("lg:grid-cols-5");
+    expect(html).not.toContain("<svg");
+    expect(html).not.toContain("fh-cta-pin");
+  });
+
+  it("moves both tables into the detail region", async () => {
+    const html = await render({ defaultRegion: "bac", defaultValue: "2" });
+    const detail = markupRegion(html, 'data-calc-region="detail"');
+    expect(detail).not.toBeNull();
+    expect(detail!).toContain(C.comparison.title);
+    expect(detail!).toContain(C.table.caption);
+    // Neither table is announced: the live region holds two rows.
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live!).not.toContain("<table");
+  });
+
+  it("omits the detail region entirely when there is nothing to put in it", async () => {
+    // An unreadable value withholds both the comparison and the all-unit
+    // table, and an empty region is worse than no region.
+    const html = await render({ defaultValue: "abc" });
+    expect(html).toContain(C.valueInvalid);
+    expect(markupRegion(html, 'data-calc-region="detail"')).toBeNull();
+  });
+
+  it("puts the actions after the answer and outside the live region", async () => {
+    const html = await render({ defaultRegion: "bac" }, {
+      actions: createElement("div", { "data-test": "actions" }),
+      nextSteps: createElement("div", { "data-test": "next-steps" }),
+    });
+    const live = markupRegion(html, 'data-results-live="true"');
+    expect(live!).not.toContain('data-test="actions"');
+    expect(html.indexOf('data-test="actions"')).toBeLessThan(
+      html.indexOf('data-test="next-steps"'),
+    );
+    expect(html.indexOf('data-test="next-steps"')).toBeLessThan(
+      html.indexOf('data-calc-region="detail"'),
+    );
   });
 });
 

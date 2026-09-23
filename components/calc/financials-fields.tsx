@@ -110,13 +110,29 @@ export function readStatement(
   };
 }
 
-/** The three field groups for one period's statements. */
+/** Which of the three blocks to render, in the order they are listed. */
+export type StatementGroup = "income" | "assets" | "liabilities";
+
+export const STATEMENT_GROUPS = ["income", "assets", "liabilities"] as const;
+
+/**
+ * The three field groups for one period's statements.
+ *
+ * `groups` narrows the render to a SUBSET, which is what row 68 needs: the
+ * two-period page interleaves the periods group by group — kết quả kinh doanh
+ * (kỳ này), kết quả kinh doanh (kỳ trước), then each balance-sheet section the
+ * same way — so the five lines a reader is copying off one statement sit
+ * beside the same five lines of the other rather than thirteen fields away.
+ * Omitting it renders all three in the documented order, so the single-period
+ * page's markup is unchanged.
+ */
 export function StatementFields({
   copy,
   invalid,
   bind,
   prefix = "",
   titleSuffix = "",
+  groups = STATEMENT_GROUPS,
   className,
 }: {
   copy: StatementCopy;
@@ -126,10 +142,18 @@ export function StatementFields({
   prefix?: string;
   /** Appended to each group title, e.g. " — năm nay". */
   titleSuffix?: string;
+  /** Subset and order of blocks to render. Defaults to all three. */
+  groups?: readonly StatementGroup[];
   className?: string;
 }) {
-  const group = (title: string, keys: readonly StatementKey[], first: boolean) => (
+  const group = (
+    name: string,
+    title: string,
+    keys: readonly StatementKey[],
+    first: boolean,
+  ) => (
     <FieldGroup
+      key={name}
       title={`${title}${titleSuffix}`}
       className={first ? className : "mt-8"}
     >
@@ -147,11 +171,17 @@ export function StatementFields({
     </FieldGroup>
   );
 
+  const blocks: Record<StatementGroup, [string, readonly StatementKey[]]> = {
+    income: [copy.incomeGroup, INCOME_KEYS],
+    assets: [copy.assetGroup, ASSET_KEYS],
+    liabilities: [copy.liabilityGroup, LIABILITY_KEYS],
+  };
+
   return (
     <>
-      {group(copy.incomeGroup, INCOME_KEYS, true)}
-      {group(copy.assetGroup, ASSET_KEYS, false)}
-      {group(copy.liabilityGroup, LIABILITY_KEYS, false)}
+      {groups.map((name, at) =>
+        group(name, blocks[name][0], blocks[name][1], at === 0),
+      )}
     </>
   );
 }

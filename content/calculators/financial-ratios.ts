@@ -29,8 +29,14 @@ export const FINANCIAL_RATIOS = {
   metaDescription:
     "Nhập báo cáo kết quả kinh doanh và bảng cân đối để tính các chỉ số sinh lời, thanh khoản, đòn bẩy, hiệu quả và định giá. Công cụ miễn phí của FinHome.",
 
+  // §5: purpose plus the undefined-ratio rule, which is the one thing a
+  // reader will otherwise read as a broken page. The worked example that
+  // argues `oneRatioNotice` is the disclosure below it.
   lede:
     "Nhập mười ba dòng từ báo cáo kết quả kinh doanh và bảng cân đối kế toán để có toàn bộ bộ chỉ số. Những chỉ số có mẫu số bằng 0 sẽ hiện dấu gạch ngang chứ không hiện một con số vô cùng — vì không áp dụng được thì đó là câu trả lời đúng.",
+  ledeDetailTitle: "Ví dụ: vì sao một chỉ số không đủ để kết luận",
+  ledeDetail:
+    "Một ROE 19,2% đi kèm thanh toán hiện hành 0,8 nói điều khác hẳn cùng mức ROE đó đi kèm 2,0: doanh nghiệp thứ nhất đang sinh lời tốt và có thể vẫn mất khả năng trả nợ trong quý tới. Đó là lý do bảng kết quả hiển thị cả hai mươi dòng thay vì một con số tổng hợp.",
 
   /**
    * The thirteen statement lines — the SINGLE definition for both pages.
@@ -229,8 +235,11 @@ export const FINANCIAL_RATIOS = {
   // qualification. The reader who needs it — someone comparing against a
   // published analyst figure — is looking for it; the reader who needs the
   // lesson is not.
+  // §5: the lesson stays visible; the two-company worked example that argues
+  // it moves into `ledeDetail`, because `noticeDetail` on this route is
+  // already the closing-balance caveat and the shell has one slot each.
   oneRatioNotice:
-    "Một chỉ số không kết luận được sức khỏe của một doanh nghiệp. Mỗi dòng trong bảng dưới chỉ trả lời một câu hỏi hẹp, và bảng có hai mươi dòng vì chúng phải được đọc cùng nhau: một ROE 19,2% đi kèm thanh toán hiện hành 0,8 nói điều khác hẳn cùng mức ROE đó đi kèm 2,0 — doanh nghiệp thứ nhất đang sinh lời tốt và có thể vẫn mất khả năng trả nợ trong quý tới.",
+    "Một chỉ số không kết luận được sức khỏe của một doanh nghiệp. Mỗi dòng trong bảng kết quả chỉ trả lời một câu hỏi hẹp, và bảng có hai mươi dòng vì chúng phải được đọc cùng nhau.",
 
   // Kept, and now the long version behind the notice rather than inside it.
   closingBalanceTitle: "Vì sao con số ở đây có thể khác báo cáo phân tích",

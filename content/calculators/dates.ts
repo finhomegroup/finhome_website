@@ -87,6 +87,12 @@ export const DATES = {
     todayHelp:
       "Điền ngày hôm nay vào ô ngày bắt đầu. Nút này lấy ngày từ máy bạn — đó là lý do các ô không được điền sẵn ngày hôm nay.",
 
+    // ROW 72 — "đặt nút xem số ngày cuối form". The shared CTA sits after the
+    // last field group, and it names what it will show, which differs by mode:
+    // one mode counts days, the other lands on a date.
+    ctaDifference: "Xem số ngày",
+    ctaOffset: "Xem ngày kết quả",
+
     resultTitle: "Kết quả",
     daysLabel: "Số ngày",
     workdaysLabel: "Số ngày làm việc",

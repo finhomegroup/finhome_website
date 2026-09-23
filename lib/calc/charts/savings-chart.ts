@@ -45,6 +45,7 @@ import {
   type MoneyWords,
 } from "@/lib/calc/charts/labels";
 import {
+  countTicks,
   linearTicks,
   niceMax,
   type ChartTable,
@@ -283,7 +284,10 @@ export function savingsPathsModel(
     ],
     xAxis: {
       label: labels.xAxis,
-      ticks: linearTicks(xMax, 4, (value) => formatDecimal(value, 0)),
+      // `countTicks`, NOT `linearTicks`: this axis carries whole months, so
+      // equal intervals plus a rounding formatter label quarter positions with
+      // the integers they are not. See `countTicks` in `types.ts`.
+      ticks: countTicks(xMax, 5, (value) => formatDecimal(value, 0)),
     },
     yAxis: {
       label: fill(labels.yAxis, { unit }),
@@ -512,7 +516,10 @@ export function savingsChartModel(
     ],
     xAxis: {
       label: labels.xAxis,
-      ticks: linearTicks(months, 4, (value) => formatDecimal(value, 0)),
+      // `countTicks`, NOT `linearTicks`: this axis carries whole months, so
+      // equal intervals plus a rounding formatter label quarter positions with
+      // the integers they are not. See `countTicks` in `types.ts`.
+      ticks: countTicks(months, 5, (value) => formatDecimal(value, 0)),
     },
     yAxis: {
       label: fill(labels.yAxis, { unit }),

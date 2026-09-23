@@ -38,8 +38,15 @@ export const NET_DISTRIBUTION = {
   metaDescription:
     "Tính số tiền thực về tay sau các khoản trừ theo phần trăm và theo số tiền, hoặc ngược lại: cần vay hoặc báo giá bao nhiêu để nhận đủ số bạn cần. Công cụ miễn phí của FinHome.",
 
+  // §5: one purpose sentence, then the limitation that changes a decision —
+  // the debt does not shrink with the cash. What the tool accepts and which
+  // two directions it runs is the detail; a reader standing in front of the
+  // fields does not need it before the first field.
   lede:
-    "Một khoản vay được giải ngân ít hơn số ghi trên hợp đồng khi có phí bị trừ ngay lúc nhận — nhưng nghĩa vụ trả nợ vẫn là số trên hợp đồng. Trang này chạy chuỗi khoản trừ đó theo cả hai chiều, với các khoản phí do BẠN nhập.",
+    "Tính số tiền thực về tay sau các khoản phí bị trừ ngay khi nhận. Nghĩa vụ trả lãi và gốc vẫn là số NỢ GỐC trên hợp đồng, không phải số về tay.",
+  ledeDetailTitle: "Công cụ trừ những khoản nào, theo chiều nào",
+  ledeDetail:
+    "Nó trừ đúng những khoản BẠN nhập: các khoản theo phần trăm trước — mỗi khoản tính trên cùng số nợ gốc, không cộng dồn lên nhau — rồi các khoản theo số tiền cố định. Không tự thêm thuế và không áp biểu phí của tổ chức nào. Chiều thứ hai giải bài toán ngược: cần vay hoặc báo giá bao nhiêu để nhận đủ số tiền bạn cần.",
 
   // A TOOL-SPECIFIC DISCLAIMER, because the shared one contradicts this page
   // twice. It says results do not deduct "thuế, phí và lạm phát" — this tool's
@@ -53,11 +60,14 @@ export const NET_DISTRIBUTION = {
     "Công cụ này chỉ mang tính minh họa. Nó trừ ĐÚNG những khoản bạn đã nhập và không thêm khoản nào: không tự tính thuế, không tự áp biểu phí của tổ chức nào, và không kiểm tra hợp đồng của bạn có những khoản phí gì. Kết quả cũng không quy các khoản phí đó về một mức lãi suất tương đương — đó là việc của công cụ APR. Con số ở đây không phải cam kết về số tiền bạn sẽ được giải ngân và không phải lời khuyên tài chính.",
 
   // Original row 67: "gắn rõ loại giao dịch".
+  // §5: the two things a reader must not get wrong stay visible — these are
+  // the reader's own assumptions, and this is not an offer of disbursement.
+  // What the tool therefore does not know moves into the disclosure.
   transactionNotice:
-    "Các khoản trừ ở đây là GIẢ ĐỊNH do bạn nhập, không phải biểu phí của nơi nào. Công cụ không biết hợp đồng của bạn có phí gì, không phải công cụ tính thuế, và không xác định khoản nào là bắt buộc — hãy lấy đúng tên và tỷ lệ từ bảng phí hoặc hợp đồng bạn được cung cấp.",
-  transactionNoticeDetailTitle: "Dùng cho những giao dịch nào?",
+    "Các khoản trừ ở đây là GIẢ ĐỊNH do bạn nhập, không phải biểu phí của nơi nào và không phải cam kết về số tiền bạn sẽ được giải ngân. Hãy lấy đúng tên và tỷ lệ từ bảng phí hoặc hợp đồng bạn được cung cấp.",
+  transactionNoticeDetailTitle: "Công cụ không biết gì, và dùng cho giao dịch nào?",
   transactionNoticeDetail:
-    "Phép tính chỉ là một chuỗi khoản trừ, nên nó đúng cho nhiều tình huống: khoản vay bị trừ phí khi giải ngân, một khoản báo giá dịch vụ bị khấu trừ tại nguồn, tiền nhận từ nước ngoài qua phí chuyển và phí trung gian, hoặc tiền rút từ một sản phẩm đầu tư có phí bán. Điều công cụ KHÔNG làm là quyết định khoản nào áp dụng cho bạn và ở mức nào. Với khoản vay, cần nhớ thêm một điều mà phép trừ này không nói: lãi được tính trên số NỢ GỐC, không phải trên số tiền về tay.",
+    "Công cụ không biết hợp đồng của bạn có phí gì, không phải công cụ tính thuế, và không xác định khoản nào là bắt buộc. Phép tính chỉ là một chuỗi khoản trừ, nên nó đúng cho nhiều tình huống: khoản vay bị trừ phí khi giải ngân, một khoản báo giá dịch vụ bị khấu trừ tại nguồn, tiền nhận từ nước ngoài qua phí chuyển và phí trung gian, hoặc tiền rút từ một sản phẩm đầu tư có phí bán. Điều công cụ KHÔNG làm là quyết định khoản nào áp dụng cho bạn và ở mức nào. Với khoản vay, cần nhớ thêm một điều mà phép trừ này không nói: lãi được tính trên số NỢ GỐC, không phải trên số tiền về tay.",
 
   form: {
     directionLegend: "Bạn có con số nào?",
@@ -107,11 +117,33 @@ export const NET_DISTRIBUTION = {
     netLabel: "Số tiền thực về tay",
     grossUpLabel: "Phải vay thêm bao nhiêu so với số cần nhận",
 
-    // The row original row 67 asks for by name: the obligation stays visible
-    // and is stated as unchanged, beside the smaller figure that arrived.
-    obligationLabel: "Vẫn phải trả lãi và gốc trên",
+    /**
+     * The obligation original row 67 asks for by name — now a QUALIFIER ON the
+     * gross row rather than a second row repeating its đồng figure.
+     *
+     * A real UI round found 2.000.000.000 ₫ announced twice, as two peer rows
+     * with two different labels. One quantity, one place (§6): the gross is
+     * stated once and the obligation is said ON it, which is also the only
+     * place it can never drift from the number it qualifies.
+     */
+    obligationLabel: "Vẫn phải trả lãi và gốc trên số này",
     obligationNote:
-      "Phí bị trừ khi giải ngân KHÔNG làm giảm khoản nợ. Bạn nhận về số nhỏ hơn nhưng vẫn trả lãi và trả gốc trên số nợ gốc — đó là lý do hai dòng đầu khác nhau.",
+      "Phí bị trừ khi giải ngân KHÔNG làm giảm khoản nợ. Bạn nhận về số nhỏ hơn số nợ gốc, nhưng lãi và gốc vẫn tính trên nợ gốc — đó là lý do số về tay nhỏ hơn số trên hợp đồng.",
+
+    /**
+     * ROW 69's "không gọi đây là đề nghị giải ngân", beside the figure.
+     *
+     * Every claim in this line is already made on the page: `disclaimer` says
+     * the result "không phải cam kết về số tiền bạn sẽ được giải ngân", and
+     * `transactionNotice` says the charges are the reader's own assumptions
+     * and not any institution's schedule. Both sit away from the number — the
+     * notice above the tool, the disclaimer at the foot — and row 69 promotes
+     * "số tiền thực về tay" to an emphasised, CTA-pinned headline. A promoted
+     * đồng figure that reads like a quote needs the qualification in the same
+     * region, not a scroll away. No new claim, and no new scope.
+     */
+    notCommitmentLine:
+      "Đây là số ước tính từ đúng những khoản bạn đã nhập — không phải đề nghị, báo giá hay cam kết giải ngân của tổ chức nào.",
 
     detailTitle: "Chi tiết",
     percentAmountLabel: "Trừ theo phần trăm",

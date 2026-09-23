@@ -25,6 +25,11 @@ export default function UsSocialSecurityAnalysisPage() {
       // The page returns two answers that routinely disagree. A reader
       // expecting one number needs to know that before they read either.
       notice={C.twoAnswersNotice}
+      // The rule stays above; the worked default case behind this summary.
+      noticeDetailTitle={C.twoAnswersNoticeDetailTitle}
+      noticeDetail={C.twoAnswersNoticeDetail}
+      // Row 56's two-column result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       // Every figure in the claiming table is the reader's own PIA times a

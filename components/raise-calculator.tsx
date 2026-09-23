@@ -1,6 +1,7 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import {
   ExampleNotice,
   ExampleNoticeDetail,
@@ -8,6 +9,7 @@ import {
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -68,7 +70,39 @@ const MODES = {
   }
 >;
 
-export function RaiseCalculator() {
+const FORM_ID = "tang-luong-nhap";
+const RESULT_ID = "tang-luong-ket-qua";
+
+/**
+ * ROW 65: "Giữ tăng theo tiền/phần trăm rõ ràng; đưa lương mới và tăng thực
+ * mỗi tháng ngay dưới form."
+ *
+ * THE THREE MODES ARE UNTOUCHED. Each still owns its own box with its own
+ * unit, parser, default and error, and the box is still keyed on the mode so a
+ * percentage cannot be left behind in a field that now means đồng. That is
+ * what "giữ … rõ ràng" protects, and it is the one thing on this page that
+ * would silently produce a wrong number if it were tidied.
+ *
+ * TWO OF THE FIVE SALARY FIGURES ARE THE ANSWER: "Lương mới" and "Tăng thêm
+ * mỗi tháng" — read as the row's "tăng thực mỗi tháng", since that is the
+ * result row rather than the net-rise INPUT further down. The remaining three
+ * are the same rise restated per year or as a percentage, so they move into
+ * the detail region.
+ *
+ * THE SAVINGS-GOAL STAGE STAYS BELOW THE LAYOUT, unchanged. It is a second
+ * question with its own inputs and its own non-live result group, and folding
+ * its nine fields into `form` would have put the salary answer underneath
+ * them — the opposite of what this row asks for.
+ */
+export function RaiseCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions — `<ResultActions>`. Rendered after the goal stage. */
+  actions?: React.ReactNode;
+  /** The longer guidance — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const initial0 = {
     mode: "percent",
     current: C.form.defaultCurrent,
@@ -208,66 +242,91 @@ export function RaiseCalculator() {
         className="mb-6"
       />
 
-      <FieldGroup>
-        <RadioGroupField
-          {...fields.bind("mode")}
-          legend={C.form.modeLegend}
-          help={C.form.modeHelp}
-          options={[
-            { value: "percent", label: C.form.modePercent },
-            { value: "amount", label: C.form.modeAmount },
-            { value: "target", label: C.form.modeTarget },
-          ]}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="single"
+        form={
+          <>
+            <FieldGroup>
+              <RadioGroupField
+                {...fields.bind("mode")}
+                legend={C.form.modeLegend}
+                help={C.form.modeHelp}
+                options={[
+                  { value: "percent", label: C.form.modePercent },
+                  { value: "amount", label: C.form.modeAmount },
+                  { value: "target", label: C.form.modeTarget },
+                ]}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.group} className="mt-8">
-        <NumberField
-          {...fields.bind("current")}
-          label={C.form.currentLabel}
-          unit={C.form.currentUnit}
-          help={C.form.currentHelp}
-          error={C.form.currentInvalid}
-          invalid={currentInvalid}
-        />
-        {/* Keyed on the mode: the box changes meaning, so it changes identity. */}
-        <NumberField
-          key={mode}
-          {...fields.bind(active.key)}
-          label={active.label}
-          unit={active.unit}
-          help={active.help}
-          error={active.error}
-          invalid={valueInvalid}
-        />
-        <NumberField
-          {...fields.bind("perYear")}
-          label={C.form.perYearLabel}
-          help={C.form.perYearHelp}
-          error={C.form.perYearInvalid}
-          invalid={perYearInvalid}
-        />
-      </FieldGroup>
-
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow label={C.form.nextLabel} value={money(result?.next)} />
-        <ResultRow
-          label={C.form.increasePercentLabel}
-          value={result ? formatPercent(result.increasePercent) : null}
-        />
-        <ResultRow
-          label={C.form.increaseLabel}
-          value={money(result?.increase)}
-        />
-        <ResultRow
-          label={C.form.increasePerYearLabel}
-          value={money(result?.increasePerYear)}
-        />
-        <ResultRow
-          label={C.form.nextPerYearLabel}
-          value={money(result?.nextPerYear)}
-        />
-      </ResultGroup>
+            <FieldGroup title={C.form.group} className="mt-8">
+              <NumberField
+                {...fields.bind("current")}
+                label={C.form.currentLabel}
+                unit={C.form.currentUnit}
+                help={C.form.currentHelp}
+                error={C.form.currentInvalid}
+                invalid={currentInvalid}
+              />
+              {/* Keyed on the mode: the box changes meaning, so it changes
+                  identity. */}
+              <NumberField
+                key={mode}
+                {...fields.bind(active.key)}
+                label={active.label}
+                unit={active.unit}
+                help={active.help}
+                error={active.error}
+                invalid={valueInvalid}
+              />
+              <NumberField
+                {...fields.bind("perYear")}
+                label={C.form.perYearLabel}
+                help={C.form.perYearHelp}
+                error={C.form.perYearInvalid}
+                invalid={perYearInvalid}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={currentInvalid || perYearInvalid || valueInvalid}
+          />
+        }
+        primary={
+          <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+            <ResultRow
+              label={C.form.nextLabel}
+              value={money(result?.next)}
+              emphasis
+            />
+            <ResultRow
+              label={C.form.increaseLabel}
+              value={money(result?.increase)}
+            />
+          </ResultGroup>
+        }
+        detail={
+          <ResultGroup title={C.form.detailTitle} live={false}>
+            <ResultRow
+              label={C.form.increasePercentLabel}
+              value={result ? formatPercent(result.increasePercent) : null}
+            />
+            <ResultRow
+              label={C.form.increasePerYearLabel}
+              value={money(result?.increasePerYear)}
+            />
+            <ResultRow
+              label={C.form.nextPerYearLabel}
+              value={money(result?.nextPerYear)}
+            />
+          </ResultGroup>
+        }
+      />
 
       {/* Original row 63's own question. The salary block above is untouched
           and still works on its own — this section is additive. */}
@@ -425,7 +484,12 @@ export function RaiseCalculator() {
         </p>
       ) : goal.state === "baselineOnly" ? (
         <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.zeroShareNotice}
+          {/* Two causes, one state: a 0% share of a real rise, or a rise of
+              0 ₫ at any share. Telling the second reader they are saving 0%
+              contradicts their own field — see the content file. */}
+          {goal.netIncrease === 0
+            ? C.form.zeroNetNotice
+            : C.form.zeroShareNotice}
         </p>
       ) : null}
 
@@ -434,6 +498,13 @@ export function RaiseCalculator() {
           {C.form.unreachableNotice}
         </p>
       ) : null}
+
+      {/* After BOTH answers. The salary figure is not the last thing this
+          page tells the reader — the goal date above is — so the actions and
+          the guidance list belong here rather than in the layout's own slots,
+          which sit between the salary answer and the goal stage's inputs. */}
+      {actions ? <div className="mt-8">{actions}</div> : null}
+      {nextSteps ? <div className="mt-8">{nextSteps}</div> : null}
 
       {/* After the result, never before it. */}
       <ExampleNoticeDetail className="mt-6" />

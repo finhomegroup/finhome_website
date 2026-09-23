@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { TaxEquivalentCalculator } from "@/components/tax-equivalent-calculator";
 import { TAX_EQUIVALENT as C } from "@/content/calculators/tax-equivalent";
@@ -23,6 +24,12 @@ export default function TaxEquivalentPage() {
       metaDescription={C.metaDescription}
       title={C.pageTitle}
       lede={C.lede}
+      // The waiting-to-buy scenario and the worked pair — 5,5% against 5,8%
+      // landing at 5,51% — which are what make the figures mean anything but
+      // are not needed BEFORE the form. `noticeDetail` below is a different
+      // question (legal provenance), so this one hangs off the heading.
+      ledeDetailTitle={C.ledeDetailTitle}
+      ledeDetail={C.ledeDetail}
       // A 5,5% deposit and a 5,8% bond are a dead heat, not 0,3 points
       // apart — and the bond carries credit risk the deposit does not.
       notice={C.vietnamNotice}
@@ -38,10 +45,13 @@ export default function TaxEquivalentPage() {
       // parameter. The dates were in the prose; these are the documents,
       // openable, with the provenance limit on the list itself.
       sources={C.sources}
-      // Original row 24's next step: "mở tiền gửi hoặc kế hoạch tích lũy".
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <TaxEquivalentCalculator />
+      {/* Original row 24's next step: "mở tiền gửi hoặc kế hoạch tích lũy" —
+          the first two destinations beside the answer, the rest below it. */}
+      <TaxEquivalentCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

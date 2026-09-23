@@ -143,15 +143,20 @@ describe("toi-da-401k at its shipped defaults", () => {
     expect(usdCents(r.payPerPeriod)).toBe("5.000,00");
     expect(usdCents(r.perPeriodAmount!)).toBe("942,31");
     expect(formatPercent(r.perPeriodPercent!, 2)).toBe("18,85%");
-    expect(C.frontLoadNotice).toContain("942,31");
-    expect(C.frontLoadNotice).toContain("18,85%");
+    // REPOINTED by row 49's entry pass: the worked default case moved into
+    // `frontLoadNoticeDetail`, the disclosure the route passes under
+    // `frontLoadNoticeDetailTitle`. The RULE — and the fact that the tool
+    // cannot know which kind of plan you have — stays visible.
+    expect(C.frontLoadNoticeDetail).toContain("942,31");
+    expect(C.frontLoadNoticeDetail).toContain("18,85%");
+    expect(C.frontLoadNotice).toContain("bù cuối năm");
   });
 
   it("quotes the match threshold, per period and per year", () => {
     const r = run();
     expect(usdCents(r.matchThresholdPerPeriod)).toBe("300,00");
     expect(usdCents(r.matchThresholdAnnual)).toBe("7.800,00");
-    expect(C.frontLoadNotice).toContain("7.800");
+    expect(C.frontLoadNoticeDetail).toContain("7.800");
   });
 
   it("loses nothing on the level schedule, under either kind of plan", () => {
@@ -180,8 +185,13 @@ describe("toi-da-401k at its shipped defaults", () => {
       6,
     );
     for (const figure of ["7.800", "3.000", "4.800", "16", "10"]) {
-      expect(C.frontLoadNotice, `notice is missing ${figure}`).toContain(figure);
+      expect(
+        C.frontLoadNoticeDetail,
+        `the worked case is missing ${figure}`,
+      ).toContain(figure);
     }
+    // And the claim those figures support stays visible.
+    expect(C.frontLoadNotice).toContain("theo từng kỳ lương");
   });
 
   it("quotes the harder front-load in the FAQ range", () => {

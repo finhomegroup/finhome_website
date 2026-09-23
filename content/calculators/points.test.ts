@@ -100,6 +100,7 @@ describe("diem-chiet-khau at its shipped defaults", () => {
     const r = run();
     const copy = [
       C.lede,
+      C.ledeDetail,
       C.scopeNotice,
       C.methodNotice,
       ...C.formula.body,
@@ -119,14 +120,52 @@ describe("diem-chiet-khau at its shipped defaults", () => {
 });
 
 describe("diem-chiet-khau — which assumption is visible", () => {
-  it("puts the scope question in the VISIBLE notice", () => {
+  it("puts the scope CONDITION in the VISIBLE notice", () => {
     // It was FAQ item 5 only. Whether this offer structure exists for the
     // reader decides whether the tool applies at all, and the shell's own
     // criterion for the visible slot is the thing a user must know BEFORE
-    // they read a figure off the tool.
-    expect(C.scopeNotice).toContain("hầu như không có sản phẩm");
-    expect(C.scopeNotice).toContain("bảo hiểm nhân thọ");
+    // they read a figure off the tool. What survived the second browser
+    // round's length complaint is the CONDITION — a concrete offer trading an
+    // upfront cost for a lower rate — because that is the part that decides
+    // applicability. The market description is the elaboration, not the rule.
+    expect(C.scopeNotice).toContain("một đề nghị cụ thể");
+    expect(C.scopeNotice).toContain("lãi suất thấp hơn");
     expect(C.scopeNotice).toContain("đừng coi cấu trúc này là mặc định");
+  });
+
+  it("keeps the market structure and the worked offer, in the lede detail", () => {
+    // MOVED, not dropped — the same assertion shape as the methodology below,
+    // because a shortening that quietly loses the demoted sentence is the
+    // failure mode this route already had once.
+    expect(C.ledeDetail).toContain("hầu như không có sản phẩm");
+    expect(C.ledeDetail).toContain("bảo hiểm nhân thọ");
+    expect(C.ledeDetail).toContain("ô phí trả trước");
+    expect(C.ledeDetailTitle.length).toBeGreaterThan(10);
+  });
+
+  it("states the prefilled offer as hypothetical, not as a quote", () => {
+    // The old lede opened "Ngân hàng đề nghị: trả trước 1%…", which reads as
+    // an offer someone is making. It is the tool's default, nothing more.
+    expect(C.ledeDetail).toContain("1%");
+    expect(C.ledeDetail).toContain("0,25 điểm phần trăm");
+    expect(C.ledeDetail).toContain("GIẢ ĐỊNH");
+    expect(C.ledeDetail).toContain("không phải báo giá");
+    expect(C.lede).not.toContain("Ngân hàng đề nghị");
+  });
+
+  it("keeps both visible entry blocks to one sentence", () => {
+    // The acceptance the second browser round wrote: the visible purpose is
+    // one sentence. Counted on sentence-ending punctuation, so a second
+    // sentence cannot slip back in behind a full stop. This is a LENGTH claim
+    // only — that the first field is now reachable is a browser measurement.
+    for (const [name, text] of [
+      ["lede", C.lede],
+      ["scopeNotice", C.scopeNotice],
+    ] as const) {
+      const sentences = text.split(/[.!?](?:\s|$)/).filter(Boolean);
+      expect(sentences.length, `${name} runs to ${sentences.length} sentences`)
+        .toBe(1);
+    }
   });
 
   it("keeps the methodology, in the disclosure rather than deleted", () => {
@@ -171,6 +210,7 @@ describe("diem-chiet-khau — which assumption is visible", () => {
   it("quotes no unverified fee range", () => {
     const copy = [
       C.lede,
+      C.ledeDetail,
       C.scopeNotice,
       C.methodNotice,
       ...C.formula.body,

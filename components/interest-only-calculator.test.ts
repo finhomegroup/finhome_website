@@ -11,6 +11,7 @@
  * defaults and must hydrate byte-identically. Nothing here is a visual check.
  */
 import { describe, expect, it, vi } from "vitest";
+import { markupRegion } from "@/lib/markup-region";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { INTEREST_ONLY } from "@/content/calculators/interest-only";
@@ -296,6 +297,59 @@ describe("whole-month fields and their bound", () => {
     expect(html).toContain(C.form.postRateInvalid);
     expect(html).toContain(C.balanceChart.unavailableRecovery);
     expect(html).not.toContain("21.300.993 ₫");
+  });
+});
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the bugs a textual bound
+ * produces, and `detail` is the last region, so a marker-to-marker slice would
+ * run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 17: the jump leads, the assumptions come last", () => {
+  it("puts the form and the answer side by side", async () => {
+    expect(await render()).toContain("lg:grid-cols-5");
+  });
+
+  it("emphasises the increase when the grace period ends", async () => {
+    const C = await copy();
+    const html = await render();
+    // "Ưu tiên mức tăng khoản trả khi hết ân hạn." The emphasis is conditional
+    // in the source — it falls back to the first payment on a loan with no
+    // grace period — so this pins it at the defaults, where there IS one.
+    expect(html.split("md:text-3xl").length - 1).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(C.form.graceJumpLabel));
+    expect(emphasis).toBeLessThan(html.indexOf(C.form.firstPaymentLabel));
+  });
+
+  it("puts both charts ahead of the long assumption list", async () => {
+    const C = await copy();
+    const html = await render();
+    expect(html.split("<figure").length - 1).toBe(2);
+    const lastChart = html.lastIndexOf("<figure");
+    expect(lastChart).toBeLessThan(html.indexOf(C.form.datesTitle));
+    expect(lastChart).toBeLessThan(html.indexOf(C.form.detailTitle));
+  });
+
+  it("keeps the dates and the schedule below the answer", async () => {
+    const C = await copy();
+    const html = await render();
+    expect(regionOf(html, "detail")).toContain(C.form.datesTitle);
+    expect(regionOf(html, "result")).not.toContain(C.form.datesTitle);
+  });
+
+  it("gives the route a CTA pointing at its own answer, and one live region", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain('aria-controls="chi-tra-lai-ket-qua"');
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
   });
 });
 

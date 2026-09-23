@@ -67,7 +67,11 @@ export const EXPECTED_RETURN = {
   },
 
   spreadNotice:
-    "Đừng dừng ở dòng đầu tiên. Với các tình huống mặc định, lợi nhuận kỳ vọng là 7,5% — nhưng không tình huống nào cho ra 7,5%: bạn được 25%, được 10%, hoặc mất 15%. Độ lệch chuẩn 14,3614% nói rằng mức dao động lớn gần gấp đôi chính con số kỳ vọng. Và hệ số biến thiên 1,9149 là con số duy nhất so sánh được giữa hai khoản đầu tư có kỳ vọng khác nhau: một phương án kỳ vọng 20% với độ lệch 30% (hệ số 1,5) rủi ro ít hơn trên mỗi đơn vị lợi nhuận so với một phương án kỳ vọng 10% với độ lệch 20% (hệ số 2,0), dù nghe thì ngược lại.",
+    "Đừng dừng ở dòng đầu tiên: lợi nhuận kỳ vọng là một bình quân mà gần như không tình huống nào cho ra đúng con số đó, nên mức dao động quanh nó mới là phần thông tin. Hệ số biến thiên là con số duy nhất so sánh được giữa hai khoản đầu tư có kỳ vọng khác nhau.",
+  spreadNoticeDetailTitle:
+    "Con số cụ thể: kỳ vọng 7,5% mà không tình huống nào là 7,5%",
+  spreadNoticeDetail:
+    "Với các tình huống mặc định, lợi nhuận kỳ vọng là 7,5% — nhưng không tình huống nào cho ra 7,5%: bạn được 25%, được 10%, hoặc mất 15%. Độ lệch chuẩn 14,3614% nói rằng mức dao động lớn gần gấp đôi chính con số kỳ vọng. Và hệ số biến thiên 1,9149: một phương án kỳ vọng 20% với độ lệch 30% (hệ số 1,5) rủi ro ít hơn trên mỗi đơn vị lợi nhuận so với một phương án kỳ vọng 10% với độ lệch 20% (hệ số 2,0), dù nghe thì ngược lại.",
 
   formula: {
     title: "Cách tính",

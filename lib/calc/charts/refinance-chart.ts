@@ -25,10 +25,20 @@ export type RefinanceChartLabels = MoneyWords & {
   cashSeries: string;
   /** `{month}` substituted. The cash-flow crossing, never the cost one. */
   cashBreakEvenMarker: string;
-  /** `{cash}` substituted. Appended so the two measures cannot be merged. */
+  /** `{cash}` substituted. In the figure's disclosure, with `detailTitle`. */
   cashNote: string;
-  /** `{cost}`, `{cash}` substituted. Appended when the two crossings differ. */
+  /** `{cost}`, `{cash}` substituted. Added when the two crossings differ. */
   breakEvenGapNote: string;
+  /**
+   * Summary line for the figure's disclosure.
+   *
+   * The caption carried five sentences above the plot. What stays visible is
+   * the reading itself and what a value below zero means on each of the two
+   * lines; the second measure's amount and the two crossing months are
+   * arithmetic about the picture, and both crossings are already named in the
+   * markers list beside it.
+   */
+  detailTitle: string;
   cashColumn: string;
 };
 
@@ -85,12 +95,13 @@ export function refinanceChartModel(result: RefinanceResult | null, labels: Refi
   if (result.cashFlowBreakEvenMonths !== null) model.markers.push({ period: result.cashFlowBreakEvenMonths, label: fill(labels.cashBreakEvenMarker, { month: result.cashFlowBreakEvenMonths }) });
   model.summary = fill(labels.summary, { month: result.horizonMonths,
     saving: compactMoney(result.horizonCostSaving, labels), oldDebt: compactMoney(result.horizon.currentBalance, labels), newDebt: compactMoney(result.horizon.newBalance, labels) });
-  model.summary += ` ${fill(labels.cashNote, { cash: compactMoney(result.horizonCashFlowSaving, labels) })}`;
+  let detail = fill(labels.cashNote, { cash: compactMoney(result.horizonCashFlowSaving, labels) });
   if (result.breakEvenMonths !== null && result.cashFlowBreakEvenMonths !== null
     && result.breakEvenMonths !== result.cashFlowBreakEvenMonths) {
-    model.summary += ` ${fill(labels.breakEvenGapNote, {
+    detail += ` ${fill(labels.breakEvenGapNote, {
       cost: formatDecimal(result.breakEvenMonths, 0), cash: formatDecimal(result.cashFlowBreakEvenMonths, 0) })}`;
   }
+  model.detail = { title: labels.detailTitle, body: detail };
   const checkpoints = new Set([0, result.horizonMonths]);
   const stride = Math.max(1, Math.ceil(result.horizonMonths / 6));
   for (let month = stride; month < result.horizonMonths; month += stride) checkpoints.add(month);

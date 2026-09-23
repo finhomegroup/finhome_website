@@ -1,9 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -26,7 +28,27 @@ import { RENTAL_PROPERTY as C } from "@/content/calculators/rental-property";
 /** The NQ43 reduction, applied only when the reader declares eligibility. */
 const DECLARED_PIT_RELIEF_PERCENT = 30;
 
-export function RentalPropertyCalculator() {
+/*
+ * CSV row 18 ("Theo nhóm + kết quả"): the form reads as Giá mua → Thuê → Chi
+ * phí → Khoản vay, in that order, with the operating cost lifted out of the
+ * letting group into its own; and the owner's net cash flow stays in the
+ * result column beside the form, restated on the pinned button. The tax set
+ * stays a FIFTH group under its own title — folding five tax controls, two
+ * thresholds and a relief declaration into "Chi phí" would hide exactly the
+ * distinction the page's own notices are about. Docs §8.
+ */
+const FORM_ID = "bat-dong-san-cho-thue-nhap";
+const RESULT_ID = "bat-dong-san-cho-thue-ket-qua";
+
+export function RentalPropertyCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     price: C.form.defaultPrice,
     down: C.form.defaultDown,
@@ -133,324 +155,383 @@ export function RentalPropertyCalculator() {
     }
   };
 
+  const cashFlow = money(result?.cashFlowPerMonth);
+
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.purchaseGroup}>
-        <NumberField
-          {...fields.bind("price")}
-          label={C.form.priceLabel}
-          unit={C.form.priceUnit}
-          help={C.form.priceHelp}
-          error={C.form.priceInvalid}
-          invalid={priceInvalid}
-        />
-        <NumberField
-          {...fields.bind("down")}
-          label={C.form.downLabel}
-          unit={C.form.downUnit}
-          help={C.form.downHelp}
-          error={C.form.downInvalid}
-          invalid={downInvalid}
-        />
-        <NumberField
-          {...fields.bind("purchaseCosts")}
-          label={C.form.purchaseCostsLabel}
-          unit={C.form.purchaseCostsUnit}
-          help={C.form.purchaseCostsHelp}
-          error={C.form.purchaseCostsInvalid}
-          invalid={purchaseCostsInvalid}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.loanGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("rate")}
-          label={C.form.rateLabel}
-          unit={C.form.rateUnit}
-          help={C.form.rateHelp}
-          error={C.form.rateInvalid}
-          invalid={rateInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.rentGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("rent")}
-          label={C.form.rentLabel}
-          unit={C.form.rentUnit}
-          help={C.form.rentHelp}
-          error={C.form.rentInvalid}
-          invalid={rentInvalid}
-        />
-        <NumberField
-          {...fields.bind("vacancy")}
-          label={C.form.vacancyLabel}
-          unit={C.form.vacancyUnit}
-          help={C.form.vacancyHelp}
-          error={C.form.vacancyInvalid}
-          invalid={vacancyInvalid}
-        />
-        <NumberField
-          {...fields.bind("expenses")}
-          label={C.form.expensesLabel}
-          unit={C.form.expensesUnit}
-          help={C.form.expensesHelp}
-          error={C.form.expensesInvalid}
-          invalid={expensesInvalid}
-        />
-      </FieldGroup>
-
-      <FieldGroup title={C.form.taxGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("vatRate")}
-          label={C.form.vatRateLabel}
-          unit={C.form.vatRateUnit}
-          help={C.form.vatRateHelp}
-          error={C.form.vatRateInvalid}
-          invalid={vatRateInvalid}
-        />
-        <NumberField
-          {...fields.bind("pitRate")}
-          label={C.form.pitRateLabel}
-          unit={C.form.pitRateUnit}
-          help={C.form.pitRateHelp}
-          error={C.form.pitRateInvalid}
-          invalid={pitRateInvalid}
-        />
-        <NumberField
-          {...fields.bind("threshold")}
-          label={C.form.thresholdLabel}
-          unit={C.form.thresholdUnit}
-          help={C.form.thresholdHelp}
-          error={C.form.thresholdInvalid}
-          invalid={thresholdInvalid}
-        />
-        {/* Its own field, not the VAT one reused: two taxes, two documents,
-            and an official answer putting the PIT deduction at 1 tỷ for
-            non-lodging letting. See the model's header. */}
-        <NumberField
-          {...fields.bind("pitThreshold")}
-          label={C.form.pitThresholdLabel}
-          unit={C.form.pitThresholdUnit}
-          help={C.form.pitThresholdHelp}
-          error={C.form.pitThresholdInvalid}
-          invalid={pitThresholdInvalid}
-        />
-        {/* Default NO. The condition is on the reader's whole business
-            revenue, which this page cannot see, so the relief is a
-            declaration and the copy says what it is and is not. */}
-        <RadioGroupField
-          {...fields.bind("relief")}
-          legend={C.form.reliefLegend}
-          help={C.form.reliefHelp}
-          options={[
-            { value: "no", label: C.form.reliefNo },
-            { value: "yes", label: C.form.reliefYes },
-          ]}
-        />
-      </FieldGroup>
-
-      {/* The owner's own position, live. The four yields and the year's
-          income statement are further views of the same figures. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.cashFlowMonthLabel}
-          value={money(result?.cashFlowPerMonth)}
-        />
-        <ResultRow
-          label={C.form.cashFlowYearLabel}
-          value={money(result?.cashFlowPerYear)}
-        />
-        <ResultRow
-          label={C.form.cashOnCashLabel}
-          value={
-            result?.cashOnCashPercent == null
-              ? null
-              : formatPercent(result.cashOnCashPercent)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={C.form.yieldTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.grossYieldLabel}
-          value={result ? formatPercent(result.grossYieldPercent) : null}
-        />
-        <ResultRow
-          label={C.form.capRateLabel}
-          value={result ? formatPercent(result.capRatePercent) : null}
-        />
-        <ResultRow
-          label={C.form.cashOnCashRepeatLabel}
-          value={
-            result?.cashOnCashPercent == null
-              ? null
-              : formatPercent(result.cashOnCashPercent)
-          }
-        />
-        <ResultRow
-          label={C.form.dscrLabel}
-          value={result?.dscr == null ? null : formatDecimal(result.dscr)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={C.form.grossRentLabel}
-          value={money(result?.grossRentPerYear)}
-        />
-        <ResultRow
-          label={C.form.vacancyLossLabel}
-          value={money(result?.vacancyLossPerYear)}
-        />
-        <ResultRow
-          label={C.form.effectiveRentLabel}
-          value={money(result?.effectiveRentPerYear)}
-        />
-        <ResultRow label={C.form.vatLabel} value={money(result?.vatPerYear)} />
-        <ResultRow label={C.form.pitLabel} value={money(result?.pitPerYear)} />
-        {/* Mounted only when a relief was DECLARED: three rows of dashes
-            would imply a reduction nobody claimed (docs §6's "an optional
-            result row is not mounted, not nulled"). */}
-        {reliefPercent > 0 ? (
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
           <>
-            <ResultRow
-              label={C.form.pitReliefLabel}
-              value={money(result?.pitReliefPerYear)}
-            />
-            <ResultRow
-              label={C.form.pitAfterReliefLabel}
-              value={money(result?.pitAfterReliefPerYear)}
-            />
-            <ResultRow
-              label={C.form.taxBeforeReliefLabel}
-              value={money(result?.rentalTaxBeforeReliefPerYear)}
-            />
-          </>
-        ) : null}
-        <ResultRow
-          label={C.form.taxLabel}
-          value={money(result?.rentalTaxPerYear)}
-        />
-        <ResultRow
-          label={C.form.taxableLabel}
-          value={
-            result === null ? null : result.taxable ? C.form.yes : C.form.no
-          }
-        />
-        {/* Its own row: the two taxes can now cross their thresholds at
-            different revenues, which is the point of splitting them. */}
-        <ResultRow
-          label={C.form.pitAppliesLabel}
-          value={
-            result === null ? null : result.pitApplies ? C.form.yes : C.form.no
-          }
-        />
-        <ResultRow
-          label={C.form.expensesResultLabel}
-          value={money(result?.expensesPerYear)}
-        />
-        <ResultRow label={C.form.noiLabel} value={money(result?.netOperatingIncomePerYear)} />
-        <ResultRow
-          label={C.form.debtServiceLabel}
-          value={money(result?.debtServicePerYear)}
-        />
-        <ResultRow
-          label={C.form.monthlyPaymentLabel}
-          value={money(result?.monthlyPayment)}
-        />
-        <ResultRow
-          label={C.form.loanAmountLabel}
-          value={money(result?.loanAmount)}
-        />
-        <ResultRow
-          label={C.form.cashInvestedLabel}
-          value={money(result?.cashInvested)}
-        />
-        {/* Standing context, not a result row — kept after the last row so it
-            does not split the row list (ResultRow's border-t would otherwise
-            land right under this paragraph). Still inside the live={false}
-            group: this must not be re-announced on every keystroke. */}
-        <p className="mt-3 text-xs leading-relaxed text-ink-3">
-          {C.taxVintageNotice}
-        </p>
-      </ResultGroup>
+            <FieldGroup title={C.form.purchaseGroup}>
+              <NumberField
+                {...fields.bind("price")}
+                label={C.form.priceLabel}
+                unit={C.form.priceUnit}
+                help={C.form.priceHelp}
+                error={C.form.priceInvalid}
+                invalid={priceInvalid}
+              />
+              <NumberField
+                {...fields.bind("down")}
+                label={C.form.downLabel}
+                unit={C.form.downUnit}
+                help={C.form.downHelp}
+                error={C.form.downInvalid}
+                invalid={downInvalid}
+              />
+              <NumberField
+                {...fields.bind("purchaseCosts")}
+                label={C.form.purchaseCostsLabel}
+                unit={C.form.purchaseCostsUnit}
+                help={C.form.purchaseCostsHelp}
+                error={C.form.purchaseCostsInvalid}
+                invalid={purchaseCostsInvalid}
+              />
+            </FieldGroup>
 
-      {/* ORIGINAL ROW 15's scenario view. Outside every ResultGroup, because
-          docs §4 forbids a table inside a live region — and this one has four
-          rows that would re-announce on every keystroke. */}
-      <section className="mt-8">
-        <h3 className="font-display text-base font-medium text-ink">
-          {C.scenarios.title}
-        </h3>
-        <p className="mt-2 text-sm leading-relaxed text-ink-2">
-          {C.scenarios.intro}
-        </p>
-        {scenarios === null ? (
-          <p className="mt-3 text-sm leading-relaxed text-ink-3">
-            {C.scenarios.unavailableNotice}
-          </p>
-        ) : (
+            <FieldGroup title={C.form.rentGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("rent")}
+                label={C.form.rentLabel}
+                unit={C.form.rentUnit}
+                help={C.form.rentHelp}
+                error={C.form.rentInvalid}
+                invalid={rentInvalid}
+              />
+              <NumberField
+                {...fields.bind("vacancy")}
+                label={C.form.vacancyLabel}
+                unit={C.form.vacancyUnit}
+                help={C.form.vacancyHelp}
+                error={C.form.vacancyInvalid}
+                invalid={vacancyInvalid}
+              />
+            </FieldGroup>
+
+            {/* Lifted out of the letting group: it is the other half of the
+                cash flow, not a property of the rent. */}
+            <FieldGroup title={C.form.costGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("expenses")}
+                label={C.form.expensesLabel}
+                unit={C.form.expensesUnit}
+                help={C.form.expensesHelp}
+                error={C.form.expensesInvalid}
+                invalid={expensesInvalid}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.loanGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("rate")}
+                label={C.form.rateLabel}
+                unit={C.form.rateUnit}
+                help={C.form.rateHelp}
+                error={C.form.rateInvalid}
+                invalid={rateInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
+
+            <FieldGroup title={C.form.taxGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("vatRate")}
+                label={C.form.vatRateLabel}
+                unit={C.form.vatRateUnit}
+                help={C.form.vatRateHelp}
+                error={C.form.vatRateInvalid}
+                invalid={vatRateInvalid}
+              />
+              <NumberField
+                {...fields.bind("pitRate")}
+                label={C.form.pitRateLabel}
+                unit={C.form.pitRateUnit}
+                help={C.form.pitRateHelp}
+                error={C.form.pitRateInvalid}
+                invalid={pitRateInvalid}
+              />
+              <NumberField
+                {...fields.bind("threshold")}
+                label={C.form.thresholdLabel}
+                unit={C.form.thresholdUnit}
+                help={C.form.thresholdHelp}
+                error={C.form.thresholdInvalid}
+                invalid={thresholdInvalid}
+              />
+              {/* Its own field, not the VAT one reused: two taxes, two
+                  documents, and an official answer putting the PIT deduction
+                  at 1 tỷ for non-lodging letting. See the model's header. */}
+              <NumberField
+                {...fields.bind("pitThreshold")}
+                label={C.form.pitThresholdLabel}
+                unit={C.form.pitThresholdUnit}
+                help={C.form.pitThresholdHelp}
+                error={C.form.pitThresholdInvalid}
+                invalid={pitThresholdInvalid}
+              />
+              {/* Default NO. The condition is on the reader's whole business
+                  revenue, which this page cannot see, so the relief is a
+                  declaration and the copy says what it is and is not. */}
+              <RadioGroupField
+                {...fields.bind("relief")}
+                legend={C.form.reliefLegend}
+                help={C.form.reliefHelp}
+                options={[
+                  { value: "no", label: C.form.reliefNo },
+                  { value: "yes", label: C.form.reliefYes },
+                ]}
+              />
+            </FieldGroup>
+          </>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={!usable}
+            // Thirteen controls across five groups: the button is off the
+            // screen long before the last of them is filled.
+            sticky
+            answer={{ label: C.form.cashFlowMonthLabel, value: cashFlow }}
+          />
+        }
+        primary={
           <>
-            {/* `ResultTable` has no hint prop — only a chart's own table
-                does, through `ChartFigure` — so the reading note is a
-                paragraph above it. */}
-            <p className="mt-3 text-sm leading-relaxed text-ink-3">
-              {C.scenarios.hint}
-            </p>
-            <ResultTable
-              className="mt-3"
-              caption={C.scenarios.caption}
-              // Five columns, so the block falls back to one card per
-              // scenario below `md` (docs §3).
-              mobileCards
-              columns={[
-                { label: C.scenarios.scenarioColumn },
-                { label: C.scenarios.assumptionColumn },
-                { label: C.scenarios.cashFlowColumn, numeric: true },
-                { label: C.scenarios.deltaColumn, numeric: true },
-                { label: C.scenarios.dscrColumn, numeric: true },
-              ]}
-              rows={scenarios.scenarios.map((scenario) => [
-                scenarioName(scenario.key),
-                `${formatPercent(scenario.vacancyPercent, 2)} · ${formatMoney(scenario.monthlyExpenses)} ₫`,
-                // Typed cells: one stated money unit for the block, with the
-                // exact đồng behind the same checkbox (docs §3). A rate and a
-                // ratio are never divided.
-                moneyCell(scenario.result.cashFlowPerMonth),
-                scenario.key === "base"
-                  ? ""
-                  : moneyCell(scenario.cashFlowPerMonthDelta),
-                scenario.result.dscr === null
-                  ? ""
-                  : formatDecimal(scenario.result.dscr),
-              ])}
-            />
-            {scenarios.baseNegativeCashFlow ? (
-              <p className="mt-3 text-sm leading-relaxed text-ink-3">
-                {C.scenarios.alreadyNegativeNotice}
-              </p>
-            ) : scenarios.anyNegativeCashFlow ? (
-              <p className="mt-3 text-sm leading-relaxed text-ink-3">
-                {C.scenarios.flipsNegativeNotice}
-              </p>
-            ) : null}
-          </>
-        )}
-      </section>
+            {/* The owner's own position, live, and the figure the pinned
+                button restates. The four yields and the year's income
+                statement are further views of the same figures. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={C.form.cashFlowMonthLabel}
+                value={cashFlow}
+                emphasis
+              />
+              <ResultRow
+                label={C.form.cashFlowYearLabel}
+                value={money(result?.cashFlowPerYear)}
+              />
+              <ResultRow
+                label={C.form.cashOnCashLabel}
+                value={
+                  result?.cashOnCashPercent == null
+                    ? null
+                    : formatPercent(result.cashOnCashPercent)
+                }
+              />
+            </ResultGroup>
 
-      {/* ORIGINAL ROW 15's waterfall: rent → cost → debt, on the same ledger
-          the rows above report. */}
-      <ChartFigure model={waterfall}>
-        <BarChart model={waterfall} />
-      </ChartFigure>
+            <ResultGroup
+              title={C.form.yieldTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={C.form.grossYieldLabel}
+                value={result ? formatPercent(result.grossYieldPercent) : null}
+              />
+              <ResultRow
+                label={C.form.capRateLabel}
+                value={result ? formatPercent(result.capRatePercent) : null}
+              />
+              <ResultRow
+                label={C.form.cashOnCashRepeatLabel}
+                value={
+                  result?.cashOnCashPercent == null
+                    ? null
+                    : formatPercent(result.cashOnCashPercent)
+                }
+              />
+              <ResultRow
+                label={C.form.dscrLabel}
+                value={result?.dscr == null ? null : formatDecimal(result.dscr)}
+              />
+            </ResultGroup>
+          </>
+        }
+        chart={
+          /* ORIGINAL ROW 15's waterfall: rent → cost → debt, on the same
+             ledger the rows above report. */
+          <ChartFigure model={waterfall}>
+            <BarChart model={waterfall} />
+          </ChartFigure>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <>
+            <ResultGroup title={C.form.detailTitle} live={false}>
+              <ResultRow
+                label={C.form.grossRentLabel}
+                value={money(result?.grossRentPerYear)}
+              />
+              <ResultRow
+                label={C.form.vacancyLossLabel}
+                value={money(result?.vacancyLossPerYear)}
+              />
+              <ResultRow
+                label={C.form.effectiveRentLabel}
+                value={money(result?.effectiveRentPerYear)}
+              />
+              <ResultRow
+                label={C.form.vatLabel}
+                value={money(result?.vatPerYear)}
+              />
+              <ResultRow
+                label={C.form.pitLabel}
+                value={money(result?.pitPerYear)}
+              />
+              {/* Mounted only when a relief was DECLARED: three rows of dashes
+                  would imply a reduction nobody claimed (docs §6's "an optional
+                  result row is not mounted, not nulled"). */}
+              {reliefPercent > 0 ? (
+                <>
+                  <ResultRow
+                    label={C.form.pitReliefLabel}
+                    value={money(result?.pitReliefPerYear)}
+                  />
+                  <ResultRow
+                    label={C.form.pitAfterReliefLabel}
+                    value={money(result?.pitAfterReliefPerYear)}
+                  />
+                  <ResultRow
+                    label={C.form.taxBeforeReliefLabel}
+                    value={money(result?.rentalTaxBeforeReliefPerYear)}
+                  />
+                </>
+              ) : null}
+              <ResultRow
+                label={C.form.taxLabel}
+                value={money(result?.rentalTaxPerYear)}
+              />
+              <ResultRow
+                label={C.form.taxableLabel}
+                value={
+                  result === null
+                    ? null
+                    : result.taxable
+                      ? C.form.yes
+                      : C.form.no
+                }
+              />
+              {/* Its own row: the two taxes can now cross their thresholds at
+                  different revenues, which is the point of splitting them. */}
+              <ResultRow
+                label={C.form.pitAppliesLabel}
+                value={
+                  result === null
+                    ? null
+                    : result.pitApplies
+                      ? C.form.yes
+                      : C.form.no
+                }
+              />
+              <ResultRow
+                label={C.form.expensesResultLabel}
+                value={money(result?.expensesPerYear)}
+              />
+              <ResultRow
+                label={C.form.noiLabel}
+                value={money(result?.netOperatingIncomePerYear)}
+              />
+              <ResultRow
+                label={C.form.debtServiceLabel}
+                value={money(result?.debtServicePerYear)}
+              />
+              <ResultRow
+                label={C.form.monthlyPaymentLabel}
+                value={money(result?.monthlyPayment)}
+              />
+              <ResultRow
+                label={C.form.loanAmountLabel}
+                value={money(result?.loanAmount)}
+              />
+              <ResultRow
+                label={C.form.cashInvestedLabel}
+                value={money(result?.cashInvested)}
+              />
+              {/* Standing context, not a result row — kept after the last row
+                  so it does not split the row list (ResultRow's border-t would
+                  otherwise land right under this paragraph). Still inside the
+                  live={false} group: this must not be re-announced on every
+                  keystroke. */}
+              <p className="mt-3 text-xs leading-relaxed text-ink-3">
+                {C.taxVintageNotice}
+              </p>
+            </ResultGroup>
+
+            {/* ORIGINAL ROW 15's scenario view. Outside every ResultGroup,
+                because docs §4 forbids a table inside a live region — and this
+                one has four rows that would re-announce on every keystroke. */}
+            <section className="mt-8">
+              <h3 className="font-display text-base font-medium text-ink">
+                {C.scenarios.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">
+                {C.scenarios.intro}
+              </p>
+              {scenarios === null ? (
+                <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                  {C.scenarios.unavailableNotice}
+                </p>
+              ) : (
+                <>
+                  {/* `ResultTable` has no hint prop — only a chart's own table
+                      does, through `ChartFigure` — so the reading note is a
+                      paragraph above it. */}
+                  <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                    {C.scenarios.hint}
+                  </p>
+                  <ResultTable
+                    className="mt-3"
+                    caption={C.scenarios.caption}
+                    // Five columns, so the block falls back to one card per
+                    // scenario below `md` (docs §3).
+                    mobileCards
+                    columns={[
+                      { label: C.scenarios.scenarioColumn },
+                      { label: C.scenarios.assumptionColumn },
+                      { label: C.scenarios.cashFlowColumn, numeric: true },
+                      { label: C.scenarios.deltaColumn, numeric: true },
+                      { label: C.scenarios.dscrColumn, numeric: true },
+                    ]}
+                    rows={scenarios.scenarios.map((scenario) => [
+                      scenarioName(scenario.key),
+                      `${formatPercent(scenario.vacancyPercent, 2)} · ${formatMoney(scenario.monthlyExpenses)} ₫`,
+                      // Typed cells: one stated money unit for the block, with
+                      // the exact đồng behind the same checkbox (docs §3). A
+                      // rate and a ratio are never divided.
+                      moneyCell(scenario.result.cashFlowPerMonth),
+                      scenario.key === "base"
+                        ? ""
+                        : moneyCell(scenario.cashFlowPerMonthDelta),
+                      scenario.result.dscr === null
+                        ? ""
+                        : formatDecimal(scenario.result.dscr),
+                    ])}
+                  />
+                  {scenarios.baseNegativeCashFlow ? (
+                    <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                      {C.scenarios.alreadyNegativeNotice}
+                    </p>
+                  ) : scenarios.anyNegativeCashFlow ? (
+                    <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                      {C.scenarios.flipsNegativeNotice}
+                    </p>
+                  ) : null}
+                </>
+              )}
+            </section>
+          </>
+        }
+      />
     </CalculatorCard>
   );
 }

@@ -5,7 +5,8 @@
  * guards the DuPont change column's unit and `lib/calc/financials.test.ts`
  * guards the arithmetic. Neither reads this module's prose — and the most
  * load-bearing sentence on the page is a pair of COUNTERFACTUALS in
- * `duPontNotice` ("nếu chỉ biên lợi nhuận thuần đổi, ROE đã là 17,63%"), which
+ * `duPontNoticeDetail` ("nếu chỉ biên lợi nhuận thuần đổi, ROE đã là 17,63%"),
+ * which
  * no test could see. A counterfactual is the easiest kind of claim to get
  * wrong and the hardest for a reader to check, so it is pinned here against
  * the model.
@@ -186,8 +187,15 @@ describe("phan-tich-bao-cao-tai-chinh at its shipped two periods", () => {
 
     expect(formatPercent(marginOnly, 2)).toBe("17,63%");
     expect(formatPercent(leverageOnly, 2)).toBe("13,55%");
-    expect(C.duPontNotice).toContain(formatPercent(marginOnly, 2));
-    expect(C.duPontNotice).toContain(formatPercent(leverageOnly, 2));
+    // §5 moved the arithmetic into `duPontNoticeDetail`; the counterfactuals
+    // are still on the page, one click under the warning they support.
+    expect(C.duPontNoticeDetail).toContain(formatPercent(marginOnly, 2));
+    expect(C.duPontNoticeDetail).toContain(formatPercent(leverageOnly, 2));
+    // The WARNING itself needs no click: leverage can raise ROE, and that is
+    // not good news.
+    expect(C.duPontNotice).toContain("hệ số nhân vốn chủ");
+    expect(C.duPontNotice).toContain("không phải tin tốt");
+    expect(C.duPontNotice).toContain("rủi ro tài chính");
 
     // The ORDERING is the claim, not the two numbers: moving margin alone
     // must explain most of the rise, and moving leverage alone almost none.

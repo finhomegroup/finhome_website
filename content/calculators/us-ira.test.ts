@@ -94,15 +94,21 @@ describe("ira-truyen-thong-hay-roth at its shipped defaults", () => {
     expect(usd(r.traditionalTotalEqualCost)).toBe("754.019");
     expect(usd(r.rothAdvantageEqualCost)).toBe("4.029");
     expect(formatPercent(r.breakEvenRetirementRatePercent!, 2)).toBe("21,47%");
-    expect(C.equalCostNotice).toContain("4.029");
-    expect(C.equalCostNotice).toContain("21,47%");
+    // REPOINTED by row 53's entry pass: the worked default case moved into
+    // `equalCostNoticeDetail`, the disclosure the route passes under
+    // `equalCostNoticeDetailTitle`. The rule it illustrates — that the
+    // break-even sits below today's rate — stays visible above the tool.
+    expect(C.equalCostNoticeDetail).toContain("4.029");
+    expect(C.equalCostNoticeDetail).toContain("21,47%");
+    expect(C.equalCostNotice).toContain("thuế lãi vốn");
+    expect(C.equalCostNotice).toContain("thấp hơn thuế suất hôm nay");
   });
 
   it("quotes the margin by which the rule of thumb is wrong", () => {
     const r = run();
     const margin = 24 - r.breakEvenRetirementRatePercent!;
     expect(formatMoney(margin, 2)).toBe("2,53");
-    expect(C.equalCostNotice).toContain("2,53");
+    expect(C.equalCostNoticeDetail).toContain("2,53");
   });
 
   it("pins the side account's own figures", () => {

@@ -27,10 +27,53 @@ export const FUEL = {
   metaDescription:
     "Nhập khoảng cách, mức tiêu thụ và giá nhiên liệu để biết chi phí một chuyến, chi phí mỗi km và chi phí cả tháng. Công cụ miễn phí của FinHome.",
 
+  // §5: one purpose sentence stays visible; what the tool answers in each
+  // purpose is the detail, because a reader who picked a purpose already knows.
   lede:
-    "Nhập khoảng cách, mức tiêu thụ của xe và giá nhiên liệu hiện tại. Công cụ tính số lít cần dùng, chi phí một chuyến, chi phí mỗi km, và nếu bạn đi lại thường xuyên thì cả chi phí mỗi tháng.",
+    "Tính tiền nhiên liệu cho một chuyến đi, hoặc so hai nơi ở khi đi làm, từ khoảng cách và mức tiêu thụ bạn tự nhập.",
+  ledeDetailTitle: "Công cụ trả lời những gì",
+  ledeDetail:
+    "Với một chuyến đi: số lít cần dùng, chi phí một chuyến, chi phí mỗi km, tiền mỗi người nếu chia nhau, và cả chi phí mỗi tháng nếu bạn nhập số chuyến. Với hai nơi ở: tiền nhiên liệu đi làm mỗi tháng của từng nơi và phần chênh lệch giữa hai nơi, trên cùng một chiếc xe và cùng một giá nhiên liệu.",
 
   form: {
+    /**
+     * ROW 70's purpose selector — "Tách chuyến đơn và so sánh hai nơi ở".
+     *
+     * The page answered two different questions in one ten-field column, and
+     * a reader with one of them had to read past the other's inputs and
+     * results. The selector is the APPROVED split: một chuyến đi against so
+     * hai nơi ở. It changes which fields and which result group render, and
+     * nothing else — the vehicle, the fuel price, the headcount and the
+     * "Kiểu chuyến" selector are shared inputs in both purposes because both
+     * questions price the same car, and `commuteIntro` already said so.
+     *
+     * The values of the fields belonging to the OTHER purpose are kept: one
+     * `useCalcFields` object holds every key, so switching back finds the
+     * numbers still there. Nothing is read from or written to the network,
+     * and nothing is persisted.
+     */
+    purposeLegend: "Bạn đang tính gì?",
+    purposeHelp:
+      "Hai câu hỏi khác nhau, cùng một chiếc xe và cùng một giá nhiên liệu. Chọn lại lúc nào cũng được — số bạn đã nhập ở mục kia vẫn còn.",
+    purposeTrip: "Chi phí một chuyến đi",
+    purposeHomes: "So hai nơi ở khi đi làm",
+    defaultPurpose: "trip",
+
+    /**
+     * The trip purpose's own framing for the two near-answer destinations.
+     *
+     * `next-steps.ts` holds one intro per slug, written for the comparison
+     * purpose ("chi phí đi lại mỗi tháng"), and an independent browser round
+     * read it under a 210.000 ₫ per-TRIP answer with the monthly frequency
+     * blank — beside two links that talk about a difference between two homes
+     * this purpose never computes. The links are still the right ones, so only
+     * the sentence changes, and it names the purpose selector that does compute
+     * that difference rather than pretending this one did. Neither sentence
+     * promises a transfer: the reader re-enters the figures either way.
+     */
+    tripStepsIntro:
+      "Con số trên là tiền nhiên liệu cho một chuyến, chưa phải chi phí mỗi tháng. Nếu bạn đang so hai nơi ở, hãy chọn “So hai nơi ở khi đi làm” ở trên để ước tính chênh lệch tiền nhiên liệu hằng tháng — chỉ nhiên liệu, không phải toàn bộ chi phí đi lại. Hai câu hỏi đi cùng nó, và bạn sẽ nhập lại số:",
+
     tripGroup: "Chuyến đi",
     distanceLabel: "Khoảng cách một chiều",
     distanceUnit: "km",
@@ -90,6 +133,15 @@ export const FUEL = {
     normalisedLabel: "Mức tiêu thụ quy đổi",
     normalisedUnit: "lít/100 km",
 
+    /**
+     * §6: the trip answer had six peer announced rows. Quãng đường thực đi and
+     * mức tiêu thụ quy đổi are ECHOES OF THE INPUTS — they exist so a reader who
+     * picked km/lít instead of lít/100 km, or forgot khứ hồi, can see it — so
+     * they read as the basis of the answer rather than as answers. Both keep
+     * their exact values and units; only the group they sit in changed.
+     */
+    tripBasisTitle: "Cơ sở tính của chuyến đi",
+
     monthlyTitle: "Theo tháng",
     monthlyCostLabel: "Chi phí mỗi tháng",
     monthlyPerPersonLabel: "Mỗi người mỗi tháng",
@@ -97,8 +149,13 @@ export const FUEL = {
 
     // ------------------------------------- original row 68: two candidate homes
     commuteGroup: "So hai nơi ở (đi làm)",
+    // NO POSITIONAL WORDING. This used to say the shared inputs were "ở trên"
+    // and the resulting figures "dưới đây". Since the purpose selector, the
+    // shared vehicle group now renders BELOW this paragraph and the figures sit
+    // in the other column at desktop width, so the sentence described a layout
+    // the reader was not looking at. It names the shared inputs instead.
     commuteIntro:
-      "Nhập khoảng cách MỘT CHIỀU từ hai nơi ở bạn đang cân nhắc đến chỗ làm. Cả hai dùng chung mức tiêu thụ, giá nhiên liệu, số ngày đi làm và số người ở trên — vì câu hỏi là nơi ở khác nhau tốn khác nhau bao nhiêu. Phần so sánh cũng dùng ô “Kiểu chuyến” ở trên: chọn khứ hồi thì mọi con số dưới đây gấp đôi, nên dòng “cơ sở tính” trong kết quả luôn ghi rõ đang tính chiều nào. Bạn tự nhập khoảng cách; công cụ không đọc vị trí của bạn.",
+      "Nhập khoảng cách MỘT CHIỀU từ hai nơi ở bạn đang cân nhắc đến chỗ làm. Cả hai nơi dùng chung một chiếc xe: cùng mức tiêu thụ, cùng giá nhiên liệu, cùng số ngày đi làm và cùng số người — vì câu hỏi là ở nơi nào tốn thêm bao nhiêu. Ô “Kiểu chuyến” cũng dùng chung; chọn khứ hồi thì mọi con số nhân đôi, nên dòng “cơ sở tính” trong kết quả luôn ghi rõ đang tính chiều nào. Bạn tự nhập khoảng cách; công cụ không đọc vị trí của bạn.",
 
     homeALabel: "Nhà A — khoảng cách một chiều",
     homeAName: "Nhà A",
@@ -132,6 +189,12 @@ export const FUEL = {
     commuteHouseholdLabel: "Cả xe — chênh lệch mỗi tháng",
     commutePerPersonLabel: "Mỗi người — chênh lệch mỗi tháng",
     commuteKmLabel: "Chênh lệch số km mỗi tháng",
+    /**
+     * §6: the km difference is the distance BEHIND the đồng difference, not a
+     * fifth answer beside it. It keeps its exact value and unit in its own
+     * labelled group.
+     */
+    commuteDetailTitle: "Chi tiết quãng đường",
     /** `{name}` substituted. */
     commuteLegFormat: "{name} — cả xe mỗi tháng",
 
@@ -150,8 +213,14 @@ export const FUEL = {
   disclaimer:
     "Công cụ này chỉ mang tính minh họa: nó nhân quãng đường với mức tiêu thụ và giá nhiên liệu do bạn tự nhập. Giá nhiên liệu thay đổi theo thời gian và mức tiêu thụ thực tế phụ thuộc cách lái, tải trọng và điều kiện đường, nên con số ở đây là ước lượng chứ không phải chi phí đã xảy ra. Kết quả KHÔNG gồm phí đường bộ, phí đỗ xe, bảo dưỡng, khấu hao hay thời gian đi lại, và không phải lời khuyên về việc nên ở đâu hay đi bằng gì.",
 
+  // §5: the LIMITATION stays visible — this is fuel, not the cost of travelling,
+  // and not the cost of living somewhere. The list of what is excluded and when
+  // the figure is still useful moves behind a disclosure that names itself.
   scopeNotice:
-    "Đây là chi phí NHIÊN LIỆU, không phải chi phí đi lại. Một chiếc xe còn tốn khấu hao, bảo hiểm, bảo dưỡng, lốp, phí đường bộ, phí đỗ xe — và thời gian của bạn. Con số ở đây hữu ích khi so hai lộ trình hoặc hai nơi ở trên cùng một cơ sở, chứ không phải khi so xe riêng với xe khách hay tàu.",
+    "Đây là chi phí NHIÊN LIỆU, không phải chi phí đi lại và cũng không phải chi phí của một nơi ở. Một chiếc xe còn tốn nhiều khoản khác, nên đừng đọc con số này như tổng chi phí.",
+  scopeNoticeDetailTitle: "Những khoản KHÔNG có trong con số này",
+  scopeNoticeDetail:
+    "Không gồm khấu hao, bảo hiểm, bảo dưỡng, lốp, phí đường bộ, phí đỗ xe — và thời gian của bạn. Khi so hai nơi ở thì cũng không gồm tiền thuê hay giá nhà, thuế, tiện ích hay chi phí đi lại bằng phương tiện khác. Con số ở đây hữu ích khi so hai lộ trình hoặc hai nơi ở trên cùng một cơ sở, chứ không phải khi so xe riêng với xe khách hay tàu.",
 
   chart: {
     currency: "₫",
@@ -162,7 +231,7 @@ export const FUEL = {
     assumptions: [
       "Khoảng cách của cả hai nơi ở do bạn tự nhập. Công cụ không đọc vị trí, không lưu địa chỉ.",
       "Hai nơi ở dùng CÙNG mức tiêu thụ, cùng giá nhiên liệu, cùng số ngày đi làm và cùng số người.",
-      "Chiều đi lấy theo ô “Kiểu chuyến” ở trên. Hai ô khoảng cách luôn là một chiều, nên chọn khứ hồi làm toàn bộ con số gấp đôi — câu tóm tắt dưới đây ghi rõ đang tính chiều nào.",
+      "Chiều đi lấy theo ô “Kiểu chuyến” trong phần nhập. Hai ô khoảng cách luôn là một chiều, nên chọn khứ hồi làm toàn bộ con số gấp đôi — câu tóm tắt đi kèm ghi rõ đang tính chiều nào.",
       "Các ô đang điền sẵn một ví dụ; hãy thay bằng số của bạn.",
       "Chỉ tính nhiên liệu đi làm. Không có phí đường bộ, phí đỗ xe, bảo dưỡng, khấu hao hay thời gian đi lại.",
     ],

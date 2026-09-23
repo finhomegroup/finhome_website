@@ -69,8 +69,12 @@ export const RETIREMENT_PLAN = {
   metaDescription:
     "Dự phóng cả hai giai đoạn của một kế hoạch hưu trí bằng đồng: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền — có tính lạm phát, và nói rõ năm nào tiền cạn. Công cụ miễn phí của FinHome.",
 
+  /** One purpose sentence. The rest is `ledeDetail`, behind a disclosure. */
   lede:
-    "Một bản dự phóng chạy cả hai giai đoạn: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền cho đến khi hết tiền hoặc hết kỳ. Hai điều công cụ này không làm: không đưa số danh nghĩa lên làm câu trả lời, và không im lặng khi tiền cạn.",
+    "Dự phóng cả hai giai đoạn: tích lũy đến tuổi bạn dự định nghỉ, rồi rút tiền đến hết kỳ.",
+  ledeDetailTitle: "Công cụ này cho bạn những gì",
+  ledeDetail:
+    "Số dư từng năm theo cả hai cách đếm, năm nào tiền cạn nếu kế hoạch không đủ, và mức chi giữ được đến hết kỳ. Hai điều công cụ này không làm: không đưa số danh nghĩa lên làm câu trả lời, và không im lặng khi tiền cạn.",
 
   form: {
     resultTitle: "Kết quả kế hoạch",
@@ -78,7 +82,10 @@ export const RETIREMENT_PLAN = {
     verdictYes: "Đủ",
     verdictNo: "Không đủ",
     depletionLabel: "Tiền cạn ở tuổi",
-    yearsShortLabel: "Thiếu",
+    // Named against the HORIZON, because it now sits beside a money shortfall
+    // in the same group: a bare "Thiếu" next to "Chi tiêu còn thiếu mỗi năm"
+    // reads as two versions of one figure.
+    yearsShortLabel: "Thiếu so với kỳ dự phóng",
     yearsUnit: "năm",
     realBalanceAtRetirementLabel: "Số dư khi nghỉ, theo giá hôm nay",
 
@@ -95,7 +102,17 @@ export const RETIREMENT_PLAN = {
     firstWithdrawalRealLabel: "Cùng khoản đó theo giá hôm nay",
     initialRateLabel: "Tỷ lệ rút năm đầu",
     sustainableLabel: "Mức chi giữ được đến hết, theo giá hôm nay",
-    shortfallLabel: "Thiếu so với mức mong muốn",
+    /**
+     * `spendingShortfall` — an ANNUAL spending gap in today's money, not a
+     * capital shortage.
+     *
+     * The old label was "Thiếu so với mức mong muốn", which was adequate as
+     * the eighth row of a cash-flow group and became misleading the moment it
+     * was promoted beside a capital figure: a browser pass read
+     * `20.942.597 ₫` as the whole plan's shortfall. Same value, same formula;
+     * the label now carries the period and the price basis.
+     */
+    shortfallLabel: "Chi tiêu còn thiếu mỗi năm, theo giá hôm nay",
 
     /** The depletion year is usually a PARTIAL payment, so all three figures. */
     partialTitle: "Năm cạn tiền trả được bao nhiêu",
@@ -103,10 +120,21 @@ export const RETIREMENT_PLAN = {
     partialPaidLabel: "Thực trả được",
     partialShortLabel: "Còn thiếu",
 
+    /**
+     * One sentence each, directly under the verdict.
+     *
+     * Both were three-sentence paragraphs sitting between the answer and the
+     * figure — the "long narrative before plot" a browser pass measured. The
+     * reasoning moved into `verdictDetail`, behind a labelled disclosure. What
+     * stays visible is the verdict restated in words and where to go next.
+     */
     depletionNotice:
-      "Kế hoạch này cạn tiền trước khi hết kỳ dự phóng. Công cụ nói rõ năm nào thay vì chỉ hiển thị số dư cuối bằng 0 — một bản dự phóng kết thúc ở 0 mà không nói tại sao đã che đi đúng thông tin duy nhất có ý nghĩa. Ba trang còn lại của kế hoạch này định giá ba cách bù: dành thêm mỗi năm, nghỉ muộn hơn, hoặc hạ mức chi tiêu.",
+      "Kế hoạch này cạn tiền trước khi hết kỳ dự phóng. Ba trang còn lại của kế hoạch định giá ba cách bù.",
     fundedNotice:
-      "Kế hoạch đủ đến hết kỳ dự phóng. Hãy nhìn dòng “mức chi giữ được đến hết”: đó là mức chi tối đa mà số vốn khi nghỉ duy trì được suốt kỳ. Nếu nó cao hơn mức bạn nhập nhiều, bạn đang dành nhiều hơn mức mục tiêu của chính mình đòi hỏi.",
+      "Kế hoạch đủ đến hết kỳ dự phóng. Hãy so mức chi bạn nhập với “mức chi giữ được đến hết” trong phần chi tiết.",
+    verdictDetailTitle: "Đọc kết luận này thế nào",
+    verdictDetail:
+      "Nếu kế hoạch cạn tiền, công cụ nói rõ năm nào thay vì chỉ hiển thị số dư cuối bằng 0 — một bản dự phóng kết thúc ở 0 mà không nói tại sao đã che đi đúng thông tin duy nhất có ý nghĩa. Ba cách bù được định giá ở ba trang còn lại: dành thêm mỗi năm, nghỉ muộn hơn, hoặc hạ mức chi tiêu. Nếu kế hoạch đủ, dòng “mức chi giữ được đến hết” là mức chi tối đa mà số vốn khi nghỉ duy trì được suốt kỳ; cao hơn mức bạn nhập nhiều thì bạn đang dành nhiều hơn mức mục tiêu của chính mình đòi hỏi.",
     /**
      * The forgiven float residue at the funded boundary, stated rather than
      * hidden. `fundedAtBoundary` returns the residue precisely so a page can
@@ -117,6 +145,20 @@ export const RETIREMENT_PLAN = {
       "Năm cuối kỳ còn thiếu một phần cực nhỏ của một đồng ({residue} ₫). Đó là sai số làm tròn của số thực, không phải một năm không được chi trả, nên kế hoạch vẫn được tính là đủ — và phần dư đó được ghi ra đây thay vì bỏ qua trong im lặng.",
     invalidNotice:
       "Các mốc tuổi phải theo thứ tự: tuổi hiện tại ≤ tuổi dự định nghỉ < tuổi kết thúc, và toàn kỳ không quá 100 năm. Các số tiền phải từ 0 trở lên và các mức lợi suất, lạm phát trong khoảng −100 đến 100.",
+
+    /**
+     * The full-width detail region below the two columns.
+     *
+     * Every figure inside it was on this page before and none was removed —
+     * the nominal readings, the whole-period cash flow, and the depletion
+     * year's partial payment. What changed is that they no longer sit between
+     * the verdict and the chart: the audit measured this route's result
+     * heading 2.842 px down a 390 px viewport, and eleven ledger rows in the
+     * primary flow are most of that distance.
+     */
+    detailTitle: "Xem chi tiết kế hoạch",
+    detailHint:
+      "Số dư danh nghĩa, dòng tiền cả kỳ, và — nếu kế hoạch không đủ — năm cạn tiền trả được bao nhiêu.",
   },
 
   /**
@@ -160,8 +202,15 @@ export const RETIREMENT_PLAN = {
     horizonMarker: "Hết kỳ dự phóng: tuổi {age} — năm thứ {year}",
     summaryFunded:
       "Đến tuổi {retirementAge} kế hoạch có {capital}, tương đương {realCapital} theo giá hôm nay, và giữ được đến hết tuổi {endAge}.",
+    // `{yearsShort}` dropped from the sentence 2026-09-21: the primary result
+    // group now states it as its own row beside the depletion age, and the
+    // caption above the plot was carrying nine formatted figures.
     summaryDepleted:
-      "Đến tuổi {retirementAge} kế hoạch có {capital}, tương đương {realCapital} theo giá hôm nay — nhưng cạn ở tuổi {depletionAge}, tức thiếu {yearsShort} năm so với kỳ dự phóng.",
+      "Đến tuổi {retirementAge} kế hoạch có {capital}, tương đương {realCapital} theo giá hôm nay, rồi cạn ở tuổi {depletionAge}.",
+    // Behind the figure's own disclosure now, not appended to the caption:
+    // three formatted amounts in a paragraph above a plot is the caption doing
+    // the table's job.
+    partialTitle: "Năm cạn tiền trả được bao nhiêu",
     partialNote:
       "Năm cạn tiền vẫn trả được một phần: cần {planned}, trả được {paid}, còn thiếu {short}.",
     otherIncomeNote:
@@ -174,8 +223,30 @@ export const RETIREMENT_PLAN = {
     nominalColumn: "Danh nghĩa",
   },
 
+  /**
+   * The model limitation a reader has to know BEFORE reading a figure off this
+   * tool: a nominal balance is not purchasing power.
+   *
+   * SPLIT 2026-09-21, and the split is where the care is. The audit measured
+   * this route's first numeric input 880 px down a 390×844 viewport and its
+   * result heading at 2.842 px, with this notice — five clauses and four đồng
+   * figures — sitting in the gap above the form. The approved contract forbids
+   * silently collapsing a model limitation, so the LIMITATION stays visible
+   * and only the worked arithmetic that demonstrates it moves behind a
+   * disclosure whose summary line states the two headline figures. A reader
+   * who never opens it has still been told the thing that changes how they
+   * read the page.
+   *
+   * `realNoticeDetail` is what `long-term-plan.test.ts` checks the four model
+   * figures against, together with this line. That test is the reason the
+   * numbers cannot drift from the engine, and splitting the string does not
+   * relax it — it asserts over both halves.
+   */
   realNotice:
-    "Với các giả định mặc định, số dư khi nghỉ là 10.902.417.350 ₫ — nhưng theo giá hôm nay nó chỉ tương đương 4.089.679.933 ₫, tức khoảng 37,5% của con số đó. Nhìn theo chiều rút tiền cũng vậy: năm rút đầu tiên là 543.830.612 ₫, nhưng nó chỉ mua được đúng lượng hàng hóa mà 204.000.000 ₫ mua hôm nay. Một người lập kế hoạch dựa trên con số danh nghĩa sẽ lập kế hoạch để mình nghèo, và đó là lý do công cụ luôn tính song song hai con số rồi đặt con số theo giá hôm nay lên làm kết quả chính.",
+    "Số dư danh nghĩa không phải sức mua: với các giả định mặc định, 10.902.417.350 ₫ khi nghỉ chỉ tương đương 4.089.679.933 ₫ theo giá hôm nay. Công cụ luôn tính song song hai con số và đặt con số theo giá hôm nay lên làm kết quả chính.",
+  realNoticeDetailTitle: "Cùng số dư đó, nhìn theo chiều rút tiền",
+  realNoticeDetail:
+    "Số dư khi nghỉ 10.902.417.350 ₫ theo giá hôm nay chỉ tương đương 4.089.679.933 ₫, tức khoảng 37,5% của con số đó. Nhìn theo chiều rút tiền cũng vậy: năm rút đầu tiên là 543.830.612 ₫, nhưng nó chỉ mua được đúng lượng hàng hóa mà 204.000.000 ₫ mua hôm nay. Một người lập kế hoạch dựa trên con số danh nghĩa sẽ lập kế hoạch để mình nghèo, và đó là lý do công cụ luôn tính song song hai con số rồi đặt con số theo giá hôm nay lên làm kết quả chính.",
 
   formula: {
     title: "Cách tính",

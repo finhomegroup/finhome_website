@@ -61,6 +61,61 @@ describe("countTicks — an axis of whole periods", () => {
     expect(countTicks(37 - 4e-15, 5, label).at(-1)!.label).toBe("37");
   });
 
+  it("marks the stride tick the kept endpoint crowds, and moves nothing", () => {
+    // The measured case: `tiet-kiem-hoc-phi` at its shipped defaults is a
+    // 13-year axis, so the stride is 4 and the kept endpoint 13 lands one
+    // year after the stride tick 12. At 390×844 an independent pass measured
+    // the two labels overlapping by 5,09 px (year 12 at x 310,14–326,78,
+    // year 13 at x 321,69–338,33).
+    const ticks = countTicks(13, 5, label);
+    expect(ticks.map((t) => t.label)).toEqual(["0", "4", "8", "12", "13"]);
+    // The EARLIER of the pair is marked, and only it.
+    expect(ticks.map((t) => t.crowded)).toEqual([
+      undefined,
+      undefined,
+      undefined,
+      true,
+      undefined,
+    ]);
+    // Positions are the true fractions still — 12/13 and 1 — and both ends of
+    // the axis survive. Marking is a rendering hint, not a change of data.
+    expect(ticks[3].at).toBe(12 / 13);
+    expect(ticks.at(-1)!.at).toBe(1);
+    expect(ticks[0].at).toBe(0);
+  });
+
+  it("marks nothing on an axis whose ticks all clear each other", () => {
+    // A 16-year horizon strides by 4 and ends on a stride tick, so no pair is
+    // closer than a quarter of the axis. An unmarked tick carries NO key, so a
+    // consumer that spreads a tick cannot pick up a stale `crowded: false`.
+    for (const max of [16, 12, 20, 100]) {
+      for (const tick of countTicks(max, 5, label)) {
+        expect(tick.crowded, `max ${max} tick ${tick.label}`).toBeUndefined();
+        expect(Object.hasOwn(tick, "crowded"), `max ${max}`).toBe(false);
+      }
+    }
+  });
+
+  it("marks the stride tick a FRACTIONAL end crowds too", () => {
+    // A non-round horizon reaches the same collision by the other route: the
+    // fractional end is its own tick, so 12,4 sits 0,4 of a year after 12.
+    const ticks = countTicks(12.4, 5, (value) =>
+      Number.isInteger(value) ? String(value) : value.toFixed(1),
+    );
+    expect(ticks.map((t) => t.label)).toEqual(["0", "3", "6", "9", "12", "12.4"]);
+    expect(ticks.at(-2)!.crowded).toBe(true);
+    expect(ticks.at(-1)!.crowded).toBeUndefined();
+    expect(ticks.at(-1)!.at).toBe(1);
+  });
+
+  it("never marks the origin, whatever the stride", () => {
+    // Year 0 is the reader's anchor for every other label, and on a very
+    // short axis it is also next door to the first stride tick.
+    for (const max of [1, 2, 3, 4, 5, 13, 179]) {
+      expect(countTicks(max, 5, label)[0].crowded, `max ${max}`).toBeUndefined();
+    }
+  });
+
   it("refuses an axis it cannot tick", () => {
     expect(countTicks(0, 5, label)).toEqual([]);
     expect(countTicks(-3, 5, label)).toEqual([]);

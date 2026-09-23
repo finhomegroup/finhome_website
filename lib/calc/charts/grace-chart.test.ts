@@ -231,4 +231,21 @@ describe("the balance line", () => {
     expect(model.series).toEqual([]);
     expect(model.unavailable?.reason).toBe(LINE_LABELS.unavailableReason);
   });
+
+  it("labels every month tick at its own position on an odd term", () => {
+    // Equal quarter intervals plus a rounding formatter named months the ticks
+    // do not sit on. See `countTicks` in `types.ts`.
+    const odd = graceBalanceLineModel(
+      computeGraceLoan({ ...BASE, termMonths: 37, graceMonths: 6, promoMonths: 12 })!,
+      LINE_LABELS,
+    );
+    expect(odd.xMax).toBe(37);
+    for (const tick of odd.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * odd.xMax,
+        9,
+      );
+    }
+    expect(odd.xAxis.ticks.at(-1)!.at).toBe(1);
+  });
 });

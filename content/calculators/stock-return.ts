@@ -83,8 +83,12 @@ export const STOCK_RETURN = {
   metaDescription:
     "Tính lãi lỗ thực của một giao dịch cổ phiếu sau phí môi giới, thuế chuyển nhượng 0,1% và thuế cổ tức 5% theo Luật 109/2025/QH15 áp dụng từ 01/07/2026, kèm giá hòa vốn. Công cụ miễn phí của FinHome.",
 
+  // Tightened, not weakened: the date, the law, the base and the
+  // no-cost-deduction rule all stay. What went is the restatement of the
+  // rule in the negative, which `taxOnLossNotice` right below already
+  // carries in full with the article number.
   lede:
-    "Từ 01/07/2026, thuế thu nhập cá nhân khi chuyển nhượng chứng khoán theo Luật Thuế thu nhập cá nhân số 109/2025/QH15 là 0,1% giá trị bán của từng lần bán và không được trừ giá vốn, chứ không phải 0,1% lợi nhuận — nên bạn vẫn nộp thuế khi bán lỗ. Công cụ tính lãi lỗ thực sau toàn bộ phí và thuế, và cho biết giá cần đạt để hòa vốn.",
+    "Từ 01/07/2026, thuế chuyển nhượng chứng khoán theo Luật Thuế thu nhập cá nhân số 109/2025/QH15 là 0,1% giá trị bán của từng lần bán và không được trừ giá vốn, nên bạn vẫn nộp thuế khi bán lỗ. Công cụ tính lãi lỗ thực sau toàn bộ phí và thuế, kèm giá cần đạt để hòa vốn.",
 
   form: {
     tradeGroup: "Giao dịch",
@@ -171,16 +175,37 @@ export const STOCK_RETURN = {
     totalFeesLabel: "Tổng phí môi giới",
     totalTaxesLabel: "Tổng thuế",
 
+    // THE POINTER WAS REPAIRED WITH THE LAYOUT, NOT LEFT BEHIND. This sentence
+    // used to send the reader to "hai dòng … ở trên", which was true when both
+    // rows were in one stack. CSV row 35 moves the frictionless comparison into
+    // the Chi tiết region, which is BELOW the answer, so "ở trên" would now
+    // name a direction the row is not in. It names the section instead — the
+    // one form of reference that survives the region moving again.
     taxedOnLossNotice:
-      "Giao dịch này lỗ, và bạn vẫn phải nộp thuế chuyển nhượng vì thuế tính trên giá trị bán chứ không tính trên lợi nhuận. Đây là lý do khoản lỗ thực luôn sâu hơn khoản lỗ trước phí và thuế — hãy so hai dòng “Lợi nhuận sau phí và thuế” và “Lợi nhuận nếu không có phí và thuế” ở trên.",
+      "Giao dịch này lỗ, và bạn vẫn phải nộp thuế chuyển nhượng vì thuế tính trên giá trị bán chứ không tính trên lợi nhuận. Đây là lý do khoản lỗ thực luôn sâu hơn khoản lỗ trước phí và thuế — hãy so dòng “Lợi nhuận sau phí và thuế” ở đây với dòng “Lợi nhuận nếu không có phí và thuế” trong phần “Chi tiết”.",
     noBreakEvenNotice:
       "Tổng phí và thuế bên bán đã bằng hoặc vượt 100% giá trị bán, nên không có mức giá nào giúp hòa vốn. Hãy kiểm tra lại các tỷ lệ đã nhập.",
     alreadyBreakEvenNotice:
       "Cổ tức bạn đã nhận đã vượt toàn bộ số tiền bỏ ra, nên giao dịch này không thể lỗ: dù giá cổ phiếu về 0 bạn vẫn hòa vốn. Con số 0 ₫ ở dòng “Giá bán để hòa vốn” là mức giá thấp nhất, không phải mức giá cần đạt.",
   },
 
+  // SPLIT IN TWO, AND THE SPLIT IS THE POINT. CSV row 35 asks for "phần giải
+  // thích thuế dài" to come off the path from the inputs to the answer. This
+  // notice renders directly above the tool box, so its length is measured in
+  // screens of form the reader has to scroll past before typing anything: four
+  // sentences of law and two worked examples was the longest notice in the
+  // group. The RULE stays visible, because it is the thing a reader must know
+  // before reading a figure off the tool; the two worked examples move behind
+  // `noticeDetail`'s disclosure. `CalculatorPage`'s own `notice` docstring
+  // already asked for exactly this shape — "keep it to one or two sentences …
+  // the full version goes in `noticeDetail`" — and this page was the one that
+  // most needed it. Nothing was deleted, and `stock-return.test.ts` still
+  // derives all three figures below from the engine.
   taxOnLossNotice:
-    "Điểm mà một công cụ tính lãi lỗ thông thường bỏ qua: theo Điều 13 khoản 2 Luật Thuế thu nhập cá nhân số 109/2025/QH15, áp dụng từ 01/07/2026, thuế chuyển nhượng chứng khoán là 0,1% giá trị bán của từng lần bán và không được trừ giá vốn, chứ không phải 0,1% lợi nhuận. Nó được thu ngay khi bạn bán, kể cả khi bán lỗ. Với ví dụ mặc định đổi giá bán thành 24.000 ₫ và đặt ô cổ tức về 0: giá giảm 20% nhưng bạn lỗ 20,320%, và trong khoản lỗ đó có 240.000 ₫ tiền thuế trên một giao dịch không có đồng lãi nào. Cùng lý do, giá hòa vốn của bạn không phải giá mua: với phí 0,15% mỗi chiều và thuế 0,1%, cổ phiếu mua ở 30.000 ₫ và không có cổ tức phải lên 30.120 ₫ mới về vốn.",
+    "Điểm mà một công cụ tính lãi lỗ thông thường bỏ qua: theo Điều 13 khoản 2 Luật Thuế thu nhập cá nhân số 109/2025/QH15, áp dụng từ 01/07/2026, thuế chuyển nhượng chứng khoán là 0,1% giá trị bán của từng lần bán và không được trừ giá vốn, chứ không phải 0,1% lợi nhuận. Nó được thu ngay khi bạn bán, kể cả khi bán lỗ.",
+  taxOnLossDetailTitle: "Con số cụ thể: bán lỗ 20% và giá hòa vốn",
+  taxOnLossDetail:
+    "Với ví dụ mặc định đổi giá bán thành 24.000 ₫ và đặt ô cổ tức về 0: giá giảm 20% nhưng bạn lỗ 20,320%, và trong khoản lỗ đó có 240.000 ₫ tiền thuế trên một giao dịch không có đồng lãi nào. Cùng lý do, giá hòa vốn của bạn không phải giá mua: với phí 0,15% mỗi chiều và thuế 0,1%, cổ phiếu mua ở 30.000 ₫ và không có cổ tức phải lên 30.120 ₫ mới về vốn.",
 
   formula: {
     title: "Cách tính",

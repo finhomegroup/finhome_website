@@ -3,7 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  NEAR_ANSWER_ACTIONS,
   TOOL_NEXT_STEPS,
+  furtherSteps,
+  nearAnswerSteps,
   nextStepsFor,
 } from "@/content/calculators/next-steps";
 import { getCalculator } from "@/content/calculators/registry";
@@ -150,6 +153,68 @@ describe("contextual next steps", () => {
         readFileSync(route, "utf8"),
         `${slug} has next steps that its page never renders`,
       ).toContain("ToolNextSteps");
+    }
+  });
+
+  it("splits the floating-rate block rather than shortening it", () => {
+    // §8b: a browser pass measured three links below a plot and three
+    // assumptions, 1101,9 px past the answer. Round 1 DELETED the third to get
+    // to two; round 2 restored it, because the acceptance is about PLACEMENT.
+    // So the two rate questions render beside the answer and the
+    // extra-principal one — furthest from a payment that jumps when the
+    // promotional period ends — is the further link below the figure.
+    const steps = TOOL_NEXT_STEPS["lai-suat-tha-noi"];
+    expect(steps.tools.map((t) => t.slug)).toEqual([
+      "kha-nang-mua-nha",
+      "lai-co-dinh-hay-tha-noi",
+      "vay-mua-nha",
+    ]);
+    expect(nearAnswerSteps("lai-suat-tha-noi").map((t) => t.slug)).toEqual([
+      "kha-nang-mua-nha",
+      "lai-co-dinh-hay-tha-noi",
+    ]);
+    expect(furtherSteps("lai-suat-tha-noi").map((t) => t.slug)).toEqual([
+      "vay-mua-nha",
+    ]);
+    // The education seam is a different element and was never what moved.
+    expect(steps.education?.href).toBe("/blog/het-uu-dai-khoan-tra-tang-bao-nhieu/");
+  });
+
+  it("never puts more than the agreed count beside an answer", () => {
+    // The whole point of the slot is that it is short enough to sit above a
+    // plot. If a future entry grows to four tools, three of them go below.
+    for (const [slug, steps] of Object.entries(TOOL_NEXT_STEPS)) {
+      const near = nearAnswerSteps(slug);
+      expect(
+        near.length,
+        `${slug} would put ${near.length} actions beside the answer`,
+      ).toBeLessThanOrEqual(NEAR_ANSWER_ACTIONS);
+      // Nothing is lost in the split: the two halves reconstruct the list.
+      expect([...near, ...furtherSteps(slug)]).toEqual([...steps.tools]);
+    }
+  });
+
+  it("never points an intro at the chart's position", () => {
+    // The `actions` slot renders the first steps ABOVE the figure, so any
+    // sentence that locates the chart is wrong in one of the two places the
+    // intro can appear. `lai-kep` shipped "Biểu đồ ở trên" and a browser pass
+    // caught it. Pointing at the RESULT is safe: the answer is above the
+    // actions in both placements, which is the layout's fixed source order.
+    for (const [from, steps] of Object.entries(TOOL_NEXT_STEPS)) {
+      for (const phrase of [
+        "Biểu đồ ở trên",
+        "biểu đồ ở trên",
+        "biểu đồ bên trên",
+        "đồ thị ở trên",
+        "bảng ở trên",
+        "biểu đồ dưới",
+        "biểu đồ bên dưới",
+      ]) {
+        expect(
+          steps.intro,
+          `${from} intro locates the chart with "${phrase}"`,
+        ).not.toContain(phrase);
+      }
     }
   });
 

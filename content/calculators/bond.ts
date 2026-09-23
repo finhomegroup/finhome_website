@@ -39,8 +39,18 @@ export const BOND = {
       "Hai chiều của cùng một phép tính. Chiều thứ hai phải giải bằng phương pháp số vì không có công thức đóng.",
     modeYield: "Biết lợi suất yêu cầu, tính giá",
     modePrice: "Biết giá thị trường, tính lợi suất đáo hạn",
+    // Which direction the page opens in. It was a literal in the component
+    // while every other starting value lived here; now the whole initial
+    // state of the form is described in one place.
+    defaultMode: "yield",
 
-    bondGroup: "Trái phiếu",
+    // CSV row 25 regroups the form by Giá / Lãi suất / Kỳ hạn. The groups it
+    // replaced — "Trái phiếu" and "Thị trường" — cut the form by WHO decides
+    // a number, which is not the cut a reader of this page needs: the two
+    // confusions this tool exists to undo are mệnh giá versus giá thị trường
+    // and lãi suất coupon versus lợi suất yêu cầu, and the old grouping put
+    // each pair in different boxes. Now each pair shares a legend.
+    priceGroup: "Giá",
     faceLabel: "Mệnh giá",
     faceUnit: "₫",
     faceHelp:
@@ -48,6 +58,7 @@ export const BOND = {
     faceInvalid: "Vui lòng nhập mệnh giá lớn hơn 0.",
     defaultFace: "100.000.000",
 
+    rateGroup: "Lãi suất",
     couponLabel: "Lãi suất coupon",
     couponUnit: "%/năm",
     couponHelp:
@@ -55,6 +66,7 @@ export const BOND = {
     couponInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultCoupon: "8",
 
+    termGroup: "Kỳ hạn",
     yearsLabel: "Số năm còn lại đến đáo hạn",
     yearsHelp:
       "Phải là số nguyên kỳ trả lãi: với trái phiếu trả lãi 6 tháng một lần thì 5 hoặc 5,5 đều được, nhưng 5,25 thì không.",
@@ -69,7 +81,9 @@ export const BOND = {
     frequencyQuarterly: "4 lần — hằng quý",
     defaultFrequency: "2",
 
-    marketGroup: "Thị trường",
+    // "Thị trường" is gone rather than kept unused: the two fields it held
+    // now sit with the figure each is confused for — giá thị trường under
+    // "Giá", lợi suất yêu cầu under "Lãi suất".
     yieldLabel: "Lợi suất yêu cầu",
     yieldUnit: "%/năm",
     yieldHelp:
@@ -106,8 +120,15 @@ export const BOND = {
     yearsUnit: "năm",
     periodsUnit: "kỳ",
 
+    // This sentence used to blame a price "quá cao", which is the end of the
+    // bracket a reader cannot reach: lib/calc/bond.ts puts it at 1,04e68 ₫
+    // on the default bond, and 900 triệu on a 100 triệu bond solves fine at
+    // −36,6417%. The end that IS reachable is the opposite one — a price
+    // below the bond's value at the 1000%/năm ceiling, 800.001,64 ₫ on the
+    // default bond — and the usual cause is a mệnh giá and a giá thị trường
+    // entered in different units. So the notice now names that.
     unsolvableNotice:
-      "Không tìm được lợi suất đáo hạn cho mức giá này. Thường là do giá quá cao so với tổng tiền trái phiếu sẽ trả — hãy kiểm tra lại mệnh giá, lãi suất coupon và số năm còn lại.",
+      "Không tìm được lợi suất đáo hạn cho mức giá này. Thường là do giá quá thấp so với tổng tiền trái phiếu sẽ trả — hãy kiểm tra xem mệnh giá và giá thị trường có cùng đơn vị không, chẳng hạn một ô nhập theo 100.000 ₫ còn ô kia theo 100 triệu ₫.",
   },
 
   // WHAT THE VISIBLE SLOT IS FOR. This page's decisive caveat is not which
@@ -116,8 +137,10 @@ export const BOND = {
   // while this slot explained the three yields; the three-yield distinction
   // is also in `formula.body` and in FAQ item 3, so it loses nothing by
   // moving one disclosure away.
+  // Two sentences rather than three, and NOTHING moved out: every clause here
+  // is the critical limit itself, which the entry contract keeps visible.
   creditRiskNotice:
-    "Công cụ này không tính rủi ro vỡ nợ: nó giả định mọi khoản lãi và mệnh giá đều được trả đủ, đúng hạn. Vì thế lợi suất 20% chỉ là 20% nếu bạn thực sự nhận được tiền — một lợi suất cao thường là giá của rủi ro chứ không phải một ưu đãi. Lợi suất đo số tiền bạn được hứa; nó không đo khả năng trả nợ của tổ chức phát hành, và trang này không có dữ liệu nào về khả năng đó.",
+    "Công cụ này không tính rủi ro vỡ nợ: nó giả định mọi khoản lãi và mệnh giá đều được trả đủ, đúng hạn, nên lợi suất 20% chỉ là 20% nếu bạn thực sự nhận được tiền — một lợi suất cao thường là giá của rủi ro chứ không phải một ưu đãi. Lợi suất đo số tiền bạn được hứa, không đo khả năng trả nợ của tổ chức phát hành, và trang này không có dữ liệu nào về khả năng đó.",
 
   threeYieldsNoticeTitle: "Ba con số cùng được gọi là “lợi suất”",
   threeYieldsNotice:

@@ -1,10 +1,12 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { CopyButton } from "@/components/calc/copy-button";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -47,7 +49,38 @@ const FORM_IDS: Record<UnitCategory, string[]> = {
   gold: UNITS.gold.map((unit) => unit.id),
 };
 
-export function UnitsCalculator() {
+const FORM_ID = "doi-don-vi-nhap";
+const RESULT_ID = "doi-don-vi-ket-qua";
+
+/**
+ * ROW 73: "Khi chưa chọn vùng, hiển thị “Chọn quy ước vùng để xem kết quả”
+ * thay vì chỉ dấu gạch; giữ nút sao chép đã có sau khi tính."
+ *
+ * THE REFUSAL NOW SPEAKS IN THE ANSWER SLOT. `ResultRow` renders `PLACEHOLDER`
+ * for a null value, which is correct for "chưa nhập" but wrong here: the tool
+ * is not waiting for a number, it is waiting for a DECISION the reader has to
+ * make, and a dash does not say so. The long `regionRequiredNotice` below the
+ * group already explained it — but it explained it after the reader had
+ * already read a dash as "không đổi được".
+ *
+ * The copy button is unchanged and stays exactly where it was, immediately
+ * under the equation line and inside the answer block: `equation !== null`
+ * still gates it, so it appears once there is a figure and disappears again
+ * when the region goes back to unselected. Its text is still built from the
+ * RESOLVED units, so a pasted land figure always names its convention.
+ *
+ * `columns="single"`: a "Gọn" row whose form is three selects and one box, and
+ * whose two tables want the full width underneath.
+ */
+export function UnitsCalculator({
+  actions,
+  nextSteps,
+}: {
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The longer guidance below — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     category: C.form.defaultCategory,
     fromId: C.form.defaultFromId,
@@ -136,165 +169,207 @@ export function UnitsCalculator() {
 
   return (
     <CalculatorCard>
-      <FieldGroup title={C.form.group}>
-        <SelectField
-          {...fields.bind("category")}
-          label={C.form.categoryLabel}
-          help={C.form.categoryHelp}
-          options={CATEGORY_ORDER.map((id) => ({
-            value: id,
-            label: C.categories[id],
-          }))}
-        />
-        {/* Keyed on the category so the select remounts with its new option
-            list rather than briefly holding a value that is not in it. */}
-        <SelectField
-          key={`from-${category}`}
-          value={fromId}
-          onValueChange={(next) => fields.bind("fromId").onValueChange(next)}
-          label={C.form.fromLabel}
-          help={C.form.fromHelp}
-          options={options}
-        />
-        <SelectField
-          key={`to-${category}`}
-          value={toId}
-          onValueChange={(next) => fields.bind("toId").onValueChange(next)}
-          label={C.form.toLabel}
-          help={C.form.toHelp}
-          options={options}
-        />
-        {/* Only where it decides an area. A region selector under a gold
-            conversion would be a control that changes nothing. */}
-        {ambiguous ? (
-          <RadioGroupField
-            {...fields.bind("region")}
-            legend={C.form.regionLegend}
-            help={C.form.regionHelp}
-            options={[
-              { value: "", label: C.form.regionUnset },
-              { value: "bac", label: C.form.regionBac },
-              { value: "trung", label: C.form.regionTrung },
-            ]}
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="single"
+        form={
+          <FieldGroup title={C.form.group}>
+            <SelectField
+              {...fields.bind("category")}
+              label={C.form.categoryLabel}
+              help={C.form.categoryHelp}
+              options={CATEGORY_ORDER.map((id) => ({
+                value: id,
+                label: C.categories[id],
+              }))}
+            />
+            {/* Keyed on the category so the select remounts with its new
+                option list rather than briefly holding a value that is not
+                in it. */}
+            <SelectField
+              key={`from-${category}`}
+              value={fromId}
+              onValueChange={(next) =>
+                fields.bind("fromId").onValueChange(next)
+              }
+              label={C.form.fromLabel}
+              help={C.form.fromHelp}
+              options={options}
+            />
+            <SelectField
+              key={`to-${category}`}
+              value={toId}
+              onValueChange={(next) => fields.bind("toId").onValueChange(next)}
+              label={C.form.toLabel}
+              help={C.form.toHelp}
+              options={options}
+            />
+            {/* Only where it decides an area. A region selector under a gold
+                conversion would be a control that changes nothing. */}
+            {ambiguous ? (
+              <RadioGroupField
+                {...fields.bind("region")}
+                legend={C.form.regionLegend}
+                help={C.form.regionHelp}
+                options={[
+                  { value: "", label: C.form.regionUnset },
+                  { value: "bac", label: C.form.regionBac },
+                  { value: "trung", label: C.form.regionTrung },
+                ]}
+              />
+            ) : null}
+            <NumberField
+              {...fields.bind("value")}
+              label={C.form.valueLabel}
+              help={C.form.valueHelp}
+              error={C.form.valueInvalid}
+              invalid={valueInvalid}
+            />
+          </FieldGroup>
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={valueInvalid}
           />
-        ) : null}
-        <NumberField
-          {...fields.bind("value")}
-          label={C.form.valueLabel}
-          help={C.form.valueHelp}
-          error={C.form.valueInvalid}
-          invalid={valueInvalid}
-        />
-      </FieldGroup>
+        }
+        primary={
+          <>
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              {/* ROW 73: the unconfirmed region SAYS SO here, in prose, rather
+                  than rendering the null placeholder. `prose` because it is a
+                  sentence — a 30px instruction set as a figure would wrap. */}
+              <ResultRow
+                label={result ? label(result.toId) : C.form.convertedLabel}
+                value={
+                  result
+                    ? quantity(result.converted)
+                    : regionMissing
+                      ? C.form.regionRequiredValue
+                      : null
+                }
+                prose={result === null && regionMissing}
+                emphasis={result !== null}
+              />
+              {/* More digits than the result: this is what the reader
+                  multiplies by when they need precision beyond the
+                  display. */}
+              <ResultRow
+                label={C.form.factorLabel}
+                value={result ? formatQuantity(result.factor, 10) : null}
+              />
+            </ResultGroup>
 
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={result ? label(result.toId) : C.form.convertedLabel}
-          value={result ? quantity(result.converted) : null}
-        />
-        {/* More digits than the result: this is what the reader multiplies by
-            when they need precision beyond the display. */}
-        <ResultRow
-          label={C.form.factorLabel}
-          value={result ? formatQuantity(result.factor, 10) : null}
-        />
-      </ResultGroup>
+            {/* The region is a REFUSAL state, not a warning beside a figure.
+                The row above now carries the instruction; this paragraph
+                keeps its own job — why the tool refuses, and what the số mét
+                vuông on the deed means for them. */}
+            {regionMissing ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-2">
+                {C.form.regionRequiredNotice}
+              </p>
+            ) : null}
 
-      {/* The region is a REFUSAL state, not a warning beside a figure. */}
-      {regionMissing ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-2">
-          {C.form.regionRequiredNotice}
-        </p>
-      ) : null}
+            {equation !== null ? (
+              <div className="mt-6">
+                <p className="text-sm leading-relaxed text-ink-2">
+                  <span className="font-medium text-ink">
+                    {C.form.equationLabel}:
+                  </span>{" "}
+                  <span className="tabular-nums">{equation}</span>
+                </p>
+                {/* Writes to the clipboard on a click and at no other time. */}
+                <CopyButton
+                  text={equation}
+                  label={C.form.copyLabel}
+                  copiedLabel={C.form.copiedLabel}
+                  failedLabel={C.form.copyFailedLabel}
+                />
+                <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                  {C.form.precisionNote}
+                </p>
+              </div>
+            ) : null}
+          </>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          comparison === null && tableRows.length === 0 ? null : (
+            <>
+              {/* The SHORT comparison: the two conventions for whichever side
+                  is regional, on the reader's own figure. The full category
+                  table is below.
 
-      {equation !== null ? (
-        <div className="mt-6">
-          <p className="text-sm leading-relaxed text-ink-2">
-            <span className="font-medium text-ink">
-              {C.form.equationLabel}:
-            </span>{" "}
-            <span className="tabular-nums">{equation}</span>
-          </p>
-          {/* Writes to the clipboard on a click and at no other time. */}
-          <CopyButton
-            text={equation}
-            label={C.form.copyLabel}
-            copiedLabel={C.form.copiedLabel}
-            failedLabel={C.form.copyFailedLabel}
-          />
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            {C.form.precisionNote}
-          </p>
-        </div>
-      ) : null}
+                  THE VALUE COLUMN NAMES ITS UNIT. It read a bare "Kết quả",
+                  so 2 sào → ha showed 0,072 beside 0,09999 while the row
+                  labels named 360 m² and 499,95 m² — two units on one line
+                  and none of them the answer's. Where the TARGET is the
+                  regional side, each row is in its own unit and the heading
+                  says to read it from the row. */}
+              {comparison !== null ? (
+                <ResultTable
+                  caption={C.form.comparison.title}
+                  columns={[
+                    { label: C.form.comparison.unitColumn },
+                    {
+                      label:
+                        comparison.targetId === null
+                          ? C.form.comparison.valueColumnPerRow
+                          : C.form.comparison.valueColumnIn.replace(
+                              "{unit}",
+                              label(comparison.targetId),
+                            ),
+                      numeric: true,
+                    },
+                  ]}
+                  rows={comparison.rows.map((row) => [
+                    `${C.form.comparison[row.region]} — ${label(row.id)}`,
+                    quantity(row.value),
+                  ])}
+                />
+              ) : null}
+              {comparison !== null ? (
+                <>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                    {C.form.comparison.note}
+                  </p>
+                  {/* Both sides regional: the target convention is fixed for
+                      the comparison, and it is NAMED rather than left to pass
+                      as neutral. */}
+                  {comparison.targetConventionApplied &&
+                  comparison.targetId !== null ? (
+                    <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                      {C.form.comparison.targetConventionNote.replace(
+                        "{unit}",
+                        label(comparison.targetId),
+                      )}
+                    </p>
+                  ) : null}
+                  {comparison.targetId === null ? (
+                    <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                      {C.form.comparison.perRowNote}
+                    </p>
+                  ) : null}
+                </>
+              ) : null}
 
-      {/* The SHORT comparison: the two conventions for whichever side is
-          regional, on the reader's own figure. The full category table is
-          below.
-
-          THE VALUE COLUMN NAMES ITS UNIT. It read a bare "Kết quả", so 2 sào
-          → ha showed 0,072 beside 0,09999 while the row labels named 360 m²
-          and 499,95 m² — two units on one line and none of them the answer's.
-          Where the TARGET is the regional side, each row is in its own unit
-          and the heading says to read it from the row. */}
-      {comparison !== null ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.form.comparison.title}
-          columns={[
-            { label: C.form.comparison.unitColumn },
-            {
-              label:
-                comparison.targetId === null
-                  ? C.form.comparison.valueColumnPerRow
-                  : C.form.comparison.valueColumnIn.replace(
-                      "{unit}",
-                      label(comparison.targetId),
-                    ),
-              numeric: true,
-            },
-          ]}
-          rows={comparison.rows.map((row) => [
-            `${C.form.comparison[row.region]} — ${label(row.id)}`,
-            quantity(row.value),
-          ])}
-        />
-      ) : null}
-      {comparison !== null ? (
-        <>
-          <p className="mt-3 text-sm leading-relaxed text-ink-3">
-            {C.form.comparison.note}
-          </p>
-          {/* Both sides regional: the target convention is fixed for the
-              comparison, and it is NAMED rather than left to pass as
-              neutral. */}
-          {comparison.targetConventionApplied && comparison.targetId !== null ? (
-            <p className="mt-2 text-sm leading-relaxed text-ink-3">
-              {C.form.comparison.targetConventionNote.replace(
-                "{unit}",
-                label(comparison.targetId),
-              )}
-            </p>
-          ) : null}
-          {comparison.targetId === null ? (
-            <p className="mt-2 text-sm leading-relaxed text-ink-3">
-              {C.form.comparison.perRowNote}
-            </p>
-          ) : null}
-        </>
-      ) : null}
-
-      {tableRows.length > 0 ? (
-        <ResultTable
-          className="mt-8"
-          caption={C.form.table.caption}
-          columns={[
-            { label: C.form.table.unitColumn },
-            { label: C.form.table.valueColumn, numeric: true },
-          ]}
-          rows={tableRows}
-        />
-      ) : null}
+              {tableRows.length > 0 ? (
+                <ResultTable
+                  className="mt-8"
+                  caption={C.form.table.caption}
+                  columns={[
+                    { label: C.form.table.unitColumn },
+                    { label: C.form.table.valueColumn, numeric: true },
+                  ]}
+                  rows={tableRows}
+                />
+              ) : null}
+            </>
+          )
+        }
+      />
     </CalculatorCard>
   );
 }

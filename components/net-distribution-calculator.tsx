@@ -1,11 +1,13 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
@@ -25,7 +27,54 @@ import {
 } from "@/lib/calc/net-distribution";
 import { NET_DISTRIBUTION as C } from "@/content/calculators/net-distribution";
 
-export function NetDistributionCalculator() {
+/**
+ * ROW 69 — "Đưa số thực về tay cạnh số vay; biểu đồ trừ phí trước giải thích
+ * dài, không gọi đây là đề nghị giải ngân", at "Hai cột".
+ *
+ * THREE CHANGES, and the row names all three.
+ *
+ * "CẠNH SỐ VAY" is the split: the four input groups are eighteen fields tall,
+ * so the two figures the page exists to contrast — số thực về tay against nợ
+ * gốc trên hợp đồng — were below the fold of the form that produces them. They
+ * were already the first two rows of the announced group and stay in that
+ * order; "số tiền thực về tay" now takes `emphasis` and is the string the
+ * sticky CTA pins, because it is the question in the page title.
+ *
+ * "BIỂU ĐỒ TRƯỚC GIẢI THÍCH DÀI" moves the deduction bridge from the bottom of
+ * the card into the `chart` slot, i.e. directly under the answer. It used to
+ * sit after the six-row Chi tiết group and both refusal paragraphs, which is
+ * the ordering `CalculatorLayout`'s docstring measured the cost of elsewhere.
+ * The Chi tiết rows are the full-width band now.
+ *
+ * "KHÔNG GỌI ĐÂY LÀ ĐỀ NGHỊ GIẢI NGÂN" is `notCommitmentLine`, rendered inside
+ * the result region so a promoted đồng headline cannot be read as a quote. Its
+ * two claims are `disclaimer`'s and `transactionNotice`'s already; see the
+ * content file.
+ *
+ * WHAT DID NOT CHANGE: the engine call, both directions, every bound, and the
+ * CROSS-FIELD percentage rule — `tooMuch` still marks all three rate fields
+ * `aria-invalid` with `totalRateInvalid` in place of their help text, still
+ * blanks every figure, and still renders `tooMuchNotice` beside them. The CTA's
+ * `invalid` is that same condition, so it focuses the first offending rate
+ * rather than scrolling to a placeholder.
+ */
+const FORM_ID = "phan-phoi-rong-nhap";
+const RESULT_ID = "phan-phoi-rong-ket-qua";
+
+export function NetDistributionCalculator({
+  actions,
+  nextSteps,
+}: {
+  /**
+   * The one or two near-answer destinations — `<ResultActions>`, between the
+   * answer and the deduction bridge. The APR question is the one a reader has
+   * the moment they see how much the fees took, and it used to be reachable
+   * only after the chart, the six-row band and both refusal paragraphs.
+   */
+  actions?: React.ReactNode;
+  /** The further questions and the retention panel — `<ToolNextSteps promoted>`. */
+  nextSteps?: React.ReactNode;
+}) {
   const fields = useCalcFields({
     direction: C.form.defaultDirection,
     amount: C.form.defaultAmount,
@@ -129,8 +178,11 @@ export function NetDistributionCalculator() {
 
   const chart = netProceedsModel(result, namedCharges, C.chart);
 
-  return (
-    <CalculatorCard>
+  /** The promoted figure, formatted once for the row and the CTA. */
+  const netAnswer = money(result?.net);
+
+  const form = (
+    <>
       <FieldGroup>
         <RadioGroupField
           {...fields.bind("direction")}
@@ -199,17 +251,34 @@ export function NetDistributionCalculator() {
           invalid={fixedInvalid[1]}
         />
       </FieldGroup>
+    </>
+  );
 
+  const primary = (
+    <>
       {/* Both ends of the conversion in the headline, plus the gross-up —
           which is the figure the page exists to correct. */}
       {/* Original row 67: the gross obligation stays VISIBLE beside the
           smaller figure that arrives, and is named as still owed. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow label={C.form.netLabel} value={money(result?.net)} />
-        <ResultRow label={C.form.grossLabel} value={money(result?.gross)} />
+      <ResultGroup
+        title={C.form.resultTitle}
+        className="mt-8"
+        anchorId={RESULT_ID}
+      >
+        <ResultRow label={C.form.netLabel} value={netAnswer} emphasis />
+        {/* §6 repair: the gross was announced TWICE — once as nợ gốc trên hợp
+            đồng and once as "vẫn phải trả lãi và gốc trên", the same đồng
+            figure in two peer rows. The obligation was never a second
+            quantity; it is what is true OF this one, so it is said on the row
+            it qualifies. `obligationNote` below still spells out why the two
+            figures differ. */}
         <ResultRow
-          label={C.form.obligationLabel}
+          label={C.form.grossLabel}
           value={money(result?.gross)}
+          // Not on a placeholder: the cross-field total-rate failure blanks
+          // every figure, and a qualifier on a dash asserts something about a
+          // number nobody can see.
+          note={result === null ? undefined : C.form.obligationLabel}
         />
         <ResultRow
           label={C.form.grossUpLabel}
@@ -231,7 +300,29 @@ export function NetDistributionCalculator() {
         </p>
       ) : null}
 
-      <ResultGroup title={C.form.detailTitle} className="mt-4" live={false}>
+      {/* ROW 69: the headline is an estimate of the reader's own charges, and
+          says so in the same region rather than at the foot of the page. */}
+      <p className="mt-3 text-sm leading-relaxed text-ink-3">
+        {C.form.notCommitmentLine}
+      </p>
+
+      {result !== null && result.net < 0 ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.negativeNetNotice}
+        </p>
+      ) : null}
+
+      {tooMuch ? (
+        <p className="mt-4 text-sm leading-relaxed text-ink-3">
+          {C.form.tooMuchNotice}
+        </p>
+      ) : null}
+    </>
+  );
+
+  const detail = (
+    <>
+      <ResultGroup title={C.form.detailTitle} live={false}>
         <ResultRow
           label={C.form.percentAmountLabel}
           value={money(result?.percentAmount)}
@@ -259,22 +350,34 @@ export function NetDistributionCalculator() {
           value={result ? formatPercent(result.retentionPercent, 4) : null}
         />
       </ResultGroup>
+    </>
+  );
 
-      {result !== null && result.net < 0 ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.negativeNetNotice}
-        </p>
-      ) : null}
-
-      {tooMuch ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {C.form.tooMuchNotice}
-        </p>
-      ) : null}
-
-      <ChartFigure model={chart}>
-        <BarChart model={chart} />
-      </ChartFigure>
+  return (
+    <CalculatorCard>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={form}
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={result === null}
+            sticky
+            answer={{ label: C.form.netLabel, value: netAnswer }}
+          />
+        }
+        primary={primary}
+        actions={actions}
+        chart={
+          <ChartFigure model={chart}>
+            <BarChart model={chart} />
+          </ChartFigure>
+        }
+        nextSteps={nextSteps}
+        detail={detail}
+      />
     </CalculatorCard>
   );
 }

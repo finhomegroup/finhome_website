@@ -23,6 +23,9 @@ import {
   AffordabilityScenarioComparison,
 } from "@/components/affordability-calculator";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
+// The second route's own copy. It holds no form strings, so importing it here
+// cannot make the two routes' forms drift.
+import { SOCIAL_HOUSING as N } from "@/content/calculators/social-housing";
 import {
   computeAffordability,
   type AffordabilityInput,
@@ -339,5 +342,87 @@ describe("the stale bank-acceptance copy is gone", () => {
     expect(ratioFaq).toBeDefined();
     expect(ratioFaq?.a).toContain("giả định của BẠN");
     expect(ratioFaq?.a).toContain("ngân sách của hộ");
+  });
+});
+
+describe("§8 row 1: the price beside the data, and what is limiting it", () => {
+  const html = renderToStaticMarkup(createElement(AffordabilityCalculator));
+
+  it("emphasises the price and nothing else", () => {
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    const emphasisAt = html.indexOf("md:text-3xl");
+    expect(html.indexOf(C.form.maxPriceLabel)).toBeLessThan(emphasisAt);
+    expect(emphasisAt).toBeLessThan(html.indexOf(C.form.maxLoanLabel));
+  });
+
+  it("wires the CTA from the form region to the answer", () => {
+    expect(html).toContain('aria-controls="kha-nang-mua-nha-ket-qua"');
+    expect(html).toContain('id="kha-nang-mua-nha-ket-qua"');
+    const form = html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+    expect(form).toContain('data-calc-cta="true"');
+  });
+
+  it("names the binding limit and the ceiling WITHOUT a disclosure", () => {
+    // The defect the row describes: all four of these existed, correctly
+    // labelled, inside "Xem chi tiết" — four screens under a headline that
+    // reads like one ceiling. They are now in the result region.
+    const result = html.slice(
+      html.indexOf('data-calc-region="result"'),
+      html.indexOf('data-calc-region="detail"'),
+    );
+    expect(result).toContain(C.form.bindingLabel);
+    expect(result).toContain(C.form.ratioCeilingLabel);
+    expect(result).toContain(C.form.householdResidualLabel);
+    expect(result).toContain(C.form.budgetLabel);
+    // At the shipped defaults the household budget is what binds, and the
+    // sentence that says so is on screen.
+    expect(result).toContain(C.form.bindingHousehold);
+  });
+
+  it("leaves the financing ledger disclosed, where it was", () => {
+    const detail = html.slice(html.indexOf('data-calc-region="detail"'));
+    expect(detail).toContain(C.form.financingDetailTitle);
+    expect(detail).toContain(C.form.priceBindingLabel);
+    // And the monthly block was MOVED, not copied. Counted on the one row
+    // whose label appears nowhere else: the title is also the first clause of
+    // `detailHint`, and "Trần theo giả định của bạn" is a chart series name.
+    expect(
+      html.split(C.form.householdResidualLabel).length - 1,
+      "the monthly block renders exactly once",
+    ).toBe(1);
+    expect(detail).not.toContain(C.form.householdResidualLabel);
+  });
+});
+
+describe("§8 row 2: the NOXH route does not read as an eligibility verdict", () => {
+  it("says so beside the answer, on that route only", () => {
+    const noxh = renderToStaticMarkup(
+      createElement(AffordabilityCalculator, { programme: "social-housing" }),
+    );
+    expect(noxh).toContain(N.resultNotEligibilityNotice);
+    expect(N.resultNotEligibilityNotice).toContain("KHÔNG phải xác nhận");
+    // It is in the result region, beside the figure it qualifies — not in the
+    // form column and not behind the disclosure.
+    const result = noxh.slice(
+      noxh.indexOf('data-calc-region="result"'),
+      noxh.indexOf('data-calc-region="detail"'),
+    );
+    expect(result).toContain(N.resultNotEligibilityNotice);
+
+    const commercial = renderToStaticMarkup(
+      createElement(AffordabilityCalculator),
+    );
+    expect(commercial).not.toContain(N.resultNotEligibilityNotice);
+  });
+
+  it("keeps the two routes' answer anchors apart", () => {
+    const noxh = renderToStaticMarkup(
+      createElement(AffordabilityCalculator, { programme: "social-housing" }),
+    );
+    expect(noxh).toContain('id="nha-o-xa-hoi-ket-qua"');
+    expect(noxh).not.toContain("kha-nang-mua-nha-ket-qua");
   });
 });

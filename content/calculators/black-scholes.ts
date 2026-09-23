@@ -64,7 +64,15 @@ export const BLACK_SCHOLES = {
     timeInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultTime: "1",
 
-    marketGroup: "Thị trường",
+    // CSV row 42 asks for the market inputs and the ASSUMPTION to be separate
+    // boxes, and this page already knew which is which: `volatilityHelp` says
+    // độ biến động is "ô duy nhất không quan sát trực tiếp được". Under one
+    // "Thị trường" legend it read as a fifth quotable market figure, which is
+    // the misreading that matters here — the FAQ's first question exists
+    // because this number has to be estimated, and two estimates of it differ
+    // enough to be "quan điểm của thị trường về tương lai". It now has its own
+    // legend, alone, and the three fields keep their order.
+    assumptionGroup: "Giả định của bạn",
     volatilityLabel: "Độ biến động",
     volatilityUnit: "%/năm",
     volatilityHelp:
@@ -72,6 +80,9 @@ export const BLACK_SCHOLES = {
     volatilityInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultVolatility: "20",
 
+    // What is left under this legend is exactly the two rates a reader can
+    // look up rather than estimate.
+    marketGroup: "Thị trường",
     rateLabel: "Lãi suất phi rủi ro",
     rateUnit: "%/năm",
     rateHelp:
@@ -90,6 +101,17 @@ export const BLACK_SCHOLES = {
     callLabel: "Quyền chọn mua",
     putLabel: "Quyền chọn bán",
     probabilityLabel: "Xác suất trung tính rủi ro quyền mua có lãi",
+
+    // THE PINNED RESTATEMENT CARRIES BOTH PRICES, NOT ONE OF THEM. This page
+    // has two answers, and `ResultCta`'s `answer` slot holds one label and one
+    // value — so the value is a labelled PAIR. The two prefixes are short
+    // because the block is one line at the bottom of the viewport; the full
+    // names stay on the rows themselves. Naming each price inline rather than
+    // relying on the order means neither side reads as the recommended trade,
+    // which is the reason this route had declined the pin at all.
+    pinnedPairLabel: "Giá quyền chọn",
+    pinnedCallPrefix: "mua",
+    pinnedPutPrefix: "bán",
 
     greeksTitle: "Hệ số greek",
     deltaLabel: "Delta",
@@ -125,8 +147,10 @@ export const BLACK_SCHOLES = {
   // the last FAQ answer, as "the model underprices far-from-the-money
   // options". Said plainly it belongs above the calculator, because it is
   // what stops a reader treating the output as a quote.
+  // Two sentences, nothing moved: all three clauses are model limits, and
+  // the entry contract keeps those visible.
   modelPriceNotice:
-    "Con số trang này đưa ra là giá theo mô hình, không phải giá đang giao dịch. Thị trường có thể trả cao hơn hoặc thấp hơn, và chênh lệch không tự động nghĩa là bên nào sai: mô hình giả định biến động không đổi và lợi suất phân phối chuẩn theo log, nên nó định giá thấp các quyền chọn xa giá. Cùng lý do đó, N(d₂) là xác suất trung tính rủi ro, không phải xác suất thực tế — một con số dùng để định giá, không phải một dự báo về việc quyền chọn có lãi hay không.",
+    "Con số trang này đưa ra là giá theo mô hình, không phải giá đang giao dịch: mô hình giả định biến động không đổi và lợi suất phân phối chuẩn theo log, nên nó định giá thấp các quyền chọn xa giá, và thị trường có thể trả cao hơn hoặc thấp hơn mà không bên nào sai. Cùng lý do đó, N(d₂) là xác suất trung tính rủi ro dùng để định giá, không phải xác suất thực tế và không phải một dự báo về việc quyền chọn có lãi hay không.",
 
   contextNoticeTitle: "Dùng mô hình này ở Việt Nam",
   contextNotice:

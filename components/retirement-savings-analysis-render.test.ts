@@ -30,8 +30,9 @@
  * visual check.
  */
 import { describe, expect, it, vi } from "vitest";
+import { markupRegion } from "@/lib/markup-region";
 import { readFileSync } from "node:fs";
-import { createElement, type ComponentType } from "react";
+import { createElement, type ComponentType, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MAX_EXTRA_WORKING_YEARS } from "@/lib/calc/long-term-plan";
 import { fill } from "@/lib/calc/charts/labels";
@@ -48,6 +49,7 @@ const count = (html: string, needle: string | RegExp): number =>
 /** Render the calculator, optionally on a patched default scenario. */
 async function render(
   defaults?: Partial<Record<string, string>>,
+  props?: { actions?: ReactNode },
 ): Promise<string> {
   vi.resetModules();
   if (defaults) {
@@ -66,9 +68,9 @@ async function render(
   try {
     const loaded = (await import(
       "@/components/retirement-savings-analysis-calculator"
-    )) as Record<string, ComponentType>;
+    )) as Record<string, ComponentType<{ actions?: ReactNode }>>;
     return renderToStaticMarkup(
-      createElement(loaded.RetirementSavingsAnalysisCalculator),
+      createElement(loaded.RetirementSavingsAnalysisCalculator, props ?? null),
     );
   } finally {
     vi.doUnmock(CONTENT_PATH);
@@ -321,5 +323,67 @@ describe("the funded boundary, on the rendered page", () => {
     // figure the tool failed to find.
     const html = await render(FUNDED_BOUNDARY);
     expect(html).not.toContain(C.form.depletionLabel);
+  });
+});
+
+/**
+ * One layout region's own markup, bounded by depth rather than by the next
+ * marker — `markupRegion`'s docstring records the bugs a textual bound
+ * produces, and `detail` is the last region, so a marker-to-marker slice would
+ * run to the end of the document.
+ */
+function regionOf(html: string, name: string): string {
+  const region = markupRegion(html, `data-calc-region="${name}"`);
+  expect(region, name).not.toBeNull();
+  return region ?? "";
+}
+
+describe("§8 row 50: the gap and the way to close it, side by side", () => {
+  it("puts the form and the answer side by side", async () => {
+    expect(await render()).toContain("lg:grid-cols-5");
+  });
+
+  it("emphasises the money missing, not the coverage percentage", async () => {
+    const html = await render();
+    // The coverage reads as a comfort level on its own; the shortfall in đồng
+    // is the figure the remedies below it are sized against.
+    expect(count(html, "md:text-3xl")).toBe(1);
+    const emphasis = html.indexOf("md:text-3xl");
+    expect(emphasis).toBeGreaterThan(html.indexOf(C.form.gapRealLabel));
+  });
+
+  it("keeps the cheapest remedy beside the gap", async () => {
+    const html = await render();
+    // "Đưa khoảng thiếu và các cách điều chỉnh cạnh nhau." The contribution
+    // that closes it is in the answer column, with the annual figure and its
+    // labelled monthly equivalent together.
+    const result = regionOf(html, "result");
+    expect(result).toContain(C.form.contributeTitle);
+    expect(result).toContain(C.form.contributeAnnualLabel);
+    expect(result).toContain(C.form.contributeMonthlyLabel);
+  });
+
+  it("does not ask the reader to re-read the whole plan first", async () => {
+    const html = await render();
+    // The capital projection and the remedy sweep are the long read: both stay
+    // in the collapsed detail region BELOW the answer, not above it.
+    const detail = regionOf(html, "detail");
+    expect(detail).toContain(C.form.capitalTitle);
+    expect(detail).toContain(C.form.remedies.caption);
+    expect(regionOf(html, "result")).not.toContain(C.form.capitalTitle);
+  });
+
+  it("keeps the family's other views beside the answer", async () => {
+    const html = await render(undefined, { actions: "VIEWS-MARKER" });
+    expect(regionOf(html, "result")).toContain("VIEWS-MARKER");
+  });
+
+  it("gives the route a CTA and exactly one live region", async () => {
+    const html = await render();
+    expect(html).toContain('data-calc-cta="true"');
+    expect(html).toContain(
+      'aria-controls="phan-tich-tiet-kiem-huu-tri-ket-qua"',
+    );
+    expect(count(html, 'data-results-live="true"')).toBe(1);
   });
 });

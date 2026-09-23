@@ -572,3 +572,36 @@ describe("rentBuyScenariosModel — the growth-scenario band", () => {
     expect(refused.table).toBe(table);
   });
 });
+
+describe("the month axis names the month it points at", () => {
+  /** Every tick label is the month at its own position. */
+  function assertMonthTicks(model: {
+    xMax: number;
+    xAxis: { ticks: { at: number; label: string }[] };
+  }) {
+    for (const tick of model.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * model.xMax,
+        9,
+      );
+    }
+    expect(model.xAxis.ticks.at(-1)!.at).toBe(1);
+  }
+
+  it("holds on the trajectory over an odd horizon", () => {
+    // Equal quarter intervals plus a rounding formatter named months the ticks
+    // do not sit on. See `countTicks` in `types.ts`.
+    const model = trajectoryOf({ ...REFERENCE, horizonMonths: 37 });
+    expect(model.xMax).toBe(37);
+    assertMonthTicks(model);
+  });
+
+  it("holds on the growth-scenario band over an odd horizon", () => {
+    const model = rentBuyScenariosModel(
+      compareGrowthScenarios({ ...REFERENCE, horizonMonths: 37 }, [0, 3, 6])!,
+      SCENARIOS,
+    );
+    expect(model.xMax).toBe(37);
+    assertMonthTicks(model);
+  });
+});

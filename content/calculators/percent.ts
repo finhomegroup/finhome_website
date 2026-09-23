@@ -14,13 +14,17 @@ export const PERCENT = {
   metaDescription:
     "Tính phần trăm của một số, tỷ lệ giữa hai số và mức tăng giảm theo phần trăm. Ba phép tính phần trăm thường dùng nhất, trong một công cụ miễn phí của FinHome.",
 
-  lede:
-    "Bốn câu hỏi khác nhau đều được gọi là “tính phần trăm”, và chúng cho ra bốn con số khác nhau — một số tiền, một tỷ lệ, một mức thay đổi, và một khoảng cách tính bằng điểm phần trăm. Chọn đúng câu hỏi bạn cần rồi nhập hai số.",
+  /** One purpose sentence; the four answers are enumerated in `ledeDetail`. */
+  lede: "Chọn đúng câu hỏi bạn cần, rồi nhập hai số.",
+  ledeDetailTitle: "Bốn câu hỏi đều gọi là “tính phần trăm”",
+  ledeDetail:
+    "Bốn câu hỏi khác nhau đều được gọi là “tính phần trăm”, và chúng cho ra bốn con số khác nhau — một số tiền, một tỷ lệ, một mức thay đổi, và một khoảng cách tính bằng điểm phần trăm.",
 
   form: {
     modeLegend: "Bạn muốn tính gì?",
-    modeHelp:
-      "Kết quả của mỗi phép tính có đơn vị khác nhau: phép thứ nhất trả về một SỐ TIỀN, hai phép giữa trả về PHẦN TRĂM, phép cuối trả về cả ĐIỂM PHẦN TRĂM và phần trăm.",
+    // Condensed 2026-09-21: the notice above the tool already names the three
+    // units, and this repeated them in full directly above the first input.
+    modeHelp: "Mỗi phép tính trả về một đơn vị khác nhau.",
 
     // The one-line worked arithmetic original row 59 asks for ("phép tính một
     // dòng có giải thích"), built per mode so the equation matches the boxes.
@@ -120,8 +124,21 @@ export const PERCENT = {
       "Hai ô trên là LÃI SUẤT, nên chênh lệch giữa chúng là điểm phần trăm — không phải một số tiền. Muốn biết 2 điểm phần trăm thành bao nhiêu đồng mỗi tháng thì phải có số tiền vay và kỳ hạn; công cụ vay mua nhà làm phần đó.",
   },
 
+  /**
+   * The mistake a reader arrives already making, in one line, above the tool.
+   *
+   * SPLIT 2026-09-21, not shortened. The audit measured this page's first
+   * numeric input 1.041 px down a 390×844 viewport, and this notice was a
+   * four-sentence block sitting in that gap. The rule the split follows: the
+   * DISTINCTION is the critical limit and stays visible, the worked example
+   * that proves it moves behind a disclosure whose own summary line names the
+   * numbers — so nothing essential is hidden behind an unlabelled toggle.
+   */
   asymmetryNotice:
-    "Ba đơn vị dễ bị lẫn: PHẦN TRĂM, ĐIỂM PHẦN TRĂM và SỐ TIỀN. Lãi suất tăng từ 7% lên 9% là tăng 2 điểm phần trăm, đồng thời là tăng 28,57% so với mức cũ — hai cách nói đều đúng và cho hai con số rất khác nhau. Và cả hai đều chưa phải số tiền: 2 điểm phần trăm thành bao nhiêu đồng mỗi tháng còn phụ thuộc số tiền vay và kỳ hạn.",
+    "Ba đơn vị dễ bị lẫn ở đây: PHẦN TRĂM, ĐIỂM PHẦN TRĂM và SỐ TIỀN. Chọn sai phép tính thì con số vẫn ra, chỉ là trả lời một câu hỏi khác.",
+  asymmetryDetailTitle: "Vì sao 7% lên 9% vừa là 2 điểm, vừa là 28,57%",
+  asymmetryDetail:
+    "Lãi suất tăng từ 7% lên 9% là tăng 2 điểm phần trăm, đồng thời là tăng 28,57% so với mức cũ — hai cách nói đều đúng và cho hai con số rất khác nhau. Và cả hai đều chưa phải số tiền: 2 điểm phần trăm thành bao nhiêu đồng mỗi tháng còn phụ thuộc số tiền vay và kỳ hạn.",
 
   formula: {
     title: "Bốn công thức",

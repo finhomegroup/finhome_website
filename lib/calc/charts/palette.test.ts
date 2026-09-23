@@ -3,6 +3,7 @@ import {
   PALETTE_SLOTS,
   paletteIndexByKey,
   paletteSlot,
+  seriesIndex,
 } from "./palette";
 
 describe("paletteIndexByKey", () => {
@@ -108,5 +109,28 @@ describe("paletteSlot", () => {
 
   it("reports a palette size the components actually have", () => {
     expect(PALETTE_SLOTS).toBe(4);
+  });
+});
+
+describe("seriesIndex", () => {
+  it("does NOT wrap, so a fifth series is a fifth series", () => {
+    // The non-colour channel's index. `paletteSlot` wrapping is correct for
+    // four colours and wrong for the texture list, which is longer: keying the
+    // texture to the wrapped slot is how six segments ended up with four
+    // encodings on `kha-nang-mua-nha` at 390 px.
+    const slots = paletteIndexByKey({
+      legend: ["a", "b", "c", "d", "e", "f"].map((key) => ({ key })),
+      segmentKeys: [],
+    });
+    expect(["a", "b", "c", "d", "e", "f"].map((k) => seriesIndex(slots, k, 0)))
+      .toEqual([0, 1, 2, 3, 4, 5]);
+    expect(paletteSlot(slots, "e", 0)).toBe(seriesIndex(slots, "a", 0));
+    expect(seriesIndex(slots, "e", 0)).not.toBe(seriesIndex(slots, "a", 0));
+  });
+
+  it("uses the same fallback rule as paletteSlot, unwrapped", () => {
+    const slots = paletteIndexByKey({ legend: [], segmentKeys: [] });
+    expect(seriesIndex(slots, "missing", 6)).toBe(6);
+    expect(paletteSlot(slots, "missing", 6)).toBe(2);
   });
 });

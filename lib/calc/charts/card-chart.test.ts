@@ -205,4 +205,17 @@ describe("cardPathsModel", () => {
     expect(model.markers.map((marker) => marker.period)).toEqual([125, 28]);
     expect(model.markers[1].label).toContain("15/1/2029");
   });
+
+  it("labels every month tick at its own position", () => {
+    // 125 months in quarters is 31,25 — so equal intervals plus a rounding
+    // formatter claimed month 31 at 31,25. See `countTicks` in `types.ts`.
+    const model = modelOf();
+    for (const tick of model.xAxis.ticks) {
+      expect(Number(tick.label.replace(/\./g, "")), tick.label).toBeCloseTo(
+        tick.at * model.xMax,
+        9,
+      );
+    }
+    expect(model.xAxis.ticks.at(-1)!.at).toBe(1);
+  });
 });

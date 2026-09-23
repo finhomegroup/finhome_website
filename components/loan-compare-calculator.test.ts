@@ -13,6 +13,7 @@
  * check — docs §6's rule stands.
  */
 import { describe, expect, it, vi } from "vitest";
+import { markupRegion } from "@/lib/markup-region";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LOAN_COMPARE } from "@/content/calculators/loan-compare";
@@ -596,6 +597,39 @@ describe("the fixed/floating perspective", () => {
     expect(FIXED_VS_FLOATING.compare.fixedSideHint).toContain("cố định vài năm");
   });
 
+  it("keeps that sentence short and its scope intact", async () => {
+    // The second browser round measured the first input starting at 887 px at
+    // 390×844 with the two-sentence version. One sentence stays visible, and
+    // it is the one that must be read BEFORE a figure: 9,5% for 20 years is
+    // hypothetical. Counted on sentence-ending punctuation so a second one
+    // cannot slip back in. A LENGTH claim only — whether the field is now
+    // reachable at 390×844 is a browser measurement, not this assertion.
+    const notice = FIXED_VS_FLOATING.compare.exampleNotice;
+    expect(notice.split(/[.!?](?:\s|$)/).filter(Boolean).length).toBe(1);
+    expect(notice).toContain("9,5%");
+    expect(notice).toContain("20 năm");
+  });
+
+  it("keeps the replacement instruction, in a labelled disclosure", async () => {
+    // MOVED, not deleted: the sentence asking for the reader's real rate AND
+    // the duration it is held for is the actionable half, and it belongs where
+    // a reader goes once they have the quote in hand.
+    const html = await render("fixedFloating");
+    expect(html).toContain(FIXED_VS_FLOATING.compare.exampleDetailTitle);
+    expect(html).toContain(FIXED_VS_FLOATING.compare.exampleDetail);
+    expect(FIXED_VS_FLOATING.compare.exampleDetail).toContain(
+      "đúng thời gian giữ mức lãi đó",
+    );
+    expect(html).toContain("<details");
+  });
+
+  it("does not show the example notice on the offers route", async () => {
+    // The perspective flag, not the shared card: `so-sanh-khoan-vay` has no
+    // prefilled fixed side to disclaim.
+    const html = await render("offers");
+    expect(html).not.toContain(FIXED_VS_FLOATING.compare.exampleDetailTitle);
+  });
+
   it("makes no unverified claim about what the market offers", () => {
     // docs: no unverified population claim in copy. An earlier version of this
     // notice and of the FAQ asserted that most Vietnamese banks fix the rate
@@ -648,6 +682,104 @@ describe("the fixed/floating perspective", () => {
     expect(strings).not.toContain("10,7177");
     expect(strings).not.toContain("Lãi cố định hòa vốn");
     expect(FIXED_VS_FLOATING.reframeNotice).toContain("rẻ nhất tại mốc bạn chọn");
+  });
+});
+
+describe("§8 rows 6 and 15: the difference is the answer", () => {
+  /** The comparison at a perspective, with the props a route passes. */
+  async function view(
+    perspective: "offers" | "fixedFloating",
+    props?: { nextSteps?: ReturnType<typeof createElement> },
+  ) {
+    vi.resetModules();
+    const loaded = await import("@/components/loan-compare-calculator");
+    return renderToStaticMarkup(
+      createElement(loaded.LoanCompareCalculator, { perspective, ...props }),
+    );
+  }
+
+  /**
+   * One layout region's own markup, bounded by depth rather than by the next
+   * marker — `markupRegion`'s docstring records the bugs a textual bound
+   * produces, and `detail` is the last region, so a marker-to-marker slice
+   * would run to the end of the document.
+   */
+  const regionOf = (html: string, name: string): string => {
+    const region = markupRegion(html, `data-calc-region="${name}"`);
+    expect(region, name).not.toBeNull();
+    return region ?? "";
+  };
+
+  it("emphasises the cost spread, not the winner's name", async () => {
+    const html = await view("offers");
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    // The emphasised value belongs to the spread row: it falls between that
+    // row's label and the winner-name row's.
+    expect(html.indexOf("md:text-3xl")).toBeGreaterThan(
+      html.indexOf(C.spreadLabel),
+    );
+    expect(html.indexOf("md:text-3xl")).toBeLessThan(html.indexOf(C.bestLabel));
+    // And the spread is given a base to be read against.
+    expect(regionOf(html, "result")).toContain(C.horizonCostLabel);
+  });
+
+  it("keeps one horizon for every offer, above the offer groups", async () => {
+    // ALREADY SATISFIED, asserted rather than rebuilt: row 6's "đồng nhất mốc
+    // thời gian" is one field, not one per column.
+    const html = await view("offers");
+    const form = regionOf(html, "form");
+    expect(form.split(C.horizonLabel).length - 1).toBe(1);
+    expect(form.indexOf(C.horizonLabel)).toBeLessThan(
+      form.indexOf(C.rateLabel),
+    );
+  });
+
+  it("wires each route's CTA to its own answer", async () => {
+    const offers = await view("offers");
+    expect(offers).toContain('id="so-sanh-khoan-vay-nhap"');
+    expect(offers).toContain('id="so-sanh-khoan-vay-ket-qua"');
+    expect(offers).toContain('aria-controls="so-sanh-khoan-vay-ket-qua"');
+    expect(regionOf(offers, "form")).toContain('data-calc-cta="true"');
+
+    const fixed = await view("fixedFloating");
+    expect(fixed).toContain('id="lai-co-dinh-hay-tha-noi-ket-qua"');
+    expect(fixed).not.toContain("so-sanh-khoan-vay-ket-qua");
+  });
+
+  it("moved the table's row-group explanation next to the table", async () => {
+    const html = await view("offers");
+    expect(regionOf(html, "detail")).toContain(LOAN_COMPARE.table.intro);
+    expect(html.indexOf(LOAN_COMPARE.table.intro)).toBeGreaterThan(
+      html.indexOf(C.amountLabel),
+    );
+  });
+
+  it("puts the post-promo instalment and each side's horizon cost beside the answer", async () => {
+    const html = await view("fixedFloating");
+    const result = regionOf(html, "result");
+    expect(result).toContain(FIXED_VS_FLOATING.compare.riskTitle);
+    // Both metrics, per side, out of the fifteen-row table.
+    expect(result).toContain(LOAN_COMPARE.table.rows.resetPayment);
+    expect(result).toContain(LOAN_COMPARE.table.rows.resetMonth);
+    expect(result).toContain(LOAN_COMPARE.table.rows.horizonCost);
+    // The constant side has no reset, so it reports its own instalment under
+    // its own name instead of an invented "sau ưu đãi" figure.
+    expect(result).toContain(LOAN_COMPARE.table.rows.monthly);
+    expect(result).toContain("18.642.624");
+    // Still one live region: the block above is a support group.
+    expect((html.match(/data-results-live="true"/g) ?? []).length).toBe(1);
+  });
+
+  it("does not add that block to the offers route", async () => {
+    const html = await view("offers");
+    expect(html).not.toContain(FIXED_VS_FLOATING.compare.riskTitle);
+  });
+
+  it("places the route's next steps beside the answer", async () => {
+    const html = await view("offers", {
+      nextSteps: createElement("p", null, "BƯỚC TIẾP THEO"),
+    });
+    expect(regionOf(html, "result")).toContain("BƯỚC TIẾP THEO");
   });
 });
 

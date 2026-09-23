@@ -43,29 +43,46 @@ export default function Us401kPage() {
       // is the one thing a reader should take away even if they read nothing
       // else on the page.
       notice={C.forfeitNotice}
-      afterCalculator={
-        <section>
-          <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-            {C.relatedTool.title}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-2">
-            {C.relatedTool.why}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed">
-            <Link
-              href={RELATED_HREF}
-              className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
-            >
-              {RELATED_TITLE}
-            </Link>
-          </p>
-        </section>
-      }
+      // The rule stays above; the worked default case behind this summary.
+      noticeDetailTitle={C.forfeitNoticeDetailTitle}
+      noticeDetail={C.forfeitNoticeDetail}
+      // Row 48's split result side needs the wider tool box.
+      wide
       prose={C.formula}
       faq={C.faq}
       sources={C.sources}
     >
-      <Us401kCalculator />
+      {/* THE LINK MOVED, NOTHING ELSE. It was `afterCalculator`, which renders
+          below the full-width detail band: an independent review measured the
+          gap from the end of the result region at 2611,5 px on mobile and
+          2286,5 px on desktop. Same destination, same title and context copy,
+          now in the calculator's near-answer `actions` slot — the audit's
+          "1–2 hành động ngay sau câu trả lời". The surface matches
+          `ResultActions` so the two idioms read as one, and it carries the
+          same `data-calc-actions` hook. */}
+      <Us401kCalculator
+        actions={
+          <section
+            data-calc-actions="near-answer"
+            className="mt-6 rounded-2xl bg-bg-soft p-5"
+          >
+            <h2 className="font-display text-base font-medium text-ink">
+              {C.relatedTool.title}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2">
+              {C.relatedTool.why}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed">
+              <Link
+                href={RELATED_HREF}
+                className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
+              >
+                {RELATED_TITLE}
+              </Link>
+            </p>
+          </section>
+        }
+      />
     </CalculatorPage>
   );
 }

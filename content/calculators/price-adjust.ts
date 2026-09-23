@@ -60,13 +60,19 @@ export const PRICE_ADJUST = {
     "Nhập giá niêm yết cùng các mức giảm để biết bạn thực trả bao nhiêu và tiết kiệm được bao nhiêu. Mặc định công cụ hiểu giá niêm yết đã gồm thuế — đúng như cách giá được ghi tại Việt Nam.",
 
   form: {
-    priceGroup: "Giá và thuế",
+    // ROW 62 — "Chia Giá / Giảm / Thuế". This group held the price AND the two
+    // tax fields under the title "Giá và thuế", which is why the audit asked
+    // for three groups: the tax question ("đã gồm thuế chưa?") is the one a
+    // reader gets wrong, and it was the third and fourth control inside a
+    // group named after something else.
+    priceGroup: "Giá",
     priceLabel: "Giá niêm yết",
     priceUnit: "₫",
     priceHelp: "Giá ghi trên nhãn hoặc trên trang bán hàng.",
     priceInvalid: "Vui lòng nhập giá lớn hơn 0.",
     defaultPrice: "1.000.000",
 
+    taxGroup: "Thuế",
     taxLabel: "Thuế hoặc phụ phí",
     taxUnit: "%",
     // THE PREFILLED RATE IS 8, AND IT IS A DATED LEGAL PARAMETER, NOT AN
@@ -77,6 +83,19 @@ export const PRICE_ADJUST = {
     // the categories that never got the reduction, and the fact that the rate
     // depends on the SELLER's VAT method. That last one is why 8 cannot be
     // presented as a universal retail rate.
+    //
+    // MEASURED REPAIR (export 2026-09-22T20:56:03Z, 1440×1000): with this
+    // passage open on the field, the form column ran 2386,25 px tall inside a
+    // 702 px shell, so focusing the last tax field put the whole result region
+    // above the viewport (-321,5 to -75,5) and the CTA at 1940,5–2064,75. The
+    // fix is the auto-lease pattern, not a deletion: the field carries
+    // `taxHelpShort` — which keeps the ONE warning that decides what the
+    // reader types — and `taxHelp` below is rendered VERBATIM in a
+    // `DetailDisclosure` under the same field. Nothing here is paraphrased
+    // away, and every tax-applicability sentence stays on the page.
+    taxHelpShort:
+      "Ô này điền sẵn 8, là thuế suất trên một hóa đơn bán lẻ thông thường ở thời điểm này — không phải mức đúng cho mọi trường hợp. Một số nhóm hàng vẫn ở 10%, và mức của bạn còn phụ thuộc phương pháp tính thuế của người bán. Hãy nhập đúng thuế suất hoặc phụ phí ghi trên hóa đơn/báo giá của bạn; hóa đơn của bạn là căn cứ, không phải con số điền sẵn ở đây.",
+    taxDetailTitle: "Vì sao điền sẵn 8%, và khi nào số của bạn khác",
     taxHelp:
       "Ô này điền sẵn 8, là thuế suất trên một hóa đơn bán lẻ thông thường ở thời điểm này. Đó là mức giảm 2 điểm phần trăm so với mức phổ thông 10% tại khoản 3 Điều 9 Luật Thuế giá trị gia tăng số 48/2024/QH15; con số 8% nằm tại Điều 1 khoản 2 điểm a Nghị định 174/2025/NĐ-CP ban hành theo Nghị quyết 204/2025/QH15, và Điều 2 khoản 1 của nghị định đó ghi hiệu lực từ 01/07/2025 đến hết 31/12/2026 — từ 01/01/2027 mức phổ thông trở lại là 10% nếu Quốc hội không quyết định khác. Số của bạn sẽ khác 8 trong những trường hợp sau. Thứ nhất, những nhóm bị loại khỏi diện được giảm vẫn ở 10%: đó là hàng hóa và dịch vụ chịu thuế tiêu thụ đặc biệt — thuốc lá, rượu, bia, nước giải khát có hàm lượng đường trên 5 g/100 ml, điều hòa trên 24.000 BTU đến 90.000 BTU, xe dưới 24 chỗ, mô tô trên 125 cm³, vàng mã, bài lá, cùng dịch vụ karaoke, massage, vũ trường, golf, casino, đặt cược và xổ số — cùng các nhóm tại Phụ lục I như sản phẩm kim loại, viễn thông, tài chính - ngân hàng - bảo hiểm và bất động sản; riêng xăng thì vẫn được giảm, vì Điều 1 khoản 1 điểm b loại xăng ra khỏi nhóm chịu thuế tiêu thụ đặc biệt bị trừ này. Thứ hai, mức 8% là dành cho người bán nộp thuế theo phương pháp khấu trừ: người bán nộp theo tỷ lệ phần trăm trên doanh thu được giảm 20% mức tỷ lệ của họ (Điều 1 khoản 2 điểm b) chứ không về 8%, và nhiều người bán nhỏ không xuất hóa đơn giá trị gia tăng nào. Vì vậy 8% không phải một mức bán lẻ đúng cho mọi trường hợp — hãy nhập đúng thuế suất hoặc phụ phí ghi trên hóa đơn/báo giá của bạn, vì hóa đơn của bạn là căn cứ, không phải con số điền sẵn ở đây. Xem phần nguồn ở cuối trang.",
     // 0–100, not "không được là số âm". The field accepted 500, which is not a
@@ -116,6 +135,11 @@ export const PRICE_ADJUST = {
 
     resultTitle: "Kết quả",
     finalLabel: "Giá cuối phải trả",
+    // ROW 62 — "chi tiết từng bước mở thêm". The seven result rows were one
+    // undifferentiated group, so "Giá cuối phải trả" had the same weight as
+    // "Giá nếu không giảm". Four of them are now components rather than the
+    // answer, and they sit under this title in the detail region.
+    detailTitle: "Các con số thành phần",
     savingLabel: "Tiết kiệm được",
     savingPercentLabel: "Tỷ lệ tiết kiệm",
     discountLabel: "Tổng mức giảm",

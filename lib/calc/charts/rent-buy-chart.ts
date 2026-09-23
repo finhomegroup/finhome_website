@@ -50,7 +50,7 @@ import {
   type MoneyWords,
 } from "@/lib/calc/charts/labels";
 import {
-  linearTicks,
+  countTicks,
   niceMax,
   type ChartTable,
   type ChartTick,
@@ -410,7 +410,10 @@ export function rentBuyTrajectoryModel(
     references: [{ value: 0, label: labels.zeroReference }],
     xAxis: {
       label: labels.xAxis,
-      ticks: linearTicks(xMax, 4, (value) => formatDecimal(value, 0)),
+      // `countTicks`, NOT `linearTicks`: this axis carries whole months, so
+      // equal intervals plus a rounding formatter label quarter positions with
+      // the integers they are not. See `countTicks` in `types.ts`.
+      ticks: countTicks(xMax, 5, (value) => formatDecimal(value, 0)),
     },
     yAxis: { label: fill(labels.yAxis, { unit }), ticks },
     xMax,
@@ -604,7 +607,10 @@ export function rentBuyScenariosModel(
     references: [{ value: 0, label: labels.zeroReference }],
     xAxis: {
       label: labels.xAxis,
-      ticks: linearTicks(xMax, 4, (value) => formatDecimal(value, 0)),
+      // `countTicks`, NOT `linearTicks`: this axis carries whole months, so
+      // equal intervals plus a rounding formatter label quarter positions with
+      // the integers they are not. See `countTicks` in `types.ts`.
+      ticks: countTicks(xMax, 5, (value) => formatDecimal(value, 0)),
     },
     yAxis: { label: fill(labels.yAxis, { unit }), ticks },
     xMax,

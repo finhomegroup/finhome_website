@@ -110,6 +110,13 @@ export const US_TBILL = {
     understatementLabel: "Niêm yết thấp hơn lợi suất thật",
     pointsUnit: "điểm %",
 
+    // Row 75 separates the QUOTING CONVENTION from the yields. The
+    // understatement is a gap between two conventions, not a return, and it
+    // used to sit in the same group as the yield it is measured against.
+    quoteConventionTitle: "Quy ước niêm yết",
+    quoteConventionNote:
+      "Dòng này đo khoảng cách giữa cách niêm yết và lợi suất thật; nó không phải một loại lợi suất và không cộng thêm gì vào lợi nhuận của bạn.",
+
     yieldsTitle: "Ba cách quy đổi lợi suất",
     periodReturnLabel: "Lợi suất trong kỳ (chưa quy năm)",
     bondEquivalentLabel: "Lợi suất ghép nửa năm",
@@ -120,6 +127,11 @@ export const US_TBILL = {
     afterTaxProfitLabel: "Lợi nhuận sau thuế",
     afterTaxYieldLabel: "Lợi suất sau thuế",
     taxableEquivalentLabel: "Sản phẩm chịu thuế bang phải trả tối thiểu",
+    // The one figure on this page that a VALID entry can make unavailable:
+    // at a state rate of 100% no taxable instrument keeps anything, so there
+    // is no rate that matches. The dash needs saying, next to the dash.
+    taxableEquivalentUnavailableNotice:
+      "Với thuế suất bang 100%, một sản phẩm chịu thuế bang không giữ lại đồng lãi nào, nên không có mức lợi suất nào của nó sánh được — dòng cuối vì vậy để trống. Các dòng khác vẫn tính bình thường.",
 
     beyondShortBillNotice:
       "Kỳ hạn trên 182 ngày. Với các kỳ hạn này, Kho bạc Hoa Kỳ công bố một chỉ số “coupon equivalent” tính theo một công thức bậc hai riêng, và con số “lợi suất ghép nửa năm” ở đây có thể lệch nhẹ so với chỉ số đó. Chúng tôi cố ý không sao chép công thức của Kho bạc mà tính lợi suất ghép nửa năm từ nguyên lý — mức tăng của chính tín phiếu — nên con số này kiểm chứng được nhưng không mang tên gọi của Kho bạc. Với kỳ hạn từ 182 ngày trở xuống, Kho bạc không ghép lãi: chỉ số của Kho bạc là lãi đơn và trùng với dòng “Lợi suất quy năm (đơn, 365 ngày)” ở trên — trừ một trường hợp về cơ số ngày, khi một năm kể từ ngày phát hành có ngày 29/02 thì quy định cho Kho bạc dùng 366 ngày, và con số của Kho bạc cao hơn dòng đó đúng 366/365 lần. Công cụ không nhận ngày phát hành nên luôn tính trên 365 ngày.",
@@ -128,7 +140,13 @@ export const US_TBILL = {
   },
 
   quoteNotice:
-    "Với tín phiếu mặc định, lãi suất niêm yết là 5,00% nhưng lợi suất quy năm thực nhận là 5,1343% — cao hơn 0,1343 điểm phần trăm. Chênh lệch đến từ hai quy ước cộng dồn. Thứ nhất, mức chiết khấu được tính trên mệnh giá, còn nhà đầu tư chỉ bỏ ra giá mua thấp hơn: 126,39 USD lãi trên 9.873,61 USD bỏ ra, không phải trên 10.000 USD. Thứ hai, lãi suất niêm yết quy năm theo 360 ngày trong khi khoản đầu tư chạy trên lịch 365 ngày. Riêng lý do thứ nhất đưa con số lên 5,0640%, riêng lý do thứ hai lên 5,0694%; cả hai cùng lúc cho 5,1343%. Vì vậy, so lãi suất niêm yết 5,00% của tín phiếu với APY 5,00% của một khoản tiền gửi là đang so hai đại lượng khác nhau.",
+    "Lãi suất niêm yết của tín phiếu luôn thấp hơn lợi suất thực nhận: chiết khấu được tính trên mệnh giá còn bạn chỉ bỏ ra giá mua thấp hơn, và con số niêm yết quy năm theo 360 ngày. Vì vậy so lãi suất niêm yết của tín phiếu với APY của một khoản tiền gửi là đang so hai đại lượng khác nhau.",
+
+  // The two conventions priced separately and together, so a reader can see
+  // they compound. Teaching with worked figures — disclosed, not deleted.
+  quoteNoticeDetailTitle: "Cụ thể: hai quy ước, tính riêng rồi cộng dồn",
+  quoteNoticeDetail:
+    "Với tín phiếu mặc định, lãi suất niêm yết là 5,00% nhưng lợi suất quy năm thực nhận là 5,1343% — cao hơn 0,1343 điểm phần trăm. Thứ nhất, mức chiết khấu được tính trên mệnh giá, còn nhà đầu tư chỉ bỏ ra giá mua thấp hơn: 126,39 USD lãi trên 9.873,61 USD bỏ ra, không phải trên 10.000 USD. Thứ hai, lãi suất niêm yết quy năm theo 360 ngày trong khi khoản đầu tư chạy trên lịch 365 ngày. Riêng lý do thứ nhất đưa con số lên 5,0640%, riêng lý do thứ hai lên 5,0694%; cả hai cùng lúc cho 5,1343%.",
 
   formula: {
     title: "Cách tính",

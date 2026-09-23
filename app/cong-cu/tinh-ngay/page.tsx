@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { DatesCalculator } from "@/components/dates-calculator";
 import { DATES as C } from "@/content/calculators/dates";
@@ -34,9 +35,13 @@ export default function DatesPage() {
       intro={C.noClockNotice}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <DatesCalculator />
+      {/* The guidance list moved INTO the layout, under the answer rather
+          than under the whole card. No `wide`: row 72 is a "Gọn" row. */}
+      <DatesCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

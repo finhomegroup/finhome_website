@@ -124,6 +124,8 @@ export type ValuePathsOptions = {
    * with one placeholder per caller.
    */
   summary: string;
+  /** Worked arithmetic about the figure, behind a labelled disclosure. */
+  detail?: { title: string; body: string } | null;
   /** Vertical rules — the exit month, the month the fund runs out, arrival. */
   markers?: readonly { period: number; label: string }[];
   /**
@@ -287,6 +289,7 @@ export function valuePathsModel(
     kind: "lines",
     title: labels.title,
     summary: options.summary,
+    detail: options.detail ?? null,
     assumptions: options.assumptions ?? labels.assumptions,
     series,
     markers: [...(options.markers ?? [])],

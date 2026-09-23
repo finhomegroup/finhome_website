@@ -72,12 +72,32 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
       claimAge: "67",
     },
 
-    resultTitle: "Trợ cấp ước tính",
+    resultTitle: "Trợ cấp ước tính từ số bạn nhập",
     monthlyLabel: "Nhận mỗi tháng ở tuổi đã chọn",
     annualLabel: "Nhận mỗi năm",
     piaLabel: "Mức trợ cấp cơ bản (PIA)",
     replacementLabel: "Tỷ lệ thay thế thu nhập",
 
+    // THE PINNED RESTATEMENT CARRIES THE AGE WITH THE AMOUNT, as a pair. A
+    // monthly figure alone is not this page's answer: the nine claiming ages
+    // differ by a factor of 1,77, so the same amount means a different decision
+    // at 62 than at 70. An independent pass at 1440×1000 clicked the last
+    // claim-age field (y 529–575) and measured both the monthly figure and the
+    // chosen age scrolled above the viewport, with only the replacement rate
+    // and the supporting rows left on screen — that measurement, not a control
+    // count, is why this route pins. Prefixes are short because the block is
+    // one line at the bottom of the viewport; the row labels are unchanged.
+    pinnedLabel: "Trợ cấp ước tính",
+    pinnedMonthlySuffix: "mỗi tháng",
+    pinnedAgePrefix: "ở",
+
+    // The replacement rate is a ratio to the reader's own average earnings,
+    // so with no earnings there is no denominator — not a missing figure.
+    noReplacementValue: "Không có thu nhập để so",
+    noReplacementNotice:
+      "Thu nhập bình quân bằng 0, nên tỷ lệ thay thế không có mẫu số: dòng đó không phải một ô còn trống. Trợ cấp cũng bằng 0 vì công thức lấy thu nhập bình quân làm đầu vào duy nhất.",
+
+    aimeDisclosureTitle: "Thu nhập bình quân và công thức ba mức",
     aimeTitle: "Ước tính thu nhập bình quân",
     cappedEarningsLabel: "Thu nhập được tính",
     yearsCountedLabel: "Số năm được tính",
@@ -119,7 +139,13 @@ export const US_SOCIAL_SECURITY_ESTIMATE = {
       "Một ô nhập chưa hợp lệ, hoặc năm công thức bạn chọn chưa có số liệu trong công cụ.",
   },
 
+  // The RULE and the model's limit stay above the tool; the worked default
+  // case is three income levels of arithmetic, so it moved into the
+  // disclosure below.
   regressiveNotice:
+    "Công thức trợ cấp lũy thoái theo thiết kế: phần thu nhập bình quân đầu tiên được tính 90%, phần giữa 32%, phần trên cùng chỉ 15%, và phần vượt trần chịu thuế an sinh xã hội không được tính. Mọi con số ở đây là ước tính dựng từ một mức thu nhập bình quân bạn nhập, không phải bản ước tính chính thức của SSA.",
+  regressiveNoticeDetailTitle: "Cụ thể: ba mức thu nhập trên công thức 2026",
+  regressiveNoticeDetail:
     "Với các giá trị mặc định, thu nhập bình quân 78.000 USD một năm cho mức trợ cấp cơ bản 2.825,80 USD một tháng — tỷ lệ thay thế 43,47%. Nhưng công thức không tuyến tính: người có thu nhập 30.000 USD được thay thế 61,83% thu nhập, còn người có thu nhập 400.000 USD chỉ được 28,42%, vì thu nhập của họ bị cắt ở trần 184.500 USD rồi phần trên cùng chỉ được tính 15%. Thu nhập gấp 5,13 lần, trợ cấp chỉ gấp 1,55 lần. Đó không phải một khiếm khuyết của công thức mà là thiết kế của nó — và hệ quả thực tế là người thu nhập càng cao càng phải tự lo phần lớn hơn cho tuổi nghỉ hưu.",
 
   formula: {

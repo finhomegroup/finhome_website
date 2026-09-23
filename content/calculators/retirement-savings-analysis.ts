@@ -80,7 +80,15 @@ export const RETIREMENT_SAVINGS_ANALYSIS = {
     "Đặt số vốn kế hoạch hưu trí của bạn sẽ đạt được cạnh số vốn nó thực sự cần, tính bằng đồng, rồi định lượng ba cách bù khoảng thiếu: dành thêm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Trang này không lập kế hoạch mới. Nó lấy kế hoạch bạn đang chạy, đặt số vốn kế hoạch đó sẽ đạt được cạnh số vốn nó thực sự cần, rồi định lượng ba cách bù khoảng thiếu: dành thêm mỗi năm, nghỉ muộn hơn, hoặc chi tiêu ít hơn. Ba cách đó không cùng đơn vị, nên trang định lượng chúng chứ không xếp hạng chúng.",
+    // The third sentence used to repeat `coverageNotice` word for word, so the
+    // reader met the same "not ranked" caveat twice before the first input.
+    // It stays in the notice, which is the slot for a caveat; the enumeration
+    // of the three remedies moves into the disclosure.
+    "Trang này không lập kế hoạch mới: nó đặt số vốn kế hoạch bạn đang chạy sẽ đạt được cạnh số vốn nó thực sự cần.",
+
+  ledeDetailTitle: "Ba cách bù khoảng thiếu mà trang này định lượng",
+  ledeDetail:
+    "Từ khoảng thiếu đó, trang giải riêng ba cách bù: dành thêm mỗi năm, nghỉ muộn hơn, hoặc chi tiêu ít hơn trong hưu trí. Mỗi con số là mức vừa đủ đóng khoảng thiếu nếu bạn chỉ dùng cách đó, nên chúng không cộng vào nhau và không thay thế được nhau.",
 
   form: {
     resultTitle: "Khoảng thiếu của kế hoạch",

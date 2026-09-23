@@ -37,8 +37,15 @@ export const ANNUITY = {
   metaDescription:
     "Tính khoản nhận định kỳ từ một hợp đồng niên kim kỳ hạn xác định, phần được miễn thuế trong mỗi khoản nhận, và lợi suất mà một báo giá của công ty bảo hiểm hàm ý. Công cụ miễn phí của FinHome.",
 
+  // §5: purpose plus the scope that decides whether the page applies at all.
+  // The worked 250.000 → 18.908 → 7,56% illustration is the disclosure; it is
+  // the same text as before, one click away instead of three sentences deep
+  // above the first field.
   lede:
-    "Một hợp đồng niên kim 250.000 USD trả 18.908 USD một năm nghe như lợi suất 7,56%. Nó không phải: hai phần ba số đó là tiền gốc của bạn đang được trả lại. Trang này bóc tách mỗi khoản nhận thành gốc và lãi, và làm một việc mà công cụ của bên bán thường không làm — giải ra lợi suất mà một báo giá cụ thể hàm ý.",
+    "Bóc tách mỗi khoản niên kim bạn nhận thành phần gốc được trả lại và phần lãi, rồi giải ra lợi suất mà một báo giá cụ thể hàm ý. Công cụ dựng theo bối cảnh Hoa Kỳ và tính bằng USD.",
+  ledeDetailTitle: "Ví dụ: vì sao 7,56% không phải lợi suất",
+  ledeDetail:
+    "Một hợp đồng niên kim 250.000 USD trả 18.908 USD một năm nghe như lợi suất 7,56%. Nó không phải: hai phần ba số đó là tiền gốc của bạn đang được trả lại. Tách hai phần đó ra là việc mà công cụ của bên bán thường không làm.",
 
   form: {
     modeGroup: "Bạn muốn tính gì",
@@ -119,6 +126,27 @@ export const ANNUITY = {
     netLabel: "Thực nhận mỗi kỳ, sau thuế",
     payoutRateLabel: "Khoản nhận mỗi năm so với phí",
 
+    // ROW 59 ("Nhấn khoản thực nhận sau thuế và phạm vi Hoa Kỳ; không để tỷ lệ
+    // chi trả bị hiểu thành lợi suất bảo đảm").
+    /**
+     * A note on the payout-rate ROW, so the figure cannot be read alone.
+     *
+     * The long explanation is `payoutRateNotice` above the tool and the table
+     * `intro` below it, both unchanged. This is the one short line that
+     * travels with the number itself.
+     */
+    payoutRateNote: "Không phải lợi suất, và không phải một mức bảo đảm",
+    /**
+     * The scope, beside the answer rather than only in the sources note.
+     *
+     * Every claim here is already made on this page: the fields are USD
+     * (`premiumUnit`), the exclusion ratio is United States law for contracts
+     * bought with after-tax money (`taxHelp`), and the engine only does
+     * fixed-term contracts (`sources.note`).
+     */
+    scopeLine:
+      "Mọi con số ở đây là USD, và phần thuế áp theo quy định của Hoa Kỳ cho hợp đồng kỳ hạn xác định mua bằng tiền đã chịu thuế.",
+
     breakdownTitle: "Mỗi khoản nhận gồm những gì",
     excludedLabel: "Gốc trả lại — không chịu thuế",
     taxableLabel: "Tiền lãi — chịu thuế",
@@ -172,8 +200,16 @@ export const ANNUITY = {
       "Một ô nhập chưa hợp lệ. Số năm được nhận phải từ 1 đến 70 và số năm chờ từ 0 đến 50.",
   },
 
+  // §5: the thing a reader must not get wrong stays visible — a payout rate
+  // is neither a yield nor a guaranteed return, and comparing it with a bond
+  // yield compares two different things. The four-figure arithmetic that
+  // proves it, including the tax comparison, is the labelled disclosure;
+  // `annuity.test.ts` still derives every figure, now across visible+detail.
   payoutRateNotice:
-    "Với các giá trị mặc định, hợp đồng trả 18.908,57 USD một năm trên số phí 250.000 USD — “tỷ lệ chi trả” 7,56%. Con số đó không phải lợi suất, và đây là chỗ dễ nhầm nhất khi đọc quảng cáo niên kim: trong mỗi khoản nhận 1.575,71 USD, có 1.041,67 USD là tiền gốc của chính bạn đang được trả lại và chỉ 534,05 USD là lãi. Phải nhận đủ 13,2 năm mới lấy lại hết phần gốc. Điều bù lại là về thuế: vì hai phần ba mỗi khoản nhận là gốc, thuế suất hiệu dụng trên cả khoản nhận chỉ là 7,46% dù thuế suất biên của bạn là 22% — nên so một hợp đồng niên kim với một trái phiếu chịu thuế theo lợi suất gộp là so sai hai con số.",
+    "“Tỷ lệ chi trả” của một hợp đồng KHÔNG phải lợi suất và cũng không phải mức sinh lời được bảo đảm: phần lớn mỗi khoản nhận là tiền gốc của chính bạn đang được trả lại. Vì vậy so một hợp đồng niên kim với một trái phiếu chịu thuế theo lợi suất gộp là so sai hai con số.",
+  payoutRateNoticeDetailTitle: "Số học với các giá trị mặc định",
+  payoutRateNoticeDetail:
+    "Với các giá trị mặc định, hợp đồng trả 18.908,57 USD một năm trên số phí 250.000 USD — “tỷ lệ chi trả” 7,56%. Con số đó không phải lợi suất, và đây là chỗ dễ nhầm nhất khi đọc quảng cáo niên kim: trong mỗi khoản nhận 1.575,71 USD, có 1.041,67 USD là tiền gốc của chính bạn đang được trả lại và chỉ 534,05 USD là lãi. Phải nhận đủ 13,2 năm mới lấy lại hết phần gốc. Điều bù lại là về thuế: vì hai phần ba mỗi khoản nhận là gốc, thuế suất hiệu dụng trên cả khoản nhận chỉ là 7,46% dù thuế suất biên của bạn là 22%.",
 
   formula: {
     title: "Cách tính",

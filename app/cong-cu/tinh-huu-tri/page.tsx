@@ -38,19 +38,21 @@ export default function RetirementTargetPage() {
       // paragraph stays one plain string and the phrases stay data beside it.
       prose={C.formula}
       faq={C.faq}
-      // The other three views of the SAME plan, above the method and the FAQ:
-      // a reader who has their answer should find the next question without
-      // scrolling past two explanatory sections. Rendered from the page rather
-      // than from inside the calculator so it ships no client JavaScript.
-      afterCalculator={<LongTermViews current="contribution" />}
       // The shared default is false here and says so in its own comment: this
       // model uses a different return before and after the retirement date, so
       // "giả định mức lãi đó giữ nguyên trong suốt thời gian được tính" is
       // wrong on a page that has rate fields. The override keeps the opening
       // clause `check:markup` counts.
       disclaimer={L.scope.disclaimer}
+      wide
     >
-      <RetirementTargetCalculator />
+      {/* The other three views of the SAME plan, passed INTO the calculator so
+          the layout can put them beside the answer instead of below the whole
+          tool. Still rendered from the page, so they ship no client
+          JavaScript. */}
+      <RetirementTargetCalculator
+        actions={<LongTermViews current="contribution" />}
+      />
     </CalculatorPage>
   );
 }

@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { WageCalculator } from "@/components/wage-calculator";
 import { WAGE as C } from "@/content/calculators/wage";
@@ -33,9 +34,13 @@ export default function WagePage() {
       intro={C.monthNotice}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
     >
-      <WageCalculator />
+      {/* The guidance list moved into the layout's own slot, so it follows the
+          answer rather than the whole page. No `wide`: row 64 is "Gọn". */}
+      <WageCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

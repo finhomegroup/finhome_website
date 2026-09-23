@@ -9,6 +9,7 @@ import { CalculatorHeading } from "@/components/calc/calculator-heading";
 import { ProseText } from "@/components/ui/prose-text";
 import { getCalculator } from "@/content/calculators/registry";
 import { calculatorPath } from "@/content/calculators/registry";
+import { cn } from "@/lib/cn";
 import { canonicalPath, calculatorSchema, faqSchema, pageMetadata } from "@/lib/seo";
 
 /**
@@ -62,6 +63,7 @@ export function CalculatorPage({
   sources,
   afterCalculator,
   disclaimer,
+  wide = false,
   children,
 }: {
   /** Registry slug, without the `/cong-cu/` prefix. */
@@ -143,6 +145,20 @@ export function CalculatorPage({
   afterCalculator?: React.ReactNode;
   /** Accurate model-specific qualification, without removing the disclaimer. */
   disclaimer?: string;
+  /**
+   * Widen the TOOL — and only the tool — so a `CalculatorLayout` in `"split"`
+   * mode has room for its 40/60 columns.
+   *
+   * `max-w-3xl` is 48rem, which is a good reading measure and not enough for
+   * two columns of form and results: the audit found the form and the result
+   * still stacked at 1440×1000 on every route, and this container is why.
+   *
+   * The prose, the FAQ, the sources and both notices stay at `max-w-3xl`
+   * regardless, because their constraint is the opposite one — a 1152 px line
+   * of Vietnamese body copy is harder to read, not easier. So this is a
+   * per-route opt-in for the tool's own box rather than a page width.
+   */
+  wide?: boolean;
   /** The client island: the calculator itself. */
   children: React.ReactNode;
 }) {
@@ -168,7 +184,10 @@ export function CalculatorPage({
       />
       <JsonLd data={faqSchema(faq.items)} />
       <SiteHeader />
-      <main className="flex-1 py-16 md:py-24">
+      {/* Tighter TOP padding than the editorial pages: a tool's first input is
+          the thing a reader came for, and 64 px of it is dead space at 390 px.
+          Bottom padding is unchanged. */}
+      <main className="flex-1 pb-16 pt-8 md:pb-24 md:pt-14">
         <Container>
           <CalculatorHeading
             title={title}
@@ -210,12 +229,14 @@ export function CalculatorPage({
             </div>
           ) : null}
 
+          {/* The tool's own box. `wide` widens THIS and nothing else — the
+              notices above and the prose below keep their reading measure. */}
           <div
-            className={
-              notice || entry.usRules
-                ? "mx-auto mt-6 max-w-3xl"
-                : "mx-auto mt-8 max-w-3xl"
-            }
+            className={cn(
+              "mx-auto",
+              notice || entry.usRules ? "mt-6" : "mt-8",
+              wide ? "max-w-6xl" : "max-w-3xl",
+            )}
           >
             {children}
           </div>

@@ -62,8 +62,14 @@ describe("tinh-tien-tip at its shipped defaults", () => {
     // presented as a Vietnamese bill.
     expect(F.defaultTip).toBe("0");
     expect(run().tip).toBe(0);
-    expect(C.tippingNotice).toContain("mặc định tiền tip là 0");
-    expect(C.tippingNotice).toContain("không có tập quán tip");
+    // §5: the default stays visible; the cultural comparison that explains it
+    // moved into the named disclosure and is still on the page.
+    expect(C.tippingNotice).toContain("mặc định bằng 0");
+    expect(C.tippingNoticeDetail).toContain("mặc định tiền tip là 0");
+    expect(C.tippingNoticeDetail).toContain("không có tập quán tip");
+    // And the service charge stays distinct from a tip where no click is
+    // needed, because that is what a reader gets wrong on a real bill.
+    expect(C.tippingNotice).toContain("Phí phục vụ và VAT là hai dòng riêng");
   });
 
   it("keeps the three charges apart in the model, not just in the copy", () => {

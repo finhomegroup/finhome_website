@@ -66,11 +66,47 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
       discount: "3",
     },
 
-    resultTitle: "Hai câu trả lời",
+    resultTitle: "Hai câu trả lời, theo giả định bạn nhập",
     bestNominalLabel: "Tốt nhất theo tổng tiền nhận",
     bestPvLabel: "Tốt nhất theo giá trị hiện tại",
     breakEven70Label: "Tuổi hòa vốn của nhận ở 70 so với nhận ở 62",
     fraLabel: "Tuổi hưởng đủ của bạn",
+
+    // The two objectives stay two rows. Naming one of them "kết luận" is
+    // exactly the merge the row forbids: which one applies depends on
+    // whether the reader has other assets, which this page cannot know.
+    twoMeasuresHint:
+      "Hai dòng trên là hai thước đo khác nhau, không phải một kết luận và một số phụ.",
+
+    // THE PINNED RESTATEMENT CARRIES BOTH OPTIMA, in the row order, with each
+    // measure named inline. An independent pass at 1440×1000 clicked the last
+    // discount-rate field (y 529–575) and measured the total-money optimum
+    // above the viewport with the present-value optimum only at the top edge —
+    // so while the reader edits the discount rate, the figure that rate governs
+    // is the one they cannot see. Both halves are restated because this page's
+    // entire argument is that there are two answers; a pin carrying one of them
+    // would manufacture exactly the recommendation `twoMeasuresHint` refuses.
+    // Prefixes are short because the block is one line; the rows keep their
+    // full labels, and neither side is emphasised here or there.
+    pinnedPairLabel: "Hai tuổi tốt nhất",
+    pinnedNominalPrefix: "tổng tiền",
+    pinnedPvPrefix: "giá trị hiện tại",
+
+    // An empty break-even is never a missing input, so it never renders a
+    // bare dash — `T.never` used to serve every cause at once. Two causes
+    // are reachable from the form and each gets its own words:
+    //   age 62        → it is the baseline the other eight are compared to
+    //   benefits tie  → a zero basic benefit makes all nine equal
+    // The engine also discards a crossing past age 120. That branch has no
+    // path through this form — the crossing depends only on the statutory
+    // age factors, which put it near 80 for every full retirement age the
+    // birth-year range produces — so it gets a label and no explanatory
+    // paragraph, rather than copy describing a state no reader can reach.
+    breakEvenBaselineValue: "Là mốc so sánh",
+    breakEvenTieValue: "Hai bên bằng nhau",
+    breakEvenBeyondValue: "Sau 120 tuổi",
+    breakEvenTieNotice:
+      "Mức trợ cấp cơ bản bằng 0 nên cả chín phương án đều nhận 0 USD mỗi tháng: không có phương án nào vượt phương án nào, nên không có tuổi hòa vốn để tính. Cột hòa vốn trống vì hai bên bằng nhau, chứ không phải vì thiếu số liệu.",
 
     detailTitle: "Chi tiết hai phương án đầu và cuối",
     earlyMonthlyLabel: "Nhận ở 62, mỗi tháng",
@@ -88,9 +124,8 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
       totalColumn: "Tổng danh nghĩa",
       pvColumn: "Giá trị hiện tại",
       breakEvenColumn: "Hòa vốn so với 62",
-      never: "—",
       intro:
-        "Cột “hòa vốn so với 62” không đi lên đều: nó đỉnh ở 78,00 tuổi với phương án nhận ở 64 rồi TỤT xuống 77,62 ở tuổi 65. Đó không phải lỗi làm tròn mà là hệ quả của thang giảm hai bậc — phần giải thích nằm ở mục cách tính bên dưới.",
+        "Cột “hòa vốn so với 62” không đi lên đều: nó đỉnh ở 78,00 tuổi với phương án nhận ở 64 rồi TỤT xuống 77,62 ở tuổi 65. Đó không phải lỗi làm tròn mà là hệ quả của thang giảm hai bậc — phần giải thích nằm ở mục cách tính bên dưới. Dòng tuổi 62 không có ô hòa vốn vì chính nó là mốc để tám phương án còn lại so vào.",
     },
 
     interiorNotice:
@@ -103,7 +138,13 @@ export const US_SOCIAL_SECURITY_ANALYSIS = {
       "Một ô nhập chưa hợp lệ. Tuổi kết thúc phải lớn hơn 62 và không quá 120.",
   },
 
+  // The rule a reader needs before either figure, short enough to read
+  // above the tool. The worked default case moved into the disclosure below
+  // it — same words, one level down, so nothing about scope was dropped.
   twoAnswersNotice:
+    "Trang này trả về hai câu trả lời, không phải một: tổng tiền nhận cả đời thường chọn một tuổi muộn hơn giá trị hiện tại, và hai thước đo đó trả lời hai câu hỏi khác nhau. Mọi con số ở đây là phép dự phóng trên tuổi kết thúc do bạn tự nhập, theo luật Hoa Kỳ — nó không biết bạn sống bao lâu, và không tính thuế trên trợ cấp, phép thử thu nhập hay trợ cấp theo vợ/chồng.",
+  twoAnswersNoticeDetailTitle: "Cụ thể: các số mặc định nói gì",
+  twoAnswersNoticeDetail:
     "Với các giá trị mặc định — sống đến 85, chiết khấu 3% một năm — hai thước đo không trùng nhau. Theo tổng tiền nhận, chờ đến 70 là tốt nhất: 624.960 USD so với 540.960 USD nếu nhận ở 62. Theo giá trị hiện tại, tốt nhất lại là tuổi 68 với 403.341 USD, và nhận ở 70 chỉ được 395.607 USD — thấp hơn cả tuổi 68, vì tám năm không có thu nhập là tám năm bạn phải sống bằng tiền khác. Điểm hòa vốn của phương án 70 so với phương án 62 là 80 tuổi 4 tháng: sống qua mốc đó thì chờ có lợi trên tổng tiền, không qua thì không.",
 
   formula: {

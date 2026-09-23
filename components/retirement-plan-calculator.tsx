@@ -1,8 +1,11 @@
 "use client";
 
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
+import { DetailDisclosure } from "@/components/calc/detail-disclosure";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import {
@@ -19,6 +22,10 @@ import { LONG_TERM_PLAN as L } from "@/content/calculators/long-term-plan";
 import { RETIREMENT_PLAN as C } from "@/content/calculators/retirement-plan";
 
 const F = C.form;
+
+/** See `percent-calculator.tsx` for why these are literals, not `useId`. */
+const FORM_ID = "ke-hoach-huu-tri-nhap";
+const RESULT_ID = "ke-hoach-huu-tri-ket-qua";
 
 /**
  * The TRAJECTORY view of the merged long-term plan (original plan row 44).
@@ -41,7 +48,25 @@ const F = C.form;
  * `lib/calc/long-term-plan.ts`'s `fundedAtBoundary` docstring, and
  * `retirement-plan-render.test.ts` for the reproduction.
  */
-export function RetirementPlanCalculator() {
+export function RetirementPlanCalculator({
+  actions,
+}: {
+  /**
+   * `<LongTermViews current="trajectory">`, passed in from the route, into the
+   * layout's `actions` slot: after the answer and BEFORE the figure.
+   *
+   * Passed rather than imported because this file is a client component and
+   * `LongTermViews` is a server one: composed this way it still ships no
+   * client JavaScript. That placement is the audit's P2 — "đưa 1–2 hành động
+   * phù hợp ngay sau câu trả lời, không chôn sau bảng dài" — and for this route
+   * the relevant action is the three sibling views of the SAME plan, which is
+   * the control that already exists. It goes across WHOLE: the four-view set is
+   * the property `LongTermViews` calls load-bearing, and it is a short nav with
+   * no prose, so it fits the slot's budget. No save button and no handoff is
+   * invented here; nothing on this site stores a result.
+   */
+  actions?: React.ReactNode;
+}) {
   const fields = useCalcFields(L.defaults);
   const read = readRetirement(fields.values);
   const plan = read.input === null ? null : resolveLongTermPlan(read.input);
@@ -65,167 +90,287 @@ export function RetirementPlanCalculator() {
 
   const firstWithdrawal = result?.years.find((row) => !row.accumulating);
 
+  /**
+   * The verdict, formatted ONCE.
+   *
+   * Both the primary row and the pinned CTA restatement read this, so the two
+   * cannot say different things.
+   */
+  const verdict =
+    result === null ? null : funded ? F.verdictYes : F.verdictNo;
+
   const chart = longTermTrajectoryModel(plan, C.chart);
 
+  /*
+   * A "Hai cột" row in the audit (CSV row 46), whose action is "Desktop: form
+   * trái, kết luận và chart phải; ưu tiên đủ/thiếu, tuổi cạn tiền và khoản cần
+   * điều chỉnh". Both halves are implemented here:
+   *
+   * - `CalculatorLayout` in `"split"` mode puts the eleven-field form in the
+   *   40% column and the verdict plus the trajectory figure in the 60% one.
+   *   This is the longest form in the suite outside `phan-bo-tai-san`, and it
+   *   is why the reader previously could not see the verdict move.
+   * - The live group is now the three things the action names plus the capital
+   *   in today's money, with the verdict emphasised as the single main answer.
+   *   `Thiếu so với mức mong muốn` is the "khoản cần điều chỉnh", and it MOVED
+   *   UP out of the cash-flow group, where it was the eighth figure on the
+   *   page. Nothing was added: every row below existed already.
+   *
+   * The three `live={false}` groups keep their figures and move to the
+   * full-width detail region behind a disclosure — they are a ledger, not an
+   * answer, and docs §4 already says a wide live group is the failure mode a
+   * live table is.
+   */
   return (
     <CalculatorCard>
-      <RetirementFields
-        copy={L.fields}
-        invalid={read.invalid}
-        bind={fields.bind}
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <RetirementFields
+            copy={L.fields}
+            invalid={read.invalid}
+            bind={fields.bind}
+          />
+        }
+        cta={
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            // Every one of the eleven fields is shown on this route, so any
+            // invalid flag is a field the reader can be sent to.
+            invalid={Object.values(read.invalid).some(Boolean)}
+            // Eleven fields across four groups — the longest form in the suite
+            // bar one, and the route the browser pass measured the answer
+            // scrolling out of sight on.
+            sticky
+            answer={{ label: F.verdictLabel, value: verdict }}
+          />
+        }
+        primary={
+          <>
+            {/* The verdict and the capital in today's money lead, because the
+                nominal figure is the one a reader will misuse. Optional rows
+                are MOUNTED conditionally rather than nulled: `ResultRow`
+                renders a dash beside a label, which reads as a figure the tool
+                failed to find. */}
+            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={F.verdictLabel}
+                // The one main answer: this page answers "đủ hay không".
+                emphasis
+                value={verdict}
+              />
+              {depletionAge !== null ? (
+                <ResultRow
+                  label={F.depletionLabel}
+                  value={String(depletionAge)}
+                />
+              ) : null}
+              {/* Beside the depletion age, because an age alone does not say
+                  how far short of the horizon the plan falls. Both rows mount
+                  only when the plan is short. */}
+              {result !== null && !funded && result.yearsShort > 0 ? (
+                <ResultRow
+                  label={F.yearsShortLabel}
+                  value={`${result.yearsShort} ${F.yearsUnit}`}
+                />
+              ) : null}
+              {/* "Khoản cần điều chỉnh": the annual spending gap in today's
+                  money — the figure the three sibling views price remedies
+                  against. Its label carries the period and the price basis;
+                  see the content file. */}
+              <ResultRow
+                label={F.shortfallLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.spendingShortfall)
+                }
+              />
+              <ResultRow
+                label={F.realBalanceAtRetirementLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.realBalanceAtRetirement)
+                }
+              />
+            </ResultGroup>
+
+            {result !== null ? (
+              <div className="mt-4">
+                <p className="text-sm leading-relaxed text-ink-3">
+                  {funded ? F.fundedNotice : F.depletionNotice}
+                </p>
+                {/* The rest of the reading guidance, labelled. Not a warning:
+                    the model limitation is the notice above the tool and the
+                    figure's own assumptions, both visible. */}
+                <details className="mt-1">
+                  <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+                    {F.verdictDetailTitle}
+                  </summary>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                    {F.verdictDetail}
+                  </p>
+                </details>
+              </div>
+            ) : null}
+
+            {/* What the boundary policy forgave, in đồng. Six decimal places:
+                the residue is a fraction of one đồng by construction, and
+                rounding it to the đồng would render the disclosure as "0 ₫". */}
+            {boundary?.residue !== null && boundary?.residue !== undefined ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {fill(F.boundaryNotice, {
+                  residue: formatMoney(boundary.residue, 6),
+                })}
+              </p>
+            ) : null}
+
+            {/* The invalid state's own recovery, beside the answer it is
+                standing in for. The authoritative rows above are already
+                showing a dash rather than a stale figure — `result` is null —
+                so this explains a gap rather than decorating one. */}
+            {result === null ? (
+              <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                {F.invalidNotice}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          /* Row 44's figure, in the right-hand column beside the form. The
+             exact reading is this figure's own table, which `ChartFigure`
+             keeps in a `<details>` outside every live region. */
+          <ChartFigure model={chart} className="mt-8">
+            <LineChart model={chart} />
+          </ChartFigure>
+        }
+        actions={actions}
+        detail={
+          <DetailDisclosure title={F.detailTitle} hint={F.detailHint}>
+            <ResultGroup title={F.nominalTitle} live={false}>
+              <ResultRow
+                label={F.balanceAtRetirementLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.balanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.finalBalanceLabel}
+                value={
+                  result === null ? null : longTermMoney(result.finalBalance)
+                }
+              />
+              <ResultRow
+                label={F.realFinalBalanceLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.realFinalBalance)
+                }
+              />
+            </ResultGroup>
+
+            <ResultGroup title={F.flowTitle} className="mt-4" live={false}>
+              <ResultRow
+                label={F.totalContributedLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.totalContributed)
+                }
+              />
+              <ResultRow
+                label={F.totalGrowthLabel}
+                value={
+                  result === null ? null : longTermMoney(result.totalGrowth)
+                }
+              />
+              <ResultRow
+                label={F.totalWithdrawnLabel}
+                value={
+                  result === null ? null : longTermMoney(result.totalWithdrawn)
+                }
+              />
+              <ResultRow
+                label={F.firstWithdrawalLabel}
+                value={
+                  firstWithdrawal === undefined
+                    ? null
+                    : longTermMoney(firstWithdrawal.withdrawal)
+                }
+              />
+              {/* The same draw in today's money. On a funded plan this is
+                  exactly the spend that was asked for, less other income — the
+                  identity `retirement.ts` keeps two deflators to preserve. */}
+              <ResultRow
+                label={F.firstWithdrawalRealLabel}
+                value={
+                  firstWithdrawal === undefined
+                    ? null
+                    : longTermMoney(firstWithdrawal.realWithdrawal)
+                }
+              />
+              <ResultRow
+                label={F.initialRateLabel}
+                value={
+                  result === null ||
+                  result.initialWithdrawalRatePercent === null
+                    ? null
+                    : formatPercent(result.initialWithdrawalRatePercent, 2)
+                }
+              />
+              <ResultRow
+                label={F.sustainableLabel}
+                value={
+                  result === null || result.sustainableSpending === null
+                    ? null
+                    : longTermMoney(result.sustainableSpending)
+                }
+              />
+              {/* `shortfallLabel` is NOT repeated here: it moved up into the
+                  live group as the audit's "khoản cần điều chỉnh". One figure,
+                  one place — two copies of it is how a page comes to show the
+                  same quantity twice with different rounding. */}
+            </ResultGroup>
+
+            {/* "Cạn ở tuổi 82" counts the year the plan could not pay IN FULL,
+                and that year is normally a PARTIAL payment — 181.159.463 ₫ of
+                a 1.288.834.386 ₫ need on the defaults. Reporting the age alone
+                loses how much was actually received. Withheld entirely when
+                the verdict is funded, so a forgiven residue cannot render as a
+                real shortfall. */}
+            {result !== null &&
+            !funded &&
+            result.lastWithdrawalPlanned !== null &&
+            result.lastWithdrawalPaid !== null &&
+            result.lastWithdrawalShortfall !== null ? (
+              <ResultGroup
+                title={F.partialTitle}
+                className="mt-4"
+                live={false}
+              >
+                <ResultRow
+                  label={F.partialPlannedLabel}
+                  value={longTermMoney(result.lastWithdrawalPlanned)}
+                />
+                <ResultRow
+                  label={F.partialPaidLabel}
+                  value={longTermMoney(result.lastWithdrawalPaid)}
+                />
+                <ResultRow
+                  label={F.partialShortLabel}
+                  value={longTermMoney(result.lastWithdrawalShortfall)}
+                />
+              </ResultGroup>
+            ) : null}
+          </DetailDisclosure>
+        }
       />
-
-      {/* The verdict and the capital in today's money lead, because the
-          nominal figure is the one a reader will misuse. Optional rows are
-          MOUNTED conditionally rather than nulled: `ResultRow` renders a dash
-          beside a label, which reads as a figure the tool failed to find. */}
-      <ResultGroup title={F.resultTitle} className="mt-8">
-        <ResultRow
-          label={F.verdictLabel}
-          value={result === null ? null : funded ? F.verdictYes : F.verdictNo}
-        />
-        {depletionAge !== null ? (
-          <ResultRow label={F.depletionLabel} value={String(depletionAge)} />
-        ) : null}
-        {result !== null && !funded && result.yearsShort > 0 ? (
-          <ResultRow
-            label={F.yearsShortLabel}
-            value={`${result.yearsShort} ${F.yearsUnit}`}
-          />
-        ) : null}
-        <ResultRow
-          label={F.realBalanceAtRetirementLabel}
-          value={
-            result === null
-              ? null
-              : longTermMoney(result.realBalanceAtRetirement)
-          }
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.nominalTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.balanceAtRetirementLabel}
-          value={result === null ? null : longTermMoney(result.balanceAtRetirement)}
-        />
-        <ResultRow
-          label={F.finalBalanceLabel}
-          value={result === null ? null : longTermMoney(result.finalBalance)}
-        />
-        <ResultRow
-          label={F.realFinalBalanceLabel}
-          value={result === null ? null : longTermMoney(result.realFinalBalance)}
-        />
-      </ResultGroup>
-
-      <ResultGroup title={F.flowTitle} className="mt-4" live={false}>
-        <ResultRow
-          label={F.totalContributedLabel}
-          value={result === null ? null : longTermMoney(result.totalContributed)}
-        />
-        <ResultRow
-          label={F.totalGrowthLabel}
-          value={result === null ? null : longTermMoney(result.totalGrowth)}
-        />
-        <ResultRow
-          label={F.totalWithdrawnLabel}
-          value={result === null ? null : longTermMoney(result.totalWithdrawn)}
-        />
-        <ResultRow
-          label={F.firstWithdrawalLabel}
-          value={
-            firstWithdrawal === undefined
-              ? null
-              : longTermMoney(firstWithdrawal.withdrawal)
-          }
-        />
-        {/* The same draw in today's money. On a funded plan this is exactly
-            the spend that was asked for, less other income — the identity
-            `retirement.ts` keeps two deflators to preserve. */}
-        <ResultRow
-          label={F.firstWithdrawalRealLabel}
-          value={
-            firstWithdrawal === undefined
-              ? null
-              : longTermMoney(firstWithdrawal.realWithdrawal)
-          }
-        />
-        <ResultRow
-          label={F.initialRateLabel}
-          value={
-            result === null || result.initialWithdrawalRatePercent === null
-              ? null
-              : formatPercent(result.initialWithdrawalRatePercent, 2)
-          }
-        />
-        <ResultRow
-          label={F.sustainableLabel}
-          value={
-            result === null || result.sustainableSpending === null
-              ? null
-              : longTermMoney(result.sustainableSpending)
-          }
-        />
-        <ResultRow
-          label={F.shortfallLabel}
-          value={result === null ? null : longTermMoney(result.spendingShortfall)}
-        />
-      </ResultGroup>
-
-      {/* "Cạn ở tuổi 82" counts the year the plan could not pay IN FULL, and
-          that year is normally a PARTIAL payment — 181.159.463 ₫ of a
-          1.288.834.386 ₫ need on the defaults. Reporting the age alone loses
-          how much was actually received. Withheld entirely when the verdict is
-          funded, so a forgiven residue cannot render as a real shortfall. */}
-      {result !== null &&
-      !funded &&
-      result.lastWithdrawalPlanned !== null &&
-      result.lastWithdrawalPaid !== null &&
-      result.lastWithdrawalShortfall !== null ? (
-        <ResultGroup title={F.partialTitle} className="mt-4" live={false}>
-          <ResultRow
-            label={F.partialPlannedLabel}
-            value={longTermMoney(result.lastWithdrawalPlanned)}
-          />
-          <ResultRow
-            label={F.partialPaidLabel}
-            value={longTermMoney(result.lastWithdrawalPaid)}
-          />
-          <ResultRow
-            label={F.partialShortLabel}
-            value={longTermMoney(result.lastWithdrawalShortfall)}
-          />
-        </ResultGroup>
-      ) : null}
-
-      {result !== null ? (
-        <p className="mt-6 text-sm leading-relaxed text-ink-3">
-          {funded ? F.fundedNotice : F.depletionNotice}
-        </p>
-      ) : null}
-
-      {/* What the boundary policy forgave, in đồng. Six decimal places: the
-          residue is a fraction of one đồng by construction, and rounding it to
-          the đồng would render the disclosure as "0 ₫". */}
-      {boundary?.residue !== null && boundary?.residue !== undefined ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {fill(F.boundaryNotice, {
-            residue: formatMoney(boundary.residue, 6),
-          })}
-        </p>
-      ) : null}
-
-      {result === null ? (
-        <p className="mt-4 text-sm leading-relaxed text-ink-3">
-          {F.invalidNotice}
-        </p>
-      ) : null}
-
-      {/* Row 44's figure. Built and tested with the model slice, rendered
-          nowhere until now. The exact reading is this figure's own table. */}
-      <ChartFigure model={chart} className="mt-8">
-        <LineChart model={chart} />
-      </ChartFigure>
     </CalculatorCard>
   );
 }

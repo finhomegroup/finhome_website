@@ -4,8 +4,9 @@
 //
 // Every figure quoted below is for the prefilled default (8%/năm, ghép lãi
 // hằng tháng) and is pinned by effective-rate.test.ts: hiệu dụng 8,29995% —
-// trang hiển thị bốn chữ số thập phân, nên nó hiện 8,3000% — ghép hằng ngày
-// 8,3278%, và chiều nghịch 10% hiệu dụng là 9,569% danh nghĩa.
+// since row 60 the page leads with two decimals, so the headline reads 8,30%
+// and the four-decimal 8,3000% moved into “Số chính xác” and the table —
+// ghép hằng ngày 8,3278%, và chiều nghịch 10% hiệu dụng là 9,569% danh nghĩa.
 // If the defaults move, re-read the module — do not adjust these by hand.
 // Quote the RENDERED value in user-facing copy. An elided form of the raw
 // figure used to sit here, and it invited a truncation (rather than a
@@ -26,14 +27,20 @@ export const EFFECTIVE_RATE = {
   metaDescription:
     "Quy lãi suất danh nghĩa về lãi suất hiệu dụng theo kỳ ghép lãi, và ngược lại, kèm bảng so sánh mọi tần suất ghép lãi. Đây là tác động của kỳ ghép lãi, không phải APR có phí. Công cụ miễn phí của FinHome.",
 
+  // §5: the distinction itself is the purpose and stays visible. The three
+  // figures that demonstrate it are the disclosure — the same worked example,
+  // one click away instead of two sentences above the first field.
   lede:
-    "Một mức “8%/năm” không phải một con số duy nhất. Ghép lãi một lần một năm thì đúng là 8%; ghép hằng tháng thành 8,30%; ghép hằng ngày thành 8,33%. Lãi suất danh nghĩa là con số được niêm yết, lãi suất hiệu dụng là con số bạn thực nhận sau khi tính kỳ ghép lãi — và chỉ con số thứ hai so sánh được giữa các sản phẩm có kỳ ghép lãi khác nhau.",
+    "Lãi suất danh nghĩa là con số được niêm yết; lãi suất hiệu dụng là con số bạn thực nhận sau khi tính kỳ ghép lãi. Chỉ con số thứ hai so sánh được giữa các sản phẩm có kỳ ghép lãi khác nhau.",
+  ledeDetailTitle: "Ví dụ: “8%/năm” là ba con số khác nhau",
+  ledeDetail:
+    "Một mức “8%/năm” không phải một con số duy nhất. Ghép lãi một lần một năm thì đúng là 8%; ghép hằng tháng thành 8,30%; ghép hằng ngày thành 8,33%. Khoảng cách đó nhỏ ở một năm và lớn dần theo thời gian.",
 
   // The distinction original row 58 asks for, above the tool rather than in a
   // collapsed FAQ: a reader must not read a number off this page and take it
   // to a loan quote as though it included the fees.
   aprNotice:
-    "Trang này chỉ tính tác động của KỲ GHÉP LÃI. Nó không cộng phí thu xếp, phí bảo hiểm, phí thẩm định hay phí trả nợ trước hạn — nên con số “hiệu dụng” ở đây KHÔNG phải APR. Với một khoản vay, phí thường ảnh hưởng nhiều hơn cả kỳ ghép lãi; hãy dùng công cụ APR cho phần đó.",
+    "Trang này chỉ tính tác động của KỲ GHÉP LÃI: nó không cộng phí thu xếp, phí bảo hiểm, phí thẩm định hay phí trả nợ trước hạn — nên con số “hiệu dụng” ở đây KHÔNG phải APR. Với một khoản vay, phí thường ảnh hưởng nhiều hơn cả kỳ ghép lãi, nên hãy dùng công cụ APR cho phần đó.",
   aprNoticeDetailTitle: "Hiệu dụng và APR khác nhau ở chỗ nào?",
   aprNoticeDetail:
     "Lãi hiệu dụng trả lời: cùng một mức niêm yết, ghép lãi dày hơn thì thành bao nhiêu? Đó là câu hỏi về CÁCH TÍNH LÃI. APR trả lời: quy mọi khoản phải trả — gồm cả phí — về một mức lãi suất tương đương để so hai báo giá. Đó là câu hỏi về TỔNG CHI PHÍ. Hai con số có thể chênh nhau nhiều điểm phần trăm, và chúng không thay thế nhau được: một sản phẩm ghép lãi hằng năm nhưng thu 2% phí thu xếp có APR cao hơn hẳn mức niêm yết, trong khi lãi hiệu dụng của nó đúng bằng mức niêm yết.",
@@ -65,6 +72,21 @@ export const EFFECTIVE_RATE = {
     gainLabel: "Phần tăng do ghép lãi",
     pointsUnit: "điểm %",
     periodsUnit: "kỳ",
+
+    // ROW 60 — "giảm số lẻ ở kết quả mặc định".
+    //
+    // The tool's whole subject is a difference in the third and fourth decimal
+    // place, so the accepted action is NOT to round the arithmetic: it is to
+    // stop opening with four decimals on every row. The two headline rates are
+    // rounded to two places and SAY they are rounded; the exact four-place
+    // figures, the periodic rate and the compounding gain keep their full
+    // precision in the detail group and in the table below, where the tool
+    // teaches the small difference. `convertRate` is untouched.
+    approxEffectiveLabel: "Lãi hiệu dụng (khoảng, chưa gồm phí)",
+    approxNominalLabel: "Lãi danh nghĩa niêm yết (khoảng)",
+    exactTitle: "Số chính xác",
+    approxNote:
+      "Hai dòng lãi suất ở trên được làm tròn đến hai chữ số thập phân cho dễ đọc. Phần “Số chính xác” và bảng bên dưới giữ bốn chữ số thập phân — khác biệt giữa các kỳ ghép lãi dày thường chỉ hiện ra ở chữ số thứ ba và thứ tư, nên đừng so hai sản phẩm bằng con số đã làm tròn.",
   },
 
   compounding: {

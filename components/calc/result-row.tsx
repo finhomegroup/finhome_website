@@ -23,34 +23,78 @@ import { PLACEHOLDER } from "@/lib/calc/number";
  * so desktop rendering is unchanged and the phone gets the full panel width
  * for each of the two lines.
  */
+/** One place, so the noted and un-noted label render identically. */
+const LABEL = "block text-sm leading-snug text-ink-2 md:text-base";
+
 export function ResultRow({
   label,
   value,
+  note,
   prose = false,
+  emphasis = false,
 }: {
   label: string;
   value: string | null;
+  /**
+   * SUPPLEMENTARY CONTEXT for this row's own answer — a second labelled figure
+   * that qualifies the value rather than competing with it.
+   *
+   * Added for the measured card-route repair: the two credit-card pages
+   * announced five peer figures, one of which was the payoff DATE — a fact the
+   * reader needs but not a second answer. Set at body size inside the row's
+   * `aria-atomic` node, so a screen reader still hears one row: label, value,
+   * then the qualifier.
+   *
+   * This is not a place for a caveat or a sentence of guidance. Those are
+   * `<p>` siblings of the group, outside the live region, and they stay there.
+   */
+  note?: string;
   /**
    * The value is a sentence, not a figure: body type, allowed to wrap, and not
    * held at its full width on desktop. A verdict given the figure treatment
    * cannot shrink and pushes the row past its container.
    */
   prose?: boolean;
+  /**
+   * THE one main answer of the page. At most one row per group may set this.
+   *
+   * The 2026-09-21 audit's P2 finding was "nhiều con số cùng mức nhấn" — a
+   * reader arriving at a group of four identically-sized figures has to work
+   * out which one answered their question. This is one step up the existing
+   * type scale in the existing display face; it introduces no new token, no
+   * colour and no surface, because the problem was hierarchy rather than
+   * decoration.
+   *
+   * Ignored with `prose`: a verdict sentence set at 30px wraps to three lines
+   * and stops being a headline.
+   */
+  emphasis?: boolean;
 }) {
   return (
     <div
       aria-atomic="true"
       className="border-t border-ink-4/20 py-3 first:border-t-0 md:flex md:items-baseline md:justify-between md:gap-6"
     >
-      <span className="block text-sm leading-snug text-ink-2 md:text-base">
-        {label}
-      </span>
+      {note ? (
+        // Only when there IS a note: an unconditional wrapper would change the
+        // markup of every row in the suite for the rows that have none.
+        <span className="block md:mr-auto">
+          <span className={LABEL}>{label}</span>
+          <span className="mt-1 block text-sm leading-snug text-ink-3">
+            {note}
+          </span>
+        </span>
+      ) : (
+        <span className={LABEL}>{label}</span>
+      )}
       <span
         className={cn(
           "mt-1 block md:mt-0 md:text-right",
           prose
             ? "text-base leading-relaxed text-ink md:max-w-sm"
-            : "font-display text-xl font-medium tabular-nums text-ink md:shrink-0 md:text-2xl",
+            : emphasis
+              ? "font-display text-2xl font-medium tabular-nums text-ink md:shrink-0 md:text-3xl"
+              : "font-display text-xl font-medium tabular-nums text-ink md:shrink-0 md:text-2xl",
         )}
       >
         {value === null ? PLACEHOLDER : value}

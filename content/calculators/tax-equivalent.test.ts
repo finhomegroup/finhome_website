@@ -19,6 +19,7 @@ const F = C.form;
 
 const ALL_COPY = [
   C.lede,
+  C.ledeDetail,
   C.vietnamNotice,
   C.vietnamNoticeDetail,
   C.sources.intro,
@@ -44,7 +45,10 @@ describe("the arithmetic the page quotes is the module's own", () => {
       taxRatePercent: taxPercent,
     })!;
     expect(formatDecimal(r.taxablePercent, 6)).toBe("5,789474");
-    expect(C.vietnamNotice).toContain("5,789474%");
+    // In the lede disclosure now: the entry contract keeps the visible
+    // notice to the rule (which side is taxed), and the worked pair is the
+    // detail behind it. The figure still has to match the engine.
+    expect(C.ledeDetail).toContain("5,789474%");
   });
 
   it("nets down the other direction to the figure the copy quotes", () => {
@@ -54,7 +58,7 @@ describe("the arithmetic the page quotes is the module's own", () => {
       taxRatePercent: 5,
     })!;
     expect(formatDecimal(r.afterTaxPercent, 2)).toBe("5,51");
-    expect(C.vietnamNotice).toContain("5,51%");
+    expect(C.ledeDetail).toContain("5,51%");
   });
 });
 
@@ -207,7 +211,10 @@ describe("the two teaching sentences an independent review corrected", () => {
 
 describe("the waiting-to-buy context the row asks for", () => {
   it("frames the question as money that is about to be spent", () => {
-    expect(C.lede).toContain("TIỀN ĐANG CHỜ MUA NHÀ");
+    // Moved from `lede` to `ledeDetail`: the scenario is the context, not
+    // the purpose, so it collapses under the heading rather than pushing the
+    // form down a phone screen. Still above the form, still on this page.
+    expect(C.ledeDetail).toContain("TIỀN ĐANG CHỜ MUA NHÀ");
   });
 
   it("says the date matters more than the after-tax rate", () => {

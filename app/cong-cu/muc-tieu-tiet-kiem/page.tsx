@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { ResultActions } from "@/components/calc/result-actions";
 import { ToolNextSteps } from "@/components/calc/tool-next-steps";
 import { SavingsGoalCalculator } from "@/components/savings-goal-calculator";
 import { SAVINGS_GOAL as C } from "@/content/calculators/savings-goal";
@@ -30,9 +31,15 @@ export default function SavingsGoalPage() {
       notice={C.endOfMonthNotice}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={<ToolNextSteps slug={SLUG} />}
+      wide
     >
-      <SavingsGoalCalculator />
+      {/* The next steps move INSIDE the tool, beside the answer, rather than
+          below the comparison chart and the method prose. Still rendered from
+          the page, so the block ships no client JavaScript. */}
+      <SavingsGoalCalculator
+        actions={<ResultActions slug={SLUG} />}
+        nextSteps={<ToolNextSteps slug={SLUG} promoted />}
+      />
     </CalculatorPage>
   );
 }

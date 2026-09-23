@@ -203,23 +203,52 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
   const r = plan.asEntered;
   const firstWithdrawal = r.years.find((row) => !row.accumulating)!;
 
+  /**
+   * The notice above the calculator, both halves.
+   *
+   * The 2026-09-21 UX pass SPLIT that notice: the model limitation stays
+   * visible and the worked arithmetic moved into `realNoticeDetail`, behind a
+   * disclosure the page renders through `CalculatorPage`'s `noticeDetail`. The
+   * figures are still on the page and still have to agree with the engine, so
+   * the assertions below run over the pair — narrowing them to the visible
+   * half would have quietly stopped checking three of the four figures.
+   */
+  const noticeText = `${C.realNotice} ${C.realNoticeDetail}`;
+
   it("quotes the capital both ways in the notice above the calculator", () => {
     // The page's whole point: the nominal figure and the same figure in
     // today's money. Both are rendered in the result rows, so the notice must
     // not quote a third number.
+    //
+    // Asserted on the VISIBLE half specifically, not on the pair. This is the
+    // model limitation the approved contract forbids collapsing, so a future
+    // edit that pushed the nominal/real pair entirely behind the disclosure
+    // has to turn this red.
     expect(C.realNotice).toContain(dong(r.balanceAtRetirement));
     expect(C.realNotice).toContain(dong(r.realBalanceAtRetirement));
   });
 
   it("quotes the first year's draw in both readings", () => {
-    expect(C.realNotice).toContain(dong(firstWithdrawal.withdrawal));
+    expect(noticeText).toContain(dong(firstWithdrawal.withdrawal));
     // In today's money the draw is exactly the spend that was asked for less
     // other income — the identity `retirement.ts` keeps two deflators for.
     expect(firstWithdrawal.realWithdrawal).toBeCloseTo(
       plan.input.desiredAnnualSpending - plan.input.otherAnnualIncome,
       6,
     );
-    expect(C.realNotice).toContain(dong(firstWithdrawal.realWithdrawal));
+    expect(noticeText).toContain(dong(firstWithdrawal.realWithdrawal));
+  });
+
+  it("keeps the collapsed half labelled and the visible half short", () => {
+    // A disclosure whose summary says nothing is the thing the split must not
+    // become: the reader has to be able to decide whether to open it from the
+    // line they can see. And the visible half has to STAY short, or the split
+    // achieves nothing — it exists because the audit measured this route's
+    // first input 880 px down a 390 px viewport with the long version above
+    // the form.
+    expect(C.realNoticeDetailTitle.length).toBeGreaterThan(10);
+    expect(C.realNoticeDetail.length).toBeGreaterThan(C.realNotice.length);
+    expect(C.realNotice.length).toBeLessThanOrEqual(300);
   });
 
   it("quotes the inflation factor and the share it leaves", () => {
@@ -269,6 +298,10 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
       C.metaDescription,
       C.lede,
       C.realNotice,
+      // The collapsed half too: a claim about United States law does not stop
+      // being a claim because it is behind a `<details>`.
+      C.realNoticeDetailTitle,
+      C.realNoticeDetail,
       ...C.formula.body,
       ...C.faq.items.flatMap((item) => [item.q, item.a]),
       ...Object.values(C.chart).flatMap((value) =>

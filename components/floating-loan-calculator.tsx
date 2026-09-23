@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
+import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
@@ -13,6 +14,7 @@ import {
 import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
+import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
@@ -38,6 +40,20 @@ import type { DisclosedSetting } from "@/lib/calc/disclosed-settings";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { FLOATING_LOAN as C } from "@/content/calculators/floating-loan";
 
+/*
+ * CSV row 4 ("Hai cột"): "ưu tiên khoản trả trước/sau ưu đãi và tháng đổi lãi;
+ * nút xem kết quả đưa thẳng tới so sánh này". The promo instalment and the
+ * shock were already the headline; what was missing is the instalment AFTER
+ * the promotion as a row of its own — the page's own title asks "sau ưu đãi
+ * trả bao nhiêu?" and the answer was reachable only as "mức cao nhất", which
+ * is a different month once a recurring step is on — and the reset month,
+ * which appeared only inside the scenario block's labels. The peak row is now
+ * mounted only when the peak is genuinely a later month, so the two are never
+ * the same figure under two names. Docs §8.
+ */
+const FORM_ID = "lai-suat-tha-noi-nhap";
+const RESULT_ID = "lai-suat-tha-noi-ket-qua";
+
 // No `= {}` default on the parameter: an optional PARAMETER makes the
 // component fail `createElement`'s typed overload, so nothing could pass this
 // from a test. React always supplies a props object.
@@ -52,8 +68,14 @@ export function FloatingLoanCalculator({
    * URL — financial inputs do not go into query strings.
    */
   initialStressPoints = 0,
+  actions,
+  nextSteps,
 }: {
   initialStressPoints?: number;
+  /** Compact actions immediately after the answer — `<ResultActions>`. */
+  actions?: React.ReactNode;
+  /** The route's longer next-step block, below the figure. */
+  nextSteps?: React.ReactNode;
 }) {
   const initial = {
     amount: C.form.defaultAmount,
@@ -223,329 +245,395 @@ export function FloatingLoanCalculator({
         className="mb-6"
       />
 
-      <FieldGroup title={C.form.loanGroup}>
-        <NumberField
-          {...fields.bind("amount")}
-          label={C.form.amountLabel}
-          unit={C.form.amountUnit}
-          help={C.form.amountHelp}
-          error={C.form.amountInvalid}
-          invalid={amountInvalid}
-        />
-        <NumberField
-          {...fields.bind("term")}
-          label={C.form.termLabel}
-          help={C.form.termHelp}
-          error={C.form.termInvalid}
-          invalid={termInvalid}
-        />
-      </FieldGroup>
+      <CalculatorLayout
+        formId={FORM_ID}
+        columns="split"
+        form={
+          <>
+            <FieldGroup title={C.form.loanGroup}>
+              <NumberField
+                {...fields.bind("amount")}
+                label={C.form.amountLabel}
+                unit={C.form.amountUnit}
+                help={C.form.amountHelp}
+                error={C.form.amountInvalid}
+                invalid={amountInvalid}
+              />
+              <NumberField
+                {...fields.bind("term")}
+                label={C.form.termLabel}
+                help={C.form.termHelp}
+                error={C.form.termInvalid}
+                invalid={termInvalid}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.promoGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("promoMonths")}
-          label={C.form.promoMonthsLabel}
-          help={C.form.promoMonthsHelp}
-          error={C.form.promoMonthsInvalid}
-          invalid={promoMonthsInvalid}
-        />
-        <NumberField
-          {...fields.bind("promoRate")}
-          label={C.form.promoRateLabel}
-          unit={C.form.promoRateUnit}
-          help={C.form.promoRateHelp}
-          error={C.form.promoRateInvalid}
-          invalid={promoRateInvalid}
-        />
-      </FieldGroup>
+            <FieldGroup title={C.form.promoGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("promoMonths")}
+                label={C.form.promoMonthsLabel}
+                help={C.form.promoMonthsHelp}
+                error={C.form.promoMonthsInvalid}
+                invalid={promoMonthsInvalid}
+              />
+              <NumberField
+                {...fields.bind("promoRate")}
+                label={C.form.promoRateLabel}
+                unit={C.form.promoRateUnit}
+                help={C.form.promoRateHelp}
+                error={C.form.promoRateInvalid}
+                invalid={promoRateInvalid}
+              />
+            </FieldGroup>
 
-      <FieldGroup title={C.form.postGroup} className="mt-8">
-        <NumberField
-          {...fields.bind("postRate")}
-          label={C.form.postRateLabel}
-          unit={C.form.postRateUnit}
-          help={C.form.postRateHelp}
-          error={C.form.postRateInvalid}
-          invalid={postRateInvalid}
-        />
-        {/* Optional, and blank by default — see the parse above for why the
-            tool never guesses this. Kept in the core group because a budget
-            line is the point of the chart for most readers. */}
-        <NumberField
-          {...fields.bind("budget")}
-          label={C.form.budgetLabel}
-          unit={C.form.budgetUnit}
-          help={C.form.budgetHelp}
-          error={C.form.budgetInvalid}
-          invalid={budgetInvalid}
-        />
-      </FieldGroup>
+            <FieldGroup title={C.form.postGroup} className="mt-8">
+              <NumberField
+                {...fields.bind("postRate")}
+                label={C.form.postRateLabel}
+                unit={C.form.postRateUnit}
+                help={C.form.postRateHelp}
+                error={C.form.postRateInvalid}
+                invalid={postRateInvalid}
+              />
+              {/* Optional, and blank by default — see the parse above for why
+                  the tool never guesses this. Kept in the core group because a
+                  budget line is the point of the chart for most readers. */}
+              <NumberField
+                {...fields.bind("budget")}
+                label={C.form.budgetLabel}
+                unit={C.form.budgetUnit}
+                help={C.form.budgetHelp}
+                error={C.form.budgetInvalid}
+                invalid={budgetInvalid}
+              />
+            </FieldGroup>
 
-      {/*
-        ORIGINAL ROW 11, in the primary flow and not behind a disclosure:
-        "nút thử tăng 1/2/3 điểm phần trăm với nhãn kịch bản". It sits directly
-        under the post-promotional rate it shifts, because that is the field it
-        is about.
+            {/*
+              ORIGINAL ROW 11, in the primary flow and not behind a disclosure:
+              "nút thử tăng 1/2/3 điểm phần trăm với nhãn kịch bản". It sits
+              directly under the post-promotional rate it shifts, because that
+              is the field it is about.
 
-        A radio group, so the presets are NAMED SCENARIOS and selecting one
-        twice cannot compound — the reproduced requirement is that repeated
-        clicks do not accumulate. The baseline is one of the options, so
-        getting back to the reader's own figure is a selection rather than a
-        reset they have to find.
-      */}
-      <RadioGroupField
-        value={String(stressPoints)}
-        onValueChange={(next) => setStressPoints(Number(next))}
-        legend={C.form.stressLegend}
-        help={C.form.stressHelp}
-        className="mt-8"
-        options={RATE_STRESS_POINTS.map((points) => ({
-          value: String(points),
-          label:
-            points === 0
-              ? C.form.stressBaselineOption
-              : points === 1
-                ? C.form.stressPlusOne
-                : points === 2
-                  ? C.form.stressPlusTwo
-                  : C.form.stressPlusThree,
-        }))}
+              A radio group, so the presets are NAMED SCENARIOS and selecting
+              one twice cannot compound — the reproduced requirement is that
+              repeated clicks do not accumulate. The baseline is one of the
+              options, so getting back to the reader's own figure is a
+              selection rather than a reset they have to find.
+            */}
+            <RadioGroupField
+              value={String(stressPoints)}
+              onValueChange={(next) => setStressPoints(Number(next))}
+              legend={C.form.stressLegend}
+              help={C.form.stressHelp}
+              className="mt-8"
+              options={RATE_STRESS_POINTS.map((points) => ({
+                value: String(points),
+                label:
+                  points === 0
+                    ? C.form.stressBaselineOption
+                    : points === 1
+                      ? C.form.stressPlusOne
+                      : points === 2
+                        ? C.form.stressPlusTwo
+                        : C.form.stressPlusThree,
+              }))}
+            />
+
+            {/* The step-up scenario is a second-order what-if. Collapsed, but
+                its summary line names any setting that is moving the
+                result. */}
+            <AdvancedFields
+              title={C.form.scenarioGroupTitle}
+              settings={scenarioSettings}
+              className="mt-8"
+            >
+              <NumberField
+                {...fields.bind("adjustStep")}
+                label={C.form.adjustStepLabel}
+                unit={C.form.adjustStepUnit}
+                help={C.form.adjustStepHelp}
+                error={C.form.adjustStepInvalid}
+                invalid={adjustStepInvalid}
+              />
+              <NumberField
+                {...fields.bind("adjustEvery")}
+                label={C.form.adjustEveryLabel}
+                unit={C.form.adjustEveryUnit}
+                help={C.form.adjustEveryHelp}
+                error={C.form.adjustEveryInvalid}
+                invalid={adjustEveryInvalid}
+              />
+              <NumberField
+                {...fields.bind("rateCap")}
+                label={C.form.rateCapLabel}
+                unit={C.form.rateCapUnit}
+                help={C.form.rateCapHelp}
+                error={C.form.rateCapInvalid}
+                invalid={rateCapInvalid}
+              />
+            </AdvancedFields>
+          </>
+        }
+        cta={
+          /* Nine controls, an advanced panel and a scenario switch, so the
+             button pins — and it restates the instalment AFTER the promotion,
+             which is the comparison row 4 asks it to lead to. */
+          <ResultCta
+            formId={FORM_ID}
+            targetId={RESULT_ID}
+            invalid={!fieldsUsable}
+            answer={{
+              label: C.form.postGroup,
+              value: money(stress?.selected.postPromoPayment),
+            }}
+            sticky
+          />
+        }
+        primary={
+          <>
+            {/* The promo instalment, the one after it, the month it changes and
+                the gap — which is the whole point of the page. */}
+            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+              <ResultRow
+                label={C.form.firstPaymentLabel}
+                value={money(result?.firstPayment)}
+              />
+              {/* THE ANSWER, and the only emphasised row: the page's own title
+                  asks what is paid after the promotion, and the month is in
+                  the label rather than left to the reader to add up. */}
+              <ResultRow
+                label={fill(C.form.postPromoPaymentLabel, {
+                  n: stress?.selected.postPromoMonth ?? "—",
+                })}
+                value={money(stress?.selected.postPromoPayment)}
+                emphasis
+              />
+              {/* Only when the peak is genuinely a LATER month: with no
+                  recurring step it is the same figure as the row above, and
+                  two names for one amount read as two amounts. */}
+              {stress === null ||
+              stress.selected.peakMonth !== stress.selected.postPromoMonth ? (
+                <ResultRow
+                  label={C.form.highestPaymentLabel}
+                  value={money(result?.highestPayment)}
+                />
+              ) : null}
+              <ResultRow
+                label={C.form.shockLabel}
+                value={money(result?.paymentShock)}
+              />
+              <ResultRow
+                label={C.form.shockPercentLabel}
+                value={result ? formatPercent(result.paymentShockPercent, 2) : null}
+              />
+            </ResultGroup>
+
+            {/*
+              THE BASELINE, KEPT. A scenario that replaced the reader's own
+              figures would leave them with nothing to compare against — so the
+              rate being used, the reader's own instalment and the difference
+              are all stated, and `live={false}` because this is a comparison
+              the reader asked for by choosing a scenario, not a per-keystroke
+              announcement. docs §4: exactly one live region per page, and it is
+              the headline above.
+            */}
+            <ResultGroup
+              title={C.form.stressComparisonTitle}
+              className="mt-4"
+              live={false}
+            >
+              <ResultRow
+                label={C.form.stressAppliedLabel}
+                value={
+                  stress
+                    ? formatPercent(stress.selected.postRatePercent, 2)
+                    : null
+                }
+              />
+              {stress?.selected.cappedByRateCap ? (
+                <ResultRow
+                  label={C.form.stressRequestedLabel}
+                  value={formatPercent(
+                    stress.selected.requestedPostRatePercent,
+                    2,
+                  )}
+                />
+              ) : null}
+              {stressed ? (
+                <>
+                  <ResultRow
+                    label={C.form.stressBaselineRateLabel}
+                    value={
+                      stress
+                        ? formatPercent(stress.baseline.postRatePercent, 2)
+                        : null
+                    }
+                  />
+                  <ResultRow
+                    label={C.form.stressBaselinePaymentLabel}
+                    value={money(stress?.baseline.postPromoPayment)}
+                  />
+                  <ResultRow
+                    label={fill(C.form.stressPaymentIncreaseLabel, {
+                      n: stress?.selected.postPromoMonth ?? "—",
+                    })}
+                    value={money(stress?.paymentIncrease)}
+                  />
+                  <ResultRow
+                    label={C.form.stressInterestIncreaseLabel}
+                    value={money(stress?.interestIncrease)}
+                  />
+                </>
+              ) : null}
+              {/* Mounted only when the reader typed a budget. No budget, no
+                  line and no gap — the tool does not invent one.
+
+                  TWO ROWS, because one gap cannot answer both questions. The
+                  first is the reset month; the second is the highest instalment
+                  anywhere in the schedule, which a recurring step pushes years
+                  later. The peak row is mounted only when it IS a different
+                  month. */}
+              {stress?.selected.budgetGap != null ? (
+                <ResultRow
+                  label={fill(C.form.stressBudgetGapLabel, {
+                    n: stress.selected.postPromoMonth ?? "—",
+                  })}
+                  value={money(stress.selected.budgetGap)}
+                />
+              ) : null}
+              {stress?.selected.budgetGapAtPeak != null &&
+              stress.selected.peakMonth !== stress.selected.postPromoMonth ? (
+                <ResultRow
+                  label={fill(C.form.stressBudgetGapPeakLabel, {
+                    n: stress.selected.peakMonth,
+                  })}
+                  value={money(stress.selected.budgetGapAtPeak)}
+                />
+              ) : null}
+            </ResultGroup>
+
+            {/* `stress !== null` as well as `!stressed`: with a malformed field
+                there is no computed result, and "đang tính đúng mức lãi bạn
+                nhập" would be a success note over a row of dashes. */}
+            {stress !== null && !stressed ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.stressBaselineNotice}
+              </p>
+            ) : null}
+            {stress?.selected.cappedByRateCap ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.stressCapNotice}
+              </p>
+            ) : null}
+            {stressed && (adjustStep ?? 0) > 0 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-3">
+                {C.form.stressStepNotice}
+              </p>
+            ) : null}
+            {stress?.selected.budgetGap != null &&
+            stress.selected.budgetGap < 0 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {C.form.stressBudgetOverNotice}
+              </p>
+            ) : null}
+            {/* The case a single gap hides: the reset fits, a later step does
+                not. */}
+            {stress?.selected.budgetGap != null &&
+            stress.selected.budgetGap >= 0 &&
+            stress.selected.budgetGapAtPeak != null &&
+            stress.selected.budgetGapAtPeak < 0 ? (
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {fill(C.form.stressBudgetOverLaterNotice, {
+                  n: stress.selected.peakMonth,
+                  amount: money(-stress.selected.budgetGapAtPeak) ?? "",
+                })}
+              </p>
+            ) : null}
+          </>
+        }
+        chart={
+          /* Outside every ResultGroup: it must not be re-announced on each
+             keystroke, for the same reason a table must not. */
+          <ChartFigure model={chart}>
+            <LineChart model={chart} />
+          </ChartFigure>
+        }
+        actions={actions}
+        nextSteps={nextSteps}
+        detail={
+          <DetailDisclosure
+            title={C.form.detailDisclosureTitle}
+            hint={C.form.detailDisclosureHint}
+          >
+            {/* The observed defect was here: 2.862.633.323 ₫ and
+                4.862.633.323 ₫ beside their labels in a 266 px panel, each
+                label squeezed into a one-word column. Compact figures under one
+                stated unit, label above value on a phone, and the full đồng
+                reading one checkbox away. */}
+            <DetailFigures
+              title={C.form.detailTitle}
+              figures={[
+                {
+                  label: C.form.totalInterestLabel,
+                  value: result ? moneyCell(result.totalInterest) : null,
+                },
+                {
+                  label: C.form.totalPaidLabel,
+                  value: result ? moneyCell(result.totalPaid) : null,
+                },
+                {
+                  label: C.form.lowestPaymentLabel,
+                  value: result ? moneyCell(result.lowestPayment) : null,
+                },
+                {
+                  // A month count, not an amount: it keeps its own unit word
+                  // and is never scaled.
+                  label: C.form.monthsLabel,
+                  value: result
+                    ? `${formatDecimal(result.months, 0)} ${C.form.monthsUnit}`
+                    : null,
+                },
+              ]}
+            />
+
+            {/* The paragraph about the BALANCE COLUMN, now directly above the
+                table that has one. It was the page's entry prose — five
+                sentences of worked arithmetic ahead of the form, the chart and
+                the answer, explaining a column four screens below. */}
+            {tableRows.length > 0 ? (
+              <p className="mt-6 text-sm leading-relaxed text-ink-2">
+                {C.form.table.intro}
+              </p>
+            ) : null}
+
+            {tableRows.length > 0 ? (
+              <ResultTable
+                className="mt-4"
+                caption={C.form.table.caption}
+                // Six columns are 390 px wide inside a 266 px panel even
+                // compacted, so a phone gets one block per rate phase instead:
+                // the month range as the block's heading, then rate,
+                // instalment, interest, principal and closing balance as
+                // label/value pairs.
+                mobileCards
+                columns={[
+                  { label: C.form.table.phaseColumn, nowrap: true },
+                  { label: C.form.table.rateColumn, numeric: true },
+                  { label: C.form.table.paymentColumn, numeric: true },
+                  { label: C.form.table.interestColumn, numeric: true },
+                  { label: C.form.table.principalColumn, numeric: true },
+                  { label: C.form.table.balanceColumn, numeric: true },
+                ]}
+                rows={tableRows}
+              />
+            ) : null}
+          </DetailDisclosure>
+        }
       />
 
-      {/* The step-up scenario is a second-order what-if. Collapsed, but its
-          summary line names any setting that is moving the result. */}
-      <AdvancedFields
-        title={C.form.scenarioGroupTitle}
-        settings={scenarioSettings}
-        className="mt-8"
-      >
-        <NumberField
-          {...fields.bind("adjustStep")}
-          label={C.form.adjustStepLabel}
-          unit={C.form.adjustStepUnit}
-          help={C.form.adjustStepHelp}
-          error={C.form.adjustStepInvalid}
-          invalid={adjustStepInvalid}
-        />
-        <NumberField
-          {...fields.bind("adjustEvery")}
-          label={C.form.adjustEveryLabel}
-          unit={C.form.adjustEveryUnit}
-          help={C.form.adjustEveryHelp}
-          error={C.form.adjustEveryInvalid}
-          invalid={adjustEveryInvalid}
-        />
-        <NumberField
-          {...fields.bind("rateCap")}
-          label={C.form.rateCapLabel}
-          unit={C.form.rateCapUnit}
-          help={C.form.rateCapHelp}
-          error={C.form.rateCapInvalid}
-          invalid={rateCapInvalid}
-        />
-      </AdvancedFields>
-
-      {/* The promo instalment and the one after it, side by side, plus the
-          gap — which is the whole point of the page. */}
-      <ResultGroup title={C.form.resultTitle} className="mt-8">
-        <ResultRow
-          label={C.form.firstPaymentLabel}
-          value={money(result?.firstPayment)}
-        />
-        <ResultRow
-          label={C.form.highestPaymentLabel}
-          value={money(result?.highestPayment)}
-        />
-        <ResultRow
-          label={C.form.shockLabel}
-          value={money(result?.paymentShock)}
-        />
-        <ResultRow
-          label={C.form.shockPercentLabel}
-          value={
-            result ? formatPercent(result.paymentShockPercent, 2) : null
-          }
-        />
-      </ResultGroup>
-
-      {/*
-        THE BASELINE, KEPT. A scenario that replaced the reader's own figures
-        would leave them with nothing to compare against — so the rate being
-        used, the reader's own instalment and the difference are all stated,
-        and `live={false}` because this is a comparison the reader asked for by
-        choosing a scenario, not a per-keystroke announcement. docs §4: exactly
-        one live region per page, and it is the headline above.
-      */}
-      <ResultGroup
-        title={C.form.stressComparisonTitle}
-        className="mt-4"
-        live={false}
-      >
-        <ResultRow
-          label={C.form.stressAppliedLabel}
-          value={
-            stress ? formatPercent(stress.selected.postRatePercent, 2) : null
-          }
-        />
-        {stress?.selected.cappedByRateCap ? (
-          <ResultRow
-            label={C.form.stressRequestedLabel}
-            value={formatPercent(stress.selected.requestedPostRatePercent, 2)}
-          />
-        ) : null}
-        {stressed ? (
-          <>
-            <ResultRow
-              label={C.form.stressBaselineRateLabel}
-              value={
-                stress ? formatPercent(stress.baseline.postRatePercent, 2) : null
-              }
-            />
-            <ResultRow
-              label={C.form.stressBaselinePaymentLabel}
-              value={money(stress?.baseline.postPromoPayment)}
-            />
-            <ResultRow
-              label={fill(C.form.stressPaymentIncreaseLabel, {
-                n: stress?.selected.postPromoMonth ?? "—",
-              })}
-              value={money(stress?.paymentIncrease)}
-            />
-            <ResultRow
-              label={C.form.stressInterestIncreaseLabel}
-              value={money(stress?.interestIncrease)}
-            />
-          </>
-        ) : null}
-        {/* Mounted only when the reader typed a budget. No budget, no line and
-            no gap — the tool does not invent one.
-
-            TWO ROWS, because one gap cannot answer both questions. The first
-            is the reset month; the second is the highest instalment anywhere
-            in the schedule, which a recurring step pushes years later. The
-            peak row is mounted only when it IS a different month. */}
-        {stress?.selected.budgetGap != null ? (
-          <ResultRow
-            label={fill(C.form.stressBudgetGapLabel, {
-              n: stress.selected.postPromoMonth ?? "—",
-            })}
-            value={money(stress.selected.budgetGap)}
-          />
-        ) : null}
-        {stress?.selected.budgetGapAtPeak != null &&
-        stress.selected.peakMonth !== stress.selected.postPromoMonth ? (
-          <ResultRow
-            label={fill(C.form.stressBudgetGapPeakLabel, {
-              n: stress.selected.peakMonth,
-            })}
-            value={money(stress.selected.budgetGapAtPeak)}
-          />
-        ) : null}
-      </ResultGroup>
-
-      {/* `stress !== null` as well as `!stressed`: with a malformed field there
-          is no computed result, and "đang tính đúng mức lãi bạn nhập" would be
-          a success note over a row of dashes. */}
-      {stress !== null && !stressed ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.stressBaselineNotice}
-        </p>
-      ) : null}
-      {stress?.selected.cappedByRateCap ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.stressCapNotice}
-        </p>
-      ) : null}
-      {stressed && (adjustStep ?? 0) > 0 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-3">
-          {C.form.stressStepNotice}
-        </p>
-      ) : null}
-      {stress?.selected.budgetGap != null && stress.selected.budgetGap < 0 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {C.form.stressBudgetOverNotice}
-        </p>
-      ) : null}
-      {/* The case a single gap hides: the reset fits, a later step does not. */}
-      {stress?.selected.budgetGap != null &&
-      stress.selected.budgetGap >= 0 &&
-      stress.selected.budgetGapAtPeak != null &&
-      stress.selected.budgetGapAtPeak < 0 ? (
-        <p className="mt-3 text-sm leading-relaxed text-ink-2">
-          {fill(C.form.stressBudgetOverLaterNotice, {
-            n: stress.selected.peakMonth,
-            amount: money(-stress.selected.budgetGapAtPeak) ?? "",
-          })}
-        </p>
-      ) : null}
-
-      {/* The chart comes straight after the answer. Outside every
-          ResultGroup: it must not be re-announced on each keystroke, for the
-          same reason a table must not. */}
-      <ChartFigure model={chart}>
-        <LineChart model={chart} />
-      </ChartFigure>
-
-      <DetailDisclosure
-        title={C.form.detailDisclosureTitle}
-        hint={C.form.detailDisclosureHint}
-        className="mt-8"
-      >
-        {/* The observed defect was here: 2.862.633.323 ₫ and 4.862.633.323 ₫
-            beside their labels in a 266 px panel, each label squeezed into a
-            one-word column. Compact figures under one stated unit, label above
-            value on a phone, and the full đồng reading one checkbox away. */}
-        <DetailFigures
-          title={C.form.detailTitle}
-          figures={[
-            {
-              label: C.form.totalInterestLabel,
-              value: result ? moneyCell(result.totalInterest) : null,
-            },
-            {
-              label: C.form.totalPaidLabel,
-              value: result ? moneyCell(result.totalPaid) : null,
-            },
-            {
-              label: C.form.lowestPaymentLabel,
-              value: result ? moneyCell(result.lowestPayment) : null,
-            },
-            {
-              // A month count, not an amount: it keeps its own unit word and
-              // is never scaled.
-              label: C.form.monthsLabel,
-              value: result
-                ? `${formatDecimal(result.months, 0)} ${C.form.monthsUnit}`
-                : null,
-            },
-          ]}
-        />
-
-        {tableRows.length > 0 ? (
-          <ResultTable
-            className="mt-6"
-            caption={C.form.table.caption}
-            // Six columns are 390 px wide inside a 266 px panel even compacted,
-            // so a phone gets one block per rate phase instead: the month range
-            // as the block's heading, then rate, instalment, interest,
-            // principal and closing balance as label/value pairs.
-            mobileCards
-            columns={[
-              { label: C.form.table.phaseColumn, nowrap: true },
-              { label: C.form.table.rateColumn, numeric: true },
-              { label: C.form.table.paymentColumn, numeric: true },
-              { label: C.form.table.interestColumn, numeric: true },
-              { label: C.form.table.principalColumn, numeric: true },
-              { label: C.form.table.balanceColumn, numeric: true },
-            ]}
-            rows={tableRows}
-          />
-        ) : null}
-      </DetailDisclosure>
       {/* The long version of the example-state note, out of the entry flow.
           See ExampleNotice for why it is not above the form. */}
       <ExampleNoticeDetail className="mt-6" />
-
     </CalculatorCard>
   );
 }

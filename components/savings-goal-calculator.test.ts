@@ -13,7 +13,7 @@
  * visual check — docs §6's rule stands.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { SAVINGS_GOAL } from "@/content/calculators/savings-goal";
 import { MAX_PROJECTION_MONTHS } from "@/lib/calc/savings-schedule";
@@ -26,8 +26,14 @@ const CONTENT = "@/content/calculators/savings-goal";
  */
 type FormPatch = Partial<Record<keyof typeof SAVINGS_GOAL.form, string>>;
 
-/** Render the calculator, optionally overriding some of its default strings. */
-async function render(patch?: FormPatch): Promise<string> {
+/**
+ * Render the calculator, optionally overriding some of its default strings and
+ * passing the props the route passes.
+ */
+async function render(
+  patch?: FormPatch,
+  props?: { nextSteps?: ReactNode },
+): Promise<string> {
   vi.resetModules();
   if (patch) {
     vi.doMock(CONTENT, async () => {
@@ -44,7 +50,9 @@ async function render(patch?: FormPatch): Promise<string> {
   }
   try {
     const loaded = await import("@/components/savings-goal-calculator");
-    return renderToStaticMarkup(createElement(loaded.SavingsGoalCalculator));
+    return renderToStaticMarkup(
+      createElement(loaded.SavingsGoalCalculator, props ?? null),
+    );
   } finally {
     vi.doUnmock(CONTENT);
     vi.resetModules();
@@ -470,5 +478,98 @@ describe("the chart and the details share the schedule", () => {
     );
     expect(assumption).toBeDefined();
     expect(html).toContain(assumption!);
+  });
+});
+
+describe("§8 row 5: the goal is chosen first, and dated at the top", () => {
+  /** The form region — everything up to the result region's marker. */
+  const formOf = (html: string) =>
+    html.slice(
+      html.indexOf('data-calc-region="form"'),
+      html.indexOf('data-calc-region="result"'),
+    );
+
+  it("asks which figure to solve and which kind of goal before any box", async () => {
+    // ALREADY SATISFIED before this batch, asserted rather than reimplemented:
+    // the row's first clause is "cho chọn mục tiêu trước".
+    const html = await render();
+    const form = formOf(html);
+    expect(form).toContain(C.modeLegend);
+    expect(form).toContain(C.goalSourceLegend);
+    expect(form.indexOf(C.modeLegend)).toBeLessThan(
+      form.indexOf(C.initialLabel),
+    );
+    expect(form.indexOf(C.goalSourceLegend)).toBeLessThan(
+      form.indexOf(C.initialLabel),
+    );
+    // And the CTA is the last thing in the form region, after every input.
+    expect(form).toContain('data-calc-cta="true"');
+    expect(form.indexOf(C.rateLabel)).toBeLessThan(
+      form.indexOf('data-calc-cta="true"'),
+    );
+  });
+
+  it("emphasises exactly one row, the figure the mode solves for", async () => {
+    const html = await render();
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    // The emphasised value sits between the solved contribution's label and
+    // the next row's, so the emphasis is on that row and not a later one.
+    expect(html.indexOf("md:text-3xl")).toBeGreaterThan(
+      html.indexOf(C.contributionResultLabel),
+    );
+    expect(html.indexOf("md:text-3xl")).toBeLessThan(
+      html.indexOf(C.fundedDateLabel),
+    );
+  });
+
+  it("puts the attainment date directly under the answer", async () => {
+    const html = await render();
+    const result = html.slice(html.indexOf('data-calc-region="result"'));
+    expect(result.indexOf(C.contributionResultLabel)).toBeLessThan(
+      result.indexOf(C.fundedDateLabel),
+    );
+    // "15/7/2031" at the shipped defaults: 60 whole cycles from 15/7/2026.
+    expect(result).toContain(C.fundedDateLabel);
+  });
+
+  it("still emphasises the cycle in the months mode, and dates it", async () => {
+    const html = await render({
+      defaultMode: "months",
+      defaultContribution: "8.000.000",
+    });
+    expect((html.match(/md:text-3xl/g) ?? []).length).toBe(1);
+    const result = html.slice(html.indexOf('data-calc-region="result"'));
+    expect(result.indexOf(C.monthsResultLabel)).toBeLessThan(
+      result.indexOf(C.fundedDateLabel),
+    );
+    // The typed contribution is an input beside the answer, not restated as a
+    // result row — its label appears once, in the form region.
+    expect(html.split(C.contributionLabel).length - 1).toBe(1);
+    expect(formOf(html)).toContain(C.contributionLabel);
+  });
+
+  it("wires the CTA to the anchored result region", async () => {
+    const html = await render();
+    expect(html).toContain('aria-controls="muc-tieu-tiet-kiem-ket-qua"');
+    expect(html).toContain('id="muc-tieu-tiet-kiem-ket-qua"');
+    expect(html).toContain('id="muc-tieu-tiet-kiem-nhap"');
+    // The pinned restatement carries the SAME formatted answer as the row.
+    expect(html).toContain("5.233.121 ₫");
+    const pinned = html.slice(html.indexOf('data-calc-answer="true"'));
+    expect(pinned.slice(0, pinned.indexOf("</p>"))).toContain("5.233.121 ₫");
+  });
+
+  it("puts the route's next steps beside the answer, above the detail", async () => {
+    const html = await render(undefined, {
+      nextSteps: createElement("p", null, "BƯỚC TIẾP THEO"),
+    });
+    const result = html.slice(
+      html.indexOf('data-calc-region="result"'),
+      html.indexOf('data-calc-region="detail"'),
+    );
+    expect(result).toContain("BƯỚC TIẾP THEO");
+    // The schedule ledger stays full width below, in its own region.
+    const detail = html.slice(html.indexOf('data-calc-region="detail"'));
+    expect(detail).toContain(C.detailDisclosureTitle);
   });
 });
