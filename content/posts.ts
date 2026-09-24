@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "canh-bao-lua-dao-dat-nen-khoang-trong-phap-ly",
+    title: "Khoảng trống pháp lý tạo cơ hội lừa đảo đất nền: Người mua cần kiểm tra gì trước khi xuống tiền?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "HoREA cảnh báo kẽ hở pháp lý về tách thửa khiến nhiều đầu nậu núp bóng cá nhân phân lô bán nền trái phép, đẩy rủi ro lừa đảo về phía người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/canh-bao-lua-dao-dat-nen-khoang-trong-phap-ly.jpg",
+    date: "2026-09-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/horea-canh-bao-khoang-trong-phap-ly-tao-ke-ho-cho-dau-nau-dat-nen-lua-dao-5124043.html",
+        "accessed": "2026-09-24"
+      },
+  },
+  {
     slug: "nguoi-mua-nha-tp-hcm-chap-nhan-roi-trung-tam-bai-toan-tai-chinh",
     title: "Người mua nhà TP.HCM chấp nhận rời trung tâm: Tính toán chi phí thực để không mắc bẫy giá rẻ ảo",
     category: "Thị trường",
