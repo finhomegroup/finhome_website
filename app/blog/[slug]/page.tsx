@@ -18,6 +18,7 @@ import {
 } from "@/lib/interaction-styles";
 import { EducationArticleBody } from "@/components/education/education-article";
 import { getEducationArticle } from "@/content/education/articles";
+import { chapterForGroup } from "@/content/education/chapters";
 import { POSTS, getPost, postCover, postKind } from "@/content/posts";
 import { canonicalPath, absUrl, articleSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
@@ -101,9 +102,13 @@ export default async function Page({
 
   // Related stays inside the same kind: an evergreen exercise under a dated
   // market report reads as though the exercise were news, and vice versa.
-  const related = POSTS.filter(
-    (p) => p.slug !== slug && postKind(p) === kind,
-  ).slice(0, 3);
+  // Education pages have no generic list at all: their body already ends with
+  // curated "Đọc tiếp" links and a link back to the chapter, and a second,
+  // uncurated related block under it only repeated that.
+  const related = education
+    ? []
+    : POSTS.filter((p) => p.slug !== slug && postKind(p) === kind).slice(0, 3);
+  const chapter = education ? chapterForGroup(education.group) : null;
 
   return (
     <>
@@ -114,7 +119,7 @@ export default async function Page({
           <Container>
             <div className="mx-auto max-w-3xl">
               <Link
-                href={education ? "/blog/mua-nha-bang-con-so/" : "/blog"}
+                href={chapter ? `/blog/mua-nha-bang-con-so/#${chapter.anchor}` : "/blog"}
                 className={cn(
                   "inline-flex items-center gap-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink",
                   FH_POINTER,
@@ -144,6 +149,16 @@ export default async function Page({
                 <span className="font-medium uppercase tracking-wide text-primary-ink">
                   {post.category}
                 </span>
+                {chapter ? (
+                  <>
+                    <span aria-hidden="true" className="text-ink-4">
+                      ·
+                    </span>
+                    <span>
+                      Chương {chapter.number} · {chapter.label}
+                    </span>
+                  </>
+                ) : null}
                 <span aria-hidden="true" className="text-ink-4">
                   ·
                 </span>
@@ -190,6 +205,7 @@ export default async function Page({
           </Container>
         </article>
 
+        {related.length > 0 ? (
         <section className="border-t border-ink-4/15 bg-bg-soft py-16 md:py-24">
           <Container>
             <div>
@@ -236,6 +252,7 @@ export default async function Page({
             </div>
           </Container>
         </section>
+        ) : null}
       </main>
       <SiteFooter />
     </>
