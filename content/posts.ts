@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-thu-dat-coc-mua-nha-tu-luc-khoi-cong",
+    title: "Đề xuất cho phép thu đặt cọc mua nhà từ lúc khởi công: Cơ hội và rủi ro cần cân nhắc",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Một số hiệp hội, doanh nghiệp đề xuất chủ đầu tư được thu 5% đặt cọc mua nhà ngay khi dự án khởi công, thay vì chờ xong móng như quy định hiện hành — người mua cần lưu ý gì?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-thu-dat-coc-mua-nha-tu-luc-khoi-cong.webp",
+    date: "2026-09-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-thu-dat-coc-mua-nha-ngay-tu-luc-du-an-khoi-cong-5123761.html",
+        "accessed": "2026-09-24"
+      },
+  },
+  {
     slug: "canh-bao-lua-dao-dat-nen-khoang-trong-phap-ly",
     title: "Khoảng trống pháp lý tạo cơ hội lừa đảo đất nền: Người mua cần kiểm tra gì trước khi xuống tiền?",
     category: "Chính sách",
