@@ -1,18 +1,114 @@
 ---
 name: seo-blog
 description: >-
-  Optimize FinHome blog posts and article HTML/SEO (metadata, headings,
-  Article JSON-LD, canonical, source attribution). Use when adding or editing
-  content/posts, blog pages, or when the user asks for blog SEO.
+  Write and review reader-first Vietnamese FinHome blog and education content,
+  including collection copy, tool examples, visuals, qualifications, acquisition
+  calls to action and article SEO. Use when drafting, reviewing or editing website
+  articles, shared editorial labels or blog metadata.
 ---
 
-# FinHome Blog SEO
+# FinHome Blog — Reader-first Writing and SEO
 
 ## When to use
 
 - Adding/editing `content/posts.ts` or `content/posts/*.md`
+- Drafting/reviewing `content/education/**`, collection copy or shared article labels
 - Changing `app/blog/**` or article schema
 - User asks to "SEO blog", "optimize HTML bài viết", or publish roundups
+
+## Reader-first contract
+
+Help a first-home buyer understand a question, interpret evidence and take a useful
+next step. Lead with what the reader needs, not a defence of what FinHome wrote.
+This capability is shared across agents through the repository's `AGENTS.md`;
+it is not a separate Cursor-only editorial policy.
+
+### Voice and comprehension
+
+- Write clear, conversational Vietnamese for an adult unfamiliar with finance.
+  "Explain like I'm 5" means simple words and concrete examples, not baby talk,
+  oversimplified promises or a lecture about the reader being wrong.
+- Open with the reader's situation or question and a useful answer. Avoid category
+  negation ("Đây không phải tin tức"), unprompted self-defence ("Đây không phải lỗi
+  của ai"), praise of our process or comparisons that dismiss other content.
+- Explain the distinction directly: "Mỗi lần trả nợ gồm gốc và lãi" is more useful
+  than announcing that nobody is at fault. Define unfamiliar terms at first use.
+- Prefer short paragraphs and headings that tell the reader something. Keep one
+  main decision per article; SEO terms serve that decision, not the other way round.
+- In running prose, use rounded triệu/tỷ and "khoảng" where appropriate. Preserve
+  precise values, units and assumptions in the result table/detail. Verify the
+  rounding against the same calculation; never replace the underlying fixture with
+  a rounded number or round away a threshold that changes the decision.
+
+### Examples, charts and reflection
+
+For a tool-backed guide, connect: reader question → declared example → result and
+visual → meaning for the household → try with the reader's own numbers. Adapt the
+order to the question; do not force every news report into a calculator tutorial.
+
+- Choose a chart that explains the decision, not decoration. Tell readers what to
+  look at and what the difference means. Supply a readable text/table alternative.
+- Capture actual tool results using the declared inputs. An illustration or mock
+  must be labelled as such; do not present it as observed UI or calculated output.
+- Keep the article's household, prose, screenshot, chart, exercise and related
+  article references consistent. If examples differ, explain the difference at
+  the transition, or use one scenario. Updating one article can stale another.
+- Give one useful experiment, such as changing the term or monthly contribution,
+  and a reflection question about what changed. A tool click alone is not learning.
+
+### Qualifications without self-justification
+
+Do not ban the word "không" or remove safeguards to make copy sound confident.
+Use the reader's likely misunderstanding to decide where a qualification belongs.
+
+| Content | Treatment |
+| --- | --- |
+| "Đây không phải tin tức" in a collection introduction | Replace with the question the collection helps answer; internal taxonomy stays internal. |
+| "Được vay không có nghĩa nên vay hết" | Keep the useful distinction; explain it with household cash flow. |
+| "Đây là kịch bản, không phải dự báo lãi suất" beside a projection | Keep near the result, with the assumed rate and period visible. |
+| "Bài này không trả lời được gì" as a repeated heading | Prefer an action-oriented heading such as "Đối chiếu trước khi quyết định"; retain the substantive limits. |
+| Long repeated explanations of tests or AI assistance | Keep truthful provenance in its designated section; shorten repetition, never fabricate or erase a material review limitation. |
+
+Place conditions that change a conclusion beside that conclusion, even in a short
+answer. Secondary details can follow. A generic end disclaimer cannot repair an
+unsupported headline or a simulation described as a real contract outcome.
+Keep source attribution and relevant jurisdiction/date context. Verify current
+rates, law, fees and market availability from appropriate sources when making or
+updating those claims; a calculator test does not validate them. Label hypotheses
+as hypotheses and avoid inferring eligibility, bank approval, safety or available
+housing from an illustrative affordability result.
+
+### Acquisition through education
+
+The free standalone website tools let readers try what they learned. The app is
+the connected journey, not a reason to withhold the article's answer. Offer the
+relevant next tool in context. Mention an app action only when implemented and its
+destination is verified; do not invent store links, account saving or data transfer.
+
+## Review and verification
+
+1. Resolve the actual article data, registry and shared copy before reviewing. For
+   education, use `articles.ts`, `types.ts`, `collection.ts` and `groups.ts`; for
+   news, use `posts.ts` and the Markdown bodies. Report what was read in depth
+   versus mechanically screened; neither is a live UI or legal verification.
+2. Read as a buyer: after the opening, can I say what this helps me decide? After
+   the example, can I explain the result? At the end, do I know what to try next?
+3. Separate priority findings: misleading/unsupported claims or mismatched examples
+   first; obstructive prose and number density next; cosmetic repetition after that.
+   Give the passage, reader impact and proposed rewrite; label source rechecks still
+   needed. Do not silently rewrite a review-only assignment.
+4. For education edits, preserve `types.ts` structure, computed visuals, declared
+   emphasis and glossary references. Run relevant article, financial-semantics,
+   reading-comprehension, reading-time and visual-reference tests, then the owning
+   project gate. Inspect changed rendered pages when claiming readability/layout.
+5. Review the prose semantically. Existing tests check structure and selected
+   numerical properties, not writing quality; do not add a blanket negative-word
+   ban or weaken a numerical/safety test to pass a style change.
+
+These instructions standardize drafting and review decisions. They do not guarantee
+comprehension, financial suitability, conversion lift or compliance, and they do not
+automatically enforce tone. Human editorial acceptance and publication authority
+remain separate from passing tests or an AI review.
 
 ## Hard rules
 
@@ -24,15 +120,21 @@ description: >-
 6. **Cover**: local assets via `img(post.cover)` (`/images/blog/...` or Framer map) — do not hotlink remote URLs at runtime.
 7. External links: `target="_blank"` `rel="noopener noreferrer"` (Markdown component handles this).
 8. If `post.source` exists, page must show `SourceAttribution` and schema `isBasedOn` / `citation`.
-9. After changes: `pnpm build` and confirm `out/blog/<slug>/index.html` has title, description, canonical, JSON-LD Article.
+9. After implementation changes: run the project gate under the required Node version
+   (see `AGENTS.md`), and confirm `out/blog/<slug>/index.html` has title, description,
+   canonical and JSON-LD Article. Documentation-only capability updates use the
+   skill validator and the project-required verification; they do not prove live UI.
 
 ## Checklist per new post
 
 - [ ] Unique `slug` kebab-case Vietnamese ASCII
 - [ ] `date` ISO; `readingTime` set
 - [ ] Original title + excerpt (not a verbatim source headline dump)
-- [ ] Body follows roundup template (điểm chính → góc FinHome → đọc thêm + link)
-- [ ] `source.name` + `source.url` correct
+- [ ] Opening answers a reader need; any qualification has a concrete purpose
+- [ ] Tool guide: declared example → readable visual/result → explanation → experiment
+- [ ] Source roundup: context → takeaways → buyer relevance → original-source link
+- [ ] Source metadata matches the content type: roundup `source`, education `sources`
+- [ ] Assumptions, results, screenshots and cross-article references agree
 - [ ] Appears in `POSTS` (sitemap picks it up automatically)
 - [ ] No scraped copyrighted image or long pasted quotes
 

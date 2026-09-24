@@ -13,6 +13,6 @@ Cũng như nhiều chính sách nhà ở khác, gói tín dụng ưu đãi cho n
 
 ## Đọc thêm
 
-Nội dung chi tiết về các đề xuất chính sách và số liệu so sánh khu vực nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Trước khi xem một gói ưu đãi, hãy [tính khoản trả sau thời gian ưu đãi](/cong-cu/lai-suat-tha-noi/) bằng giả định của bạn và đối chiếu điều kiện của chương trình.
 
 [Đọc bài gốc trên VnExpress](https://vnexpress.net/thu-tuong-de-nghi-co-goi-tin-dung-uu-dai-nha-o-cho-nguoi-khong-qua-35-tuoi-4848272.html)

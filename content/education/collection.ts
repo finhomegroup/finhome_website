@@ -1,10 +1,8 @@
 // Copy for the "Mua nhà bằng con số" collection: its index page and the
 // fixed furniture of every article.
 //
-// The collection sits alongside the market-news feed, not inside it. The
-// wording says so in both directions, because a reader who lands on an
-// evergreen exercise from search needs to know it is not a dated report, and a
-// reader browsing news needs to know the exercises exist.
+// Internal taxonomy keeps education separate from news. Reader-facing copy
+// explains the decision and experiment, not that internal distinction.
 
 export const EDUCATION_COLLECTION = {
   slug: "/blog/mua-nha-bang-con-so",
@@ -23,21 +21,21 @@ export const EDUCATION_COLLECTION = {
 
   pageTitle: "Mua nhà bằng con số",
   lede:
-    "Mỗi bài một câu hỏi và một phép tính bạn tự làm được. Không phải tin thị trường: đây là bài tập, và con số trong bài đến từ chính các công cụ miễn phí trên trang này.",
+    "Mua nhà giá bao nhiêu thì vừa túi tiền? Mỗi tháng trả nợ bao nhiêu? Tiếp tục thuê hay bắt đầu mua? Cùng tìm hiểu bằng ví dụ dễ hiểu, biểu đồ và công cụ tính miễn phí.",
 
-  /** How this differs from the news feed, stated on the index. */
-  scopeTitle: "Đây không phải tin tức",
+  /** A useful starting point for readers arriving from search or the news feed. */
+  scopeTitle: "Thử một ví dụ, hiểu kế hoạch của bạn",
   scopeBody:
-    "Các bài ở đây không cũ đi theo ngày và không tóm tắt báo cáo của ai. Mỗi bài nêu rõ tình huống giả lập, chạy phép tính bằng công cụ của FinHome, và chỉ cho bạn cách tự nhập số của mình. Không bài nào trích lãi suất hay biểu phí đang áp dụng của ngân hàng nào — những con số đó thay đổi, và hợp đồng của bạn mới là câu trả lời.",
+    "Chọn câu hỏi bạn đang băn khoăn, xem ví dụ và cách đọc biểu đồ, rồi thay bằng số của mình trên công cụ. Thử đổi một điều — giá nhà, thời hạn vay hoặc tiền tiết kiệm mỗi tháng — để thấy kế hoạch thay đổi ra sao. Giả định và nguồn tham khảo được ghi ngay trong từng bài.",
 
   groupsTitle: "Năm nhóm quyết định",
   groupsNote:
-    "Mỗi bài thuộc đúng một nhóm. Bạn không cần đọc theo thứ tự — hãy vào nhóm gần nhất với điều bạn đang cân nhắc.",
+    "Bạn có thể bắt đầu từ điều đang băn khoăn, không cần đọc theo thứ tự.",
 
   /** Link from the news feed to the collection. */
-  fromNewsTitle: "Muốn tự tính thay vì đọc tin?",
+  fromNewsTitle: "Thông tin này có ý nghĩa gì với kế hoạch mua nhà của bạn?",
   fromNewsBody:
-    "Bộ bài “Mua nhà bằng con số” hướng dẫn từng phép tính khi mua nhà lần đầu, kèm bài tập trên công cụ miễn phí.",
+    "Tìm hiểu tầm giá vừa túi tiền, khoản trả hằng tháng và tiền cần chuẩn bị qua ví dụ, biểu đồ và công cụ miễn phí.",
   fromNewsCta: "Xem bộ bài",
 
   /** Link from the collection back to the news feed. */
@@ -53,11 +51,11 @@ export const EDUCATION_COLLECTION = {
     // look for before looking is far likelier to look at all. Each article
     // supplies the sentence itself in `visualReading`.
     visualReadingTitle: "Biểu đồ này cho thấy gì",
-    assumptionsTitle: "Bảng này giả định",
+    assumptionsTitle: "Giả định của ví dụ",
     openTool: "Mở công cụ",
     changeLabel: "Thử đổi một thứ:",
     checkLabel: "Tự kiểm tra:",
-    provenanceTitle: "Bài này được viết và kiểm tra thế nào",
+    provenanceTitle: "Về nội dung này",
     groupNote: "Bài thuộc nhóm",
     nextTitle: "Đọc tiếp",
   },

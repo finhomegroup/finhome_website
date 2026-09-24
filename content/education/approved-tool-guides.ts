@@ -3,7 +3,7 @@
 import type { EducationArticle } from "@/content/education/types";
 
 const MEDIA = "/images/education/tool-guides-20260923/";
-const provenance = "Bài giáo dục FinHome được soạn với hỗ trợ AI và được founder duyệt nội dung trước xuất bản. Ví dụ là giả lập; biểu đồ tính từ mô hình của công cụ. Ảnh chụp công cụ ngày 23/09/2026 chỉ minh họa bộ giả định đã nêu. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.";
+const provenance = "Bài giáo dục FinHome có hỗ trợ AI, được founder duyệt nội dung trước xuất bản. Ví dụ giả lập; ảnh công cụ ngày 23/09/2026 minh họa các giả định đã nêu. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.";
 
 export const APPROVED_C01: EducationArticle = {
   slug: "co-600-trieu-nen-tim-nha-tam-gia-nao", group: "BUDGET", planId: "C01",
@@ -235,7 +235,7 @@ export const APPROVED_C08: EducationArticle = {
     change: "Đổi riêng “Giá nhà tăng” về 0%, rồi mới thay “So sánh trong”. Bạn có thể thử từ 60 lên 120 rồi 180 tháng để thấy khác biệt giữa ở 5, 10 và 15 năm. Ghi lại ô nào làm kết luận đảo chiều.",
     check: "Nếu giá nhà không tăng, bạn còn muốn mua căn này để ở không? Lợi suất giả định có phù hợp rủi ro bạn chấp nhận không?",
   },
-  limits: { title: "Đây không phải dự báo tài sản", items: [
+  limits: { title: "Thử lại giả định trước khi chọn thuê hay mua", items: [
     "Đây là phép so chi phí ròng theo mô hình, không phải dự báo tài sản hay khuyến nghị đầu tư.",
     "Chưa tính lạm phát, thuế thu nhập và chi phí chuyển nhà ngoài các khoản đã nhập.",
     "Thay giả định lợi suất, lãi vay, giá nhà hoặc thời gian đều có thể thay đổi kết quả. Không bảo đảm khả năng bán nhà, lợi suất hay việc hoàn đủ tiền cọc theo hợp đồng thực tế.",

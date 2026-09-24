@@ -37,7 +37,12 @@ export function EducationArticleBody({
   article: EducationArticle;
 }) {
   const group = educationGroup(article.group);
-  const visual = resolveEducationVisual(article.visual, EDUCATION_VISUAL_LABELS);
+  const resolved = resolveEducationVisual(article.visual, EDUCATION_VISUAL_LABELS);
+  const visual = article.visualAssumptions
+    ? resolved.kind === "chart"
+      ? { ...resolved, model: { ...resolved.model, assumptions: [...article.visualAssumptions] } }
+      : { ...resolved, assumptions: [...article.visualAssumptions] }
+    : resolved;
   const tool = getCalculator(article.exercise.toolSlug);
   if (!tool) {
     throw new Error(
@@ -273,7 +278,7 @@ export function EducationArticleBody({
           {article.provenance}
         </p>
         <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          {C.article.groupNote} <strong className="font-medium">{group.name}</strong> — {group.boundary}
+          {C.article.groupNote} <strong className="font-medium">{group.name}</strong> — {group.description}
         </p>
       </section>
 

@@ -13,6 +13,6 @@ Có mã định danh sẽ giúp người mua tra cứu nhanh hơn tình trạng 
 
 ## Đọc thêm
 
-Nội dung chi tiết về cấu trúc dữ liệu và trách nhiệm của từng cơ quan nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Khi xem một căn nhà, hãy hỏi nơi tra cứu chính thức, tình trạng cập nhật hồ sơ và giấy tờ cần đối chiếu. Việc có mã định danh và khả năng người mua tra cứu được đầy đủ thông tin là hai điều cần kiểm tra riêng.
 
 [Đọc bài gốc trên VnExpress](https://vnexpress.net/moi-bat-dong-san-se-co-ma-dinh-danh-dien-tu-rieng-tu-1-3-5001623.html)

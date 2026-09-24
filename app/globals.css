@@ -179,6 +179,18 @@ body {
   }
 }
 
+/* The shared desktop header must fit its company link without wrapping labels
+   or shrinking the logo. Mobile keeps the existing expandable menu. */
+@media (min-width: 80rem) {
+  header nav {
+    gap: 20px;
+  }
+
+  header nav > a {
+    white-space: nowrap;
+  }
+}
+
 /* "Thử ngay" CTA pill — glossy green surface, keeping the Framer button image's
    SHAPE (top bevel highlight, darkest ~25%, then lightening toward the bottom)
    at a lightness that white text can sit on.

@@ -13,6 +13,6 @@ Bài học lớn nhất từ đợt tăng lãi suất này là không nên chỉ
 
 ## Đọc thêm
 
-Nội dung chi tiết về biểu lãi suất từng ngân hàng và số liệu khảo sát thị trường nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Muốn biết lãi sau ưu đãi ảnh hưởng đến ngân sách thế nào? [Thử khoản trả theo hai mức lãi suất](/cong-cu/lai-suat-tha-noi/) và so phần chênh với tiền còn lại mỗi tháng.
 
 [Đọc bài gốc trên DNSE](https://www.dnse.com.vn/senses/tin-tuc/lai-suat-cho-vay-mua-nha-tiep-tuc-tang-chua-co-hy-vong-giam-35237636)

@@ -15,6 +15,6 @@ Chính sách cho nhóm thu nhập trung bình vẫn đang trong giai đoạn xâ
 
 ## Đọc thêm
 
-Nội dung chi tiết về số liệu nguồn cung và các chỉ đạo cụ thể nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Trong lúc theo dõi chính sách, bạn có thể [tính tầm giá phù hợp với ngân sách hiện tại](/cong-cu/kha-nang-mua-nha/). Điều kiện và thời điểm áp dụng từng chương trình cần đối chiếu khi có hướng dẫn chính thức.
 
 [Đọc bài gốc trên VnExpress](https://vnexpress.net/thu-tuong-can-co-chinh-sach-nha-o-cho-nguoi-thu-nhap-trung-binh-5044253.html)

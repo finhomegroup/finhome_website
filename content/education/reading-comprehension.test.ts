@@ -229,12 +229,15 @@ describe("every chart has a sentence saying how to read it", () => {
 
     // So the sentence must NOT claim both lines end at the target, and must
     // name the contribution endpoint it really has.
-    expect(c04.visualReading).toContain("448.075.899");
+    expect(c04.visualReading).toContain("448,1 triệu");
+    const details = c04.sections.flatMap((s) => s.results?.rows.map((r) => r.value) ?? []).join(" ");
+    expect(details).toContain("448.075.899");
     expect(c04.visualReading).toContain("Chỉ ĐƯỜNG LIỀN kết thúc ở mục tiêu");
     expect(c04.visualReading).not.toContain("Cả hai đường đều kết thúc");
     // The 0% case is where they DO coincide, and the sentence says so with
     // the required contribution that makes it true.
-    expect(c04.visualReading).toContain("11.111.111");
+    expect(c04.visualReading).toContain("11,1 triệu");
+    expect(details).toContain("11.111.111");
   });
 });
 

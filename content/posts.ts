@@ -159,7 +159,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Trần theo tỷ lệ và ngân sách thật của hộ được tính từ hai thứ khác nhau, và khoảng cách giữa chúng nghiêng về phía bạn vay được nhiều hơn mức sống thoải mái.",
+      "Một trần vay giả định theo tỷ lệ chưa nói lên ngân sách của gia đình. Thử tính phần còn lại sau chi tiêu, nợ đang trả và tiền dự phòng.",
     readingTime: "5 phút đọc",
     date: "2026-09-14",
   },
@@ -214,7 +214,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Bạn đổi sự chắc chắn lấy một mức khởi điểm thấp hơn. Bài đưa ra mức lãi cố định hòa vốn để so với báo giá bạn đang có.",
+      "Khoản trả giữ nguyên và khoản trả đổi theo lãi suất ảnh hưởng thế nào đến gia đình? Thử một kịch bản trước khi so báo giá thực tế.",
     readingTime: "6 phút đọc",
     date: "2026-09-14",
   },
@@ -225,7 +225,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Ba phần của phép tính: khoản giảm mỗi tháng, chi phí chuyển đổi, và số tháng để bù. Con số quyết định là thời gian bạn còn giữ khoản vay.",
+      "Đổi khoản vay có thể giảm tiền trả tháng nhưng còn phí và dư nợ. So cả chi phí đến mốc dự định giữ vay để hiểu khi nào chuyển đổi có lợi.",
     readingTime: "7 phút đọc",
     date: "2026-09-14",
   },
@@ -274,8 +274,8 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Trần thu nhập tính trên thực nhận, không phải thu nhập gộp. Và trên hộ giả lập của bài, lãi suất ưu đãi làm khoản trả nhẹ đi 41% mà tầm giá lại thấp hơn — vì giới hạn đang chặn đã đổi.",
-    readingTime: "7 phút đọc",
+      "Hiểu cách xét thu nhập, tách điều kiện mua khỏi khả năng trả nợ và thử ngân sách của gia đình qua ví dụ vay mua nhà ở xã hội.",
+    readingTime: "9 phút đọc",
     date: "2026-09-17",
   },
   {
@@ -285,7 +285,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Hộ giả lập thứ hai của bộ bài, ở mức thu nhập phổ biến hơn. Cùng một hộ, khoản trả chiếm 36,7% thu nhập thực nhận ở đường thương mại và 17,6% ở chương trình ưu đãi.",
+      "Cùng thu nhập 30 triệu, số tiền còn lại sau chi tiêu mới quyết định ngân sách trả nợ. Xem hai phương án giả lập và thử với số của bạn.",
     readingTime: "6 phút đọc",
     date: "2026-09-17",
   },
@@ -296,7 +296,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Phần tự có 20% không phải số tiền mặt căn nhà đòi. Bài cộng từng khoản, và nêu rõ khoản lớn nhất trong số đó là một sản phẩm không bắt buộc.",
+      "Ngoài tiền trả trước, cần dự trù những khoản nào khi mua căn hộ 2 tỷ? Cùng lập danh sách chi phí và phân biệt số giả định với báo giá thật.",
     readingTime: "6 phút đọc",
     date: "2026-09-17",
   },
@@ -307,7 +307,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Khung phí quản lý rộng gần mười bốn lần, và khoản này thuộc ô chi phí sinh hoạt của công cụ. Bỏ qua nó làm tầm giá cao lên 69 đến 267 triệu.",
+      "Phí quản lý, gửi xe và các khoản định kỳ ảnh hưởng thế nào đến ngân sách mua nhà? Thử ba mức phí giả định và kiểm tra báo giá của tòa nhà.",
     readingTime: "6 phút đọc",
     date: "2026-09-17",
   },
@@ -318,7 +318,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Mục tiêu vốn phụ thuộc chương trình bạn nhắm. Với hộ trong bài, mức góp cần thiết còn thấp hơn mức họ đang góp.",
+      "Muốn mua nhà ở tầm giá dự kiến, gia đình còn thiếu bao nhiêu tiền trả trước? Xem ví dụ tiết kiệm và tách mục tiêu tiền khỏi điều kiện mua.",
     readingTime: "5 phút đọc",
     date: "2026-09-17",
   },
@@ -329,7 +329,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Lãi suất thấp không đổi hình dạng lịch trả — phần gốc chỉ vượt phần lãi ở tháng 147. Nó đổi tổng lãi: 514 triệu, bằng 59% số tiền vay.",
+      "Thử lịch trả góp đều với khoản vay khoảng 870 triệu, lãi giả định giữ ở 5,4%/năm. Đọc biểu đồ gốc, lãi và cộng thêm chi phí nhà ở.",
     readingTime: "5 phút đọc",
     date: "2026-09-17",
   },
@@ -340,7 +340,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "So tầm giá là cách so sai. Hai chương trình chặn ở hai chỗ khác nhau, và khoản trả so với ngân sách mới là phép so quyết định.",
+      "So cả tầm giá lẫn khoản trả mỗi tháng qua hai phương án giả lập. Điều kiện được mua, được vay và căn nhà phù hợp cần kiểm tra riêng.",
     readingTime: "6 phút đọc",
     date: "2026-09-17",
   },
@@ -351,7 +351,7 @@ const EDUCATION_ENTRIES: Post[] = [
     topics: [],
     kind: "education",
     excerpt:
-      "Khoản trả sau ưu đãi vượt ngân sách của hộ 1.979.188 ₫ mỗi tháng. Kế hoạch không trụ được qua chính lần đặt lại lãi đầu tiên của nó.",
+      "Trong ví dụ, khoản trả sau ưu đãi vượt ngân sách khoảng 2 triệu mỗi tháng. Thử lãi suất sau ưu đãi để nhận ra khoảng thiếu hụt từ sớm.",
     readingTime: "5 phút đọc",
     date: "2026-09-17",
   },
@@ -2675,7 +2675,7 @@ export const POSTS: Post[] = [
     category: "Tài chính",
     topics: ["gia-cung"],
     excerpt:
-      "Giá nhà tăng nhanh hơn thu nhập khiến số năm tích lũy mua nhà tăng rõ. FinHome tóm tắt tín hiệu chính để lập kế hoạch mua nhà.",
+      "Hiểu tỷ số giá nhà so với thu nhập được VnExpress dẫn tháng 5/2026, rồi thử ngân sách riêng thay vì coi chỉ số chung là số năm bạn phải chờ.",
     readingTime: "3 phút đọc",
     cover: "/images/blog/kha-nang-mua-nha-viet-nam-numbeo.jpg",
     date: "2026-07-24",

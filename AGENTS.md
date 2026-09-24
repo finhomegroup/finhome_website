@@ -4,6 +4,18 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
+# Blog writing and editorial review
+
+Before writing, reviewing or editing blog copy, collection introductions, education
+articles or their shared labels, read `.cursor/skills/seo-blog/SKILL.md` in full.
+It is the project-owned writing capability for all agents, including Codex and Claude;
+the directory name does not restrict its use to Cursor. Keep the editorial rules there,
+not in a second provider-specific copy. `CLAUDE.md` imports this file.
+
+Its reader-first contract covers plain Vietnamese, meaningful visuals, proportionate
+qualifications, evidence and truthful tool-to-app calls to action as well as SEO.
+Review authority does not imply authority to rewrite or publish existing articles.
+
 # Calculator suite
 
 There is a suite of financial calculators at `/cong-cu/`. Every planned tool is built.

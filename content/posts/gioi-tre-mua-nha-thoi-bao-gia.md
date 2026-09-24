@@ -19,6 +19,6 @@ Không có lựa chọn nào trong ba nhóm là "đúng" tuyệt đối — đi�
 
 ## Đọc thêm
 
-Nội dung phân tích đầy đủ về ba nhóm hành vi và dữ liệu thị trường chi tiết nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Bạn đang cân nhắc mua ngay hay chờ thêm? [Thử so sánh thuê và mua](/cong-cu/thue-hay-mua/) trên cùng thời gian dự định ở.
 
 [Đọc bài gốc trên CafeF](https://cafef.vn/gioi-tre-va-su-chuyen-dich-trong-quyet-dinh-mua-nha-thoi-bao-gia-188260531074034384.chn)

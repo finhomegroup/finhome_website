@@ -15,6 +15,6 @@ Khi giá nhà "có sổ" vượt xa khả năng chi trả, việc cân nhắc c�
 
 ## Đọc thêm
 
-Nội dung phân tích đầy đủ, gồm số liệu theo từng khu vực và ý kiến chuyên gia, nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Để lập kế hoạch cho riêng mình, hãy [tính tầm giá từ ngân sách thực tế](/cong-cu/kha-nang-mua-nha/). Đối chiếu thu nhập, chi phí sinh hoạt và tiền dự phòng thay vì lấy một chỉ số toàn thị trường làm thời hạn tiết kiệm của gia đình.
 
 [Đọc bài gốc trên CafeF](https://cafef.vn/nguoi-viet-can-hon-30-nam-thu-nhap-de-mua-duoc-nha-188260202110901204.chn)

@@ -19,6 +19,6 @@ Muốn tự kiểm tra bằng số của mình: [Có 600 triệu, nên tìm nhà
 
 ## Đọc thêm
 
-Nội dung tính toán chi tiết theo từng nhóm thu nhập nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Với thu nhập và tiền tích lũy của mình, bạn nên bắt đầu tìm ở tầm giá nào? [Thử tính ngân sách mua nhà](/cong-cu/kha-nang-mua-nha/) và để riêng tiền dự phòng.
 
 [Đọc bài gốc trên VnExpress](https://vnexpress.net/gia-nha-bao-nhieu-phu-hop-voi-nguoi-thu-nhap-trung-binh-5046151.html)

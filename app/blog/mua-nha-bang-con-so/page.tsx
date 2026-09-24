@@ -99,7 +99,7 @@ export default function EducationCollectionPage() {
                     {group.question}
                   </p>
                   <p className="mt-1 text-sm leading-relaxed text-ink-3">
-                    {group.boundary}
+                    {group.description}
                   </p>
 
                   <ul className="mt-4 space-y-3">

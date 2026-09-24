@@ -13,6 +13,6 @@ Nhà ở xã hội luôn là chủ đề được nhiều người quan tâm vì
 
 ## Đọc thêm
 
-Nội dung quy định chi tiết về từng nhóm đối tượng và căn cứ pháp lý nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Bạn có thể [ước tính tiền tự có và khoản trả khi mua nhà ở xã hội](/cong-cu/nha-o-xa-hoi/). Kết quả giúp chuẩn bị ngân sách; cơ quan tiếp nhận và ngân hàng vẫn phải xem xét hồ sơ thực tế.
 
 [Đọc bài gốc trên Luật Việt Nam](https://luatvietnam.vn/dat-dai-nha-o/dieu-kien-va-chinh-sach-uu-dai-vay-von-mua-nha-o-xa-hoi-567-101470-article.html)

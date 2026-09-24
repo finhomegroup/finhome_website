@@ -55,12 +55,13 @@ function count(cell: TableCell): number {
     : Number.NaN;
 }
 
-/** Every sentence an article renders as body prose. */
+/** Prose plus rendered result details, where exact figures belong. */
 function prose(planId: string): string {
   const article = EDUCATION_ARTICLES.find((a) => a.planId === planId)!;
   return [
     ...article.shortAnswer,
     ...article.sections.flatMap((s) => s.paragraphs),
+    ...article.sections.flatMap((s) => s.results?.rows.map((r) => `${r.label} ${r.value}`) ?? []),
     ...article.household.items.map((i) => `${i.label} ${i.value}`),
     article.household.note,
   ].join(" ");

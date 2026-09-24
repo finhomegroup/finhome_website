@@ -15,6 +15,6 @@ Chính sách này hiện vẫn đang chờ ban hành nên chưa có dự án hay
 
 ## Đọc thêm
 
-Nội dung chi tiết về cơ chế thí điểm và số liệu khảo sát nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+Trước khi chờ một chương trình mới, hãy [xác định ngân sách mua nhà của gia đình](/cong-cu/kha-nang-mua-nha/). Khi có thông báo tiếp nhận hồ sơ, đối chiếu lại đối tượng, điều kiện và thời hạn áp dụng.
 
 [Đọc bài gốc trên VnExpress](https://vnexpress.net/thu-nhap-tren-20-trieu-dong-mot-thang-co-the-duoc-uu-tien-mua-nha-gia-phu-hop-5044245.html)
