@@ -1,20 +1,19 @@
-Một con số vừa được giới chuyên gia bất động sản nhắc lại tại hội thảo giữa năm: người Việt hiện cần hơn 30 năm thu nhập để mua được một căn nhà, gấp đôi mặt bằng chung của thế giới. Đây không phải nhận định cảm tính mà dựa trên dữ liệu so sánh giá nhà và thu nhập ở hơn 100 quốc gia, và điều đáng chú ý là vị trí của Việt Nam trong bảng xếp hạng này đang xấu đi theo từng năm.
+Giá nhà cao so với thu nhập khiến kế hoạch mua nhà khó hơn. Bài VnExpress ngày 12/5/2026 dẫn nhận định của chuyên gia Cấn Văn Lực và dữ liệu Numbeo về khoảng cách này. Với gia đình đang tìm nhà, câu hỏi hữu ích là: sau chi phí sinh hoạt, mình còn bao nhiêu để tiết kiệm và trả nợ?
 
-Với người có kế hoạch mua nhà trong vài năm tới, đây là tín hiệu cần nhìn thẳng: nếu chỉ trông chờ thu nhập tăng theo lộ trình thông thường, khoảng cách với giá nhà sẽ ngày càng xa hơn thay vì thu hẹp lại.
+## Chỉ số nói gì về thị trường?
 
-## Điểm chính cần nắm
+Bài nguồn nêu tỷ số giá nhà so với thu nhập tại Việt Nam vượt 30 và đứng thứ 10 trong hơn 100 quốc gia được so sánh. Đây là số liệu được dẫn tại thời điểm bài nguồn đăng, không phải bảng xếp hạng cập nhật theo ngày trên FinHome.
 
-- Theo nền tảng dữ liệu Numbeo, Việt Nam đã tụt từ hạng 14 (2023) xuống nhóm 10 quốc gia khó mua nhà nhất trong hơn 100 nước được khảo sát.
-- Số năm thu nhập cần tích lũy để mua nhà tăng nhanh: khoảng 23 năm giai đoạn 2023-2024, lên 26 năm năm ngoái và vượt mốc 30 năm ở thời điểm hiện tại.
-- Nguyên nhân chính được chỉ ra là nguồn cung lệch pha: căn hộ bình dân gần như biến mất ở các đô thị lớn, trong khi phân khúc cao cấp áp đảo nguồn cung mới.
-- Giá căn hộ sơ cấp tại Hà Nội và TP HCM đã vượt mốc 100 triệu đồng/m² ở nhiều dự án, trong khi tốc độ tăng thu nhập bình quân chỉ bằng một phần nhỏ tốc độ tăng giá nhà.
+Tỷ số đó mô tả khả năng tiếp cận nhà ở trên một bộ giả định thống kê. Nó không có nghĩa mọi gia đình phải tiết kiệm đúng 30 năm: thu nhập, chi tiêu, tiền có sẵn và giá căn nhà mỗi người chọn đều khác nhau. Bạn có thể đọc [cách Numbeo xây dựng chỉ số bất động sản](https://www.numbeo.com/property-investment/indicators_explained.jsp) để hiểu phạm vi của phép so sánh.
 
-## Góc nhìn FinHome
+## Bắt đầu từ khoản tiền gia đình thực sự có thể dành ra
 
-Con số "30 năm" nghe có vẻ đáng lo, nhưng đó là mức trung bình tính trên toàn thị trường — không phải mức áp dụng cho mọi khu vực hay mọi loại hình nhà ở. Vẫn có những vùng, những dự án với mức giá vừa túi tiền hơn nếu người mua chịu khó mở rộng bán kính tìm kiếm và tính toán kỹ khả năng trả nợ thay vì chạy theo khu vực trung tâm. Đây cũng là lý do FinHome luôn khuyến nghị người mua nhà xác định trước ngân sách an toàn (dựa trên thu nhập thực và tỷ lệ trả nợ hợp lý) trước khi chọn khu vực, thay vì chọn nhà rồi mới tính bài toán vay.
+Ghi lại thu nhập thực nhận, chi phí sinh hoạt, khoản nợ đang trả và tiền muốn tiếp tục để dành. Phần còn lại giúp bạn ước tính ngân sách chỗ ở. Từ tiền tích lũy, giữ riêng quỹ dự phòng và các chi phí mua ngoài giá căn nhà.
 
-## Đọc thêm
+Sau đó mới đối chiếu với căn nhà cụ thể: giá bán, vị trí, chi phí đi lại và giấy tờ. Mở rộng khu vực tìm kiếm có thể tạo thêm lựa chọn, nhưng cần kiểm tra căn đang bán và tổng chi phí thực tế; một chỉ số chung không chứng minh có nhà phù hợp với ngân sách của bạn.
 
-Nội dung phân tích đầy đủ, gồm số liệu chi tiết theo từng khu vực và nhận định của chuyên gia, nằm ở bài gốc. FinHome chỉ tổng hợp góc nhìn để hỗ trợ độc giả định hướng tài chính khi mua nhà.
+## Thử với số của bạn
 
-[Đọc bài gốc trên VnExpress](https://vnexpress.net/nguoi-viet-thuoc-nhom-kho-mua-nha-nhat-the-gioi-5072991.html)
+[Mở công cụ Khả năng mua nhà](/cong-cu/kha-nang-mua-nha/), nhập ngân sách của gia đình rồi thử tăng phần tiền dự phòng. Tầm giá thay đổi thế nào? Bạn có còn đủ khoảng trống mỗi tháng cho những chi phí chưa tính đến không?
+
+[Đọc bài nguồn trên VnExpress, ngày 12/5/2026](https://vnexpress.net/nguoi-viet-thuoc-nhom-kho-mua-nha-nhat-the-gioi-5072991.html)

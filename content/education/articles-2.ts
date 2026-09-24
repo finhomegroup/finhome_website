@@ -41,13 +41,13 @@ export const ARTICLES_2: EducationArticle[] = [
     planId: "C07",
     question: "Vay 20 năm hay 25 năm: vì sao tháng nhẹ hơn mà tổng lãi cao hơn?",
     shortAnswer: [
-      "Trên cùng 2 tỷ ở 8,5%/năm: 240 tháng trả 17.356.465 ₫ mỗi tháng và tốn 2.165.551.520 ₫ lãi; 300 tháng trả 16.104.542 ₫ mỗi tháng và tốn 2.831.362.501 ₫ lãi.",
-      "Nhẹ hơn 1.251.923 ₫ mỗi tháng, đắt hơn 665.810.981 ₫ tiền lãi. Đó là một đánh đổi, không phải một sai lầm — và bài này để bạn thấy rõ hai đầu của nó.",
+      "Với cùng khoản vay 2 tỷ, trả góp đều và lãi giữ nguyên 8,5%/năm, kéo kỳ hạn từ 20 lên 25 năm giúp khoản trả giảm từ khoảng 17,4 xuống 16,1 triệu mỗi tháng.",
+      "Nhẹ hơn khoảng 1,25 triệu mỗi tháng, nhưng tổng lãi cả kỳ tăng khoảng 665,8 triệu, chưa tính phí và chưa quy đổi tiền tương lai về hiện tại. Hãy xem phần nhẹ hơn có đáng thêm 5 năm mang nợ với gia đình bạn không.",
     ],
     // Both ends of the trade-off, on the article's own fixture. The two
     // figures are emphasised together so neither can be quoted alone.
     shortAnswerEmphasis: [
-      "Nhẹ hơn 1.251.923 ₫ mỗi tháng, đắt hơn 665.810.981 ₫ tiền lãi",
+      "Nhẹ hơn khoảng 1,25 triệu mỗi tháng, nhưng tổng lãi cả kỳ tăng khoảng 665,8 triệu",
     ],
     household: {
       title: "Khoản vay giả lập trong bài",
@@ -66,14 +66,25 @@ export const ARTICLES_2: EducationArticle[] = [
         heading: "Cùng một khoản nợ, trả trong nhiều năm hơn thì tốn nhiều lãi hơn",
         paragraphs: [
           "Lãi được tính trên dư nợ, từng tháng. Kéo kỳ hạn dài ra không làm dư nợ nhỏ đi — nó làm dư nợ tồn tại lâu hơn, nên tổng số tháng bị tính lãi tăng lên.",
-          "Trong ví dụ, thêm 60 tháng làm tổng lãi tăng 665.810.981 ₫, tức khoảng một phần ba số tiền vay ban đầu. Con số đó không hiện ra ở bất kỳ đâu trong khoản trả hằng tháng, và đó chính là lý do chỉ so khoản trả hằng tháng thì chưa đủ để đánh giá tổng chi phí.",
-          "Chiều ngược lại cũng thật: khoản trả nhẹ hơn 1.251.923 ₫ mỗi tháng là tiền bạn có thể dùng cho việc khác, hoặc là phần dư để ứng phó với một tháng thu nhập thấp; bài không mô hình hóa điều kiện duyệt vay.",
-          "Biểu đồ dưới đây vẽ đúng chỗ khác biệt phát sinh: hai đường dư nợ cùng bắt đầu từ 2 tỷ, nhưng đường 25 năm nằm cao hơn ở mọi tháng. Ở tháng 120, phương án 20 năm còn nợ 1.399.876.455 ₫ còn phương án 25 năm còn 1.635.411.266 ₫ — chính phần dư nợ cao hơn, tồn tại lâu hơn đó là nơi tiền lãi tăng thêm. Đường ngắn về 0 ở tháng 240; đường dài còn 784.954.406 ₫ ở đúng tháng đó và chỉ hết ở tháng 300.",
+          "Trong ví dụ, thêm 60 tháng làm tổng lãi tăng khoảng 665,8 triệu, tức khoảng một phần ba số tiền vay ban đầu. Vì vậy, chỉ so khoản trả hằng tháng thì chưa đủ để đánh giá tổng chi phí.",
+          "Đổi lại, khoản trả nhẹ hơn khoảng 1,25 triệu mỗi tháng là tiền bạn có thể dùng cho việc khác hoặc dự phòng một tháng thu nhập thấp. Bài không mô hình hóa điều kiện duyệt vay.",
+          "Trên biểu đồ, hai đường dư nợ cùng bắt đầu từ 2 tỷ. Sau điểm đó, đường 25 năm nằm cao hơn cho đến khi trả hết: sau 10 năm, phần gốc còn nợ khoảng 1,64 tỷ, so với 1,40 tỷ của phương án 20 năm. Khi phương án ngắn vừa hết nợ ở tháng 240, phương án dài vẫn còn khoảng 785 triệu và cần thêm 60 tháng.",
         ],
+        results: { caption: "Chi tiết so sánh, cùng lãi 8,5%/năm và không trả thêm", rows: [
+          { label: "Khoản trả tháng — 20 năm", value: "17.356.465 ₫" },
+          { label: "Khoản trả tháng — 25 năm", value: "16.104.542 ₫" },
+          { label: "Khoản trả giảm mỗi tháng khi chọn 25 năm", value: "1.251.923 ₫" },
+          { label: "Tổng lãi cả kỳ — 20 năm", value: "2.165.551.520 ₫" },
+          { label: "Tổng lãi cả kỳ — 25 năm", value: "2.831.362.501 ₫" },
+          { label: "Lãi tăng thêm khi chọn 25 năm", value: "665.810.981 ₫" },
+          { label: "Dư nợ tháng 120 — 20 năm", value: "1.399.876.455 ₫" },
+          { label: "Dư nợ tháng 120 — 25 năm", value: "1.635.411.266 ₫" },
+          { label: "Dư nợ tháng 240 — 25 năm", value: "784.954.406 ₫" },
+        ] },
         emphasis: [
           "nó làm dư nợ tồn tại lâu hơn",
           "chỉ so khoản trả hằng tháng thì chưa đủ để đánh giá tổng chi phí",
-          "hai đường dư nợ cùng bắt đầu từ 2 tỷ, nhưng đường 25 năm nằm cao hơn ở mọi tháng",
+          "phương án dài vẫn còn khoảng 785 triệu",
         ],
       },
       {
@@ -81,8 +92,12 @@ export const ARTICLES_2: EducationArticle[] = [
         paragraphs: [
           "Kỳ hạn dài hơn 25% (từ 240 lên 300 tháng) nhưng khoản trả chỉ giảm 7,2%. Đây là điều gây bất ngờ nhất khi người ta hy vọng kéo dài kỳ hạn sẽ giải quyết vấn đề dòng tiền.",
           "Ở THÁNG ĐẦU, cùng số tiền vay và cùng lãi suất cho số tiền lãi như nhau; kỳ hạn dài làm phần gốc trả tháng đầu nhỏ hơn. Từ các tháng sau, dư nợ hai lịch khác nhau nên tiền lãi cũng khác. Không thể coi phần lãi bằng nhau suốt kỳ hạn.",
-          "Hãy tính thay vì đoán tác động của 5 năm tiếp theo. Cùng 2 tỷ ở 8,5%, 25 năm trả khoảng 16.104.542 ₫ còn 30 năm khoảng 15.378.270 ₫: ngân sách 16 triệu không đủ cho phương án đầu nhưng đủ cho phương án sau trong mô hình này. Đổi lại là thêm lãi và thời gian mang nợ; khả năng vay 30 năm phải kiểm tra trong báo giá thật.",
+          "Hãy tính thay vì đoán tác động của 5 năm tiếp theo. Cùng 2 tỷ ở 8,5%, 25 năm trả khoảng 16,10 triệu còn 30 năm khoảng 15,38 triệu: ngân sách 16 triệu không đủ cho phương án đầu nhưng đủ cho phương án sau trong mô hình này. Đổi lại là thêm lãi và thời gian mang nợ; khả năng vay 30 năm phải kiểm tra trong báo giá thật.",
         ],
+        results: { caption: "Đối chiếu với ngân sách 16 triệu mỗi tháng", rows: [
+          { label: "Khoản trả tháng — 25 năm", value: "16.104.542 ₫" },
+          { label: "Khoản trả tháng — 30 năm", value: "15.378.270 ₫" },
+        ] },
         emphasis: [
           "Kỳ hạn dài hơn 25% (từ 240 lên 300 tháng) nhưng khoản trả chỉ giảm 7,2%",
           "Hãy tính thay vì đoán",
@@ -91,8 +106,8 @@ export const ARTICLES_2: EducationArticle[] = [
       {
         heading: "Một cách dùng cả hai đầu của đánh đổi",
         paragraphs: [
-          "Nhiều người chọn kỳ hạn dài để khoản trả theo lịch nhẹ, rồi trả thêm gốc hằng tháng như thể kỳ hạn ngắn. Khi thu nhập tốt thì trả thêm; khi có tháng khó thì chỉ trả theo lịch.",
-          "Cách này đổi một nghĩa vụ cố định thành một lựa chọn linh hoạt, và bài C10 tính cụ thể phần lãi tiết kiệm được khi làm vậy.",
+          "Một phương án để thử là chọn kỳ hạn dài cho khoản trả theo lịch nhẹ, rồi trả thêm gốc hằng tháng khi có khả năng. Khi thu nhập tốt thì trả thêm; khi có tháng khó thì chỉ trả theo lịch.",
+          "Cách này đổi một nghĩa vụ cố định thành một lựa chọn linh hoạt. Bài về trả thêm nợ khi có tiền dư tính cụ thể phần lãi có thể tiết kiệm được.",
           "Trước khi dựa vào nó, hãy kiểm tra hai điều trong hợp đồng: có được trả thêm gốc hay không, và phí trả nợ trước hạn là bao nhiêu. Mức phí do hợp đồng quy định, và nếu cao thì phần lợi có thể mất hết.",
           "Một điểm nữa ít được nói: tổng lãi trong bài là số danh nghĩa, chưa chiết khấu dòng tiền. Một đồng bạn trả ở năm thứ 25 không nặng bằng một đồng trả năm nay, nên khoảng cách 665 triệu ở trên trông lớn hơn cảm giác thật khi so cùng một thời điểm. Điều đó không làm kỳ hạn dài trở nên rẻ, nhưng nó là lý do không nên chọn kỳ hạn ngắn đến mức khoản trả sát ngân sách chỉ để cắt tổng lãi trên giấy.",
           "Cách cân nhắc thực dụng: chọn kỳ hạn sao cho khoản trả theo lịch còn để lại biên an toàn, rồi dùng phần biên đó để trả thêm gốc khi có thể. Khả năng linh hoạt và phần lãi tiết kiệm phụ thuộc lịch trả thêm thực tế, phí và điều khoản; hãy thử con số cụ thể thay vì mặc định sẽ tiết kiệm phần lớn tiền lãi.",
@@ -143,11 +158,11 @@ export const ARTICLES_2: EducationArticle[] = [
         "Với số của bạn: khoản trả giảm bao nhiêu phần trăm khi kỳ hạn dài thêm 25%? Con số đó nhỏ hơn 25% chứ?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Kỳ hạn tối đa ngân hàng cho bạn, vốn phụ thuộc tuổi và hồ sơ.",
         "Tổng lãi trong bài là số danh nghĩa, chưa chiết khấu dòng tiền — một đồng trả ở năm thứ 25 không nặng bằng một đồng trả năm nay.",
-        "Việc lãi suất có giữ nguyên suốt kỳ hạn hay không. Xem bài C03.",
+        "Việc lãi suất có giữ nguyên suốt kỳ hạn hay không. Xem thêm bài về khoản trả khi hết ưu đãi.",
         "Phí trả nợ trước hạn, nếu bạn định dùng cách kỳ-hạn-dài-trả-thêm-gốc.",
       ],
     },
@@ -157,7 +172,7 @@ export const ARTICLES_2: EducationArticle[] = [
       items: [SRC_CFPB_COMPARE, SRC_TCB_TRA_GOP],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "co-tien-du-tra-them-no-giam-bao-nhieu-lai",
       "hai-goi-vay-thang-thap-co-re-hon",
@@ -174,13 +189,13 @@ export const ARTICLES_2: EducationArticle[] = [
     planId: "C09",
     question: "Nếu để dành thêm 2 triệu mỗi tháng, tôi đạt mục tiêu sớm hơn bao lâu?",
     shortAnswer: [
-      "Biểu đồ dưới vẽ hai đường tích lũy cho cùng một mục tiêu, chỉ khác mức góp, và đánh dấu kỳ góp đầu tiên đủ mục tiêu của từng đường — kỳ thứ 43 và kỳ thứ 35, sớm 8 tháng. Bảng số liệu ngay dưới biểu đồ giữ nguyên các con số chính xác. Phần rút ngắn được là kết quả của phép tính, không phải một con số chung — nó phụ thuộc bạn đang góp bao nhiêu so với mục tiêu.",
-      "Điều đáng nhớ: mức góp là thứ bạn kiểm soát được, lãi suất thì không. Nên khi muốn đạt mục tiêu sớm hơn, chỗ để tác động là mức góp.",
+      "Trong ví dụ đã có 100 triệu, muốn đủ 500 triệu và lãi giả định 6%/năm, tăng mức góp cuối tháng từ 8 lên 10 triệu giúp đạt mục tiêu sớm 8 tháng: từ kỳ thứ 43 xuống kỳ thứ 35.",
+      "Đây không phải một con số chung cho mọi kế hoạch. Hãy thử mức góp bạn có thể duy trì sau chi phí thiết yếu: mức góp là thứ bạn kiểm soát được, lãi suất thì không.",
     ],
     // A higher contribution moves the first FUNDED period, and not in
     // proportion. The emphasis keeps "not a general number" attached.
     shortAnswerEmphasis: [
-      "kỳ thứ 43 và kỳ thứ 35, sớm 8 tháng",
+      "sớm 8 tháng",
       "không phải một con số chung",
       "mức góp là thứ bạn kiểm soát được, lãi suất thì không",
     ],
@@ -288,7 +303,7 @@ export const ARTICLES_2: EducationArticle[] = [
         "Số tháng rút ngắn được của bạn có xứng với việc phải bớt 2 triệu mỗi tháng trong suốt thời gian đó không?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Bạn có nên bớt 2 triệu ở đâu. Bài không đề nghị cắt chi phí thiết yếu hay quỹ dự phòng.",
         "Lãi suất bạn sẽ nhận được. Đó là ô nhập.",
@@ -309,7 +324,7 @@ export const ARTICLES_2: EducationArticle[] = [
       ],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "du-tien-tra-truoc-sau-3-nam",
       "co-tien-du-tra-them-no-giam-bao-nhieu-lai",
@@ -323,7 +338,7 @@ export const ARTICLES_2: EducationArticle[] = [
     planId: "C10",
     question: "Có tiền dư, trả thêm nợ mua nhà giúp giảm bao nhiêu lãi?",
     shortAnswer: [
-      "Trên khoản vay 2 tỷ, 8,5%/năm, 240 tháng: trả thêm 2 triệu gốc mỗi tháng giảm 555.699.884 ₫ tiền lãi và rút ngắn 53 tháng. Khoản vay xong ở tháng 187.",
+      "Trong ví dụ vay 2 tỷ, lãi giữ nguyên 8,5%/năm và kỳ hạn 20 năm, trả thêm 2 triệu gốc mỗi tháng giúp giảm khoảng 555,7 triệu tiền lãi trước phí trả nợ trước hạn và rút ngắn 53 tháng. Khoản vay xong ở tháng 187.",
       "Đó là con số TRƯỚC phí trả nợ trước hạn. Mức phí do hợp đồng của bạn quy định, và nó có thể làm phần lợi nhỏ đi đáng kể — hoặc mất hết.",
     ],
     // The saving is a BEFORE-fee figure, and the fee is unknown here. That
@@ -348,10 +363,18 @@ export const ARTICLES_2: EducationArticle[] = [
         heading: "Vì sao 2 triệu mỗi tháng lại cắt được hơn 555 triệu tiền lãi",
         paragraphs: [
           "Mỗi đồng trả thêm đi thẳng vào gốc, và gốc là thứ lãi được tính trên. Đồng gốc trả sớm hơn thì được miễn lãi cho toàn bộ số tháng còn lại của nó.",
-          "Tổng số tiền trả thêm trong ví dụ này là khoảng 372 triệu, trải trong 186 tháng. Phần lãi cắt được là 555.699.884 ₫ — lớn hơn số tiền đã bỏ thêm, vì mỗi đồng gốc trả sớm tiết kiệm nhiều năm tiền lãi.",
+          "Tổng số tiền trả thêm trong ví dụ này là khoảng 372 triệu, trải trong 186 tháng. Phần lãi giảm khoảng 555,7 triệu trước phí trả nợ trước hạn — lớn hơn số tiền đã bỏ thêm, vì mỗi đồng gốc trả sớm tiết kiệm nhiều năm tiền lãi.",
           "Đây cũng là lý do trả thêm sớm hiệu quả hơn trả thêm muộn. Cùng 2 triệu, bỏ vào năm đầu tiết kiệm được nhiều hơn bỏ vào năm thứ mười lăm.",
-          "Biểu đồ dưới đây đặt hai đường dư nợ — phần gốc còn nợ — cạnh nhau: cùng khoản vay, chỉ khác việc có trả thêm hay không. Khoảng cách giữa hai đường mở rộng dần — ở tháng 60 là 1.762.543.662 ₫ so với 1.613.658.788 ₫, đến tháng 120 là 1.399.876.455 ₫ so với 1.023.599.623 ₫ — và đường trả thêm về 0 ở tháng 187, lúc đường theo lịch vẫn còn nợ 764.715.088 ₫.",
+          "Biểu đồ đặt hai đường dư nợ — phần gốc còn nợ — cạnh nhau. Sau 10 năm, phương án theo lịch còn khoảng 1,40 tỷ, còn phương án trả thêm chỉ còn khoảng 1,02 tỷ. Đường trả thêm về 0 ở tháng 187, khi phương án theo lịch vẫn còn nợ khoảng 764,7 triệu.",
         ],
+        results: { caption: "Dư nợ và phần lãi giảm trong ví dụ, chưa tính phí trả trước", rows: [
+          { label: "Dư nợ tháng 60 — theo lịch", value: "1.762.543.662 ₫" },
+          { label: "Dư nợ tháng 60 — trả thêm", value: "1.613.658.788 ₫" },
+          { label: "Dư nợ tháng 120 — theo lịch", value: "1.399.876.455 ₫" },
+          { label: "Dư nợ tháng 120 — trả thêm", value: "1.023.599.623 ₫" },
+          { label: "Dư nợ tháng 187 — theo lịch", value: "764.715.088 ₫" },
+          { label: "Lãi giảm trước phí trả nợ trước hạn", value: "555.699.884 ₫" },
+        ] },
         emphasis: [
           "Mỗi đồng trả thêm đi thẳng vào gốc, và gốc là thứ lãi được tính trên",
           "lớn hơn số tiền đã bỏ thêm",
@@ -441,7 +464,7 @@ export const ARTICLES_2: EducationArticle[] = [
         "Nếu có phí trả nợ trước hạn, tính phí theo từng kỳ trả thêm và đúng căn cứ trong hợp đồng, rồi cộng lại; không áp một tỷ lệ cho toàn kỳ nếu mức phí thay đổi. Lợi ích còn lại có đáng phần tiền mặt bạn phải dùng không?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Phí trả nợ trước hạn của bạn. Công cụ không tính, và không có mức chung — chỉ hợp đồng của bạn mới trả lời được.",
         "Hợp đồng có cho trả thêm gốc hay không, và theo lịch nào.",
@@ -456,7 +479,7 @@ export const ARTICLES_2: EducationArticle[] = [
       items: [SRC_BIDV_FEE],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: ["vay-2-ty-moi-thang-tra-bao-nhieu", "vay-20-nam-hay-25-nam"],
   },
 
@@ -467,8 +490,8 @@ export const ARTICLES_2: EducationArticle[] = [
     planId: "C11",
     question: "Lãi cố định hay thả nổi: tôi đang đánh đổi điều gì?",
     shortAnswer: [
-      "Bạn đang so mức độ biết trước khoản trả với rủi ro lãi thay đổi. Trong ví dụ này, mức ưu đãi thả nổi thấp hơn mức cố định; đó là giả định để so, không phải quy luật giá của thị trường. Lãi thả nổi là lãi được đặt lại theo chu kỳ ghi trong hợp đồng, nên khoản trả hằng tháng được tính lại theo mức mới; lãi cố định giữ một mức trong suốt thời gian đã thỏa thuận.",
-      "Bảng dưới cho một cách so cụ thể: mức lãi cố định mà tại đó hai phương án tốn tổng lãi bằng nhau. Nếu mức cố định bạn được báo thấp hơn con số đó, cố định đang có lợi trong kịch bản này.",
+      "Bạn đang so mức độ biết trước khoản trả với rủi ro lãi thay đổi. Lãi cố định giữ một mức trong thời gian đã thỏa thuận; lãi thả nổi được đặt lại theo chu kỳ trong hợp đồng, nên khoản trả hằng tháng có thể thay đổi.",
+      "Trong ví dụ vay 2 tỷ trong 20 năm, phương án cố định trả khoảng 20 triệu mỗi tháng; phương án ưu đãi trả khoảng 16,1 triệu lúc đầu rồi lên khoảng 20,5 triệu nếu lãi sau ưu đãi là 11%/năm. Đây là kịch bản, không phải quy luật giá của thị trường: hãy so cả khoản trả sau ưu đãi với ngân sách của bạn.",
     ],
     // The trade-off itself, and the fact that the example's price ordering is
     // an assumption rather than a market rule.
@@ -497,30 +520,27 @@ export const ARTICLES_2: EducationArticle[] = [
     },
     sections: [
       {
-        heading: "Đây là lựa chọn ở thời điểm ký, không phải phản ứng với cú sốc",
+        heading: "Khoản trả nào gia đình bạn có thể theo được lâu dài?",
         paragraphs: [
-          "Bài C03 nói về việc lãi đổi khi bạn đã vay rồi: đó là một cú sốc phải chịu và phải chuẩn bị. Bài này nói về lúc bạn còn được chọn cấu trúc — một quyết định khác, với thông tin khác.",
-          "Ở thời điểm ký, bạn biết mức cố định được báo và biết mức ưu đãi được báo. Bạn không biết lãi thả nổi sẽ ở đâu. Phép so trong bảng giữ kịch bản thả nổi đã nhập rồi tìm mức lãi CỐ ĐỊNH có tổng lãi bằng nó; bảng không tự tìm ngưỡng lãi thả nổi tương lai.",
-          // SPLIT. One paragraph used to carry the picture, the break-even
-          // rate, its scenario dependence AND the difference between two
-          // measures. Four facts, four short paragraphs, same words.
-          "Biểu đồ trên cho thấy cùng một điều bằng hình: đường cố định nằm ngang suốt kỳ hạn, còn hai đường thả nổi giữ mức ưu đãi trong 12 tháng rồi nhảy lên — 20.479.346 ₫ nếu sau ưu đãi là 11%/năm, 23.166.370 ₫ nếu là 13%/năm.",
-          "Cả hai mức nhảy đều cao hơn khoản trả cố định 19.967.598 ₫, nên phần “được” của ưu đãi nằm hết ở 12 tháng đầu.",
-          "Dòng cuối bảng trả lời đúng câu đó: mức lãi cố định làm hai phương án tốn tổng lãi bằng nhau, xét đúng kịch bản sau ưu đãi 11%/năm mà bài nêu; đổi kịch bản thì con số đó cũng đổi.",
-          "Lưu ý phạm vi: con số này so TỔNG LÃI CẢ KỲ HẠN. Công cụ ở phần bài tập so hai phương án tại một mốc giữ khoản vay do bạn chọn, và hai thước đo đó có thể chọn ra hai phương án khác nhau — công cụ nói rõ khi điều đó xảy ra.",
+          "Trước khi ký, đặt khoản trả cố định cạnh khoản trả sau ưu đãi, rồi so từng khoản với số tiền gia đình dành được cho nhà mỗi tháng. Đừng chỉ so mức nhẹ nhất của năm đầu.",
+          "Biểu đồ vẽ phương án cố định 10,5%/năm cùng hai kịch bản sau ưu đãi 11%/năm và 13%/năm. Khoản trả tương ứng khoảng 20 triệu, 20,5 triệu và 23,2 triệu mỗi tháng. Với hai kịch bản này, phần “được” của ưu đãi nằm hết ở 12 tháng đầu; bảng còn có kịch bản 9%/năm với kết quả khác.",
+          "Bạn không biết lãi thả nổi sẽ ở đâu. Vì vậy, hãy thử nhiều mức sau ưu đãi và xác định bạn sẽ bù khoản thiếu từ đâu nếu khoản trả vượt ngân sách.",
         ],
+        results: { caption: "Khoản trả tháng sau ưu đãi của các đường trên biểu đồ", rows: [
+          { label: "Cố định 10,5%/năm", value: "19.967.598 ₫" },
+          { label: "Sau ưu đãi 11%/năm", value: "20.479.346 ₫" },
+          { label: "Sau ưu đãi 13%/năm", value: "23.166.370 ₫" },
+        ] },
         emphasis: [
           "Bạn không biết lãi thả nổi sẽ ở đâu",
           "phần “được” của ưu đãi nằm hết ở 12 tháng đầu",
-          "đổi kịch bản thì con số đó cũng đổi",
-          "con số này so TỔNG LÃI CẢ KỲ HẠN",
         ],
       },
       {
         heading: "Sự chắc chắn có giá, và giá đó không phải luôn đáng trả",
         paragraphs: [
           "Trong ví dụ, cố định 10,5% cao hơn ưu đãi 7,5%; không suy ra mọi báo giá đều như vậy. Với sản phẩm thật, cần so mức lãi, thời gian cố định, phí và điều kiện đi kèm.",
-          "Với hộ có thu nhập ổn định và biên an toàn rộng, cái giá đó có thể không cần thiết — họ chịu được một cú tăng và tiết kiệm được phần chênh. Với hộ mà khoản trả đã sát ngân sách, biết trước con số lại là thứ quan trọng nhất, vì một cú tăng 27% có thể là điều họ không xoay kịp.",
+          "Với hộ có biên an toàn rộng, khả năng chịu một lần tăng khoản trả có thể giúp họ cân nhắc phương án thả nổi. Nhưng tiết kiệm được hay không còn phụ thuộc lãi thực tế. Với hộ đã sát ngân sách, khoản trả tăng khoảng 27% trong kịch bản 11% của bài có thể tạo ra thiếu hụt khó bù.",
           "Không có đáp án chung. Nhưng có một cách tự trả lời: lấy khoản trả của phương án cố định, đặt nó cạnh ngân sách của bạn, rồi lấy khoản trả cao nhất trong kịch bản thả nổi và làm điều tương tự. Nếu con số thứ hai vượt ngân sách, phần chênh của lãi cố định đang mua cho bạn một thứ có giá trị.",
         ],
         emphasis: [
@@ -540,6 +560,15 @@ export const ARTICLES_2: EducationArticle[] = [
           "Bảng giả lập cố định suốt 240 tháng để làm đối chứng",
           "nó thực chất là một phương án thả nổi với giai đoạn ưu đãi dài hơn",
         ],
+      },
+      {
+        heading: "Dùng mức lãi tương đương để hiểu thêm tổng chi phí",
+        paragraphs: [
+          "Sau khi kiểm tra ngân sách tháng, bạn có thể xem dòng lãi cố định tương đương trong bảng. Phép tính giữ nguyên kịch bản thả nổi đã nhập rồi tìm mức lãi CỐ ĐỊNH có tổng lãi bằng nó; bảng không tự tìm ngưỡng lãi thả nổi tương lai.",
+          "Nếu mức cố định được báo thấp hơn mức tương đương, phương án cố định tốn ít tổng lãi hơn trong kịch bản này, trước khi xét chênh lệch phí. Đổi kịch bản thì con số đó cũng đổi.",
+          "Lưu ý: con số này so TỔNG LÃI CẢ KỲ HẠN. Công cụ ở phần bài tập còn so tại mốc bạn dự kiến giữ khoản vay, ví dụ 60 tháng. Hai thước đo có thể cho hai kết luận khác nhau; hãy dùng mốc phù hợp với kế hoạch của mình.",
+        ],
+        emphasis: ["trong kịch bản này, trước khi xét chênh lệch phí", "con số này so TỔNG LÃI CẢ KỲ HẠN"],
       },
     ],
     visual: {
@@ -598,7 +627,7 @@ export const ARTICLES_2: EducationArticle[] = [
         "Đổi “So sánh tại tháng thứ” từ 60 sang 240: phương án rẻ nhất có đổi không? Nếu có, công cụ sẽ nói rõ là hai mốc cho hai câu trả lời khác nhau, và mốc đúng là mốc bạn thực sự giữ khoản vay.",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Lãi suất thả nổi sẽ ở đâu. Kịch bản là của bạn, không phải dự báo của FinHome.",
         "“Cố định” trong hợp đồng của bạn là bao lâu — đây là điều khoản, không phải phép tính.",
@@ -612,7 +641,7 @@ export const ARTICLES_2: EducationArticle[] = [
       items: [SRC_CFPB_COMPARE, SRC_TCB_TRA_GOP],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "het-uu-dai-khoan-tra-tang-bao-nhieu",
       "doi-sang-khoan-vay-lai-thap-hon-khi-nao-bu-duoc-chi-phi",
@@ -626,8 +655,8 @@ export const ARTICLES_2: EducationArticle[] = [
     planId: "C12",
     question: "Đổi sang khoản vay lãi thấp hơn: khi nào mới bù được chi phí?",
     shortAnswer: [
-      "Phép tính đặt lãi, phí và dư nợ (phần gốc còn nợ) hai khoản vay cạnh nhau tại tháng 60. Bảng dưới còn tách riêng chênh lệch tiền đã chi, để bạn không nhầm trả nhẹ hơn với chi phí thấp hơn.",
-      "Mốc bù phí bằng khoản trả giảm chỉ đo DÒNG TIỀN, chưa chứng minh lợi ích kinh tế. Khi dự định bán hoặc tất toán sớm — trả hết phần còn nợ và đóng khoản vay trước hạn — cần so cả phí, lãi đã trả và dư nợ còn lại tại cùng một tháng.",
+      "Đổi khoản vay đáng cân nhắc khi phần lãi giảm bù được phí chuyển đổi trong thời gian bạn còn giữ khoản vay. Với dư nợ — phần gốc còn nợ — 1,8 tỷ, đổi từ 11% xuống 9%/năm, giữ 216 tháng và trả ngay 40 triệu phí giả định, khoản trả giảm khoảng 2,3 triệu mỗi tháng.",
+      "Trong kịch bản này, lãi tiết kiệm bù đủ phí ở tháng 14. Nếu chỉ cộng phần khoản trả giảm mỗi tháng, phải đến tháng 18 mới bù phí: mốc đó chỉ đo DÒNG TIỀN, chưa chứng minh lợi ích kinh tế. Khi dự định bán hoặc tất toán — trả hết phần còn nợ và đóng khoản vay — hãy so cả phí, lãi và dư nợ tại cùng một tháng.",
     ],
     // Cash-flow recovery is not economic saving, and the comparison only
     // means anything at ONE month. Both halves are emphasised together.
@@ -652,11 +681,11 @@ export const ARTICLES_2: EducationArticle[] = [
     },
     sections: [
       {
-        heading: "Tính trên dư nợ hiện tại, không phải số tiền vay ban đầu",
+        heading: "Bắt đầu từ khoản nợ còn lại và ngày bạn dự kiến kết thúc vay",
         paragraphs: [
-          "Sai sót đầu tiên khi tự tính: dùng số tiền vay ban đầu. Bạn đang chuyển đổi phần nợ CÒN LẠI, nên mọi con số phải bắt đầu từ dư nợ hiện tại.",
+          "Bạn đang chuyển đổi phần nợ CÒN LẠI. Hãy lấy dư nợ hiện tại từ sao kê, rồi chọn mốc dự kiến bán nhà hoặc kết thúc khoản vay để so hai phương án; ví dụ trong bài chọn sau 60 tháng.",
           "Nếu trả được ít gốc trong những năm đầu, dư nợ còn lại vẫn cao dù tổng tiền đã trả lớn. Lấy dư nợ từ sao kê hoặc ngân hàng; không suy ra nó từ tổng khoản trả và không đoán theo cảm nhận.",
-          "Sai sót thứ hai: chỉ nhìn khoản trả tháng mà bỏ qua chênh lệch kỳ hạn. Nếu khoản vay mới kéo dài hơn số tháng còn lại, khoản trả có thể nhỏ đi do thời gian dài hơn, không chỉ do lãi suất. Bảng dưới giữ nguyên 216 tháng ở cả hai phương án để tách riêng tác động của lãi suất; hai kỳ hạn khác nhau vẫn so được nếu cùng mốc và tính đủ dư nợ.",
+          "Nếu khoản vay mới kéo dài hơn số tháng còn lại, khoản trả có thể nhỏ đi do thời gian dài hơn, không chỉ do lãi suất. Bảng giữ nguyên 216 tháng ở cả hai phương án để tách riêng tác động của lãi suất; hai kỳ hạn khác nhau vẫn so được nếu cùng mốc và tính đủ dư nợ.",
         ],
         emphasis: [
           "Bạn đang chuyển đổi phần nợ CÒN LẠI",
@@ -667,10 +696,17 @@ export const ARTICLES_2: EducationArticle[] = [
         heading: "Tách mốc bù phí dòng tiền khỏi lợi ích kinh tế",
         paragraphs: [
           "Trong bảng, phí chuyển đổi trả ngay ở tháng 0. Mốc bù phí chi phí là khi lãi tiết kiệm TÍCH LŨY bù đủ tổng phí. Mốc này khác việc khoản trả giảm bù phí vì khoản trả gồm cả gốc. Công cụ hiện so tại tháng bạn chọn và ghi dư nợ hai phương án; bảng giả lập chọn tháng 60.",
-          "Biểu đồ dưới đây vẽ cả hai thước đo theo thời gian, và chúng cắt đường 0 ở hai tháng khác nhau: chi phí bù đủ phí ở tháng 14, còn tiền đã chi phải tới tháng 18. Lý do là khoản trả nhẹ hơn mỗi tháng gồm cả phần gốc trả chậm hơn, nên dòng tiền dễ chịu hơn không có nghĩa là đã lời. Ở tháng 12 cả hai đường còn âm — chi phí −3.962.835 ₫ và tiền đã chi −12.221.362 ₫ — rồi đến tháng 24 lần lượt là 32.110.231 ₫ và 15.557.277 ₫.",
+          "Biểu đồ cho thấy chi phí bù đủ phí ở tháng 14, còn tiền đã chi phải tới tháng 18. Khoản trả gồm cả gốc lẫn lãi; trong ví dụ giữ nguyên kỳ hạn này, khoản vay mới vừa trả nhẹ hơn vừa giảm gốc nhanh hơn. Vì một phần lãi tiết kiệm được dùng để trả gốc, mốc bù chi phí đến trước mốc bù tiền đã chi.",
+          "Ngược lại, kéo dài kỳ hạn có thể làm tiền trả tháng giảm nhưng gốc giảm chậm hơn: dòng tiền dễ chịu hơn không có nghĩa là đã lời. Hãy đọc đúng tên từng đường; ở tháng 12 cả hai vẫn âm, còn tháng 24 cả hai đã dương trong kịch bản này.",
           "Một gói kéo dài kỳ hạn có thể hoàn phí dòng tiền nhanh nhưng để lại dư nợ cao hơn nhiều. Để đánh giá tại tháng H, so tổng khoản đã trả + phí + dư nợ cần tất toán của mỗi phương án; với cùng dư nợ ban đầu, chênh lệch này tương đương chênh lệch lãi và phí đã phát sinh, trước các chi phí thoát khoản vay chưa nhập.",
           "Bảng đã tính 20 triệu phí tất toán cũ giả định. Với hồ sơ thật, thay số này bằng phí đúng hợp đồng và nhập chi phí một lần của khoản vay mới riêng. Đừng cộng trùng. Một lần vượt đường 0 không bảo đảm các tháng sau vẫn có lợi; hãy đổi tháng so sánh để kiểm tra.",
         ],
+        results: { caption: "Hai thước đo sau khi đã trừ 40 triệu phí chuyển đổi giả định", rows: [
+          { label: "Tiết kiệm chi phí — tháng 12", value: "−3.962.835 ₫" },
+          { label: "Chênh lệch tiền đã chi — tháng 12", value: "−12.221.362 ₫" },
+          { label: "Tiết kiệm chi phí — tháng 24", value: "32.110.231 ₫" },
+          { label: "Chênh lệch tiền đã chi — tháng 24", value: "15.557.277 ₫" },
+        ] },
         emphasis: [
           "chi phí bù đủ phí ở tháng 14, còn tiền đã chi phải tới tháng 18",
           "dòng tiền dễ chịu hơn không có nghĩa là đã lời",
@@ -682,9 +718,14 @@ export const ARTICLES_2: EducationArticle[] = [
         paragraphs: [
           "Lãi thấp hơn hoặc kỳ hạn dài hơn đều có thể giảm khoản trả tháng. Nhưng lãi thấp hơn chưa bảo đảm giảm tổng chi phí nếu phí cao, thời gian dài hơn hoặc cấu trúc lãi thay đổi.",
           "Nếu bên cho vay mới đề nghị khoản trả nhẹ hơn nhờ kéo dài kỳ hạn, hãy thử lại với kỳ hạn bằng số tháng còn lại của khoản vay cũ. Phép thử này tách riêng ảnh hưởng của lãi suất; khi so phương án khác kỳ hạn, vẫn giữ cùng tháng đánh giá và tính cả dư nợ.",
-          "Đây là chỗ hai mốc đổi thứ tự. Nếu kỳ hạn mới là 300 tháng thay vì 216, khoản trả xuống 15.105.535 ₫ và mốc tiền đã chi đến sớm hơn — tháng 10 thay vì 18 — trong khi mốc chi phí vẫn ở tháng 14. Đổi lại, ở tháng 60 khoản vay mới còn nợ 1.678.903.943 ₫, cao hơn cả dư nợ 1.587.615.672 ₫ của khoản cũ. Dòng tiền nhẹ hơn không làm phần nợ giữ lại đó biến mất.",
+          "Nếu kỳ hạn mới là 300 tháng thay vì 216, khoản trả xuống khoảng 15,1 triệu và mốc tiền đã chi đến sớm hơn — tháng 10 thay vì 18 — trong khi mốc chi phí vẫn ở tháng 14. Đổi lại, ở tháng 60 khoản vay mới còn nợ khoảng 1,68 tỷ, cao hơn mức 1,59 tỷ của khoản cũ. Dòng tiền nhẹ hơn không làm phần nợ giữ lại đó biến mất.",
           "Bảng có cả dòng chênh lệch tổng chi phí cả kỳ hạn, bên cạnh dòng giảm được mỗi tháng. Hai dòng đó có thể nói hai điều khác nhau, và bạn cần cả hai.",
         ],
+        results: { caption: "Thử kéo kỳ hạn mới lên 300 tháng, vẫn so tại tháng 60", rows: [
+          { label: "Khoản trả tháng — vay mới 300 tháng", value: "15.105.535 ₫" },
+          { label: "Dư nợ tháng 60 — vay mới 300 tháng", value: "1.678.903.943 ₫" },
+          { label: "Dư nợ tháng 60 — khoản vay cũ", value: "1.587.615.672 ₫" },
+        ] },
         emphasis: [
           "lãi thấp hơn chưa bảo đảm giảm tổng chi phí",
           "Dòng tiền nhẹ hơn không làm phần nợ giữ lại đó biến mất",
@@ -741,7 +782,7 @@ export const ARTICLES_2: EducationArticle[] = [
         "Đổi “Tháng muốn so sánh” thành mốc dự định còn giữ khoản vay. Đọc tiết kiệm chi phí có tính dư nợ, không thay bằng dòng tiền. Kết quả chưa chiết khấu hoặc cộng phí tất toán có thể phát sinh tại chính mốc đó.",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Mức phí thật trong hợp đồng hiện tại. Bài chỉ dùng phí giả định; bạn cần thay bằng số đã xác nhận.",
         "Bạn có đủ điều kiện để được khoản vay mới hay không. Đó là thẩm định, không phải phép tính.",
@@ -756,7 +797,7 @@ export const ARTICLES_2: EducationArticle[] = [
       items: [SRC_BIDV_FEE, SRC_CFPB_COMPARE],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: ["lai-co-dinh-hay-tha-noi", "co-tien-du-tra-them-no-giam-bao-nhieu-lai"],
   },
 ];

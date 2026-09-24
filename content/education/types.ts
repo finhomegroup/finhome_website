@@ -89,6 +89,9 @@ export type EducationArticle = {
 
   /** Computed by the production engine from the hypothetical above. */
   visual: EducationVisualSpec;
+  /** Context-specific chart assumptions, reviewed with the article. Numbers
+   * still come from the shared engine; replacing copy must retain model limits. */
+  visualAssumptions?: readonly string[];
   /**
    * One sentence saying what the figure SHOWS, in the reader's terms.
    *

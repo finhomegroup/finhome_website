@@ -4090,3 +4090,256 @@ were visually inspected. Free tool CTAs lead to affordability, floating-rate and
 rent/buy tools. This does not establish real-user comprehension or conversion lift.
 Production publication is separately verified against the merged release and live
 URLs; a local pass alone is not a publication claim.
+
+## 2026-09-24 — Reader-first editorial capability and source review
+
+### Scope and disposition
+
+User requested review of the other articles and a durable writing capability after
+flagging the collection's defensive "Đây không phải tin tức" box. Review baseline:
+`00794ae30b259a078e59bbfb98850b617eff9765`; no content-tree difference from the
+locally fetched `origin/main` at this review. This is source evidence, not a fresh
+fetch or live-site check. Inventory derived from `EDUCATION_ARTICLES`: 23 articles.
+Read all questions, short answers and section headings, with targeted examination
+of opening sections, visual readings, limitations, shared copy and provenance.
+Screened 167 news Markdown files for repeated defensive wording; 10 contain
+"FinHome chỉ tổng hợp góc nhìn". That screening is not a full review of 167 articles.
+No fresh legal, rate, fee, market-availability or browser validation was performed.
+
+The official capability is the existing `.cursor/skills/seo-blog/SKILL.md`, expanded
+from SEO to reader-first writing and review. `AGENTS.md` routes all native agents
+to it; `CLAUDE.md` already imports `AGENTS.md`. There is one normative owner, not a
+new competing copy or a provider-memory preference. No production article, formula,
+logo, image or layout is changed by this pass. No commit, push or publication.
+
+### Priority findings and proposed treatment
+
+| Priority | Source | Finding and direction |
+| --- | --- | --- |
+| P1 | `articles-3.ts`, C17/C22 | "khớp với nguồn cung thật" and preference for a programme depend on real available homes, while provenance admits no specific project evidence. Restrict the conclusion to the example's cash flow; source date/location/project availability before claiming market fit. A softer tone alone does not solve this. |
+| P1 | `articles-3.ts`, C20 | "đã đủ vốn ... không còn phải chờ" overreaches a cash calculation. Say the hypothetical covers its assumed upfront budget; eligibility, actual costs, bank assessment and supply remain separate. Also use approximate wording for the rounded 1,09 tỷ × 23% example, not "đúng 250 triệu". |
+| P1 | `articles-3.ts`, C23 | "theo đúng hợp đồng" describes a hypothetical rate path as a real contractual outcome. Replace with "Trong kịch bản này, từ tháng 13..."; retain the budget shortfall and its assumptions. |
+| P1 | `articles-3.ts`, C16/C18 → `approved-tool-guides.ts`, C01 | C16 says it is the same C01 household but uses 44 triệu net income and older outputs; current C01 uses 40 triệu. C18's figure also references the C01 household. Reconcile scenario identity and dependent comparisons before revising prose; do not silently substitute figures. |
+| P2 | `collection.ts` | Lede, "Đây không phải tin tức", "không cũ đi theo ngày", and "Muốn tự tính thay vì đọc tin?" focus on category/process, not buyer benefit. Replace with practical questions and what readers can learn/try; the time-insensitive claim also conflicts with dated regulatory content. |
+| P2 | `groups.ts` and collection/article renderers | Internal exclusion boundaries are shown on both index and article footer. Keep taxonomy constraints internally; reader-facing copy should describe the decision each group helps with. Do not delete necessary article-specific qualifications. |
+| P2 | C02/C04/C07/C10/C13–C15/C19–C23 | Opening paragraphs carry exact đồng figures and/or many comparisons before meaning. Use rounded triệu/tỷ in prose, clear assumptions and precise accessible tables/details. |
+| P2 | C09/C11/C12 | Opening explains the machinery (algebraic periods, equivalent-rate comparison, economic versus cash-flow break-even) before the practical question. Start from the household decision, then explain the technical distinction with the example. |
+| P2 | C15 | "Đây không phải lỗi của ai" defends an accusation the reader did not make. Explain how each repayment splits between principal and interest instead. |
+| P2 | C22 | "Cách so sai / Cách so đúng" is unnecessarily absolute. Explain why both affordable price and monthly budget matter, then show the example's trade-off. |
+| P3 | Education shared provenance and limits headings | Repeated "Bản nháp giáo dục...", testing explanations and "Bài này không trả lời được gì" read like internal review notes. Reconcile publication status without inventing professional approval; keep concise AI/source/review disclosure and actionable limits. |
+| P3 | 10 news roundups | Repeated "FinHome chỉ tổng hợp góc nhìn..." can become a concise original-source link plus a relevant next question/tool. Preserve attribution. The Numbeo article also opens with "Đây không phải nhận định cảm tính"; replace self-defence with attributed evidence after verifying the source. |
+
+P1 means evidence/meaning risk to resolve before republication, not a finding that
+every figure or referenced law is incorrect. Those current facts were not rechecked.
+
+### Article coverage and next editorial action
+
+| ID | Reader question/topic | Next action |
+| --- | --- | --- |
+| C01 | Household budget before viewings | Keep the concrete wallet example; reconcile incoming same-household references. |
+| C02 | Monthly payment on a 2 tỷ loan | Round prose; separate scheduled payment, voluntary extra principal and housing expenses. |
+| C03 | Payment after promotional rate | Keep the conditional scenario and visible budget line; avoid repeating the same caveat in every block. |
+| C04 | Saving the down payment | Lead with the monthly contribution in triệu; move algebra and precision below. |
+| C05 | Comparing loan offers | Keep the low-payment/total-cost distinction; explain matching assumptions without "không so được gì" absolutism. |
+| C06 | Approved ceiling versus own budget | Keep the useful negative contrast; shorten the theoretical explanation, retaining assumed ratios. |
+| C07 | 20 versus 25 years | Show the monthly relief and additional interest in rounded amounts before the full table. |
+| C08 | Rent or buy | Keep scenarios and net-cost explanation; make the limits heading actionable without implying a forecast. |
+| C09 | Saving another 2 triệu | Lead with the example's 8-month difference; explain full contribution periods in detail. |
+| C10 | Extra loan repayment | Round interest saving; keep "before prepayment fees" beside it. |
+| C11 | Fixed or floating rate | Explain predictable payments versus changing payments before equivalent-rate calculations. |
+| C12 | Refinancing | Start from the decision to switch; keep cash-flow break-even distinct from total economic benefit. |
+| C13 | Rate plus fees | Show how the holding period changes the comparison; leave four-decimal rates in detail. |
+| C14 | Principal grace period | Show the two separate payment jumps; keep rate-change and principal-repayment dates distinct. |
+| C15 | Debt remaining after five years | Remove unprompted defence; explain the principal/interest split and round the opening figures. |
+| C16 | Social-housing income criteria | Reconcile C01 reference and source-check current criteria before any republication. |
+| C17 | Buying with 30 triệu income | Replace categorical "Được" with conditional example; validate/remove unsupported supply-fit conclusion. |
+| C18 | Upfront cash for an apartment | Reconcile the chart's different household; retain scope of fees and source-check current legal claims. |
+| C19 | Monthly apartment costs | Start with costs the buyer needs to budget; source-check local fee/tax scope before numeric rewrites. |
+| C20 | Savings gap | Separate reaching an assumed cash target from eligibility or readiness to buy. |
+| C21 | Subsidised loan payments | Round the opening; preserve rate assumptions and check the previously recorded shared-chart assumption issue. |
+| C22 | Two financing paths | Replace right/wrong framing with the trade-off; validate availability separately. |
+| C23 | Affording the reset | Describe a scenario, not an observed contract; keep the shortfall next to its assumed rate. |
+
+### Draft examples for the next content pass (not published)
+
+- Collection: "Mua nhà giá bao nhiêu thì vừa túi tiền? Mỗi tháng trả nợ bao nhiêu?
+  Tiếp tục thuê hay bắt đầu mua? Cùng tìm hiểu bằng ví dụ dễ hiểu, biểu đồ và công
+  cụ tính miễn phí. Sau đó, thay số của bạn để xem kế hoạch thay đổi thế nào."
+- C15: "Mỗi lần trả nợ gồm hai phần: trả lại tiền đã vay và trả lãi. Những năm đầu,
+  số tiền còn nợ vẫn lớn nên phần lãi chiếm nhiều hơn trong khoản trả hằng tháng."
+- C23: "Trong kịch bản này, từ tháng 13 gia đình cần trả khoảng 13 triệu mỗi tháng,
+  cao hơn ngân sách 11 triệu khoảng 2 triệu. Hãy thử mức lãi sau ưu đãi trong
+  phương án của bạn để xem có khoản thiếu hụt tương tự không."
+
+Manual capability checks distinguish: remove the irrelevant news disclaimer;
+retain C06's useful borrowing distinction; retain C03's scenario caveat; reject
+C23's hypothetical-to-contract certainty; preserve attribution in news; decline
+invented app-store/save-data CTAs. These are a self-review, not an independent model
+evaluation, automatic tone enforcement, user-comprehension test or conversion result.
+
+### Verification
+
+Skill frontmatter/structure validation and `git diff --check` passed. The first full
+project check hit a 5-second timeout in the unrelated biweekly-calculator rendering
+test. That file passed all 17 tests in isolation without code or timeout changes.
+A repeat native full check under Node 24 passed at 2026-09-24T01:52:40.889Z:
+6,494 tests / 297 files, TypeScript, lint baseline (3 expected, 0 new), build and
+rendered-markup contracts. These checks show no detected application regression;
+they do not independently validate editorial judgment or the outstanding claims.
+
+## 2026-09-24 — Homepage company-discovery navigation (local implementation)
+
+User approved fixing the existing footer destination and adding a visible menu
+entry. Scope is local implementation only, not commit, push or publication.
+
+- Shared navigation now includes `Về FinHome` → `/vision/`.
+- The FinHome footer placeholder `Về chúng tôi` → `#` is replaced with
+  `Tầm nhìn & Sứ mệnh` → `/vision/`.
+- Adding the seventh desktop item initially wrapped labels. A desktop-only
+  global rule reduces header navigation gaps to 20px and keeps labels on one
+  line; font size, logos, header component and existing mobile behavior remain
+  unchanged. Existing vision-page copy was not edited or substantively reviewed.
+- Added three regression tests for the menu entry, real route, footer data and
+  rendered destination. Focused site/CTA checks: 11 passed.
+- Native full project check passed at `2026-09-24T02:25:34.520Z`: 6,497 tests /
+  297 files, TypeScript, lint (3 expected baseline / 0 new), 280-page build and
+  markup contracts (76 live calculators / 194 non-calculator pages).
+- Actual static-build browser verification: 1280×720 desktop header stays on
+  one line; 390×844 mobile menu shows the new item; neither tested homepage
+  viewport has horizontal overflow. Desktop keyboard activation, mobile menu
+  click and footer Enter activation all reached `/vision/` and the expected
+  heading. Mobile menu closed after navigation. This is scoped navigation proof,
+  not a complete accessibility audit or production-deployment verification.
+- Before/after screenshots retained in workspace artifacts:
+  `artifacts/finhome-home-discovery-2026-09-24/04-fixed-desktop.jpg` and
+  `05-fixed-mobile.jpg`. Temporary development/static servers stopped and
+  viewport override reset. The working preview tab was closed; the stale dev
+  error tab could not be explicitly closed because browser URL policy blocked
+  its internal error-page URL (left for automatic temporary-tab cleanup).
+- Earlier editorial capability/recap edits were preserved. No commit, push,
+  PR or deploy performed.
+
+## 2026-09-24 — Implementing the accepted reader-first review
+
+The user authorized the reviewed plans, commit, push and a pull request. This
+delivery covers the latest review above and the homepage company-discovery change;
+it does not reopen all historical calculator backlog proposals. Merge/deployment
+are not authorized by this request. Base fetched from `origin/main`: `49a7b2b`,
+after PR180 was already merged and the subsequent news update was present.
+Working branch: `content/reader-first-review-20260924`.
+
+### Scope and implementation ownership
+
+- Existing logo/assets, calculator formulas and the two protected lint-baseline
+  files are preserved. Education visuals continue to compute from their declared
+  inputs. Article-specific assumption copy can correct programme context without
+  replacing chart values or changing ordinary calculator charts.
+- Codex owns integration, shared collection/reader labels, news endings, metadata,
+  final verification and Git delivery. An isolated Codex worker owns C01–C12.
+  Native Claude Code owns C13–C23 in a separate worktree, with a second source
+  review of fees and insurance fed back for correction. This is actual Claude
+  execution, not a simulated conversation or attribution of Codex output to Claude.
+- One normative writing capability remains `.cursor/skills/seo-blog/SKILL.md`,
+  routed through `AGENTS.md`. Its invariant is buyer question → declared evidence
+  and example → useful interpretation → truthful next step. It standardizes
+  authoring, not user comprehension, legal approval or automatic publication.
+  Human editorial acceptance and release authority remain separate.
+
+### Coverage ledger
+
+| Articles | Implemented treatment |
+| --- | --- |
+| C01/C03/C08 | Preserve approved examples, charts and actual screenshots; shorten provenance; make C08 limits heading actionable. |
+| C02/C04/C07/C10 | Rounded opening/prose, precise result details and numerical regression tests; preserve decision-changing thresholds and before-fee conditions. |
+| C05/C06 | Matched comparisons and household budget first; remove unsupported generalizations without deleting borrowing limits. |
+| C09/C11/C12 | Practical decision before algebra, equivalent rates and break-even detail; C12 distinguishes payment relief from economic benefit. |
+| C13–C15 | Rounded opening, distinct grace/rate-reset dates and principal/interest explanation. |
+| C16–C23 | Separate household identities, legal eligibility, model cash flow, actual approval and available housing; current source checks and scenario-specific qualifications. |
+| Collection / 5 groups | Reader benefits replace public taxonomy boundaries and defensive news disclaimers; internal boundaries remain available. |
+| 10 news roundups | Original source retained; repeated defensive ending replaced by relevant question/tool. Numbeo item additionally rewritten against its dated source and methodology. Other 9 bodies are not a fresh full legal/news audit. |
+| Metadata | Align affected card/meta descriptions with the revised article; preserve original dates and URLs. |
+| Homepage navigation | Shared menu and footer expose `/vision/`; preserve brand assets and mobile interaction. |
+
+### Evidence register (review date 24 September 2026)
+
+Primary sources support only the claims described; model tests do not establish
+legal currency. No professional legal sign-off is claimed.
+
+- [Government explanation of Decree 136/2026](https://baochinhphu.vn/chinh-thuc-nang-muc-tran-thu-nhap-duoc-mua-nha-o-xa-hoi-len-25-trieu-dong-thang-tu-7-4-2026-102260408114223058.htm)
+  and [consolidated 24/VBHN-BXD](https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/5/24-vbhn-bxd.pdf):
+  existing 25/35/50-million income thresholds are retained, with category,
+  12-month-average and local-adjustment context. Article48's 80% / 5.4% / up-to-25-year
+  loan conditions concern NHCSXH and are ceilings/conditions, not guaranteed approval.
+- [Official Decree96 contract template](https://xaydungchinhsach.chinhphu.vn/mau-hop-dong-mua-ban-can-ho-chung-cu-119240827163603513.htm):
+  2% maintenance basis is the pre-VAT apartment selling price; do not apply it
+  uncritically to a VAT-inclusive headline price or double-count an included fund.
+- [Registration-fee decree explanation](https://baochinhphu.vn/chinh-phu-ban-hanh-nghi-dinh-moi-ve-le-phi-truoc-ba-102220115121251819.htm)
+  and [Circular13/2022 official record](https://chinhphu.vn/?docid=205437&pageid=27160):
+  0.5% uses the applicable statutory base, not necessarily the quoted transaction
+  price. Illustration budgets are not statutory minimums or actual quotations.
+- [Law32/2024, Article15(5)](https://xaydungchinhsach.chinhphu.vn/toan-van-luat-cac-to-chuc-tin-dung-119240405135841794.htm):
+  prohibition on tying nonmandatory insurance to banking services. Distinguish
+  [compulsory fire-insurance categories under Decree105/2025](https://baochinhphu.vn/danh-muc-44-co-so-phai-mua-bao-hiem-chay-no-bat-buoc-102250522122534876.htm);
+  no determination about a named bank, building or individual policy is made.
+- [Hanoi25/2026 official explanation](https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/sua-doi-bo-sung-ve-ban-hanh-khung-gia-dich-vu-quan-ly-van-hanh-nha-chung-cu-4260213154059549.htm)
+  and [Hanoi33/2025 full text](https://vbpl.vn/hanoi/Pages/vbpq-toanvan.aspx?ItemID=177461):
+  fee-framework scope is not a universal private-condominium ceiling. Unverified
+  VAT inclusivity and post-merger HCMC-wide applicability must not be asserted.
+- [VnExpress, 12 May 2026](https://vnexpress.net/nguoi-viet-thuoc-nhom-kho-mua-nha-nhat-the-gioi-5072991.html)
+  and [Numbeo methodology](https://www.numbeo.com/property-investment/indicators_explained.jsp):
+  historic reported ratio/rank is attributed and dated; not every household's
+  literal saving period and not a current ranking or housing-supply forecast.
+
+### Verification and delivery
+
+- Final integrated `aiws native check finhome-website --mode full` passed on
+  24 September 2026, 10:22 ICT: 300 test files / 6,618 tests, TypeScript, lint
+  baseline (3 existing findings, zero new), production static build (281 pages)
+  and rendered-markup checks. Earlier failed passes found and repaired C16's
+  reading-time metadata and missing first-use explanation of “thuê mua”; no
+  glossary exemption or weakened numerical assertion was used.
+- Independent final semantic review repaired C22: extra cash raises commercial
+  purchase capacity even when the loan is payment-limited. The engine formula is
+  `(paymentSupportedLoan + usableCash) / (1 + costRate)`. At assumed 3% costs,
+  another 100 million raises price capacity about 97 million. Removed a false
+  same-home payment comparison calculated at two different purchase prices.
+- Actual native Claude Code session `527191e3-c84a-4bce-8831-7c44a11c2b3f`
+  implemented C13–C23 and resumed for fee-source corrections. Its isolated build
+  could not cross the temporary dependency symlink; the final gate above ran in
+  the owning checkout after integration and repairs.
+- Final built UI: all 23 education URLs visited at 390×844 and 1280×900 (46
+  route/viewport checks), with a heading, rendered visual and tool link on every
+  page and document width equal to viewport width. This is layout/structure proof,
+  not a user comprehension study or an exhaustive accessibility audit.
+- C21 chart visibly uses programme-specific 5.4%/300-month assumptions and states
+  the difference from actual NHCSXH repayment schedules; no commercial 6–24-month
+  teaser assumption remains on that article. Its expanded full-number table at
+  390px has a 350px scroll container, 368px contents and `overflow-x: auto`; the
+  page stays 390px wide. Compact and full-number modes remain available.
+- Mobile homepage menu → “Về FinHome” reached `/vision/` and heading “Mua nhà
+  an toàn, minh bạch, đúng thời điểm.” Desktop header keeps its seven links on
+  one line. Existing logo assets, calculator engines and protected baseline
+  files are unchanged. Earlier scoped checks also exercised an article-to-tool
+  CTA and the footer vision link.
+- Local screenshots retained under workspace
+  `artifacts/finhome-reader-first-2026-09-24/`, including
+  `08-collection-desktop.png`, `09-rate-shock-mobile.png`,
+  `10-programme-chart-desktop.png` and `11-programme-full-table-mobile.png`.
+  They are review evidence, not runtime dependencies or production screenshots.
+- The temporary browser tab was closed and viewport reset. The preview server
+  and two task-owned implementation worktrees are removed after integration;
+  completed changes remain in the delivery commit. No unrelated worktrees are
+  removed. Commit/push/PR creation are authorized; merge/deploy remain separate.
+
+Additional primary-source checks made during integration:
+
+- [158/VBHN-VPQH, September 2025](https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/9/158-vbhn-vpqh.pdf),
+  Article15(5), rechecks the nonmandatory-insurance tying prohibition. This is
+  a bounded claim check, not a full audit of all credit-law amendments.
+- [Ministry of Construction answer, 14 July 2026](https://baochinhphu.vn/dang-thue-nha-o-xa-hoi-co-bi-loai-khoi-dien-dang-ky-mua-102260714151135488.htm):
+  current social-housing rental at registration is distinct from a permanent
+  exclusion merely because someone rented previously; ask the receiving body
+  to confirm the actual contract status.
+- [Housing Law27/2023 official gazette PDF on a provincial construction-department site](https://bqlbt.sxdsonla.gov.vn/wp-content/uploads/2024/03/luat-so-27.2023.QH15-Luat-Nha-o-sua-doi.pdf),
+  Articles152–153, supports separately recorded maintenance-fund obligations.
+  The contract-template source above supplies the pre-VAT illustration basis.

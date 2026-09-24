@@ -21,6 +21,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Hỗ trợ", href: "#hotro" },
   // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
   { label: "Tin tức", href: "#tintuc" },
+  { label: "Về FinHome", href: "/vision/" },
 ];
 
 // THE PRIMARY CTA POINTS AT THE WORKING WEB TOOLS.
@@ -82,7 +83,7 @@ export const FOOTER = {
     {
       title: "FinHome",
       links: [
-        { label: "Về chúng tôi", href: "#" },
+        { label: "Tầm nhìn & Sứ mệnh", href: "/vision/" },
         { label: "Chính sách bảo mật", href: "/privacy-policy" },
         { label: "Điều khoản sử dụng", href: "/terms" },
       ],

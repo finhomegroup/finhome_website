@@ -55,13 +55,13 @@ export const ARTICLES_1: EducationArticle[] = [
     planId: "C02",
     question: "Vay 2 tỷ mua nhà, mỗi tháng thực sự phải chuẩn bị bao nhiêu?",
     shortAnswer: [
-      "Với 2 tỷ, lãi 8,5%/năm, trả góp đều trong 240 tháng, khoản ngân hàng thu là 17.356.465 ₫ mỗi tháng.",
-      "Nhưng “khoản ngân hàng thu” và “tiền ra khỏi ví” là hai con số khác nhau. Nếu bạn trả thêm gốc, hoặc có phí quản lý và bảo hiểm, số thứ hai lớn hơn. Và tháng cuối cùng thì nhỏ hơn cả hai.",
+      "Trong ví dụ vay 2 tỷ, lãi giữ nguyên 8,5%/năm và trả góp đều trong 20 năm, khoản trả theo lịch khoảng 17,4 triệu mỗi tháng.",
+      "“Khoản trả theo lịch” và “tiền ra khỏi ví” là hai con số khác nhau. Nếu chọn trả thêm 2 triệu gốc, bạn cần khoảng 19,4 triệu mỗi tháng, chưa kể chi phí nhà ở như quản lý và bảo hiểm. Tháng cuối chỉ trả phần nợ và lãi còn lại.",
     ],
     // The instalment is not the month's cash out. The example's own terms are
     // emphasised with it, so the figure never travels without them.
     shortAnswerEmphasis: [
-      "“khoản ngân hàng thu” và “tiền ra khỏi ví” là hai con số khác nhau",
+      "“Khoản trả theo lịch” và “tiền ra khỏi ví” là hai con số khác nhau",
     ],
     household: {
       title: "Khoản vay giả lập trong bài",
@@ -73,33 +73,43 @@ export const ARTICLES_1: EducationArticle[] = [
         { label: "Trả thêm gốc mỗi tháng", value: "2.000.000 ₫" },
       ],
       note:
-        "Khoản vay giả lập để minh họa. Lãi suất giữ nguyên 240 tháng là giả định của mô hình, không phải khẳng định hợp đồng của bạn áp dụng như vậy. Bài C03 trình bày trường hợp mức lãi thay đổi.",
+        "Khoản vay giả lập để minh họa. Lãi suất giữ nguyên 240 tháng là giả định của mô hình, không phải khẳng định hợp đồng của bạn áp dụng như vậy. Bài về khoản trả khi hết ưu đãi trình bày trường hợp mức lãi thay đổi.",
     },
     sections: [
       {
         // A heading is a claim, not a label: a reader who scans only the
         // headings should still learn that the instalment is one of three
         // numbers rather than the number.
-        heading: "Mỗi tháng có ba con số, và “khoản ngân hàng thu” chỉ là một trong ba",
+        heading: "Tách khoản trả theo lịch, trả thêm và chi phí nhà ở",
         paragraphs: [
-          "Câu hỏi “mỗi tháng trả bao nhiêu” có ba câu trả lời và bạn cần cả ba.",
-          "Khoản ngân hàng thu theo lịch là 17.356.465 ₫. Đây là khoản trả tính theo mô hình của bài, không phải số trên một hợp đồng thật; hãy đối chiếu lịch ngân hàng cấp khi lập kế hoạch trả nợ.",
-          "Tiền ra khỏi ví là 19.356.465 ₫, vì hộ trong bài chọn trả thêm 2 triệu gốc mỗi tháng. Trả thêm là quyền chọn của bạn, không phải nghĩa vụ — nhưng khi đã chọn thì đây mới là con số cần chuẩn bị.",
-          "Tháng cuối cùng là tháng 187, và tháng đó chỉ còn 9.549.208 ₫: vừa đúng phần dư nợ còn lại cộng tiền lãi của nó, không phải một kỳ trả đủ. Nhờ trả thêm, khoản vay xong sớm 53 tháng và tiết kiệm được 555.699.884 ₫ tiền lãi — trước phí trả nợ trước hạn, khoản mà công cụ chưa tính và hợp đồng của bạn mới quyết định.",
+          "Khoản trả theo lịch khoảng 17,4 triệu gồm tiền gốc và tiền lãi. Khi lập kế hoạch thật, hãy lấy lịch ngân hàng cấp để đối chiếu với kết quả mô phỏng.",
+          "Gia đình trong bài chọn trả thêm 2 triệu gốc, nên cần khoảng 19,4 triệu mỗi tháng cho khoản vay. Trả thêm là quyền chọn của bạn, không phải nghĩa vụ; hãy kiểm tra hợp đồng có cho phép và có thu phí hay không.",
+          "Ngoài khoản vay, bạn vẫn cần tiền cho quản lý, bảo hiểm và các chi phí nhà ở khác. Cộng các khoản này riêng để biết tổng tiền cần chuẩn bị.",
+          "Trong lịch trả thêm này, khoản vay kết thúc ở tháng 187, sớm 53 tháng. Tháng cuối còn khoảng 9,5 triệu; tổng lãi giảm khoảng 555,7 triệu — trước phí trả nợ trước hạn mà công cụ chưa tính.",
         ],
+        results: { caption: "Chi tiết lịch trả góp đều, có trả thêm 2 triệu mỗi tháng", rows: [
+          { label: "Khoản trả theo lịch mỗi tháng", value: "17.356.465 ₫" },
+          { label: "Khoản vay và phần trả thêm mỗi tháng", value: "19.356.465 ₫" },
+          { label: "Khoản trả cuối, tháng 187", value: "9.549.208 ₫" },
+          { label: "Lãi giảm trước phí trả nợ trước hạn", value: "555.699.884 ₫" },
+        ] },
         emphasis: [
-          "có ba câu trả lời và bạn cần cả ba",
           "Trả thêm là quyền chọn của bạn, không phải nghĩa vụ",
+          "Cộng các khoản này riêng",
           "trước phí trả nợ trước hạn",
         ],
       },
       {
-        heading: "Vì sao những năm đầu gần như chỉ trả lãi",
+        heading: "Vì sao phần lãi lớn hơn phần gốc trong những năm đầu",
         paragraphs: [
-          "Tháng đầu tiên, trong 17.356.465 ₫ có 14.166.667 ₫ là lãi và chỉ 3.189.798 ₫ là gốc. Lãi được tính trên dư nợ, và tháng đầu dư nợ còn nguyên 2 tỷ.",
+          "Trong khoản trả theo lịch tháng đầu, khoảng 14,2 triệu là lãi và 3,2 triệu là gốc, chưa kể 2 triệu gốc tự trả thêm. Lãi được tính trên dư nợ, tức phần gốc còn nợ; lúc bắt đầu, con số đó là 2 tỷ.",
           "Tỷ trọng gốc và lãi phụ thuộc cả lãi suất lẫn kỳ hạn. Trong ví dụ 8,5% và 240 tháng này, khoản trả đầu kỳ chủ yếu là lãi. Khi giữ nguyên số tiền vay, kỳ hạn và cách trả góp đều, lãi thấp hơn cho phần gốc tháng đầu LỚN hơn. Ở mức lãi 0%, toàn bộ khoản trả là gốc.",
           "Hệ quả thực tế: nếu bạn định bán nhà sau vài năm, hãy nhìn cột dư nợ trong biểu đồ chứ không nhìn tổng số tiền đã trả. Đã trả nhiều không có nghĩa là đã trả được nhiều gốc.",
         ],
+        results: { caption: "Khoản trả theo lịch tháng đầu, chưa gồm trả thêm", rows: [
+          { label: "Lãi tháng đầu", value: "14.166.667 ₫" },
+          { label: "Gốc trong khoản trả theo lịch", value: "3.189.798 ₫" },
+        ] },
         emphasis: [
           "Lãi được tính trên dư nợ",
           "lãi thấp hơn cho phần gốc tháng đầu LỚN hơn",
@@ -109,10 +119,15 @@ export const ARTICLES_1: EducationArticle[] = [
       {
         heading: "Trả góp đều hay trả gốc đều: đánh đổi giữa tháng đầu và tổng lãi",
         paragraphs: [
-          "Công cụ có hai cách trả và chúng cho ra hai con số rất khác nhau ở tháng đầu. Nếu không trả thêm và không đổi lãi suất, trả góp đều giữ khoản trả theo lịch ở khoảng 17.356.465 ₫ mỗi tháng, ngoại trừ làm tròn hoặc kỳ cuối. Trả gốc đều chia gốc thành 240 phần bằng nhau rồi cộng lãi trên dư nợ còn lại, nên tháng đầu là 22.500.000 ₫ và giảm dần về sau.",
-          "Khi cùng số tiền vay, lãi suất, kỳ hạn và đều không trả thêm, trả gốc đều tốn ít lãi hơn — trên khoản vay này là 1.707.083.333 ₫ so với 2.165.551.520 ₫ — nhưng đòi hỏi tháng đầu nặng hơn gần 30%. Đây là một đánh đổi giữa tổng chi phí và dòng tiền những năm đầu, không phải một phương án tốt hơn phương án kia.",
+          "Để so hai cách trả, tạm đặt khoản trả thêm về 0 và giữ nguyên mức lãi. Trả góp đều giữ khoản trả theo lịch khoảng 17,4 triệu mỗi tháng, ngoại trừ làm tròn hoặc kỳ cuối. Trả gốc đều chia gốc thành 240 phần bằng nhau rồi cộng lãi trên dư nợ còn lại, nên tháng đầu khoảng 22,5 triệu và giảm dần về sau.",
+          "Với cùng khoản vay và đều không trả thêm, trả gốc đều tốn ít lãi hơn: khoảng 1,71 tỷ so với 2,17 tỷ. Đổi lại, phương án này đòi hỏi tháng đầu nặng hơn gần 30%. Hãy cân nhắc cả tổng lãi lẫn khả năng trả trong những năm đầu.",
           "Hãy hỏi ngân hàng hợp đồng của bạn dùng cách nào, rồi chọn đúng cách đó trong công cụ. Hai cách cho hai con số và không có cách nào là mặc định đúng.",
         ],
+        results: { caption: "So hai cách trả khi không trả thêm gốc, cùng kỳ hạn và mức lãi", rows: [
+          { label: "Tháng đầu — trả gốc đều", value: "22.500.000 ₫" },
+          { label: "Tổng lãi — trả gốc đều", value: "1.707.083.333 ₫" },
+          { label: "Tổng lãi — trả góp đều", value: "2.165.551.520 ₫" },
+        ] },
         emphasis: [
           "trả gốc đều tốn ít lãi hơn",
           "đòi hỏi tháng đầu nặng hơn gần 30%",
@@ -140,7 +155,7 @@ export const ARTICLES_1: EducationArticle[] = [
     exercise: {
       title: "Thử với số của bạn",
       intro:
-        "Mở công cụ Tính khoản vay mua nhà. Các bước dùng đúng tên ô nhập trên công cụ.",
+        "Mở công cụ Tính khoản vay mua nhà và thử với khoản vay bạn đang cân nhắc.",
       steps: [
         "Nhập “Số tiền vay”, “Lãi suất” và “Kỳ hạn” — ba ô đầu là đủ để có kết quả.",
         "Chọn “Cách trả nợ”: trả góp đều hay trả gốc đều, theo hợp đồng của bạn.",
@@ -154,10 +169,10 @@ export const ARTICLES_1: EducationArticle[] = [
         "Sau khi nhập số của bạn: dòng “Ngân hàng thu hằng tháng” và dòng “Tổng tiền ra khỏi ví mỗi tháng” có bằng nhau không? Nếu khác, bạn biết vì sao chúng khác chứ?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Phí trả nợ trước hạn. Công cụ chưa tính, và mức phí do hợp đồng của bạn quy định — có hợp đồng không thu.",
-        "Lãi suất sau thời gian ưu đãi, nếu hợp đồng của bạn có ưu đãi. Xem bài C03.",
+        "Lãi suất sau thời gian ưu đãi, nếu hợp đồng của bạn có ưu đãi. Xem bài về khoản trả khi hết ưu đãi ở phần đọc tiếp.",
         "Cách hợp đồng của bạn tính lãi. Công cụ chia lãi năm cho 12; có hợp đồng tính theo số ngày thực tế chia 365, cho ra con số hơi khác.",
         "Bảo hiểm khoản vay, phí thẩm định và phí giải ngân, trừ khi bạn tự nhập vào phần chi phí kèm theo.",
       ],
@@ -169,7 +184,7 @@ export const ARTICLES_1: EducationArticle[] = [
       items: [SRC_CFPB_LOAN_ESTIMATE, SRC_TCB_DAILY],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "het-uu-dai-khoan-tra-tang-bao-nhieu",
       "vay-20-nam-hay-25-nam",
@@ -187,13 +202,13 @@ export const ARTICLES_1: EducationArticle[] = [
     planId: "C04",
     question: "Muốn đủ tiền trả trước sau 3 năm, mỗi tháng cần để dành bao nhiêu?",
     shortAnswer: [
-      "Với 100 triệu đang có, mục tiêu 500 triệu sau 36 tháng và lãi giả định 6%/năm, mức góp cần thiết là 9.668.775 ₫ mỗi tháng.",
-      "Ở lãi 0% thì cần 11.111.111 ₫. Khoảng cách giữa hai con số là phần lãi làm hộ bạn — và nó là giả định, không phải cam kết. Phần bạn kiểm soát được là mức góp.",
+      "Với 100 triệu đang có, để đạt 500 triệu sau 3 năm, bạn cần góp khoảng 9,7 triệu mỗi tháng nếu lãi giữ ở mức giả định 6%/năm và góp cuối tháng.",
+      "Nếu lãi là 0%, mức góp cần tăng lên khoảng 11,1 triệu. Phần chênh lệch nhờ lãi là giả định, không phải cam kết. Phần bạn kiểm soát được là mức góp.",
     ],
     // The controllable lever against the uncertain one, with the 0% reading
     // that shows how much of the plan rests on an assumption.
     shortAnswerEmphasis: [
-      "nó là giả định, không phải cam kết",
+      "giả định, không phải cam kết",
       "Phần bạn kiểm soát được là mức góp",
     ],
     household: {
@@ -210,25 +225,33 @@ export const ARTICLES_1: EducationArticle[] = [
     },
     sections: [
       {
-        heading: "Ba biến, biết hai thì ra biến thứ ba",
+        heading: "Mức góp có vừa với khoản tiền còn lại mỗi tháng?",
         paragraphs: [
-          "Mục tiêu, thời hạn và mức góp luôn đi cùng nhau. Cố định hai cái thì cái thứ ba không còn là lựa chọn nữa — nó là kết quả.",
-          "Nếu bạn cố định mục tiêu 500 triệu và thời hạn 36 tháng, mức góp 9.668.775 ₫/tháng là con số bắt buộc, không phải mục tiêu phấn đấu. Nếu con số đó không khả thi với thu nhập của bạn, thì phải đổi một trong hai cái còn lại: kéo dài thời hạn, hoặc hạ mục tiêu — tức là nhắm căn nhà rẻ hơn, hoặc vay nhiều hơn.",
-          "Đây là lý do công cụ có ba chế độ. Đừng chỉ chạy một chế độ: chạy “Mỗi tháng cần góp bao nhiêu” để thấy con số bắt buộc, rồi chạy “Mất bao lâu để đạt mục tiêu” với mức góp bạn thực sự làm được. Hai câu trả lời đó nói cho bạn khoảng cách giữa kế hoạch và thực tế.",
+          "Sau chi phí sinh hoạt, trả nợ và dự phòng, bạn có đều đặn để dành được khoảng 9,7 triệu mỗi tháng không? Đây là mức góp cần thiết trong giả định của bài để đạt 500 triệu sau 36 tháng.",
+          "Nếu mức đó quá cao, hãy thử kéo dài thời gian hoặc giảm mục tiêu tiền mặt. Giảm mục tiêu cần đi cùng một kế hoạch mua nhà khác; nếu bù bằng vay thêm, bạn phải kiểm tra lại khoản trả nợ mỗi tháng.",
+          "Chạy “Mỗi tháng cần góp bao nhiêu”, rồi chạy “Mất bao lâu để đạt mục tiêu” với mức góp bạn thực sự làm được. Hai kết quả giúp bạn chọn giữa đổi mức góp, thời hạn và mục tiêu.",
+          "Các số triệu trong lời giải đã làm tròn cho dễ đọc. Khi đặt lịch chuyển tiền, dùng mức chi tiết trong bảng để tránh góp thiếu so với kế hoạch.",
         ],
+        results: { caption: "Mức góp cuối tháng để đạt 500 triệu sau 36 tháng", rows: [
+          { label: "Lãi giả định 6%/năm danh nghĩa", value: "9.668.775 ₫/tháng" },
+          { label: "Lãi 0%/năm", value: "11.111.111 ₫/tháng" },
+        ] },
         emphasis: [
-          "Cố định hai cái thì cái thứ ba không còn là lựa chọn nữa",
-          "là con số bắt buộc, không phải mục tiêu phấn đấu",
-          "Đừng chỉ chạy một chế độ",
+          "mức góp cần thiết trong giả định của bài",
+          "mức góp bạn thực sự làm được",
         ],
       },
       {
         heading: "Lãi giúp được ít hơn bạn tưởng trong 3 năm",
         paragraphs: [
-          "Trong ví dụ này, tổng tiền bạn tự bỏ vào là 448.075.899 ₫ và phần do lãi là 51.924.101 ₫ — khoảng 10,4% số tiền cuối kỳ. Trong biểu đồ, đó là khoảng cách giữa hai đường.",
+          "Trong ví dụ này, tổng tiền bạn tự bỏ vào khoảng 448,1 triệu và phần do lãi khoảng 51,9 triệu — khoảng 10,4% số tiền cuối kỳ. Trong biểu đồ, đó là khoảng cách giữa hai đường.",
           "Ba năm là quãng ngắn, nên lãi kép chưa có thời gian làm nhiều. Với mục tiêu ngắn hạn, phần quyết định gần như toàn bộ là mức góp — không phải việc chọn được sản phẩm lãi cao hơn 1%.",
           "Điều đó cũng có nghĩa: với tiền sắp dùng để mua nhà, đừng đánh đổi thanh khoản để lấy thêm chút lãi. Nếu đến lúc cần mà tiền đang bị khóa, hoặc đang lỗ vì thị trường, thì cái mất lớn hơn cái được rất nhiều.",
         ],
+        results: { caption: "Số tiền ở cuối tháng 36, với lãi giả định 6%/năm", rows: [
+          { label: "Vốn ban đầu và tiền tự góp", value: "448.075.899 ₫" },
+          { label: "Phần lãi tích lũy", value: "51.924.101 ₫" },
+        ] },
         emphasis: [
           "khoảng 10,4% số tiền cuối kỳ",
           "Ba năm là quãng ngắn, nên lãi kép chưa có thời gian làm nhiều",
@@ -273,7 +296,7 @@ export const ARTICLES_1: EducationArticle[] = [
     // 6% only the balance does. The dashed contribution line ends at
     // 448.075.899 ₫, and the two coincide only at a 0% rate.
     visualReading:
-      "Hai đường: đường liền là số dư, đường gạch là phần tiền bạn tự góp. Chỉ ĐƯỜNG LIỀN kết thúc ở mục tiêu 500 triệu; đường gạch dừng ở 448.075.899 ₫, và khoảng cách 51,9 triệu giữa hai đầu mút chính là phần do lãi — khoảng một phần mười số tiền cuối kỳ. Biểu đồ này GIẢI RA MỨC GÓP cần thiết chứ không dự báo số dư, nên đặt lãi về 0 không hạ cái đích xuống: mức góp cần thiết tăng lên 11.111.111 ₫, đường gạch dâng lên trùng với đường liền, và cả hai cùng kết thúc ở 500 triệu. Đường gạch là phần bạn kiểm soát được; khoảng cách phía trên nó phụ thuộc mức lãi giả định 6%/năm.",
+      "Hai đường: đường liền là số dư, đường gạch là phần tiền bạn tự góp. Chỉ ĐƯỜNG LIỀN kết thúc ở mục tiêu 500 triệu; đường gạch dừng ở khoảng 448,1 triệu. Khoảng cách 51,9 triệu là phần do lãi giả định. Biểu đồ này GIẢI RA MỨC GÓP cần thiết chứ không dự báo số dư: đặt lãi về 0 thì mức góp tăng lên khoảng 11,1 triệu mỗi tháng, đường gạch trùng với đường liền và cả hai cùng kết thúc ở 500 triệu.",
     exercise: {
       title: "Thử với số của bạn",
       intro:
@@ -292,7 +315,7 @@ export const ARTICLES_1: EducationArticle[] = [
         "Mức góp công cụ trả ra có nằm trong khoản tiền còn lại sau chi phí sinh hoạt của bạn không? Nếu không, bạn sẽ đổi thời hạn hay đổi mục tiêu?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Lãi suất bạn sẽ thực sự nhận được. Đó là ô nhập, và không có mức nào được bảo đảm.",
         "Giá nhà và mức trả trước cần có vào thời điểm bạn mua.",
@@ -314,7 +337,7 @@ export const ARTICLES_1: EducationArticle[] = [
       ],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "gop-them-2-trieu-dat-muc-tieu-som-bao-lau",
       "co-600-trieu-nen-tim-nha-tam-gia-nao",
@@ -330,7 +353,7 @@ export const ARTICLES_1: EducationArticle[] = [
     question: "Hai gói vay: trả ít mỗi tháng có thật sự rẻ hơn?",
     shortAnswer: [
       "Không nhất thiết. Trong ví dụ của bài, gói có khoản trả hằng tháng thấp nhất lại là gói tốn nhiều lãi nhất, vì nó kéo dài kỳ hạn thêm 5 năm.",
-      "Muốn so được, hai gói phải cùng số tiền vay và bạn phải so trên chi phí vay — lãi cộng phí — chứ không phải trên khoản trả hằng tháng.",
+      "Hãy đặt hai báo giá cạnh nhau với cùng số tiền vay và cùng thời điểm đánh giá. Xem cả chi phí vay — lãi cộng phí — lẫn khoản trả hằng tháng: một con số cho biết tốn bao nhiêu, con số kia cho biết ngân sách có chịu được không.",
     ],
     // "Smaller instalment" is not "cheaper loan". The three conditions that
     // make a comparison mean anything are emphasised with it.
@@ -351,9 +374,9 @@ export const ARTICLES_1: EducationArticle[] = [
     },
     sections: [
       {
-        heading: "Cùng một số tiền vay, hoặc không so được gì",
+        heading: "Cùng số tiền vay và mốc thời gian giúp so báo giá rõ hơn",
         paragraphs: [
-          "Điều kiện đầu tiên và dễ bị bỏ qua nhất: hai gói phải được tính trên cùng số tiền vay. Nếu một bên báo giá cho 2 tỷ và bên kia cho 1,8 tỷ, mọi con số sau đó đều không so được — bạn đang so hai khoản nợ khác nhau.",
+          "Để tách riêng tác động của lãi, phí và kỳ hạn, hai gói phải được tính trên cùng số tiền vay. Báo giá 1,8 tỷ có thể trả ít hơn báo giá 2 tỷ đơn giản vì bạn vay ít hơn; nếu muốn so hai kế hoạch đó, cần tính thêm phần tiền tự có phải bù.",
           "Công cụ So sánh khoản vay vì vậy chỉ có một ô số tiền vay dùng chung cho mọi phương án. Nếu ngân hàng cho bạn vay ít hơn mức bạn cần, đó là một thông tin riêng và quan trọng, nhưng nó không thuộc phép so sánh này.",
           "Điều kiện thứ hai: nói rõ khoảng thời gian đánh giá. Biểu đồ của bài cộng lãi và phí DANH NGHĨA đến cuối kỳ hạn riêng của từng gói, tức 20 năm so với 25 năm. Nó chưa so chi phí đến cùng một ngày thoát khoản vay và chưa chiết khấu; muốn bán nhà sau 5 năm, cần so lãi, phí đã trả và dư nợ — phần gốc còn nợ — tại đúng mốc đó.",
         ],
@@ -396,11 +419,11 @@ export const ARTICLES_1: EducationArticle[] = [
         heading: "Mốc so sánh quyết định gói nào rẻ hơn",
         paragraphs: [
           "Biểu đồ của bài đặt mốc so sánh ở tháng thứ 300 — tức cả hai gói đã tất toán xong, đã trả hết phần còn nợ và đóng khoản vay — nên nó cộng lãi và phí DANH NGHĨA của trọn kỳ hạn mỗi gói. Đó là câu trả lời cho “giữ đến hết thì gói nào tốn ít hơn”.",
-          "Phần lớn người mua không giữ khoản vay đến hết. Nếu bạn đặt mốc ở tháng thứ 60, công cụ cộng lãi và phí đã trả đến tháng đó rồi cộng thêm phần dư nợ còn lại — và thứ tự có thể đổi, vì một gói kỳ hạn dài trả được ít gốc hơn nên còn nợ nhiều hơn tại cùng thời điểm.",
+          "Nếu bạn dự định bán nhà hoặc đổi khoản vay sau 5 năm, hãy đặt mốc ở tháng thứ 60. Công cụ so tổng khoản đã trả, phí và dư nợ còn lại tại mốc đó — thứ tự có thể đổi khi lãi, phí hoặc kỳ hạn khác nhau. Phần dư nợ giúp bạn thấy một khoản trả nhẹ hơn có đi kèm nhiều nợ còn lại hơn hay không.",
           "Hãy chạy cả hai mốc: mốc bạn thật sự dự kiến giữ, và cả kỳ hạn. Nếu hai mốc cho hai người thắng khác nhau, công cụ sẽ nói ra — và lựa chọn của bạn nên theo mốc gần với kế hoạch thật của bạn.",
         ],
         emphasis: [
-          "Phần lớn người mua không giữ khoản vay đến hết",
+          "Nếu bạn dự định bán nhà hoặc đổi khoản vay sau 5 năm",
           "thứ tự có thể đổi",
         ],
       },
@@ -440,7 +463,7 @@ export const ARTICLES_1: EducationArticle[] = [
         "Trong hai báo giá của bạn, gói có khoản trả hằng tháng thấp hơn có phải gói có chi phí thấp hơn tại mốc bạn chọn không? Nếu không, bạn chọn theo thước đo nào?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Lãi suất sau ưu đãi sẽ thật sự là bao nhiêu. Công cụ nhận cả hai giai đoạn, nhưng mức sau ưu đãi là kịch bản bạn nhập — hợp đồng thường gắn nó với lãi cơ sở, và lãi cơ sở thì thay đổi.",
         "Bảo hiểm khoản vay, và bất kỳ khoản phí nào bạn không nhập vào ô của nó.",
@@ -454,7 +477,7 @@ export const ARTICLES_1: EducationArticle[] = [
       items: [SRC_CFPB_COMPARE],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: ["vay-20-nam-hay-25-nam", "lai-co-dinh-hay-tha-noi", "lai-suat-quang-cao-va-chi-phi-vay-that"],
   },
 
@@ -465,14 +488,14 @@ export const ARTICLES_1: EducationArticle[] = [
     planId: "C06",
     question: "Được vay tới mức đó có nghĩa là nên vay hết không?",
     shortAnswer: [
-      "Không. Hai phép tính khác nhau cho hai con số khác nhau: áp tỷ lệ lên thu nhập gộp cho ra một trần, còn lấy thu nhập thực nhận trừ chi phí sinh hoạt cho ra ngân sách thật. Trong ví dụ của bài, trần là 20 triệu/tháng nhưng hộ chỉ còn 18 triệu.",
-      "Trong ví dụ giữ nguyên các giả định khác, khoảng cách đó tương ứng khoảng 230 triệu tầm giá. Đây là chênh lệch giữa hai phép tính minh họa, không phải số ngân hàng đã duyệt hoặc bằng chứng rằng hộ sẽ sống thoải mái với khoản nợ.",
+      "Không. Hãy bắt đầu từ tiền thực nhận, trừ sinh hoạt, nợ đang trả và phần muốn để dành. Trong ví dụ này, gia đình còn 18 triệu mỗi tháng cho khoản vay mua nhà, dù phép tính theo tỷ lệ giả định cho trần 20 triệu.",
+      "Trần theo tỷ lệ không thay thế ngân sách của gia đình. Cả hai con số trong bài đều là minh họa, không phải mức ngân hàng đã duyệt hay bảo đảm rằng khoản vay phù hợp với bạn.",
     ],
     // A ratio ceiling is not a spendable budget. The emphasis keeps the two
     // phrases that say where each number comes from, plus the limit on what
     // the gap proves.
     shortAnswerEmphasis: [
-      "áp tỷ lệ lên thu nhập gộp cho ra một trần, còn lấy thu nhập thực nhận trừ chi phí sinh hoạt cho ra ngân sách thật",
+      "Trần theo tỷ lệ không thay thế ngân sách của gia đình",
     ],
     household: {
       title: "Hộ giả lập trong bài",
@@ -492,8 +515,8 @@ export const ARTICLES_1: EducationArticle[] = [
         heading: "Trần và ngân sách được tính từ hai thứ khác nhau",
         paragraphs: [
           "Trần tính trên thu nhập GỘP: 40% của 50 triệu là 20 triệu, và giới hạn tổng nợ 50% trừ 5 triệu nợ hiện có cũng ra 20 triệu. Phép tính này không biết gia đình bạn tiêu bao nhiêu.",
-          "Ngân sách tính trên thu nhập THỰC NHẬN: 44 triệu trừ 18 triệu sinh hoạt, trừ 5 triệu nợ đang trả, trừ 3 triệu muốn để dành, còn 18 triệu. Mỗi khoản được trừ đúng một lần, nên bốn khoản đó cộng với khoản trả nhà luôn đúng bằng thu nhập thực nhận — bạn thấy điều này trong biểu đồ.",
-          "Mười tám nhỏ hơn hai mươi, nên trong ví dụ này chính hộ là giới hạn đang chặn. Đó chỉ là kết quả của hộ giả lập với các tỷ lệ đã nhập. Không suy ra ngân hàng sẵn sàng cho vay mức đó hay đây là tình trạng phổ biến của người mua nhà.",
+          "Ngân sách tính trên thu nhập THỰC NHẬN: 44 triệu trừ 18 triệu sinh hoạt, 5 triệu nợ đang trả và 3 triệu muốn để dành, còn 18 triệu cho khoản vay nhà. Mỗi khoản được trừ đúng một lần; bốn phần trên biểu đồ cộng lại bằng 44 triệu.",
+          "Vì 18 triệu thấp hơn 20 triệu, chính hộ là giới hạn đang chặn trong ví dụ này. Không suy ra ngân hàng sẵn sàng cho vay mức đó; khi lập kế hoạch, còn cần thử trường hợp thu nhập giảm hoặc chi phí tăng.",
         ],
         emphasis: [
           "Phép tính này không biết gia đình bạn tiêu bao nhiêu",
@@ -504,14 +527,13 @@ export const ARTICLES_1: EducationArticle[] = [
       {
         heading: "Nếu bỏ trống chi phí sinh hoạt thì kết quả không còn là ngân sách",
         paragraphs: [
-          "Công cụ cho phép để trống ô chi phí sinh hoạt, nhưng khi đó nó nói rõ: kết quả là GIỚI HẠN TRÊN, không phải ngân sách. Lý do là số học — không nhập chi phí thì phép tính chạy như thể chi phí bằng 0, và với hầu hết mọi hộ điều đó không đúng.",
-          "Trong ví dụ này, nếu bỏ trống chi phí sinh hoạt và phần để dành, ngân sách còn lại vượt trần, nên kết quả trở về đúng bằng con số của trần. Trong trạng thái thiếu chi phí, công cụ đánh dấu kết luận bị giới hạn: con số chưa phải ngân sách hộ hoàn chỉnh. Chỉ nhập 0 khi bạn xác nhận khoản chi thực sự bằng 0; chưa biết và bằng 0 là hai trạng thái khác nhau.",
-          "Ước lượng một con số vẫn tốt hơn để trống. Nhìn lại ba tháng chi tiêu gần nhất, lấy phần không cắt được, rồi nhập vào. Sai vài triệu vẫn hữu ích hơn là giả định bằng 0.",
+          "Nếu để trống chi phí sinh hoạt, kết quả là GIỚI HẠN TRÊN, không phải ngân sách. Trong ví dụ này, bỏ cả sinh hoạt và phần để dành khiến kết quả quay về trần 20 triệu, dù gia đình vẫn cần tiền để sống.",
+          "Chỉ nhập 0 khi khoản chi thực sự bằng 0: chưa biết và bằng 0 là hai trạng thái khác nhau. Ước lượng một con số vẫn tốt hơn để trống; hãy xem lại ba tháng chi tiêu gần nhất, nhập phần thiết yếu rồi thử thêm một mức cao hơn.",
+          "Nhớ chia các khoản chắc chắn phải chi hằng năm, như học phí, thành phần để dành mỗi tháng nếu chúng chưa nằm trong số chi tiêu bạn nhập.",
         ],
         emphasis: [
           "kết quả là GIỚI HẠN TRÊN, không phải ngân sách",
           "chưa biết và bằng 0 là hai trạng thái khác nhau",
-          "Ước lượng một con số vẫn tốt hơn để trống",
         ],
       },
       {
@@ -561,7 +583,7 @@ export const ARTICLES_1: EducationArticle[] = [
         "Hai lần chạy cho bạn hai tầm giá. Cái nào lớn hơn, và bạn sẽ đi xem nhà theo cái nào?",
     },
     limits: {
-      title: "Bài này không trả lời được gì",
+      title: "Đối chiếu trước khi quyết định",
       items: [
         "Một tỷ lệ an toàn chung. Không có con số nào đúng cho mọi hộ, và bài này không đề xuất con số nào.",
         "Ngân hàng của bạn dùng tỷ lệ nào. Hãy hỏi và nhập đúng con số đó.",
@@ -575,7 +597,7 @@ export const ARTICLES_1: EducationArticle[] = [
       items: [SRC_TCB_TRA_GOP, SRC_CFPB_DOWN_PAYMENT],
     },
     provenance:
-      "Bản nháp giáo dục FinHome được soạn với hỗ trợ AI. Ví dụ là giả lập; biểu đồ dùng mô hình của công cụ và các phép tính trọng yếu có kiểm thử tự động. Kiểm thử không chứng minh mọi diễn giải đều đúng; bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "co-600-trieu-nen-tim-nha-tam-gia-nao",
       "tiep-tuc-thue-hay-mua-nha",

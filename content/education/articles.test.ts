@@ -311,6 +311,9 @@ describe("every article's visual computes from its own hypothetical", () => {
 });
 
 describe("the figures the prose quotes", () => {
+  // Exact values can live in the readable result detail instead of dense prose.
+  const details = (article: (typeof EDUCATION_ARTICLES)[number]) =>
+    article.sections.flatMap((s) => s.results?.rows.map((r) => `${r.label} ${r.value}`) ?? []);
   /** Resolve one article's visual and collect every string it renders. */
   function renderedStrings(slug: string): string {
     const article = getEducationArticle(slug)!;
@@ -330,6 +333,7 @@ describe("the figures the prose quotes", () => {
     const prose = [
       ...article.shortAnswer,
       ...article.sections.flatMap((s) => s.paragraphs),
+      ...details(article),
     ].join(" ");
     // These are the strings the mortgage engine produces for this loan; the
     // mortgage content test pins them independently against the annuity
@@ -370,6 +374,7 @@ describe("the figures the prose quotes", () => {
     const prose = [
       ...article.shortAnswer,
       ...article.sections.flatMap((s) => s.paragraphs),
+      ...details(article),
     ].join(" ");
     expect(prose).toContain("17.356.465");
     expect(prose).toContain("16.104.542");
@@ -385,6 +390,7 @@ describe("the figures the prose quotes", () => {
     const prose = [
       ...c04.shortAnswer,
       ...c04.sections.flatMap((s) => s.paragraphs),
+      ...details(c04),
     ].join(" ");
     expect(prose).toContain("9.668.775");
     expect(prose).toContain("11.111.111");
@@ -403,6 +409,7 @@ describe("the figures the prose quotes", () => {
     const prose = [
       ...article.shortAnswer,
       ...article.sections.flatMap((s) => s.paragraphs),
+      ...details(article),
     ].join(" ");
     expect(prose).toContain("555.699.884");
     expect(prose).toContain("53 tháng");
