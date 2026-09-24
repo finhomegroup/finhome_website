@@ -20,7 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Công cụ", href: "/cong-cu/" },
   { label: "Hỗ trợ", href: "#hotro" },
   // { label: "Đội ngũ", href: "#doingu" }, // hidden until team photos are ready
-  { label: "Tin tức", href: "#tintuc" },
+  { label: "Tin tức", href: "/blog/" },
   { label: "Về FinHome", href: "/vision/" },
 ];
 
