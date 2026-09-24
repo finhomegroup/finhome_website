@@ -4343,3 +4343,17 @@ Additional primary-source checks made during integration:
 - [Housing Law27/2023 official gazette PDF on a provincial construction-department site](https://bqlbt.sxdsonla.gov.vn/wp-content/uploads/2024/03/luat-so-27.2023.QH15-Luat-Nha-o-sua-doi.pdf),
   Articles152–153, supports separately recorded maintenance-fund obligations.
   The contract-template source above supplies the pre-VAT illustration basis.
+
+## 2026-09-24 — News menu opens the blog directly
+
+- User requested “Tin tức” to open `/blog/`, not scroll to the homepage section.
+  Updated the shared `NAV_ITEMS` destination for desktop and mobile; the homepage
+  news section, logo and protected header implementation are unchanged.
+- PR182 was already merged. This follow-up starts from `origin/main` at `4bc527c`
+  on `fix/news-navigation-blog-20260924` instead of updating a merged PR.
+- Added a regression assertion for the exact shared menu label/destination and
+  existing blog route. Full native project gate passed: 300 files / 6,619 tests,
+  TypeScript, lint baseline with zero new findings, build and markup checks.
+- Actual built-browser clicks at 1280×900 and 390×844 reached `/blog/` with no
+  hash and heading “Tin tức bất động sản”. Mobile menu closed after navigation.
+  Temporary preview tab closed and viewport reset. No merge/deploy performed.

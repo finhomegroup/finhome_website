@@ -7,6 +7,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { FOOTER, NAV_ITEMS } from "@/content/site";
 
 describe("site navigation", () => {
+  it("opens the blog directly from the shared news menu instead of a homepage section", () => {
+    expect(NAV_ITEMS.filter((item) => item.label === "Tin tức")).toEqual([
+      { label: "Tin tức", href: "/blog/" },
+    ]);
+    expect(existsSync(fileURLToPath(new URL("../app/blog/page.tsx", import.meta.url)))).toBe(true);
+  });
+
   it("links the calculator suite from the main menu", () => {
     expect(NAV_ITEMS).toContainEqual({
       label: "Công cụ",
