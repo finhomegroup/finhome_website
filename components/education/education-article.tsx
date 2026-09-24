@@ -7,6 +7,8 @@ import { ColumnChart } from "@/components/calc/chart/column-chart";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { ResultTable } from "@/components/calc/result-table";
 import { ProseText } from "@/components/ui/prose-text";
+import { ArrowRightIcon } from "@/components/education/icons";
+import { chapterForGroup } from "@/content/education/chapters";
 import { EDUCATION_COLLECTION as C } from "@/content/education/collection";
 import { educationGroup } from "@/content/education/groups";
 import { EDUCATION_VISUAL_LABELS } from "@/content/education/visual-labels";
@@ -27,10 +29,13 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  * uses, so the figures cannot disagree.
  *
  * The section order is fixed by the collection's template and is not a per
- * article choice: question → short answer → declared hypothetical → body →
- * visual → exercise on the real tool → limits → sources → provenance. A reader
- * who stops after the visual has still been told what the numbers assume.
+ * article choice: question → short answer (with a link to the tool) → in-page
+ * contents → declared hypothetical → body → visual → exercise on the real tool
+ * → limits → sources → provenance → read next. A reader who stops after the
+ * visual has still been told what the numbers assume.
  */
+const ANCHOR_FOCUS =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green";
 export function EducationArticleBody({
   article,
 }: {
@@ -50,11 +55,25 @@ export function EducationArticleBody({
     );
   }
 
+  const toolHref = `${calculatorPath(article.exercise.toolSlug)}/`;
+  const chapter = chapterForGroup(article.group);
+  const ids = sectionIds(article);
+  const contents = [
+    { id: ids.answer, label: C.article.answerTitle },
+    { id: ids.household, label: article.household.title },
+    ...article.sections.map((section, i) => ({ id: ids.sections[i], label: section.heading })),
+    { id: ids.visual, label: C.article.visualReadingTitle },
+    { id: ids.exercise, label: article.exercise.title },
+    { id: ids.limits, label: article.limits.title },
+    { id: ids.sources, label: article.sources.title },
+  ];
+
   return (
-    <div className="space-y-10">
+    // Body text in the regular-width reading face; headings keep font-display.
+    <div data-education-article className="space-y-10 font-reading tracking-normal">
       {/* The answer, before the explanation. */}
-      <section>
-        <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      <section aria-labelledby={ids.answer}>
+        <h2 id={ids.answer} className="font-display text-xl font-medium text-ink md:text-2xl">
           {C.article.answerTitle}
         </h2>
         <div className="mt-3 space-y-3">
@@ -70,11 +89,62 @@ export function EducationArticleBody({
             </p>
           ))}
         </div>
+
+        {/* The tool, offered as soon as the reader knows the answer's shape.
+            The full step-by-step exercise stays further down, after the
+            example it depends on. */}
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 rounded-2xl border border-ink-4/20 px-5 py-4">
+          <p className="text-sm font-medium text-ink">{C.article.earlyToolLead}</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link
+              href={toolHref}
+              className={cn(
+                "inline-flex min-h-11 items-center rounded-full bg-brand-green-ink px-5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                FH_POINTER,
+              )}
+            >
+              {C.article.openTool} {tool.title}
+            </Link>
+            <a
+              href={`#${ids.exercise}`}
+              className={cn(
+                "inline-flex min-h-11 items-center text-sm font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2",
+                FH_POINTER,
+                ANCHOR_FOCUS,
+              )}
+            >
+              {C.article.exerciseLink}
+            </a>
+          </div>
+        </div>
       </section>
 
+      {/* In-page contents: ordinary anchors to the headings below. */}
+      <nav aria-labelledby={ids.contents} className="border-y border-ink-4/20 py-5">
+        <h2 id={ids.contents} className="font-display text-sm font-medium uppercase tracking-wide text-ink-3">
+          {C.article.contentsTitle}
+        </h2>
+        <ol className="mt-3 grid gap-x-8 gap-y-1 md:grid-cols-2">
+          {contents.map((item) => (
+            <li key={item.id}>
+              <a
+                href={`#${item.id}`}
+                className={cn(
+                  "inline-flex min-h-9 items-center py-1 text-sm leading-snug text-ink-2 transition-colors hover:text-brand-green-ink",
+                  FH_POINTER,
+                  ANCHOR_FOCUS,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       {/* The hypothetical, declared as such BEFORE any figure is used. */}
-      <section className="rounded-2xl bg-bg-soft p-5">
-        <h2 className="font-display text-base font-medium text-ink">
+      <section aria-labelledby={ids.household} className="rounded-2xl bg-bg-soft p-5">
+        <h2 id={ids.household} className="font-display text-base font-medium text-ink">
           {article.household.title}
         </h2>
         <dl className="mt-3 space-y-1.5">
@@ -95,9 +165,9 @@ export function EducationArticleBody({
         </p>
       </section>
 
-      {article.sections.map((section) => (
-        <section key={section.heading}>
-          <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      {article.sections.map((section, index) => (
+        <section key={section.heading} aria-labelledby={ids.sections[index]}>
+          <h2 id={ids.sections[index]} className="font-display text-xl font-medium text-ink md:text-2xl">
             {section.heading}
           </h2>
           <div className="mt-3 space-y-3">
@@ -136,8 +206,8 @@ export function EducationArticleBody({
           states the numbers; this states what the picture means and what it
           does not establish. A figure with no sentence of its own is a figure
           most readers scroll past. */}
-      <section>
-        <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      <section aria-labelledby={ids.visual}>
+        <h2 id={ids.visual} className="font-display text-xl font-medium text-ink md:text-2xl">
           {C.article.visualReadingTitle}
         </h2>
         <p className="mt-3 text-base leading-relaxed text-ink-2">
@@ -195,8 +265,8 @@ export function EducationArticleBody({
       )}
 
       {/* Do it with your own numbers, on the real tool. */}
-      <section className="rounded-2xl border border-ink-4/20 p-5">
-        <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      <section aria-labelledby={ids.exercise} className="rounded-2xl border border-ink-4/20 p-5">
+        <h2 id={ids.exercise} className="font-display text-xl font-medium text-ink md:text-2xl">
           {article.exercise.title}
         </h2>
         <p className="mt-2 text-base leading-relaxed text-ink-2">
@@ -211,7 +281,7 @@ export function EducationArticleBody({
         </ol>
 
         <Link
-          href={`${calculatorPath(article.exercise.toolSlug)}/`}
+          href={toolHref}
           className={cn(
             "mt-4 inline-flex min-h-11 items-center rounded-full bg-brand-green-ink px-5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
             FH_POINTER,
@@ -232,8 +302,8 @@ export function EducationArticleBody({
         </div>
       </section>
 
-      <section>
-        <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      <section aria-labelledby={ids.limits}>
+        <h2 id={ids.limits} className="font-display text-xl font-medium text-ink md:text-2xl">
           {article.limits.title}
         </h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5">
@@ -245,8 +315,8 @@ export function EducationArticleBody({
         </ul>
       </section>
 
-      <section>
-        <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
+      <section aria-labelledby={ids.sources}>
+        <h2 id={ids.sources} className="font-display text-xl font-medium text-ink md:text-2xl">
           {article.sources.title}
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-3">
@@ -282,11 +352,24 @@ export function EducationArticleBody({
         </p>
       </section>
 
-      {article.nextSlugs.length > 0 ? (
-        <section>
-          <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-            {C.article.nextTitle}
-          </h2>
+      {/* The one "read next" area on an education page: the curated links
+          plus a way back to this article's chapter on the index. */}
+      <section aria-labelledby={ids.next}>
+        <h2 id={ids.next} className="font-display text-xl font-medium text-ink md:text-2xl">
+          {C.article.nextTitle}
+        </h2>
+        <Link
+          href={`${C.slug}/#${chapter.anchor}`}
+          className={cn(
+            "mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-brand-green-ink",
+            FH_POINTER,
+            ANCHOR_FOCUS,
+          )}
+        >
+          {C.article.chapterLink} {chapter.number} · {chapter.label}
+          <ArrowRightIcon className="size-4" />
+        </Link>
+        {article.nextSlugs.length > 0 ? (
           <ul className="mt-3 grid gap-3 md:grid-cols-2">
             {article.nextSlugs.map((slug) => {
               const next = getEducationArticle(slug);
@@ -315,8 +398,48 @@ export function EducationArticleBody({
               );
             })}
           </ul>
-        </section>
       ) : null}
+      </section>
     </div>
   );
+}
+
+/** ASCII anchor from a Vietnamese heading: "Giả định của ví dụ" → "gia-dinh-cua-vi-du". */
+function anchorSlug(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[đĐ]/g, "d")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/g, "");
+}
+
+/**
+ * Stable, unique ids for every heading the in-page contents links to. Fixed
+ * sections get fixed ids; body sections derive theirs from the heading, with
+ * a numeric suffix if two headings would collide.
+ */
+export function sectionIds(article: EducationArticle) {
+  const fixed = {
+    answer: "tra-loi-ngan",
+    contents: "trong-bai-nay",
+    household: "vi-du-gia-lap",
+    visual: "doc-bieu-do",
+    exercise: "bai-tap",
+    limits: "gioi-han",
+    sources: "nguon-tham-khao",
+    next: "doc-tiep",
+  };
+  const taken = new Set<string>(Object.values(fixed));
+  const sections = article.sections.map((section, index) => {
+    const base = anchorSlug(section.heading) || `muc-${index + 1}`;
+    let id = base;
+    for (let n = 2; taken.has(id); n += 1) id = `${base}-${n}`;
+    taken.add(id);
+    return id;
+  });
+  return { ...fixed, sections };
 }

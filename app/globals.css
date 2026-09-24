@@ -100,6 +100,11 @@
   --font-sans: "Maison Neue Extended Book", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Maison Neue Extended Medium", "Maison Neue Extended Book", "Inter", sans-serif;
   --font-display-book: "Maison Neue Extended Book", "Inter", sans-serif;
+  /* Long-form reading text (education article bodies). The extended face is
+     the brand's display voice; paragraphs of Vietnamese with figures read
+     faster in a regular-width sans. Inter is already self-hosted in fonts.css
+     with the Vietnamese subset. Headings keep `font-display`. */
+  --font-reading: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 :root {
@@ -152,6 +157,16 @@ html {
      browser that does not support the selector. */
   --fh-cta-pin-offset: 1rem;
   --fh-cta-pin-max: min(17rem, 30vh);
+}
+
+/* The collection index and education articles are anchor-heavy (chapter
+   links, in-page contents). Honour a reduced-motion preference for those
+   jumps; other pages keep their existing behaviour. */
+@media (prefers-reduced-motion: reduce) {
+  html:has([data-chapter-page]),
+  html:has([data-education-article]) {
+    scroll-behavior: auto;
+  }
 }
 
 body {

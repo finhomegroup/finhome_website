@@ -28,7 +28,10 @@ describe("reviewed reader-first publication contracts", () => {
     expect(text).not.toContain("khoản trả gấp khoảng hai lần");
   });
   it("introduces reader decisions and an experiment, not a taxonomy defence", () => {
-    expect(EDUCATION_COLLECTION.lede).toContain("vừa túi tiền");
+    // The approved chapters-design subtitle frames the reader's questions; the
+    // chapter titles carry the specific decisions ("tầm giá", "đủ vốn", …).
+    expect(EDUCATION_COLLECTION.lede).toBe("Những câu hỏi thực tế trước khi mua nhà.");
+    expect(Object.values(EDUCATION_COLLECTION.chapters).map((c) => c.title).join(" ")).toContain("tầm giá");
     expect(EDUCATION_COLLECTION.scopeBody).toContain("thay bằng số của mình");
     expect(JSON.stringify(EDUCATION_COLLECTION)).not.toContain("Đây không phải tin tức");
     expect(JSON.stringify(EDUCATION_COLLECTION)).not.toContain("không cũ đi theo ngày");
