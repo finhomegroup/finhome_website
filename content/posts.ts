@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "hung-yen-quy-hoach-1700-ha-pho-hien",
+    title: "Hưng Yên quy hoạch hơn 1.700 ha tái hiện thương cảng Phố Hiến xưa",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Hưng Yên lập quy hoạch hơn 1.700 ha xây dựng thương cảng Phố Hiến với 4 phân khu chức năng, tái hiện không gian giao thương lịch sử.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/hung-yen-quy-hoach-1700-ha-pho-hien.jpg",
+    date: "2026-09-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hung-yen-quy-hoach-hon-1-700-ha-tai-hien-thuong-cang-pho-hien-xua-5123909.html",
+        "accessed": "2026-09-24"
+      },
+  },
+  {
     slug: "de-xuat-thu-dat-coc-mua-nha-tu-luc-khoi-cong",
     title: "Đề xuất cho phép thu đặt cọc mua nhà từ lúc khởi công: Cơ hội và rủi ro cần cân nhắc",
     category: "Chính sách",
