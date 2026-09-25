@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "co-600-trieu-tinh-tong-gia-nha",
+    title: "Có 600 triệu tích lũy có thể mua nhà giá bao nhiêu? Công cụ tự tính tầm tài chính",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Từ số tiền tích lũy 600 triệu và thu nhập hàng tháng, hướng dẫn cách ước tính tầm giá nhà khả thi để lập kế hoạch mua nhà phù hợp.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/co-600-trieu-tinh-tong-gia-nha.png",
+    date: "2026-09-25",
+    source: {
+        "name": "finhome.group",
+        "url": "https://www.finhome.group/blog/co-600-trieu-nen-tim-nha-tam-gia-nao/",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "thue-chong-dau-co-dat-can-lam-ro-bo-hoang",
     title: "Thuế chống đầu cơ đất: Cần làm rõ thế nào là bỏ hoang, găm giữ?",
     category: "Chính sách",
