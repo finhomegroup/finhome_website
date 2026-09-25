@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "mua-nha-bang-con-so-bo-bai-tap-tinh-toan-cho-nguoi-mua-nha-lan-dau",
+    title: "Mua nhà bằng con số — Bộ bài tập tính toán giúp người mua nhà lần đầu tránh bẫy tài chính",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "FinHome ra mắt bộ hướng dẫn toàn diện giúp người mua nhà lần đầu tính toán tầm giá, khoản trả hằng tháng, lãi suất sau ưu đãi và so sánh các gói vay một cách chính xác.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/mua-nha-bang-con-so-bo-bai-tap-tinh-toan-cho-nguoi-mua-nha-lan-dau.png",
+    date: "2026-09-25",
+    source: {
+        "name": "finhome.group",
+        "url": "https://www.finhome.group/blog/mua-nha-bang-con-so/",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "ngan-hang-tang-tuyen-dung-quan-ly-gia-san",
     title: "Ngân hàng tăng tuyển dụng nhân sự quản lý gia sản: Cuộc đua dịch vụ ngân hàng bước vào giai đoạn mới",
     category: "Tài chính",
