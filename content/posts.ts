@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "doanh-nghiep-bds-kho-tiep-can-goi-tin-dung-145000-ty",
+    title: "Doanh nghiệp bất động sản khó tiếp cận gói tín dụng 145.000 tỷ, người mua nhà xã hội chịu ảnh hưởng",
+    category: "Tài chính",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "HoREA cho biết hầu như không có doanh nghiệp phát triển nhà ở xã hội nào tiếp cận được gói tín dụng 145.000 tỷ đồng với lãi suất 6,1%/năm, buộc phải vay thương mại lãi suất tới 14%/năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/doanh-nghiep-bds-kho-tiep-can-goi-tin-dung-145000-ty.webp",
+    date: "2026-09-25",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/von-dat-doanh-nghiep-bat-dong-san-kho-tiep-can-goi-tin-dung-145000-ty-188260925061403157.chn",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "hung-yen-quy-hoach-1700-ha-pho-hien",
     title: "Hưng Yên quy hoạch hơn 1.700 ha tái hiện thương cảng Phố Hiến xưa",
     category: "Thị trường",
