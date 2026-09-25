@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "dong-nai-thu-hoi-dat-du-an-treo-10-nam-amata-long-thanh",
+    title: "Đồng Nai thu hồi đất dự án treo 10 năm: Quyền lợi người dân được bảo vệ thế nào?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","khu-vuc-ha-tang"],
+    excerpt: "Dự án Thành phố Amata Long Thành rộng hơn 721 ha sau 10 năm treo sắp bước vào giai đoạn thu hồi đất, bồi thường. Người dân cần nắm rõ quy trình và quyền lợi trước khi nhận đền bù.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-nai-thu-hoi-dat-du-an-treo-10-nam-amata-long-thanh.png",
+    date: "2026-09-25",
+    source: {
+        "name": "cafeland.vn",
+        "url": "https://cafeland.vn/tin-tuc/dong-nai-sap-thu-hoi-dat-du-an-treo-10-nam-2650-thua-dat-bi-anh-huong-155296.html?fbclid=IwRlRTSAUixcdleHRuA2FlbQIxMQBwZG9mBWZkaWQWUPGQUWNMdXYGg8Y-491Ip9qdWnLBTXNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6zhmAZ_M-DtkhsLvF5FsfP5HQ5KD8Bk9OL3r_LseXArU2dxh_e3p9FzuS6JA_aem_x6wdI4WAqRb1cwug29QjiQ",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "hung-yen-quy-hoach-1700-ha-pho-hien",
     title: "Hưng Yên quy hoạch hơn 1.700 ha tái hiện thương cảng Phố Hiến xưa",
     category: "Thị trường",
