@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "thue-chong-dau-co-dat-can-lam-ro-bo-hoang",
+    title: "Thuế chống đầu cơ đất: Cần làm rõ thế nào là bỏ hoang, găm giữ?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chuyên gia nhận định việc đánh thuế chống đầu cơ đất cần tiêu chí rõ ràng xác định đất bỏ hoang, mức thuế tính trên cơ sở nào và dữ liệu hiện có đủ áp dụng hay không.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thue-chong-dau-co-dat-can-lam-ro-bo-hoang.webp",
+    date: "2026-09-25",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/thue-chong-dau-co-dat-can-lam-ro-the-nao-la-bo-hoang-gam-giu-188260925061507159.chn",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "dong-nai-thu-hoi-dat-du-an-treo-10-nam-amata-long-thanh",
     title: "Đồng Nai thu hồi đất dự án treo 10 năm: Quyền lợi người dân được bảo vệ thế nào?",
     category: "Chính sách",
