@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "ngan-hang-tang-tuyen-dung-quan-ly-gia-san",
+    title: "Ngân hàng tăng tuyển dụng nhân sự quản lý gia sản: Cuộc đua dịch vụ ngân hàng bước vào giai đoạn mới",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Làn sóng tuyển dụng nhân sự quản lý gia sản tại các ngân hàng lớn cho thấy cuộc cạnh tranh trong lĩnh vực ngân hàng bán lẻ đang chuyển sang một giai đoạn mới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ngan-hang-tang-tuyen-dung-quan-ly-gia-san.jpg",
+    date: "2026-09-25",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/ngan-hang-tang-tuyen-dung-nhan-su-quan-ly-gia-san-mo-dau-mot-cuoc-dua-moi-d150966.html?fbclid=IwZnRzaAUjPchleHRuA2FlbQIxMQBwZG9mBWZkaWQWUPG0LxfHF_3DzhM61FpChfzVy9_CpHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR7FjFgwxDJz_BbxE1Z-CFX5XfXmLa5uZYcwC-_Fc5AaWKOhMcl6PtWV2_sURg_aem_6UP6KiiRKx_xw3OcYLdBGg#google_vignette",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
     slug: "co-600-trieu-tinh-tong-gia-nha",
     title: "Có 600 triệu tích lũy có thể mua nhà giá bao nhiêu? Công cụ tự tính tầm tài chính",
     category: "Tài chính",
