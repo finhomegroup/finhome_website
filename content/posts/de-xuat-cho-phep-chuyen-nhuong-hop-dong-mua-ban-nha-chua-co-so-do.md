@@ -2,7 +2,7 @@ Bộ Xây dựng đang lấy ý kiến góp ý cho phương án sửa đổi, b�
 
 ## Điểm chính cần nắm
 
-- Đề xuất cho phép chuyển nhượng hợp đồng mua bán đối với nhà ở và công trình xây sẵn chưa có sổ đỏ (giấy chứng nhận quyền sử dụng đất).
+- Đề xuất cho phép chuyển nhượng hợp đồng mua bán đối với nhà ở và công trình xây sẵn chưa có sổ đỏ (cách gọi quen dùng của Giấy chứng nhận quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất).
 - Hiện tại, chỉ những bất động sản đã có sổ đỏ hoặc đủ điều kiện bán theo quy định mới được phép chuyển nhượng hợp đồng.
 - Đây là đề xuất đang trong giai đoạn lấy ý kiến, chưa được cấp có thẩm quyền phê duyệt.
 
