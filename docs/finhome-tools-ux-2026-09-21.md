@@ -1716,6 +1716,13 @@ labels and their position are identical either way.
 - **Unchanged and re-proved by the existing tests:** the `fundedAtBoundary` verdict, the
   forgiven residue and the figure it states, one live region, one table, one figure, and
   every svg `aria-hidden` + `focusable="false"`.
+- **2026-09-26, reader-first rewrite** (`docs/retirement-reader-first-2026-09-26.md`): the
+  verdict became a filled sentence naming the reader's ages; the shortfall row gained a
+  sentence saying it is an annual spending gap and not a contribution; the field helps
+  teach by example; the axis reads in ages; `LongTermViews` says inputs are re-entered. Two
+  §5 statements above are superseded by that decision: `realNotice` no longer carries the
+  exact nominal/real pair (it moved under the result, filled from the live plan), and this
+  route's length caps are gone. Nothing from it has been opened in a browser.
 
 ### `vay-mua-nha` (row 3, "Hai cột")
 

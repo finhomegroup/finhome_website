@@ -41,15 +41,26 @@ const FORM_ID = "trai-phieu-nhap";
 const RESULT_ID = "trai-phieu-ket-qua";
 
 export function BondCalculator() {
-  const fields = useCalcFields({
-    mode: C.form.defaultMode,
-    face: C.form.defaultFace,
-    coupon: C.form.defaultCoupon,
-    years: C.form.defaultYears,
-    frequency: C.form.defaultFrequency,
-    yieldValue: C.form.defaultYield,
-    price: C.form.defaultPrice,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Mode and frequency are lists.
+  const fields = useCalcFields(
+    {
+      mode: C.form.defaultMode,
+      face: C.form.defaultFace,
+      coupon: C.form.defaultCoupon,
+      years: C.form.defaultYears,
+      frequency: C.form.defaultFrequency,
+      yieldValue: C.form.defaultYield,
+      price: C.form.defaultPrice,
+    },
+    {
+      face: "money",
+      price: "money",
+      coupon: "rate",
+      years: "rate",
+      yieldValue: "rate",
+    },
+  );
 
   const fromYield = fields.values.mode === "yield";
 

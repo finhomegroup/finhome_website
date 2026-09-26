@@ -32,7 +32,11 @@ export const CARD_PAYOFF = {
     "Tính số tháng, ngày hết nợ và tổng lãi để trả hết dư nợ thẻ tín dụng với mức trả cố định, theo mốc thời gian mong muốn, hoặc chỉ trả mức tối thiểu — hai đường dư nợ cạnh nhau. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Nợ thẻ tín dụng không phải một khoản vay trả góp, và tính nó như khoản vay sẽ ra con số dễ chịu hơn thực tế. Công cụ này mô phỏng theo cách sao kê thường tính — lãi cộng theo ngày rồi tính vào cuối kỳ — và cho bạn xem hai cách trả cạnh nhau, kèm ngày hết nợ của từng cách.",
+    // 2026-09-26 (independent review finding 13): open on the reader's
+    // question, then qualify the model — without claiming every statement
+    // compounds daily. The E-shelf entry contract keeps "MÔ HÌNH NÀY" and
+    // "có thể tính khác" in `dailyInterestNotice`, which is unchanged.
+    "Bạn còn nợ thẻ bao nhiêu và định trả mỗi tháng bao nhiêu — công cụ cho biết mất bao lâu để hết nợ, ngày hết nợ và tổng lãi, rồi đặt cách trả bạn chọn cạnh cách trả còn lại. Lãi thẻ ở đây được mô phỏng theo giả định cộng dồn theo ngày; biểu phí của thẻ bạn dùng có thể tính khác.",
 
   form: {
     strategyLegend: "Bạn định trả thế nào?",
@@ -53,14 +57,16 @@ export const CARD_PAYOFF = {
     rateLabel: "Lãi suất thẻ",
     rateUnit: "%/năm",
     rateHelp:
-      "Lấy đúng mức lãi ghi trong biểu phí của thẻ bạn đang dùng. Trang này không biết biểu phí của bạn nên con số điền sẵn chỉ là ví dụ. Lãi thẻ thường được cộng theo ngày trên số dư.",
+      "Lấy đúng mức lãi ghi trong biểu phí của thẻ bạn đang dùng. Trang này không biết biểu phí của bạn nên con số điền sẵn chỉ là ví dụ. Mô hình ở đây cộng lãi theo ngày trên số dư; thẻ của bạn có thể tính theo cách khác.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "30",
 
     paymentLabel: "Trả mỗi tháng",
     paymentUnit: "₫",
     paymentHelp:
-      "Số tiền cố định bạn thực sự chuyển cho thẻ mỗi tháng. Phải lớn hơn tiền lãi của tháng đầu, nếu không dư nợ sẽ tăng thay vì giảm.",
+      // Same three branches as `noPayoffNotice`: the engine refuses on
+      // `payment <= interest`, and equality means flat, not growing.
+      "Số tiền cố định bạn thực sự chuyển cho thẻ mỗi tháng. So với tiền lãi của tháng đầu: trả nhiều hơn thì dư nợ giảm dần, trả bằng đúng thì dư nợ đứng yên, trả ít hơn thì dư nợ tăng thêm phần lãi chưa trả.",
     paymentInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultPayment: "3.000.000",
 
@@ -196,7 +202,9 @@ export const CARD_PAYOFF = {
     budgetNotProofNotice:
       "Khoản tiền được giải phóng chỉ là số tiền chính bạn khai báo đang dành riêng cho nợ thẻ, tính từ ngày hết nợ trở đi. Nó không phải bằng chứng về khả năng trả nợ hay điều kiện được vay, và công cụ này không xét duyệt gì cả. Mức trả tối thiểu giảm dần theo dư nợ, nên nó KHÔNG tự giải phóng số tiền của tháng đầu cho mọi tháng sau — chỉ khoản bạn thực sự dành riêng mới được giải phóng.",
     noPayoffNotice:
-      "Mức trả này không đủ bù tiền lãi của tháng đầu, nên dư nợ sẽ tăng lên mỗi tháng và không bao giờ hết. Đây không phải lỗi tính toán mà là điều thực sự xảy ra. Hãy tăng mức trả lên trên con số tiền lãi tháng đầu.",
+      // The engine refuses on `payment <= interest`, so equality is in
+      // scope: the debt stands still, it does not grow.
+      "Mức trả này không vượt tiền lãi của tháng đầu, nên dư nợ không giảm: bằng đúng tiền lãi thì nợ đứng yên, thấp hơn thì mỗi tháng nợ tăng thêm phần lãi chưa trả — cả hai trường hợp đều không bao giờ hết. Hãy tăng mức trả lên trên tiền lãi tháng đầu — dư nợ nhân lãi suất tháng — để dư nợ bắt đầu giảm.",
     dateInvalidNotice:
       "Chưa đọc được ngày bắt đầu, nên công cụ chưa tính được ngày hết nợ. Hãy sửa ô ngày, tháng hoặc năm đang báo lỗi.",
   },
@@ -256,14 +264,25 @@ export const CARD_PAYOFF = {
   formula: {
     title: "Cách tính",
     body: [
-      "Lãi mỗi tháng = dư nợ × ((1 + lãi suất năm ÷ 365)^(365 ÷ 12) − 1). Đây là GIẢ ĐỊNH của mô hình: lãi cộng dồn theo ngày, một tháng lấy 365 ÷ 12 ngày. Với thẻ 30%/năm, hệ số này là 2,5305% một tháng, trong khi cách chia 12 cho ra 2,5%. Hợp đồng của từng thẻ có thể dùng số ngày khác, mốc nhập lãi khác hoặc cách làm tròn khác, nên con số thực tế trên sao kê có thể lệch.",
-      "Mỗi tháng: dư nợ mới = dư nợ cũ + lãi − khoản trả. Công cụ mô phỏng từng tháng cho đến khi dư nợ về 0, và khoản trả tháng cuối được cắt đúng bằng phần còn nợ nên số dư kết thúc ở đúng 0.",
-      "Chế độ theo mốc thời gian dùng công thức niên kim với chính lãi suất tháng đó: khoản trả = dư nợ × r × (1 + r)^n ÷ ((1 + r)^n − 1), rồi mô phỏng lại đúng mức trả vừa giải ra — nên con số hiển thị và lịch trả được vẽ là cùng một kế hoạch. Với 50 triệu ở 30%/năm, muốn hết nợ trong 12 tháng cần trả 4.883.350 ₫ mỗi tháng.",
+      // MEANING FIRST, 2026-09-26 (independent review finding 13). The
+      // exponent formulas moved to `detail`; this paragraph keeps the model
+      // assumption and its 2,5305% figure, which `card-payoff.test.ts` pins.
+      "Hiểu ngay: mỗi tháng, dư nợ mới = dư nợ cũ + tiền lãi của tháng − số bạn trả. Trả nhiều hơn tiền lãi thì nợ giảm; trả đúng bằng thì nợ đứng yên; trả ít hơn thì nợ tăng. Tiền lãi của tháng được tính theo GIẢ ĐỊNH của mô hình — lãi cộng dồn theo ngày trên số dư, một tháng lấy 365 ÷ 12 ngày — nên với thẻ 30%/năm nó là 2,5305% một tháng, nhỉnh hơn cách chia 12 (2,5%). Hợp đồng của từng thẻ có thể dùng số ngày khác, mốc nhập lãi khác hoặc cách làm tròn khác, nên con số trên sao kê có thể lệch; công thức đầy đủ nằm ở phần mở rộng cuối mục này.",
+      "Công cụ chạy phép cộng trừ đó từng tháng cho đến khi dư nợ về 0, và khoản trả tháng cuối được cắt đúng bằng phần còn nợ nên số dư kết thúc ở đúng 0.",
+      "Chế độ theo mốc thời gian giải ngược: với dư nợ và lãi tháng đã có, mức trả nào làm nợ về 0 đúng sau số tháng bạn chọn. Rồi công cụ mô phỏng lại đúng mức trả vừa giải ra, nên con số hiển thị và lịch trả được vẽ là cùng một kế hoạch. Với 50 triệu ở 30%/năm, muốn hết nợ trong 12 tháng cần trả 4.883.350 ₫ mỗi tháng.",
       "Mức tối thiểu = phần trăm × dư nợ CUỐI KỲ, tức dư nợ đã cộng lãi của tháng đó, và không thấp hơn mức sàn. Đây là dạng công thức nhiều sao kê dùng, nhưng cả tỷ lệ và mức sàn đều là ô nhập vì chúng khác nhau giữa các thẻ. Vì mức tối thiểu là một tỷ lệ của dư nợ, nó co lại cùng dư nợ — đó là lý do toán học của việc trả tối thiểu mất nhiều năm, và chính MỨC SÀN mới dứt điểm được món nợ.",
       "Khoảng cách giữa hai cách trả rất lớn. Với 50 triệu ở 30%/năm: trả cố định 3.000.000 ₫ mỗi tháng thì hết nợ sau 22 tháng với tổng lãi 15.758.272 ₫; chỉ trả tối thiểu 5% với sàn 500.000 ₫ thì mất 90 tháng và tổng lãi 43.091.470 ₫. Mức tối thiểu tháng đầu là 2.563.261 ₫ — trả ĐÚNG số đó nhưng giữ nguyên không giảm thì chỉ 28 tháng và lãi 19.799.257 ₫. Cùng một số tiền ở tháng đầu, khác nhau ở chỗ một bên hạ mức trả theo dư nợ và bên kia thì không.",
       "Ngày hết nợ lấy đúng số tháng của lịch trả rồi cộng vào ngày bắt đầu, không phải chia dư nợ cho mức trả. Khoản trả đầu tiên rơi vào một tháng sau ngày bắt đầu, nên kế hoạch 22 tháng bắt đầu ngày 15/9/2026 sẽ hết nợ ngày 15/7/2028.",
       "Khi mức trả không bù nổi tiền lãi tháng đầu, công cụ trả về trạng thái không có kết quả kèm ghi chú, thay vì một số tháng rất lớn — vì món nợ đó thực sự không bao giờ hết.",
     ],
+    // The two formulas the visible paragraphs stand for. Same engine.
+    detail: {
+      title: "Công thức đầy đủ",
+      body: [
+        "Lãi mỗi tháng = dư nợ × ((1 + lãi suất năm ÷ 365)^(365 ÷ 12) − 1). Với 30%/năm: (1 + 0,30 ÷ 365)^(30,4167) − 1 = 2,5305% một tháng.",
+        "Chế độ theo mốc thời gian dùng công thức niên kim với chính lãi suất tháng đó: khoản trả = dư nợ × r × (1 + r)^n ÷ ((1 + r)^n − 1), với r là lãi tháng theo công thức trên và n là số tháng bạn chọn. Khi lãi suất là 0%, công thức trên thành 0 ÷ 0 nên công cụ dùng phép chia đơn giản: khoản trả = dư nợ ÷ n.",
+      ],
+    },
   },
 
   faq: {

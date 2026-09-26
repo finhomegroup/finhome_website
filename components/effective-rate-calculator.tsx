@@ -52,11 +52,16 @@ export function EffectiveRateCalculator({
   /** The longer guidance below — `<ToolNextSteps promoted>`. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    direction: "toEffective",
-    rate: F.defaultRate,
-    compounding: F.defaultCompounding,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Direction and compounding are lists.
+  const fields = useCalcFields(
+    {
+      direction: "toEffective",
+      rate: F.defaultRate,
+      compounding: F.defaultCompounding,
+    },
+    { rate: "rate" },
+  );
 
   const rate = parseDecimal(fields.values.rate);
   // −100%/năm would take the balance to zero within the year; below that it

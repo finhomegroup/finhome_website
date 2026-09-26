@@ -21,7 +21,7 @@
  * environment; no jsdom, so the CTA's click behaviour is not exercised here.
  */
 import { describe, expect, it, vi } from "vitest";
-import { createElement, type ComponentType } from "react";
+import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { PERCENT } from "@/content/calculators/percent";
 import { TOOL_SHELL } from "@/content/calculators/tool-shell";
@@ -58,10 +58,7 @@ async function render(defaultA?: string): Promise<string> {
     });
   }
   try {
-    const loaded = (await import("@/components/percent-calculator")) as Record<
-      string,
-      ComponentType
-    >;
+    const loaded = await import("@/components/percent-calculator");
     return renderToStaticMarkup(createElement(loaded.PercentCalculator));
   } finally {
     vi.doUnmock(CONTENT_PATH);

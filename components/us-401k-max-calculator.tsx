@@ -66,7 +66,15 @@ export function Us401kMaxCalculator({
 }: {
   actions?: React.ReactNode;
 } = {}) {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Age and elapsed periods are counts; year and periods lists.
+  const fields = useCalcFields(F.defaults, {
+    salary: "money",
+    contributed: "money",
+    matchPercent: "rate",
+    matchLimit: "rate",
+    frontLoad: "rate",
+  });
   const v = fields.values;
 
   const periodsPerYear = Number(v.periods);

@@ -46,7 +46,15 @@ function ageLabel(months: number): string {
 }
 
 export function UsSocialSecurityPayoutCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Birth years and claim ages are counts and format nothing.
+  const fields = useCalcFields(F.defaults, {
+    pia: "money",
+    spousePia: "money",
+    earnings: "money",
+    exemptUnderFra: "money",
+    exemptFraYear: "money",
+  });
   const v = fields.values;
 
   const pia = parseMoney(v.pia);

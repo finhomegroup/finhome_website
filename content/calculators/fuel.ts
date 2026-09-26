@@ -273,7 +273,10 @@ export const FUEL = {
   formula: {
     title: "Cách tính",
     body: [
-      "Số lít = quãng đường ÷ 100 × mức tiêu thụ tính theo lít trên 100 km. Chi phí chuyến đi = số lít × giá mỗi lít. Với 120 km, mức 7 lít/100 km và giá 21.000 ₫, chuyến đi tốn 8,4 lít và 176.400 ₫.",
+      // 2026-09-26: the worked example now uses the PREFILLED price, so the
+      // figure a reader sees on the tool (210.000 ₫) is the figure the prose
+      // quotes. 21.000 ₫ was the engine test's fixture, not the page's.
+      "Số lít = quãng đường ÷ 100 × mức tiêu thụ tính theo lít trên 100 km. Chi phí chuyến đi = số lít × giá mỗi lít. Với ví dụ điền sẵn — 120 km, mức 7 lít/100 km và giá 25.000 ₫ — chuyến đi tốn 8,4 lít và 210.000 ₫.",
       "Khi bạn nhập theo km/lít, công cụ quy đổi một lần về lít/100 km bằng phép nghịch đảo: 100 ÷ số km mỗi lít. Một chiếc xe máy đi được 50 km với một lít tiêu thụ 2 lít/100 km. Dòng “mức tiêu thụ quy đổi” trong kết quả cho bạn kiểm tra lại con số đã được hiểu đúng.",
       "Chọn khứ hồi nhân đôi quãng đường, nên số lít và chi phí chuyến đi cũng nhân đôi. Chi phí mỗi km thì không đổi — đó là đặc tính của xe và của giá nhiên liệu, không phụ thuộc vào chuyến đi.",
       "Chi phí mỗi tháng = chi phí một chuyến × số chuyến mỗi tháng. Với quãng đường đi làm 12 km mỗi chiều, khứ hồi, 22 ngày một tháng, tổng quãng đường là 528 km một tháng.",
@@ -289,7 +292,8 @@ export const FUEL = {
       },
       {
         q: "Vì sao đi trong thành phố tốn nhiên liệu hơn?",
-        a: "Vì dừng và tăng tốc liên tục, cộng với thời gian chạy không tải khi tắc đường. Xe hơi chạy đường trường ở tốc độ ổn định thường tiêu thụ thấp hơn 30–40% so với trong nội thành. Nếu chuyến đi của bạn gồm cả hai loại đường, hãy chạy công cụ hai lần với hai mức tiêu thụ rồi cộng lại.",
+        // "30–40%" was an unsourced range, 2026-09-26.
+        a: "Vì dừng và tăng tốc liên tục, cộng với thời gian chạy không tải khi tắc đường. Cùng một chiếc xe chạy đường trường ở tốc độ ổn định thường tiêu thụ ít hơn đáng kể so với trong nội thành — mức chênh cụ thể tùy xe, nên hãy đo cả hai. Nếu chuyến đi của bạn gồm cả hai loại đường, hãy chạy công cụ hai lần với hai mức tiêu thụ rồi cộng lại.",
       },
       {
         q: "Có nên cộng thêm chi phí gì vào chi phí mỗi km không?",

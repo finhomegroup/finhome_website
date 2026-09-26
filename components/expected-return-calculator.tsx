@@ -43,15 +43,26 @@ const FORM_ID = "loi-nhuan-ky-vong-nhap";
 const RESULT_ID = "loi-nhuan-ky-vong-ket-qua";
 
 export function ExpectedReturnCalculator() {
-  const fields = useCalcFields({
-    count: C.form.defaultCount,
-    ...Object.fromEntries(
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`: every probability and return is
+  // `parseDecimal`; the scenario count formats nothing.
+  const fields = useCalcFields(
+    {
+      count: C.form.defaultCount,
+      ...Object.fromEntries(
+        INDEXES.flatMap((index) => [
+          [`probability${index}`, C.form.defaultProbabilities[index]],
+          [`return${index}`, C.form.defaultReturns[index]],
+        ]),
+      ),
+    } as Record<string, string>,
+    Object.fromEntries(
       INDEXES.flatMap((index) => [
-        [`probability${index}`, C.form.defaultProbabilities[index]],
-        [`return${index}`, C.form.defaultReturns[index]],
+        [`probability${index}`, "rate" as const],
+        [`return${index}`, "rate" as const],
       ]),
     ),
-  } as Record<string, string>);
+  );
 
   // A whole count of scenarios, so `parseCount` — docs §4. `parseDecimal`
   // with the integer guard was unreachable for a grouped entry: "3.000"

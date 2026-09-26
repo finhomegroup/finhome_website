@@ -43,7 +43,11 @@ export const POINTS = {
     loanGroup: "Khoản vay",
     amountLabel: "Số tiền vay",
     amountUnit: "₫",
-    amountHelp: "Số tiền thực nhận. Phí điểm chiết khấu tính theo phần trăm số này.",
+    // 2026-09-26: same wording as the sibling loan tools — the contract
+    // principal, not "thực nhận", which on this page would read as net of
+    // the very fee being priced.
+    amountHelp:
+      "Số tiền vay gốc ghi trên hợp đồng, ví dụ 2.000.000.000. Phí trả trước tính theo phần trăm số này.",
     amountInvalid: "Vui lòng nhập số tiền vay lớn hơn 0.",
     defaultAmount: "2.000.000.000",
 
@@ -137,10 +141,14 @@ export const POINTS = {
     title: "Cách tính",
     body: [
       "Phí trả trước = số tiền vay × phần trăm phí. Lãi suất sau khi giảm = lãi suất gốc − mức giảm tính theo điểm phần trăm. Hai khoản vay được lập bảng trả nợ đầy đủ ở hai mức lãi suất đó, trên cùng một số tiền vay và cùng một kỳ hạn.",
-      "Điểm hoàn phí kiểu đơn giản = phí ÷ mức giảm hằng tháng, làm tròn lên. Công cụ vẫn hiển thị vì đây là con số mọi nơi đều dùng, nhưng nó bỏ qua dư nợ, nên nó luôn muộn hơn thực tế.",
+      // "luôn muộn hơn" qualified 2026-09-26: the balance advantage makes the
+      // true crossover no later than the simple one; whole-month rounding can
+      // make the two coincide.
+      "Điểm hoàn phí kiểu đơn giản = phí ÷ mức giảm hằng tháng, làm tròn lên. Công cụ vẫn hiển thị vì đây là con số mọi nơi đều dùng, nhưng nó bỏ qua dư nợ — phần gốc bạn trả thêm được nhờ lãi thấp hơn — nên nó không bao giờ sớm hơn mốc thật, và thường muộn hơn.",
       "Vị thế thực tại thời điểm tất toán so hai tổng: bên không trả phí là tổng các khoản đã trả cộng dư nợ còn lại; bên trả phí là tổng đã trả cộng dư nợ còn lại cộng phí trả trước. Hiệu số dương nghĩa là trả phí có lợi. Với mặc định, tại tháng 60 bên trả phí bỏ ra 2.799.061.004 ₫ so với 2.803.931.542 ₫ — lợi 4.870.538 ₫.",
       "Tiết kiệm cả kỳ hạn sau phí là tổng lãi tiết kiệm được trong toàn bộ kỳ hạn trừ phí, tức 55.636.389 ₫ với mặc định. Con số này chỉ đúng nếu bạn giữ khoản vay đến hết kỳ hạn — điều mà phần lớn người vay mua nhà không làm.",
-      "Mức giảm được nhập theo ĐIỂM phần trăm. Nhập 0,25 để 8,5% thành 8,25%. Nếu hiểu là “giảm 0,25% của lãi suất” thì con số chỉ là 0,02 điểm, tức nhỏ hơn khoảng mười hai lần — tỷ lệ này bằng 100 chia cho lãi suất, nên ở mức 8,5%/năm nó là gần 12 lần — công cụ từ chối mức giảm làm lãi suất xuống dưới 0 nhưng không thể đoán được bạn có nhầm đơn vị hay không.",
+      // Untangled 2026-09-26: one idea per sentence, same arithmetic.
+      "Mức giảm được nhập theo ĐIỂM phần trăm: nhập 0,25 để 8,5% thành 8,25%. Đừng nhầm với “giảm 0,25% của lãi suất”, tức 8,5% × 0,25% ≈ 0,02 điểm — nhỏ hơn khoảng 12 lần ở mức lãi này. Công cụ chỉ chặn mức giảm làm lãi suất xuống dưới 0; nó không đoán được bạn có nhầm đơn vị hay không, nên hãy đọc lại báo giá xem ngân hàng giảm bao nhiêu ĐIỂM.",
     ],
   },
 

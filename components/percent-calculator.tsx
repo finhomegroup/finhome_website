@@ -53,6 +53,14 @@ const MODES = {
 const FORM_ID = "tinh-phan-tram-nhap";
 const RESULT_ID = "tinh-phan-tram-ket-qua";
 
+/** Each mode owns separate keys, so a money input never inherits a rate's grammar. */
+export const PERCENT_FORMATS = {
+  ofPercent: "rate", ofTotal: "money",
+  sharePart: "money", shareWhole: "money",
+  changeFrom: "money", changeTo: "money",
+  pointsFrom: "rate", pointsTo: "rate",
+} as const;
+
 export function PercentCalculator() {
   const fields = useCalcFields({
     mode: "of",
@@ -64,7 +72,7 @@ export function PercentCalculator() {
     changeTo: C.form.modes.change.defaultB,
     pointsFrom: C.form.modes.points.defaultA,
     pointsTo: C.form.modes.points.defaultB,
-  });
+  }, PERCENT_FORMATS);
 
   const mode = fields.values.mode as PercentMode;
   const keys = MODES[mode];

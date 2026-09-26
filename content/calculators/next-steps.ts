@@ -692,35 +692,12 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
     },
   },
 
-  // Original row 31. Its own next step in the plan is "chuyển nghĩa vụ tháng
-  // sang khả năng mua nhà" — so the first link is the affordability tool, and
-  // the `why` says the instalment has to be TYPED IN there, in the household
-  // debt field, because nothing travels with the link. Saying which field
-  // matters: entering it twice is the double-count `vehicle-budget.ts` exists
-  // to prevent, and the two tools cannot check each other.
-  "vay-mua-xe": {
-    intro:
-      "Khoản trả xe hằng tháng ở trên là một nghĩa vụ của hộ. Không có con số nào được mang sang công cụ khác — bạn sẽ nhập lại, và chỉ nhập MỘT lần:",
-    tools: [
-      {
-        slug: "kha-nang-mua-nha",
-        why: "Với khoản trả xe này trong ô “nợ phải trả mỗi tháng”, tầm giá nhà còn lại là bao nhiêu?",
-      },
-      {
-        slug: "muc-tieu-tiet-kiem",
-        why: "Tiền trả trước cho xe rời khỏi vốn tự có — cần bao lâu để tích lũy lại đủ tiền trả trước nhà?",
-      },
-      // No link to `chi-phi-nhien-lieu`, for the same reason as row 17's
-      // third link: `next-steps.test.ts` keeps every destination on the P1/P2
-      // buying path, and running costs are a P3 utility. The running-cost
-      // FIELD on this page is where that concern is answered instead.
-    ],
-    education: {
-      href: "/blog/co-600-trieu-nen-tim-nha-tam-gia-nao/",
-      label: "Có 600 triệu, nên tìm nhà trong tầm giá nào?",
-      why: "Bài tập cho thấy nghĩa vụ trả nợ hằng tháng làm tầm giá nhà thấp đi bao nhiêu, trên một hộ giả lập.",
-    },
-  },
+  // `vay-mua-xe` has NO entry, deliberately. It used to send the reader to the
+  // affordability and savings tools with a home-deposit framing; the user's
+  // direction on 2026-09-26 was that the car page is about the car. Its own
+  // next actions are car pages off the P1/P2 path this block is guarded to,
+  // so they live in `AUTO_LOAN.relatedTools` and the route resolves them
+  // through the registry — the same shape `thue-mua-xe` uses.
 
   "so-sanh-khoan-vay": {
     intro:

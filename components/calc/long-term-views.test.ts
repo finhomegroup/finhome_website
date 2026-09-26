@@ -99,4 +99,33 @@ describe("the long-term plan's four-view control", () => {
     const html = render("trajectory");
     expect(html).toContain(`<nav aria-label="${L.views.title}"`);
   });
+
+  it("tells the reader their figures are re-entered on the next page", () => {
+    // Measured 2026-09-26: a balance changed to 600.000.000 ₫ on one view met
+    // the 500.000.000 ₫ default on the next. The intro may promise a shared
+    // formula — that is true — but it must not imply the numbers travel, and
+    // nothing stores or carries them.
+    expect(L.views.intro).toContain("nhập lại");
+    expect(L.views.intro).not.toContain("không thể đưa ra");
+    // On every view, not just the trajectory's: the control is shared.
+    for (const item of L.views.items) {
+      expect(render(item.view), item.view).toContain(L.views.intro);
+    }
+  });
+
+  it("reads the same on all four views: no sibling named, no 'trang còn lại' counted", () => {
+    // The intro renders on all four routes. A sentence listing "the other
+    // three" from the trajectory's point of view was wrong on the other
+    // three; the current page is marked by the control, not by the prose.
+    expect(L.views.intro).not.toContain("ba trang");
+    expect(L.views.intro).not.toContain("còn lại");
+    for (const item of L.views.items) {
+      expect(L.views.intro, item.label).not.toContain(item.label);
+    }
+    for (const item of L.views.items) {
+      const html = render(item.view);
+      expect(count(html, L.views.currentLabel)).toBe(1);
+      expect(html).toContain(L.views.intro);
+    }
+  });
 });

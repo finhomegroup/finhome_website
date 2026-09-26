@@ -225,7 +225,10 @@ export const APR_ADVANCED = {
         // live site. No range is stated: the fee and the years it applies for
         // are set by the contract, and some contracts do not charge one. The
         // actionable half of the answer is kept unchanged.
-        a: "Chưa. Công cụ tính APR khi tất toán sớm nhưng không cộng phí trả nợ trước hạn, vì mức phí và thời gian áp dụng do hợp đồng của bạn quy định — biểu phí thường giảm dần theo số năm đã vay, và có hợp đồng không thu. Hãy đọc điều khoản hoặc hỏi ngân hàng để biết con số của chính bạn. Cách gần đúng: cộng khoản phí đó vào ô “phí khác”, hiểu rằng khi đó con số APR đến hết kỳ hạn sẽ bị tính cao hơn thực tế một chút, còn con số APR khi tất toán sớm mới là con số bạn cần.",
+        // CORRECTED 2026-09-26. The old closing advice — add the exit fee to
+        // "phí khác" — is the fee-timing error `settlementFeeNotice` on this
+        // same page warns against. The answer now agrees with the notice.
+        a: "Chưa. Công cụ tính APR khi tất toán sớm nhưng không cộng phí trả nợ trước hạn, vì mức phí và thời gian áp dụng do hợp đồng của bạn quy định — biểu phí thường giảm dần theo số năm đã vay, và có hợp đồng không thu. Hãy đọc điều khoản hoặc hỏi ngân hàng để biết con số của chính bạn. Đừng cộng khoản này vào ô phí trả ngay: phí trả ở tháng tất toán không phải phí trả lúc giải ngân, cộng sai thời điểm sẽ làm APR cao hơn thực tế. Công cụ So sánh khoản vay có ô riêng cho phí trả nợ trước hạn và tính nó đúng tại mốc bạn chọn.",
       },
       {
         q: "Nhập tháng tất toán bao nhiêu là hợp lý?",

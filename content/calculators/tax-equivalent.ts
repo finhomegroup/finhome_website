@@ -147,7 +147,8 @@ export const TAX_EQUIVALENT = {
     body: [
       "Từ miễn thuế sang chịu thuế: lợi suất chịu thuế cần có = lợi suất miễn thuế ÷ (1 − thuế suất). Với 5,5% và thuế 5%: 5,5 ÷ 0,95 = 5,789474%.",
       "Từ chịu thuế sang thực nhận: lợi suất thực nhận = lợi suất chịu thuế × (1 − thuế suất). Với 5,8% và thuế 5%: 5,8 × 0,95 = 5,51%.",
-      "Hai chiều không đối xứng theo cách người ta thường nghĩ. Chia cho (1 − t) dịch xa hơn nhân với (1 − t), nên mức phải cộng thêm luôn lớn hơn mức bị trừ đi. Ở thuế suất 5%, mức chênh tương đối cần có là 5,263158% chứ không phải 5% — và khoảng cách này rộng nhanh theo thuế suất: ở thuế 50% thì sản phẩm chịu thuế phải trả gấp đôi.",
+      // "luôn" scoped 2026-09-26: at a 0% tax rate the two moves are equal.
+      "Hai chiều không đối xứng theo cách người ta thường nghĩ. Chia cho (1 − t) dịch xa hơn nhân với (1 − t), nên với thuế suất lớn hơn 0, mức phải cộng thêm lớn hơn mức bị trừ đi. Ở thuế suất 5%, mức chênh tương đối cần có là 5,263158% chứ không phải 5% — và khoảng cách này rộng nhanh theo thuế suất: ở thuế 50% thì sản phẩm chịu thuế phải trả gấp đôi.",
       // CORRECTED: the default figures do NOT demonstrate a reversal. 5,8%
       // gross nets 5,51%, which is still 0,01 point ABOVE the 5,5% deposit.
       // What the 0,289474 point deduction does on this example is close

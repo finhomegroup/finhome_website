@@ -76,14 +76,20 @@ export function LoanAnalysisCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    termUnit: C.form.defaultTermUnit,
-    method: C.form.defaultMethod,
-    examine: C.form.defaultExamine,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. `examine` is a count and the two selects
+  // are lists; none of them format.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      termUnit: C.form.defaultTermUnit,
+      method: C.form.defaultMethod,
+      examine: C.form.defaultExamine,
+    },
+    { amount: "money", rate: "rate", term: "rate" },
+  );
 
   const amount = parseMoney(fields.values.amount);
   const rate = parseDecimal(fields.values.rate);

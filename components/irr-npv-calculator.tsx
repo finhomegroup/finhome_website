@@ -62,15 +62,26 @@ const FORM_ID = "irr-npv-nhap";
 const RESULT_ID = "irr-npv-ket-qua";
 
 export function IrrNpvCalculator() {
-  const fields = useCalcFields({
-    periods: C.form.defaultPeriods,
-    discount: C.form.defaultDiscount,
-    reinvest: C.form.defaultReinvest,
-    flow0: C.form.defaultPeriod0,
-    ...Object.fromEntries(
-      FLOW_KEYS.map((key) => [key, C.form.defaultFlow]),
-    ),
-  } as Record<string, string>);
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`: every cash flow is `parseMoney`, the two
+  // rates `parseDecimal`, and the period count formats nothing.
+  const fields = useCalcFields(
+    {
+      periods: C.form.defaultPeriods,
+      discount: C.form.defaultDiscount,
+      reinvest: C.form.defaultReinvest,
+      flow0: C.form.defaultPeriod0,
+      ...Object.fromEntries(
+        FLOW_KEYS.map((key) => [key, C.form.defaultFlow]),
+      ),
+    } as Record<string, string>,
+    {
+      discount: "rate",
+      reinvest: "rate",
+      flow0: "money",
+      ...Object.fromEntries(FLOW_KEYS.map((key) => [key, "money" as const])),
+    },
+  );
 
   // A whole count of periods, so `parseCount` — docs §4. This was
   // `parseDecimal` with the `Number.isInteger` guard below it, which is the

@@ -40,7 +40,7 @@ export const FLOATING_LOAN = {
     loanGroup: "Khoản vay",
     amountLabel: "Số tiền vay",
     amountUnit: "₫",
-    amountHelp: "Số tiền thực nhận từ ngân hàng.",
+    amountHelp: "Số tiền vay gốc ghi trên hợp đồng, ví dụ 2.000.000.000.",
     amountInvalid: "Vui lòng nhập số tiền vay lớn hơn 0.",
     defaultAmount: "2.000.000.000",
 

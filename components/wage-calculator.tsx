@@ -72,14 +72,20 @@ export function WageCalculator({
   /** The longer guidance below — `<ToolNextSteps promoted>`. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    unit: C.form.defaultUnit,
-    output: C.form.defaultOutput,
-    hours: C.form.defaultHours,
-    days: C.form.defaultDays,
-    weeks: C.form.defaultWeeks,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Hours, days and weeks go through
+  // `parseDecimal`; unit and output are lists.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      unit: C.form.defaultUnit,
+      output: C.form.defaultOutput,
+      hours: C.form.defaultHours,
+      days: C.form.defaultDays,
+      weeks: C.form.defaultWeeks,
+    },
+    { amount: "money", hours: "rate", days: "rate", weeks: "rate" },
+  );
 
   const amount = parseMoney(fields.values.amount);
   const hours = parseDecimal(fields.values.hours);

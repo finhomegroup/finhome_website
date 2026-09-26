@@ -18,6 +18,7 @@
 // default and the failure names the sentence that has to move with it.
 import { describe, it, expect } from "vitest";
 import { readRetirement } from "@/components/calc/retirement-fields";
+import { compactMoney } from "@/lib/calc/charts/labels";
 import {
   formatDecimal,
   formatMoney,
@@ -204,51 +205,147 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
   const firstWithdrawal = r.years.find((row) => !row.accumulating)!;
 
   /**
-   * The notice above the calculator, both halves.
+   * Where the figures live after the 2026-09-26 reader-first rewrite.
    *
-   * The 2026-09-21 UX pass SPLIT that notice: the model limitation stays
-   * visible and the worked arithmetic moved into `realNoticeDetail`, behind a
-   * disclosure the page renders through `CalculatorPage`'s `noticeDetail`. The
-   * figures are still on the page and still have to agree with the engine, so
-   * the assertions below run over the pair — narrowing them to the visible
-   * half would have quietly stopped checking three of the four figures.
+   * The opening notice no longer quotes the eleven-digit pair: the review
+   * found the page opening with two 10–11 digit amounts before the reader had
+   * seen a result. The limitation stays visible there in words; the
+   * demonstration moved to two places that both have to agree with the
+   * engine — the method prose, ROUNDED through `compactMoney` (the same
+   * formatter the figure caption uses), and the FAQ, EXACT. The render test
+   * covers the third place, the sentence under the result filled from the
+   * live plan. Same coverage as before; different homes.
    */
-  const noticeText = `${C.realNotice} ${C.realNoticeDetail}`;
+  const compact = (value: number) => compactMoney(value, L.money);
+  const prose = C.formula.body.join(" ");
 
-  it("quotes the capital both ways in the notice above the calculator", () => {
-    // The page's whole point: the nominal figure and the same figure in
-    // today's money. Both are rendered in the result rows, so the notice must
-    // not quote a third number.
-    //
-    // Asserted on the VISIBLE half specifically, not on the pair. This is the
-    // model limitation the approved contract forbids collapsing, so a future
-    // edit that pushed the nominal/real pair entirely behind the disclosure
-    // has to turn this red.
-    expect(C.realNotice).toContain(dong(r.balanceAtRetirement));
-    expect(C.realNotice).toContain(dong(r.realBalanceAtRetirement));
+  it("keeps the eleven-digit pair OUT of the opening notice, and the limitation IN it", () => {
+    expect(C.realNotice).not.toContain(dong(r.balanceAtRetirement));
+    expect(C.realNotice).not.toContain(dong(r.realBalanceAtRetirement));
+    // No grouped amount of seven digits or more anywhere in the opening.
+    expect(C.realNotice).not.toMatch(/\d{1,3}(\.\d{3}){2,}/);
+    // The model limitation that changes how a figure is read is still there.
+    expect(C.realNotice).toContain("giá hôm nay");
+    expect(C.realNotice).toContain("mua được ít hơn");
   });
 
-  it("quotes the first year's draw in both readings", () => {
-    expect(noticeText).toContain(dong(firstWithdrawal.withdrawal));
+  it("quotes the capital both ways — rounded in the method prose, exact in the FAQ", () => {
+    expect(prose).toContain(compact(r.balanceAtRetirement));
+    expect(prose).toContain(compact(r.realBalanceAtRetirement));
+    // Rounding did not erase the difference the paragraph is about.
+    expect(compact(r.balanceAtRetirement)).not.toBe(
+      compact(r.realBalanceAtRetirement),
+    );
+    expect(C.faq.items[0].a).toContain(dong(r.balanceAtRetirement));
+    expect(C.faq.items[0].a).toContain(dong(r.realBalanceAtRetirement));
+  });
+
+  it("quotes the first year's draw in both readings, from the engine", () => {
     // In today's money the draw is exactly the spend that was asked for less
     // other income — the identity `retirement.ts` keeps two deflators for.
     expect(firstWithdrawal.realWithdrawal).toBeCloseTo(
       plan.input.desiredAnnualSpending - plan.input.otherAnnualIncome,
       6,
     );
-    expect(noticeText).toContain(dong(firstWithdrawal.realWithdrawal));
+    expect(prose).toContain(compact(firstWithdrawal.withdrawal));
+    expect(prose).toContain(
+      `${formatDecimal(firstWithdrawal.realWithdrawal / 1e6, 0)} triệu`,
+    );
   });
 
-  it("keeps the collapsed half labelled and the visible half short", () => {
-    // A disclosure whose summary says nothing is the thing the split must not
-    // become: the reader has to be able to decide whether to open it from the
-    // line they can see. And the visible half has to STAY short, or the split
-    // achieves nothing — it exists because the audit measured this route's
-    // first input 880 px down a 390 px viewport with the long version above
-    // the form.
-    expect(C.realNoticeDetailTitle.length).toBeGreaterThan(10);
-    expect(C.realNoticeDetail.length).toBeGreaterThan(C.realNotice.length);
-    expect(C.realNotice.length).toBeLessThanOrEqual(300);
+  it("quotes the first accumulation year's arithmetic from the engine", () => {
+    // 500 + 60 = 560 triệu, 8% of it, the end-of-year balance, and the
+    // grown second-year contribution — the worked year a beginner is shown
+    // first. Each figure is the engine's own row, not the paragraph's memory.
+    const firstYear = r.years[0];
+    expect(firstYear.accumulating).toBe(true);
+    expect(prose).toContain(compact(firstYear.balance));
+    expect(prose).toContain(
+      `${formatDecimal(firstYear.investmentReturn / 1e6, 1)} triệu`,
+    );
+    expect(prose).toContain(
+      `${formatDecimal(r.years[1].contribution / 1e6, 0)} triệu`,
+    );
+  });
+
+  it("quotes the annual shortfall in the FAQ that says what it is not", () => {
+    const answer = C.faq.items[4].a;
+    expect(answer).toContain(dong(r.spendingShortfall));
+    expect(answer).toContain("không phải số tiền phải nộp thêm");
+    expect(answer).toContain("không phải tổng số vốn còn thiếu");
+  });
+
+  it("pins the default scenario's figures the copy rounds from", () => {
+    // The repair pass changed wording only. These are the engine's outputs
+    // on the shipped defaults, as quoted in the content file's header; a
+    // moved figure here means an engine or default changed, which no copy
+    // round is allowed to do.
+    expect(Math.round(r.balanceAtRetirement)).toBe(10_902_417_350);
+    expect(Math.round(r.realBalanceAtRetirement)).toBe(4_089_679_933);
+    expect(r.depletionAge).toBe(82);
+    expect(r.yearsShort).toBe(3);
+    expect(Math.round(r.spendingShortfall)).toBe(20_942_597);
+    expect(Math.round(r.lastWithdrawalPlanned!)).toBe(1_288_834_386);
+    expect(Math.round(r.lastWithdrawalPaid!)).toBe(181_159_463);
+    expect(Math.round(firstWithdrawal.withdrawal)).toBe(543_830_612);
+    expect(Math.round(r.years[0].balance)).toBe(604_800_000);
+  });
+
+  it("qualifies the monthly-versus-yearly timing by the sign of the return", () => {
+    // One January deposit beats twelve month-end deposits only when the
+    // return is positive; they tie at 0% and reverse below it. The detailed
+    // method used to state the comparison as absolute.
+    const timing = C.formula.detail.body[0];
+    expect(timing).toContain("sinh lời dương");
+    expect(timing).toContain("0% hai cách bằng nhau");
+    expect(timing).toContain("âm thì ngược lại");
+    expect(timing).not.toContain("chứ không cao hơn");
+  });
+
+  it("says the horizon counts the years until the reader TURNS the end age", () => {
+    // The engine's last year is `endAge − 1`. Stated where the reader sets
+    // the age (the shared help), where they ask about it (the FAQ) and in
+    // the detailed method's bounds paragraph.
+    expect(L.fields.fields.endAge.help).toContain("tròn 85 tuổi");
+    expect(L.fields.fields.endAge.help).toContain("không nằm trong kế hoạch");
+    expect(C.faq.items[1].a).toContain("tròn tuổi đó");
+    expect(C.formula.detail.body.join(" ")).toContain("tròn 85 tuổi");
+  });
+
+  it("describes assumptions plainly, without favourability or account claims", () => {
+    // A simplified model is not necessarily kinder than reality, a modelled
+    // balance is not the money a reader WILL see, and a withdrawal ratio is
+    // explained by what it measures rather than by what the page declines to
+    // claim.
+    const body = C.formula.body.join(" ");
+    expect(body).not.toContain("thuận lợi hơn thực tế");
+    expect(body).not.toContain("sẽ thấy trên sổ tiết kiệm");
+    expect(body).toContain("có thể cao hơn hoặc thấp hơn");
+    expect(C.faq.items[2].a).not.toContain("kịch bản thuận lợi");
+    expect(C.faq.items[3].a).not.toContain("không có cơ sở");
+    expect(C.faq.items[3].a).toContain("phần trăm số tiền có lúc nghỉ");
+    expect(C.faq.items[3].a).toContain("chưa nói được kế hoạch có an toàn hay không");
+  });
+
+  it("states the implemented order and formula without universal comparisons", () => {
+    // Third round. "Chỉ thứ tự thứ hai là lựa chọn thận trọng" is not true at
+    // a non-positive return; "đủ 30 năm rồi cạn ở năm thứ 20" was an
+    // illustration nothing computed; "phóng đại theo (1 + lợi suất thực) …
+    // cạn sớm hai năm" was a universal claim about a formula the tool does
+    // not use. What remains is what the model does: withdraw first, credit
+    // the return on what remains, index the spend, solve an annuity-due at
+    // the real return, add other income.
+    const [, withdrawal, , indexing, , annuity] = C.formula.detail.body;
+    expect(withdrawal).toContain("trừ khoản rút trước");
+    expect(withdrawal).toContain("phần còn lại");
+    expect(withdrawal).not.toContain("thận trọng");
+    expect(indexing).toContain("cùng sức mua");
+    expect(indexing).not.toContain("cạn ở năm thứ 20");
+    expect(annuity).toContain("niên kim đầu kỳ");
+    expect(annuity).toContain("(1 + lợi suất sau khi nghỉ) ÷ (1 + lạm phát) − 1");
+    expect(annuity).toContain("Thu nhập khác");
+    expect(annuity).not.toContain("phóng đại");
+    expect(annuity).not.toContain("cạn sớm hai năm");
   });
 
   it("quotes the inflation factor and the share it leaves", () => {
@@ -297,12 +394,13 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
       C.metaTitle,
       C.metaDescription,
       C.lede,
+      C.ledeDetail,
       C.realNotice,
-      // The collapsed half too: a claim about United States law does not stop
-      // being a claim because it is behind a `<details>`.
-      C.realNoticeDetailTitle,
-      C.realNoticeDetail,
       ...C.formula.body,
+      // The disclosed method too: a claim about United States law does not
+      // stop being a claim because it is behind a `<details>`.
+      ...C.formula.detail.body,
+      ...Object.values(C.form),
       ...C.faq.items.flatMap((item) => [item.q, item.a]),
       ...Object.values(C.chart).flatMap((value) =>
         typeof value === "string" ? [value] : [...value],

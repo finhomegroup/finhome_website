@@ -35,14 +35,19 @@ const RESULT_ID = "tinh-tien-tip-ket-qua";
  * where it keeps its `live={false}`.
  */
 export function TipCalculator() {
-  const fields = useCalcFields({
-    bill: C.form.defaultBill,
-    service: C.form.defaultService,
-    tax: C.form.defaultTax,
-    tip: C.form.defaultTip,
-    people: C.form.defaultPeople,
-    roundTo: C.form.defaultRound,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. People is a count; rounding is a list.
+  const fields = useCalcFields(
+    {
+      bill: C.form.defaultBill,
+      service: C.form.defaultService,
+      tax: C.form.defaultTax,
+      tip: C.form.defaultTip,
+      people: C.form.defaultPeople,
+      roundTo: C.form.defaultRound,
+    },
+    { bill: "money", service: "rate", tax: "rate", tip: "rate" },
+  );
 
   const bill = parseMoney(fields.values.bill);
   const service = parseDecimal(fields.values.service);

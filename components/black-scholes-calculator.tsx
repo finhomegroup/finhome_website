@@ -49,14 +49,26 @@ const FORM_ID = "quyen-chon-nhap";
 const RESULT_ID = "quyen-chon-ket-qua";
 
 export function BlackScholesCalculator() {
-  const fields = useCalcFields({
-    spot: C.form.defaultSpot,
-    strike: C.form.defaultStrike,
-    time: C.form.defaultTime,
-    volatility: C.form.defaultVolatility,
-    rate: C.form.defaultRate,
-    dividend: C.form.defaultDividend,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`.
+  const fields = useCalcFields(
+    {
+      spot: C.form.defaultSpot,
+      strike: C.form.defaultStrike,
+      time: C.form.defaultTime,
+      volatility: C.form.defaultVolatility,
+      rate: C.form.defaultRate,
+      dividend: C.form.defaultDividend,
+    },
+    {
+      spot: "money",
+      strike: "money",
+      time: "rate",
+      volatility: "rate",
+      rate: "rate",
+      dividend: "rate",
+    },
+  );
 
   const spot = parseMoney(fields.values.spot);
   const strike = parseMoney(fields.values.strike);

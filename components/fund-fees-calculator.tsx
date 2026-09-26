@@ -56,15 +56,29 @@ export function FundFeesCalculator({
   /** `ToolNextSteps promoted` for this slug. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    initial: C.form.defaultInitial,
-    contribution: C.form.defaultContribution,
-    months: C.form.defaultMonths,
-    grossReturn: C.form.defaultGrossReturn,
-    entryFee: C.form.defaultEntryFee,
-    managementFee: C.form.defaultManagementFee,
-    exitFee: C.form.defaultExitFee,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. `months` goes through `parseDecimal`
+  // here, so it takes the decimal display like the rates.
+  const fields = useCalcFields(
+    {
+      initial: C.form.defaultInitial,
+      contribution: C.form.defaultContribution,
+      months: C.form.defaultMonths,
+      grossReturn: C.form.defaultGrossReturn,
+      entryFee: C.form.defaultEntryFee,
+      managementFee: C.form.defaultManagementFee,
+      exitFee: C.form.defaultExitFee,
+    },
+    {
+      initial: "money",
+      contribution: "money",
+      months: "rate",
+      grossReturn: "rate",
+      entryFee: "rate",
+      managementFee: "rate",
+      exitFee: "rate",
+    },
+  );
 
   const initial = parseMoney(fields.values.initial);
   const contribution = parseMoney(fields.values.contribution);

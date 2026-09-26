@@ -124,24 +124,44 @@ export function AssetAllocationCalculator({
   /** The further questions and the retention panel — `<ToolNextSteps promoted>`. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    // Original row 56: the purpose/time allocation is the DEFAULT question.
-    // The age/risk study below is a retained educational mode.
-    mode: P.defaultMode,
-    available: P.defaultAvailable,
-    reserve: P.defaultReserve,
-    homeAmount: P.defaultHomeAmount,
-    homeMonths: P.defaultHomeMonths,
-    otherAmount: P.defaultOtherAmount,
-    otherMonths: P.defaultOtherMonths,
-    // The declared anchor the month counts are measured from. A review found
-    // the help text saying "kể từ hôm nay" on a page that never showed what
-    // today was, so the convention could not be checked by a reader.
-    anchorDay: P.defaultAnchorDay,
-    anchorMonth: P.defaultAnchorMonth,
-    anchorYear: P.defaultAnchorYear,
-    ...F.defaults,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The month counts, the anchor date, the
+  // age and the two selects format nothing.
+  const fields = useCalcFields(
+    {
+      // Original row 56: the purpose/time allocation is the DEFAULT question.
+      // The age/risk study below is a retained educational mode.
+      mode: P.defaultMode,
+      available: P.defaultAvailable,
+      reserve: P.defaultReserve,
+      homeAmount: P.defaultHomeAmount,
+      homeMonths: P.defaultHomeMonths,
+      otherAmount: P.defaultOtherAmount,
+      otherMonths: P.defaultOtherMonths,
+      // The declared anchor the month counts are measured from. A review found
+      // the help text saying "kể từ hôm nay" on a page that never showed what
+      // today was, so the convention could not be checked by a reader.
+      anchorDay: P.defaultAnchorDay,
+      anchorMonth: P.defaultAnchorMonth,
+      anchorYear: P.defaultAnchorYear,
+      ...F.defaults,
+    },
+    {
+      available: "money",
+      reserve: "money",
+      homeAmount: "money",
+      otherAmount: "money",
+      equityHolding: "money",
+      bondHolding: "money",
+      cashHolding: "money",
+      equityReturn: "rate",
+      bondReturn: "rate",
+      cashReturn: "rate",
+      equitySigma: "rate",
+      bondSigma: "rate",
+      correlation: "rate",
+    },
+  );
   const v = fields.values;
   const portfolioMode = v.mode === "portfolio";
 

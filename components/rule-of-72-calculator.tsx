@@ -49,10 +49,15 @@ export function RuleOf72Calculator({
   /** `<ResultActions slug="quy-tac-72">`, from the route. Second layout only. */
   actions?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    rate: C.form.defaultRate,
-    years: C.form.defaultYears,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Both go through `parseDecimal`.
+  const fields = useCalcFields(
+    {
+      rate: C.form.defaultRate,
+      years: C.form.defaultYears,
+    },
+    { rate: "rate", years: "rate" },
+  );
 
   // Direction 1: a rate in, a doubling time out.
   const rate = parseDecimal(fields.values.rate);

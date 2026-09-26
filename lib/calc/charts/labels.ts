@@ -54,6 +54,32 @@ export function fullMoney(value: number, words: MoneyWords): string {
 }
 
 /**
+ * Two amounts for ONE sentence, rounded — unless rounding would erase the
+ * difference the sentence is about.
+ *
+ * A summary that compares a nominal balance with the same balance in today's
+ * money wants "10,9 tỷ" beside "4,1 tỷ", not two eleven-digit figures. But
+ * at one decimal place two DIFFERENT amounts can round to the same label —
+ * 10,92 tỷ and 10,89 tỷ are both "10,9 tỷ" — and a sentence saying one is
+ * "tương đương" the other with identical figures reads as if nothing
+ * happened. So the pair is compact when the labels differ or the values are
+ * genuinely equal, and exact when only the rounding made them look equal.
+ * The suite's rule: never round away a difference a sentence exists to show.
+ */
+export function compactMoneyPair(
+  first: number,
+  second: number,
+  words: MoneyWords,
+): [string, string] {
+  const a = compactMoney(first, words);
+  const b = compactMoney(second, words);
+  if (a === b && first !== second) {
+    return [fullMoney(first, words), fullMoney(second, words)];
+  }
+  return [a, b];
+}
+
+/**
  * The magnitude word an axis title should name, chosen from the axis maximum
  * so every tick on that axis reads in the same unit.
  *

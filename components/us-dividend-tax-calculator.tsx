@@ -52,7 +52,14 @@ const FORM_ID = "thue-co-tuc-nhap";
 const RESULT_ID = "thue-co-tuc-ket-qua";
 
 export function UsDividendTaxCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The qualified rate, status and NIIT are lists.
+  const fields = useCalcFields(F.defaults, {
+    qualified: "money",
+    ordinary: "money",
+    magi: "money",
+    ordinaryRate: "rate",
+  });
 
   const qualified = parseMoney(fields.values.qualified);
   const ordinary = parseMoney(fields.values.ordinary);

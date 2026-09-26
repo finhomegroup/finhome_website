@@ -249,7 +249,31 @@ export function LoanCompareCalculator({
     flatFeeC: defaults[2].flatFee,
     exitFeeC: defaults[2].exitFee,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. `optionalMoney` keys group, `optionalDecimal` keys take a
+  // comma; `horizon` and the promo months go through `parseCount` and format
+  // nothing, because a dot would invalidate them.
+  const fields = useCalcFields(initial, {
+    amount: "money",
+    rateA: "rate",
+    termA: "rate",
+    feeA: "rate",
+    promoRateA: "rate",
+    flatFeeA: "money",
+    exitFeeA: "money",
+    rateB: "rate",
+    termB: "rate",
+    feeB: "rate",
+    promoRateB: "rate",
+    flatFeeB: "money",
+    exitFeeB: "money",
+    rateC: "rate",
+    termC: "rate",
+    feeC: "rate",
+    promoRateC: "rate",
+    flatFeeC: "money",
+    exitFeeC: "money",
+  });
 
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],

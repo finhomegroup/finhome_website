@@ -39,7 +39,7 @@ export const COMPOUND = {
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
     rateHelp:
-      "Lãi suất danh nghĩa hằng năm, ví dụ 6. Đây là GIẢ ĐỊNH của bạn, không phải mức được bảo đảm — hãy thử cả mức 0 để xem kế hoạch còn đứng được không.",
+      "Mức lãi niêm yết theo năm (còn gọi là lãi danh nghĩa), ví dụ 6 nghĩa là 6% một năm. Đây là GIẢ ĐỊNH của bạn, không phải mức được bảo đảm — hãy thử cả mức 0 để xem kế hoạch còn đứng được không.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "6",
 

@@ -136,13 +136,19 @@ export function CommercialLoanCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    grace: C.form.defaultGrace,
-    balloon: C.form.defaultBalloon,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Term and grace are month counts and
+  // format nothing.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      grace: C.form.defaultGrace,
+      balloon: C.form.defaultBalloon,
+    },
+    { amount: "money", rate: "rate", balloon: "rate" },
+  );
 
   const {
     input,

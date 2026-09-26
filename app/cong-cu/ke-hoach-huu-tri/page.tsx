@@ -26,22 +26,21 @@ export default function RetirementPlanPage() {
       lede={C.lede}
       ledeDetailTitle={C.ledeDetailTitle}
       ledeDetail={C.ledeDetail}
-      // 10.902.417.350 ₫ nominal against 4.089.679.933 ₫ in today's money —
-      // 37,5% of it. Planning against the nominal figure is the most common
-      // error in a long-horizon projection, so the page leads with it.
-      //
-      // The LIMITATION stays visible and only the worked arithmetic behind it
-      // collapses, with the two headline figures named on the summary line.
-      // See the docstring on `realNotice`.
+      // A nominal balance is not purchasing power — the most common error in
+      // a long-horizon projection — so the LIMITATION stays visible above the
+      // form, in words. The demonstration with the reader's own figures now
+      // sits under the result, where the 2026-09-26 review asked for it, and
+      // is filled by the calculator from the live plan rather than quoted
+      // from the default scenario. See the docstring on `realNotice`.
       notice={C.realNotice}
-      noticeDetailTitle={C.realNoticeDetailTitle}
-      noticeDetail={C.realNoticeDetail}
       // The eleven-field form and the trajectory figure need the 40/60 split,
       // which `max-w-3xl` cannot hold. Widens the TOOL only; the prose, the
       // FAQ and both notices keep their reading measure.
       wide
       // `prose.emphasis` is threaded by the shell through `ProseText`, so the
       // paragraph stays one plain string and the phrases stay data beside it.
+      // `prose.detail` is the full method behind a labelled disclosure — the
+      // third layer of the 2026-09-26 rewrite, rendered plain.
       prose={C.formula}
       faq={C.faq}
       // The other three views of the SAME plan. It MOVED 2026-09-21 out of

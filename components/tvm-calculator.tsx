@@ -87,25 +87,41 @@ export function TvmCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    mode: C.question.defaultMode,
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. `months` is a count; `periods` goes
+  // through `parseDecimal`; mode, solveFor and timing are lists.
+  const fields = useCalcFields(
+    {
+      mode: C.question.defaultMode,
 
-    // The guided question's own fields. Everything positive.
-    savings: C.question.defaultSavings,
-    contribution: C.question.defaultContribution,
-    goal: C.question.defaultGoal,
-    months: C.question.defaultMonths,
-    annualRate: C.question.defaultRate,
+      // The guided question's own fields. Everything positive.
+      savings: C.question.defaultSavings,
+      contribution: C.question.defaultContribution,
+      goal: C.question.defaultGoal,
+      months: C.question.defaultMonths,
+      annualRate: C.question.defaultRate,
 
-    // The advanced solver, unchanged.
-    solveFor: C.form.defaultSolveFor,
-    present: C.form.defaultPresent,
-    future: C.form.defaultFuture,
-    payment: C.form.defaultPayment,
-    periods: C.form.defaultPeriods,
-    rate: C.form.defaultRate,
-    timing: C.form.defaultTiming,
-  });
+      // The advanced solver, unchanged.
+      solveFor: C.form.defaultSolveFor,
+      present: C.form.defaultPresent,
+      future: C.form.defaultFuture,
+      payment: C.form.defaultPayment,
+      periods: C.form.defaultPeriods,
+      rate: C.form.defaultRate,
+      timing: C.form.defaultTiming,
+    },
+    {
+      savings: "money",
+      contribution: "money",
+      goal: "money",
+      annualRate: "rate",
+      present: "money",
+      future: "money",
+      payment: "money",
+      periods: "rate",
+      rate: "rate",
+    },
+  );
 
   const mode = fields.values.mode as TvmQuestion | "advanced";
   const advanced = mode === "advanced";

@@ -61,7 +61,18 @@ export function Us401kCalculator({
 }: {
   actions?: React.ReactNode;
 } = {}) {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Age and years are counts; the year is a list.
+  const fields = useCalcFields(F.defaults, {
+    salary: "money",
+    priorYearWages: "money",
+    deferral: "rate",
+    matchPercent: "rate",
+    matchLimit: "rate",
+    extra: "rate",
+    marginal: "rate",
+    returnPercent: "rate",
+  });
   const v = fields.values;
 
   const age = parseCount(v.age);

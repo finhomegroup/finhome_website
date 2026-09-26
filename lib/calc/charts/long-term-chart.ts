@@ -15,7 +15,11 @@
  * `valuePathsModel` (and the geometry under it) places a period at
  * `period / xMax`, which assumes an axis that starts at zero. An axis of AGES
  * does not: a plan from 35 to 85 would put its first point 41% of the way
- * across the plot. So the coordinate is years elapsed and the age is a label.
+ * across the plot. So the coordinate is years elapsed and the age is a label —
+ * and since 2026-09-26 the age is EVERY label a reader sees: the tick labels
+ * (`xTickLabel`), the markers and the table's first column all say the age at
+ * that date, so nobody is asked to add their own age to "năm thứ 13". The
+ * reader-first review measured that arithmetic as the figure's main cost.
  *
  * WHICH INSTANT EACH POINT IS was wrong in the first version, and an
  * independent review measured it: `RetirementYear` is an END-of-year row, so
@@ -49,7 +53,11 @@
  * and for the same reason: a plan that looks healthy in nominal terms can have
  * lost a third of its purchasing power, and the gap between the lines IS the
  * lesson. The summary says which is which, and the assumptions say the real
- * line is the nominal one deflated — not a second portfolio.
+ * line is the nominal one deflated — not a second portfolio. The summary's
+ * amounts are ROUNDED through `compactMoneyPair` ("10,9 tỷ" beside "4,1 tỷ"),
+ * because a caption is prose; the exact đồng figures are the table's, and the
+ * pair falls back to exact when rounding alone would make two different
+ * amounts read as one.
  *
  * ## It computes nothing
  *
@@ -59,7 +67,13 @@
  * for a zero crossing of its own.
  */
 
-import { fill, fullMoney } from "@/lib/calc/charts/labels";
+import {
+  compactMoney,
+  compactMoneyPair,
+  fill,
+  fullMoney,
+} from "@/lib/calc/charts/labels";
+import { formatDecimal } from "@/lib/calc/number";
 import type { LineChartModel } from "@/lib/calc/charts/types";
 import {
   valuePathsModel,
@@ -83,13 +97,15 @@ export type LongTermTrajectoryLabels = ValuePathsLabels & {
   /** `{age}`, `{year}` substituted. The end of the projection. */
   horizonMarker: string;
   /**
-   * `{retirementAge}`, `{capital}`, `{realCapital}`, `{endAge}` substituted.
-   * Used when the plan lasts.
+   * `{startAge}`, `{startCapital}`, `{retirementAge}`, `{capital}`,
+   * `{realCapital}`, `{endAge}` substituted. Used when the plan lasts. The
+   * amounts arrive rounded (see the module header).
    */
   summaryFunded: string;
   /**
-   * `{retirementAge}`, `{capital}`, `{realCapital}`, `{depletionAge}`,
-   * `{yearsShort}` substituted. Used when it does not.
+   * `{startAge}`, `{startCapital}`, `{retirementAge}`, `{capital}`,
+   * `{realCapital}`, `{depletionAge}`, `{yearsShort}` substituted. Used when
+   * it does not.
    */
   summaryDepleted: string;
   /**
@@ -294,18 +310,29 @@ export function longTermTrajectoryModel(
     });
   }
 
+  // Rounded for the caption; exact in the table. The pair helper keeps two
+  // different amounts from reading as one when a decimal place is not enough
+  // to separate them — a 0,1% inflation plan is the case.
+  const [capital, realCapital] = compactMoneyPair(
+    result.balanceAtRetirement,
+    result.realBalanceAtRetirement,
+    labels,
+  );
+  const shared = {
+    startAge: String(startAge),
+    startCapital: compactMoney(plan.input.currentBalance, labels),
+    retirementAge: String(plan.input.retirementAge),
+    capital,
+    realCapital,
+  };
   let summary =
     funded
       ? fill(labels.summaryFunded, {
-          retirementAge: String(plan.input.retirementAge),
-          capital: fullMoney(result.balanceAtRetirement, labels),
-          realCapital: fullMoney(result.realBalanceAtRetirement, labels),
+          ...shared,
           endAge: String(plan.input.endAge),
         })
       : fill(labels.summaryDepleted, {
-          retirementAge: String(plan.input.retirementAge),
-          capital: fullMoney(result.balanceAtRetirement, labels),
-          realCapital: fullMoney(result.realBalanceAtRetirement, labels),
+          ...shared,
           depletionAge: String(result.depletionAge),
           yearsShort: String(result.yearsShort),
         });
@@ -383,7 +410,17 @@ export function longTermTrajectoryModel(
     }),
   };
 
-  return valuePathsModel(paths, labels, { summary, detail, markers, table });
+  return valuePathsModel(paths, labels, {
+    summary,
+    detail,
+    markers,
+    table,
+    // The axis READS in ages while it is DRAWN in years elapsed; see the
+    // module header. A fractional tick cannot occur here (every period is a
+    // whole year), but the formatter says what it would do if one did.
+    xTickLabel: (period) =>
+      formatDecimal(startAge + period, Number.isInteger(period) ? 0 : 1),
+  });
 }
 
 /**

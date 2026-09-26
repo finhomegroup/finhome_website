@@ -57,14 +57,25 @@ const RESULT_ID = "giam-gia-va-thue-ket-qua";
  * bound, tax basis, signed input or engine refusal changed.
  */
 export function PriceAdjustCalculator() {
-  const fields = useCalcFields({
-    price: C.form.defaultPrice,
-    tax: C.form.defaultTax,
-    taxIncluded: C.form.defaultTaxIncluded,
-    discountPercent: C.form.defaultDiscountPercent,
-    secondDiscountPercent: C.form.defaultSecondDiscountPercent,
-    discountAmount: C.form.defaultDiscountAmount,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The tax-included switch is a list.
+  const fields = useCalcFields(
+    {
+      price: C.form.defaultPrice,
+      tax: C.form.defaultTax,
+      taxIncluded: C.form.defaultTaxIncluded,
+      discountPercent: C.form.defaultDiscountPercent,
+      secondDiscountPercent: C.form.defaultSecondDiscountPercent,
+      discountAmount: C.form.defaultDiscountAmount,
+    },
+    {
+      price: "money",
+      tax: "rate",
+      discountPercent: "rate",
+      secondDiscountPercent: "rate",
+      discountAmount: "money",
+    },
+  );
 
   const price = parseMoney(fields.values.price);
   const tax = parseDecimal(fields.values.tax);

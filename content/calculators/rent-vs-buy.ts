@@ -69,7 +69,10 @@ export const RENT_VS_BUY = {
 
     rateLabel: "Lãi suất vay",
     rateUnit: "%/năm",
-    rateHelp: "Mức lãi sau ưu đãi, không phải mức ưu đãi năm đầu.",
+    // 2026-09-26: one rate for the whole term is a constant-rate scenario
+    // for the buy side, not the later-period payment.
+    rateHelp:
+      "Mức lãi theo năm của khoản vay, ví dụ 8,5. Công cụ giữ một mức này suốt kỳ hạn, nên phía mua là một kịch bản lãi cố định; nếu báo giá có lãi ưu đãi rồi thả nổi, hãy chạy hai lần với hai mức để thấy kết luận đổi bao nhiêu.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "8,5",
 
@@ -119,7 +122,8 @@ export const RENT_VS_BUY = {
     depositLabel: "Tiền cọc thuê",
     depositUnit: "₫",
     depositHelp:
-      "Thường 1–3 tháng tiền thuê. Được trả lại đủ khi hết hợp đồng nên nó không phải chi phí, nhưng trong lúc chủ nhà giữ thì nó không sinh lời — công cụ trừ nó ra khỏi số tiền đem đầu tư. Tiền cọc không được vượt số tiền mặt ban đầu.",
+      // "Thường 1–3 tháng" was an unsourced market norm; the contract decides.
+      "Số tiền cọc ghi trong hợp đồng thuê. Được trả lại đủ khi hết hợp đồng nên nó không phải chi phí, nhưng trong lúc chủ nhà giữ thì nó không sinh lời — công cụ trừ nó ra khỏi số tiền đem đầu tư. Tiền cọc không được vượt số tiền mặt ban đầu.",
     // The refusal is not just "a number ≥ 0": a deposit above the upfront
     // cash breaks the comparison's one premise, so the error names the bound
     // and where it comes from.
@@ -438,15 +442,25 @@ export const RENT_VS_BUY = {
       },
       {
         q: "Nhập mức tăng giá nhà bao nhiêu là hợp lý?",
-        a: "Không có con số đúng, và đó là lý do trang này nhắc bạn chạy nhiều lần. Về dài hạn, giá nhà ở một thị trường trưởng thành thường tăng xấp xỉ mức lạm phát cộng một chút; ở Việt Nam giai đoạn vừa qua nhiều nơi tăng nhanh hơn nhiều, nhưng quá khứ không phải cam kết. Cách dùng an toàn: chạy với mức 0%, mức 5% và mức −3%, rồi chỉ tin kết luận nếu cả ba lần đều cùng chiều.",
+        // 2026-09-26 (independent review finding 10): no market growth claim
+        // and no prescribed rates; three agreeing runs reduce dependence on
+        // this box, they do not make the verdict safe.
+        a: "Không có con số đúng, và đó là lý do trang này nhắc bạn chạy nhiều lần: công cụ không dự báo giá nhà và không gợi ý một mức tăng nào. Cách dùng: chạy với một mức bạn cho là hợp lý, một mức thấp hơn và một mức âm, rồi xem kết luận có đổi chiều không. Nếu ba lần cùng chiều, kết luận ít phụ thuộc vào ô này hơn — nhưng vẫn là kết luận của các giả định bạn nhập, không phải bảo đảm. Nếu đổi chiều, quyết định của bạn đang dựa vào một điều không ai biết trước, và những yếu tố không quy ra tiền ở dưới nên là thứ quyết định.",
       },
       {
         q: "Khoảng thời gian so sánh nên là bao lâu?",
-        a: "Số năm bạn thật sự tin là mình sẽ ở căn nhà đó. Phí mua và phí bán cộng lại thường bằng 5–8% giá nhà, và cần nhiều năm mới bù được. Đây là lý do mua nhà rồi bán sau hai ba năm hầu như luôn lỗ, bất kể giá nhà tăng bao nhiêu. Nếu bạn có khả năng chuyển việc hoặc chuyển thành phố trong vài năm tới, hãy nhập mốc ngắn — kết quả sẽ khác hẳn.",
+        // 2026-09-26 (independent review finding 10): "hầu như luôn lỗ, bất kể
+        // giá nhà tăng bao nhiêu" was mathematically unsound on a scenario
+        // tool, and "5–8%" an unsourced range. The answer now says what the
+        // comparison does at a short horizon and leaves the verdict to the
+        // reader's figures.
+        a: "Số năm bạn thật sự tin là mình sẽ ở căn nhà đó. Mỗi khoản phí rơi vào đúng thời điểm giao dịch của nó: phí mua trả ngay lúc mua, phí bán tính trên giá nhà ở thời điểm bán theo mốc bạn chọn. Phần bù lại tích lũy dần: mức tăng giá là giả định bạn nhập, còn phần gốc đã trả làm dư nợ nhỏ đi — không có gì bảo đảm hai phần này đủ bù cả hai khoản phí. Ở mốc ngắn, công cụ đặt giá bán trừ dư nợ trừ phí bán cạnh toàn bộ số tiền đã bỏ ra, và kết quả tùy hai ô phí cùng mức tăng giá bạn nhập — công cụ không kết luận sẵn là lỗ hay lời. Nếu bạn có khả năng chuyển việc hoặc chuyển thành phố trong vài năm tới, hãy nhập mốc ngắn — kết quả có thể khác hẳn mốc dài.",
       },
       {
         q: "Công cụ có tính chuyện lãi suất vay thay đổi không?",
-        a: "Không. Khoản vay được giả định giữ nguyên lãi suất suốt kỳ hạn. Với khoản vay mua nhà tại Việt Nam, đây là giả định lạc quan: lãi ưu đãi thường chỉ 6–24 tháng rồi chuyển sang thả nổi. Hãy nhập mức lãi SAU ưu đãi ở ô lãi suất, và nếu muốn thấy trường hợp xấu, hãy nhập thêm 2–3 điểm phần trăm rồi chạy lại.",
+        // 2026-09-26: "giả định lạc quan" assumed rates rise. The later rate
+        // is the reader's input; the page offers two runs and the reset tool.
+        a: "Không. Khoản vay được giữ một mức lãi suốt kỳ hạn, nên phía mua là một kịch bản lãi cố định. Nếu báo giá của bạn có lãi ưu đãi rồi thả nổi, hãy chạy hai lần — một lần với mức ưu đãi, một lần với mức sau ưu đãi bạn được báo — và nếu muốn thử trường hợp lãi cao hơn, cộng thêm 2–3 điểm phần trăm rồi chạy lại. Muốn thấy khoản trả tính lại đúng ở mốc đổi lãi, hãy dùng công cụ Khoản vay lãi thả nổi.",
       },
       {
         q: "Còn những thứ không quy ra tiền được thì sao?",

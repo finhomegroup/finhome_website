@@ -39,7 +39,15 @@ const FORM_ID = "lam-phat-hoa-ky-nhap";
 const RESULT_ID = "lam-phat-hoa-ky-ket-qua";
 
 export function UsInflationCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The CPI levels and the years go through `parseDecimal`.
+  const fields = useCalcFields(F.defaults, {
+    amount: "money",
+    years: "rate",
+    startCpi: "rate",
+    endCpi: "rate",
+    rate: "rate",
+  });
 
   const mode = fields.values.mode as InflationMode;
   const cpiMode = mode === "cpi";

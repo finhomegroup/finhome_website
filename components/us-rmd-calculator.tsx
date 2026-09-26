@@ -35,7 +35,14 @@ function usdCents(value: number): string {
 }
 
 export function UsRmdCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Birth year and the two ages are counts and format nothing.
+  const fields = useCalcFields(F.defaults, {
+    balance: "money",
+    planned: "money",
+    returnPercent: "rate",
+    marginal: "rate",
+  });
   const v = fields.values;
 
   // Every one of these is a whole count, and `parseMoney` would read a

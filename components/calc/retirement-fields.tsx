@@ -9,6 +9,7 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+import type { InputFormat } from "@/lib/calc/number-input";
 import type { RetirementInput } from "@/lib/calc/retirement";
 import { LONG_TERM_PLAN } from "@/content/calculators/long-term-plan";
 
@@ -53,6 +54,20 @@ export type RetirementFieldKey =
   | (typeof AGE_KEYS)[number]
   | (typeof MONEY_KEYS)[number]
   | (typeof RATE_KEYS)[number];
+
+const MONEY_SET: ReadonlySet<string> = new Set(MONEY_KEYS);
+const RATE_SET: ReadonlySet<string> = new Set(RATE_KEYS);
+
+/**
+ * The same dispatch `readRetirement` makes, on the display side: money
+ * groups, a rate takes a comma, an age is digits only and formats nothing —
+ * `parseCount` rejects a dot, so grouping an age would invalidate it.
+ */
+function formatOf(key: RetirementFieldKey): InputFormat | undefined {
+  if (MONEY_SET.has(key)) return "money";
+  if (RATE_SET.has(key)) return "rate";
+  return undefined;
+}
 
 /** Label, unit and help for one field, supplied by the page. */
 export type FieldCopy = { label: string; unit?: string; help: string };
@@ -188,6 +203,7 @@ export function RetirementFields({
         help={copy.fields[key].help}
         error={error}
         invalid={invalid[key]}
+        format={formatOf(key)}
       />
     );
 

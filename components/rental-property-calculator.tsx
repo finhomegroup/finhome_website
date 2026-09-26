@@ -49,21 +49,39 @@ export function RentalPropertyCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    price: C.form.defaultPrice,
-    down: C.form.defaultDown,
-    purchaseCosts: C.form.defaultPurchaseCosts,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    rent: C.form.defaultRent,
-    vacancy: C.form.defaultVacancy,
-    expenses: C.form.defaultExpenses,
-    vatRate: C.form.defaultVatRate,
-    pitRate: C.form.defaultPitRate,
-    threshold: C.form.defaultThreshold,
-    pitThreshold: C.form.defaultPitThreshold,
-    relief: C.form.defaultRelief,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The relief switch formats nothing.
+  const fields = useCalcFields(
+    {
+      price: C.form.defaultPrice,
+      down: C.form.defaultDown,
+      purchaseCosts: C.form.defaultPurchaseCosts,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      rent: C.form.defaultRent,
+      vacancy: C.form.defaultVacancy,
+      expenses: C.form.defaultExpenses,
+      vatRate: C.form.defaultVatRate,
+      pitRate: C.form.defaultPitRate,
+      threshold: C.form.defaultThreshold,
+      pitThreshold: C.form.defaultPitThreshold,
+      relief: C.form.defaultRelief,
+    },
+    {
+      price: "money",
+      down: "money",
+      purchaseCosts: "money",
+      rate: "rate",
+      term: "rate",
+      rent: "money",
+      vacancy: "rate",
+      expenses: "money",
+      vatRate: "rate",
+      pitRate: "rate",
+      threshold: "money",
+      pitThreshold: "money",
+    },
+  );
 
   const price = parseMoney(fields.values.price);
   const down = parseMoney(fields.values.down);

@@ -284,17 +284,17 @@ export const RETIREMENT_INCOME = {
     "Mức chi này không phải một tỷ lệ rút an toàn vĩnh viễn: nó được tính sao cho vốn vừa hết đúng ở tuổi bạn nhập vào ô “dự phóng đến tuổi”, mặc định là 85.",
   noticeDetailTitle: "Sống lâu hơn mốc đó thì con số đổi bao nhiêu?",
   noticeDetail:
-    "Nếu bạn dự phóng đến 90, cùng số vốn đó chỉ nuôi được 156.077.672 ₫/năm lấy từ danh mục thay vì 183.057.403 ₫, tức thấp hơn 14,7%. Kỳ vọng sống là một số trung vị và một nửa số người sống lâu hơn nó, nên hãy nhập tuổi cao hơn mốc bạn nghĩ là vừa đủ rồi đọc kết quả, thay vì đọc kết quả ở mốc vừa đủ rồi tự trừ đi một biên an toàn.",
+    "Nếu bạn dự phóng đến 90, cùng số vốn đó chỉ nuôi được 156.077.672 ₫/năm lấy từ danh mục thay vì 183.057.403 ₫, tức thấp hơn 14,7%. Nhiều người sống lâu hơn mức kỳ vọng sống trung bình, nên hãy nhập tuổi cao hơn mốc bạn nghĩ là vừa đủ rồi đọc kết quả, thay vì đọc kết quả ở mốc vừa đủ rồi tự trừ đi một biên an toàn.",
 
   formula: {
     title: "Cách tính",
     body: [
       "Số vốn tại ngày nghỉ được lấy từ đúng phép dự phóng mà cả bốn trang của kế hoạch hưu trí dùng chung, rồi quy về giá hôm nay. Mức chi giữ được đến hết kỳ là mức chi đều theo giá hôm nay làm cạn đúng số vốn đó ở tuổi kết thúc — cộng thêm phần thu nhập khác, thứ không phụ thuộc vào số vốn.",
       "Phép giải chạy trên lợi suất thực, tức (1 + lợi suất sau khi nghỉ) / (1 + lạm phát) − 1. Với 5% và 4%, lợi suất thực là 0,96%/năm chứ không phải 1%: hiệu của hai tỷ lệ chỉ là một phép gần đúng, và trên một kỳ hai mươi lăm năm nó đủ sai để lệch câu trả lời.",
-      "Hệ số dùng ở đây là một niên kim đầu kỳ, vì phép dự phóng lấy tiền ra vào đầu năm rồi mới tính lợi nhuận trên phần còn lại. Dùng công thức niên kim cuối kỳ sẽ phóng đại mức chi an toàn theo đúng tỷ lệ (1 + lợi suất thực): trên các giả định mặc định là 221.163.724 ₫/năm thay cho 219.057.403 ₫/năm, cao hơn 2.106.321 ₫. Đưa con số cao hơn đó trở lại phép dự phóng thì vốn cạn ở tuổi 84 và năm cuối còn 404.578.947 ₫ không được chi trả — một mức chi được báo là giữ được đến hết kỳ nhưng không giữ được.",
+      "Hệ số dùng ở đây là một niên kim đầu kỳ, vì phép dự phóng lấy tiền ra vào đầu năm rồi mới tính lợi nhuận trên phần còn lại. Với lợi suất thực dương, công thức niên kim cuối kỳ cho ra mức chi cao hơn theo đúng tỷ lệ (1 + lợi suất thực): trên các giả định mặc định là 221.163.724 ₫/năm thay cho 219.057.403 ₫/năm, cao hơn 2.106.321 ₫. Đưa con số cao hơn đó trở lại phép dự phóng thì vốn cạn ở tuổi 84 và năm cuối còn 404.578.947 ₫ không được chi trả — một mức chi được báo là giữ được đến hết kỳ nhưng không giữ được.",
       "Khoản rút được báo theo hai cách đếm cùng một khoản tiền. Ở mức chi giữ được, khoản rút danh nghĩa là 488.001.075 ₫ ở tuổi 60 và 1.250.895.188 ₫ ở tuổi 84, trong khi khoản rút theo giá hôm nay đứng yên ở 183.057.403 ₫ suốt cả kỳ. Đó không phải hai khoản tiền khác nhau, và chỉ con số thứ hai nói cho bạn biết mình mua được gì.",
       "Phần thu nhập khác được cộng vào sau cùng và không nhân với hệ số niên kim nào, vì nó không lấy ra từ danh mục: lương hưu hay tiền cho thuê vẫn được trả bất kể danh mục còn hay đã hết. Đó cũng là lý do khi vốn bằng 0 thì kết quả bằng đúng phần thu nhập khác, chứ không bằng 0.",
-      "Con số theo tháng là mức chi cả năm chia cho 12, một cách nói lại cùng con số cho dễ so với chi phí sinh hoạt hôm nay — không phải một lệnh rút mỗi tháng. Mô hình lấy toàn bộ khoản chi của một năm vào đầu năm đó, nên rút dần trong năm sẽ để lại nhiều vốn hơn một chút chứ không ít hơn.",
+      "Con số theo tháng là mức chi cả năm chia cho 12, một cách nói lại cùng con số cho dễ so với chi phí sinh hoạt hôm nay — không phải một lệnh rút mỗi tháng. Mô hình lấy toàn bộ khoản chi của một năm vào đầu năm đó, nên với lợi suất dương, rút dần trong năm để lại nhiều vốn hơn một chút; ở lợi suất 0% hai cách bằng nhau.",
       "Ba nhánh trên hình là ba lựa chọn trên cùng một số vốn, không phải ba dự báo. Ở mức mong muốn 240.000.000 ₫/năm, vốn cạn ở tuổi 82 — thiếu ba năm so với kỳ đến tuổi 85. Ở mức giữ được, mỗi năm chi ít hơn 20.942.597 ₫ và kế hoạch đi hết kỳ. Nhánh thứ ba giữ nguyên mức mong muốn nhưng kéo kỳ dự phóng thêm năm năm, và vốn vẫn cạn ở đúng tuổi 82: sống lâu hơn không làm tiền hết sớm hơn, nó chỉ làm số năm không được cấp vốn tăng từ ba lên tám. Vì thế hai mốc trên hình trùng tuổi nhau mà vẫn nói hai điều khác nhau, và mỗi mốc ghi rõ số năm nhánh đó để trống.",
       "Một phép kiểm chứng: đưa chính mức chi giữ được trở lại phép dự phóng thì kế hoạch không cạn tiền và vốn cuối kỳ bằng 0; cộng thêm 1.000.000 ₫/năm thì nó cạn ở tuổi 84. Phép quay vòng đó cũng là lý do năm cuối kỳ đôi khi còn thiếu vài phần triệu của một đồng: một con số giải bằng công thức rồi đưa lại vào vòng lặp không rơi đúng lên gốc. Đó là sai số làm tròn của số thực, không phải một năm bị mất, nên công cụ chỉ bỏ qua phần thiếu ấy ở đúng năm cuối kỳ, chỉ khi nó không đáng kể so với nhu cầu của năm đó, và luôn ghi ra phần dư đã bỏ qua.",
     ],
@@ -331,7 +331,7 @@ export const RETIREMENT_INCOME = {
     items: [
       {
         q: "Có một tỷ lệ rút an toàn cố định không?",
-        a: "Công cụ này không so kết quả với bất kỳ ngưỡng nào — làm vậy sẽ là một khẳng định về thị trường mà trang này không có cơ sở để đưa ra. Để bạn tự đối chiếu: 4% của số vốn thực tại ngày nghỉ là 163.587.197 ₫/năm, còn phần rút từ danh mục ở đây là 183.057.403 ₫/năm, cao hơn 11,9%. Khoảng cách đó không phải một phát hiện; nó là hệ quả trực tiếp của việc công cụ cố ý tiêu hết vốn đúng ở tuổi bạn nhập, trên một lợi suất đều không có biến động. Một quy tắc ngón tay cố định thì nhắm vào việc không hết tiền, nên nó luôn để lại một phần vốn — và phần vốn đó chính là biên an toàn bạn đánh đổi khi đọc con số cao hơn.",
+        a: "Công cụ này không so kết quả với một ngưỡng nào, vì mức rút an toàn còn tùy mức sinh lời từng năm, lạm phát và bạn sống bao lâu — những điều một con số cố định không nắm được. Để bạn tự đối chiếu: 4% của số vốn thực tại ngày nghỉ là 163.587.197 ₫/năm, còn phần rút từ danh mục ở đây là 183.057.403 ₫/năm, cao hơn 11,9%. Khoảng cách đó không phải một phát hiện; nó là hệ quả trực tiếp của việc công cụ cố ý tiêu hết vốn đúng ở tuổi bạn nhập, trên một lợi suất đều không có biến động. Một quy tắc ngón tay cố định thì nhắm vào việc không hết tiền, nên nó luôn để lại một phần vốn — và phần vốn đó chính là biên an toàn bạn đánh đổi khi đọc con số cao hơn.",
       },
       {
         q: "Vì sao lợi suất sau khi nghỉ lại quyết định nhiều thế?",
@@ -339,7 +339,7 @@ export const RETIREMENT_INCOME = {
       },
       {
         q: "Rủi ro thứ tự các năm được và mất có được tính không?",
-        a: "Không, và đây là hạn chế lớn nhất của công cụ. Nó dùng một lợi suất đều mỗi năm. Người đang rút tiền chịu thêm rủi ro về thứ tự: một đợt giảm mạnh trong hai năm đầu giai đoạn rút gây thiệt hại lớn hơn nhiều so với đúng đợt giảm đó ở năm thứ hai mươi, vì tài sản bị bán ra đúng lúc giá thấp và phần bị bán ấy không còn ở đó để hồi phục. Với cùng một lợi suất bình quân, hai thứ tự khác nhau cho hai kết cục khác nhau. Hãy đọc con số này như mức chi trong một kịch bản thuận lợi.",
+        a: "Không, và đây là hạn chế lớn nhất của công cụ. Nó dùng một lợi suất đều mỗi năm. Người đang rút tiền chịu thêm rủi ro về thứ tự: một đợt giảm mạnh trong hai năm đầu giai đoạn rút gây thiệt hại lớn hơn nhiều so với đúng đợt giảm đó ở năm thứ hai mươi, vì tài sản bị bán ra đúng lúc giá thấp và phần bị bán ấy không còn ở đó để hồi phục. Với cùng một lợi suất bình quân, hai thứ tự khác nhau cho hai kết cục khác nhau. Hãy đọc con số này như mức chi trong một kịch bản lợi suất đều mỗi năm, không phải dự báo.",
       },
       {
         q: "Sống lâu hơn dự tính thì con số đổi bao nhiêu?",
@@ -355,7 +355,7 @@ export const RETIREMENT_INCOME = {
       },
       {
         q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
-        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; còn trang này tính mức chi mà số vốn duy trì được và đặt nó cạnh mức bạn mong muốn. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
+        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; còn trang này tính mức chi mà số vốn duy trì được và đặt nó cạnh mức bạn mong muốn. Cùng một bộ số sẽ cho cùng kết quả về số vốn khi nghỉ và năm tiền cạn; nhưng số bạn nhập không được lưu và không tự chuyển giữa các trang — khi đổi trang, bạn cần nhập lại.",
       },
     ],
   },

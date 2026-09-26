@@ -39,14 +39,19 @@ export function PointsCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    term: C.form.defaultTerm,
-    baseRate: C.form.defaultBaseRate,
-    points: C.form.defaultPoints,
-    reduction: C.form.defaultReduction,
-    hold: C.form.defaultHold,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Term and hold are counts and format nothing.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      term: C.form.defaultTerm,
+      baseRate: C.form.defaultBaseRate,
+      points: C.form.defaultPoints,
+      reduction: C.form.defaultReduction,
+      hold: C.form.defaultHold,
+    },
+    { amount: "money", baseRate: "rate", points: "rate", reduction: "rate" },
+  );
 
   const amount = parseMoney(fields.values.amount);
   // Two whole counts of months, neither with a unit toggle, so `parseCount` —

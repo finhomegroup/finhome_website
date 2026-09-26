@@ -2,16 +2,19 @@
 //
 // Original FinHome copy. The arithmetic is standard finance.
 //
-// ORIGINAL ROW 31 IS A HOME-BUYING QUESTION, and that is what the second half
-// of this page now answers: "mua xe ảnh hưởng tiền mua nhà ra sao". The
-// instalment is shown as a monthly obligation of the HOUSEHOLD, beside the
-// month with and without it, because one income serves both. The loan
-// arithmetic is unchanged.
+// THIS IS A CAR PAGE, and it stops at the car. It answers three questions about
+// one vehicle purchase: what the loan costs each month, what it costs in
+// interest over the term, and what the household has left each month once the
+// car is paid for. An earlier version framed that third answer as "mua xe ảnh
+// hưởng tiền mua nhà ra sao"; the user's direction on 2026-09-26 was "xe là
+// xe, không cần đề cập đến nhà cửa", so no visible string here names a house,
+// a home purchase or a home deposit — `auto-loan.test.ts` sweeps for it. The
+// household month stays, because it is the useful half of the answer, and the
+// loan arithmetic is unchanged.
 //
-// `depreciationNotice` is the honest caveat for this particular tool: a car
-// loses value while the loan does not, so a buyer with a small deposit can owe
-// more than the car is worth for a good part of the term. The reference tool
-// does not say this; we should.
+// `depreciationNotice` distinguishes the remaining debt from resale value.
+// The engine models repayment, not vehicle depreciation, so negative equity
+// is a possibility to explain, not an outcome this calculator can predict.
 //
 // TWO CLAIMS WERE REMOVED FROM THIS FILE, both about what banks do:
 // "Ngân hàng thường yêu cầu tối thiểu 20–30% giá xe" appeared in the deposit
@@ -31,13 +34,14 @@
 export const AUTO_LOAN = {
   slug: "/cong-cu/vay-mua-xe",
 
-  pageTitle: "Mua xe ảnh hưởng tiền mua nhà ra sao?",
-  metaTitle: "Tính khoản vay mua xe — Trả hằng tháng và ngân sách hộ",
+  pageTitle: "Tính khoản vay mua xe",
+  metaTitle:
+    "Tính khoản vay mua xe — Trả hằng tháng, tổng lãi và ngân sách còn lại",
   metaDescription:
-    "Nhập giá xe, tiền trả trước, lãi suất và kỳ hạn để biết khoản trả hằng tháng, rồi xem ngân sách mỗi tháng của hộ có và không có khoản vay xe đó. Công cụ miễn phí của FinHome.",
+    "Nhập giá xe, tiền trả trước, lãi suất và kỳ hạn để biết mỗi tháng trả bao nhiêu, tổng lãi là bao nhiêu và ngân sách tháng còn lại bao nhiêu sau khi mua xe. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Khoản trả xe và khoản trả nhà cùng lấy từ một dòng thu nhập. Trang này tính khoản trả hằng tháng của khoản vay mua xe, rồi đặt nó vào ngân sách tháng của hộ để bạn thấy còn lại bao nhiêu trước và sau khi mua.",
+    "Nhập giá xe, tiền trả trước, lãi suất và kỳ hạn. Công cụ cho biết mỗi tháng bạn trả bao nhiêu và tổng lãi của khoản vay là bao nhiêu, rồi đặt khoản trả đó vào ngân sách tháng để bạn thấy còn lại bao nhiêu sau khi mua xe.",
 
   form: {
     vehicleGroup: "Xe và tiền trả trước",
@@ -67,7 +71,11 @@ export const AUTO_LOAN = {
     loanGroup: "Điều kiện vay",
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Lãi suất danh nghĩa hằng năm theo báo giá của bạn, ví dụ 9,5.",
+    rateHelp:
+      // Qualified 2026-09-26 (independent review finding 9): one rate for the
+      // whole loan is a constant-rate scenario, not the payment a lender
+      // recomputes on the remaining balance after a promotion ends.
+      "Mức lãi theo năm ghi trong báo giá của bạn, ví dụ 9,5 nghĩa là 9,5% một năm. Công cụ giữ một mức lãi này suốt kỳ hạn, nên kết quả là một kịch bản lãi cố định. Nếu báo giá có lãi ưu đãi rồi thả nổi, hãy chạy thêm một lần với mức sau ưu đãi để thấy kịch bản đó; muốn thấy khoản trả được tính lại trên dư nợ còn lại khi đổi lãi, hãy dùng công cụ Khoản vay lãi thả nổi.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "10",
 
@@ -107,7 +115,7 @@ export const AUTO_LOAN = {
     // review found it on the live page. `ExampleNotice` now carries the state
     // and this line no longer claims whose numbers these are.
     householdIntro:
-      "Bốn con số dưới đây quyết định câu trả lời thật: sau khi trả nợ xe, mỗi tháng hộ còn lại bao nhiêu để dành cho nhà. Các ô đang điền sẵn một ví dụ — hãy thay bằng số của bạn.",
+      "Bốn con số dưới đây quyết định câu trả lời thật: sau khi trả nợ xe, mỗi tháng bạn còn lại bao nhiêu. Các ô đang điền sẵn một ví dụ — hãy thay bằng số của bạn.",
 
     netIncomeLabel: "Thu nhập thực nhận của hộ",
     netIncomeUnit: "₫/tháng",
@@ -133,7 +141,7 @@ export const AUTO_LOAN = {
     reserveLabel: "Để dành đều mỗi tháng",
     reserveUnit: "₫/tháng",
     reserveHelp:
-      "Số tiền bạn muốn tiếp tục để dành bất kể có mua xe hay không — quỹ dự phòng hoặc quỹ mua nhà.",
+      "Số tiền bạn muốn tiếp tục để dành bất kể có mua xe hay không — quỹ dự phòng hoặc một mục tiêu tiết kiệm khác của bạn.",
     reserveInvalid: "Vui lòng nhập một số từ 0 trở lên.",
     defaultReserve: "3.000.000",
 
@@ -176,7 +184,7 @@ export const AUTO_LOAN = {
   table: {
     caption: "Bảng trả nợ theo từng năm",
     intro:
-      "Mỗi dòng là một năm. Với khoản vay mua xe kỳ hạn ngắn, tỷ lệ trả gốc tăng nhanh hơn so với vay mua nhà.",
+      "Mỗi dòng là một năm: cột “Gốc trả trong năm” là phần làm dư nợ giảm, cột “Lãi trả trong năm” là tiền trả cho việc được vay. Kỳ hạn càng ngắn thì dư nợ về 0 càng sớm, và với cùng một mức lãi dương, tổng lãi càng thấp.",
     yearColumn: "Năm",
     interestColumn: "Lãi trả trong năm",
     principalColumn: "Gốc trả trong năm",
@@ -193,7 +201,7 @@ export const AUTO_LOAN = {
       "Các ô đang điền sẵn một ví dụ. Hình này vẽ lại đúng những gì đang nằm trong ô — chưa phải phân tích cho hoàn cảnh của bạn cho tới khi bạn thay số.",
       "Khoản trả nợ xe được trừ MỘT lần, chỉ ở thanh “sau khi mua xe”.",
       "Lãi suất và kỳ hạn được giả định không đổi suốt kỳ hạn. Đó là một giả định để tính, không phải một cam kết của ai.",
-      "Đây là dòng tiền hằng tháng. Nó không nói gì về khả năng được vay, và cũng không phải câu trả lời đầy đủ cho tầm giá nhà.",
+      "Đây là dòng tiền hằng tháng theo đúng những gì bạn nhập. Nó không nói gì về việc bạn có được vay hay không.",
     ],
     tableCaption: "Từng khoản trong ba thanh",
     itemColumn: "Khoản",
@@ -234,24 +242,48 @@ export const AUTO_LOAN = {
     runningExcludedNote:
       "Chưa tính chi phí vận hành xe, nên phần còn lại “sau khi mua xe” đang CAO HƠN thực tế.",
     upfrontNote:
-      "Tiền trả trước và giá trị xe cũ KHÔNG nằm trong bảng này: chúng là tài sản, và tiền đã đưa cho chiếc xe thì không còn để trả trước cho căn nhà.",
+      "Tiền trả trước và giá trị xe cũ KHÔNG nằm trong bảng này: chúng là tiền bỏ ra một lần lúc mua, không phải khoản chi hằng tháng.",
   },
 
   depreciationNotice:
-    "Một điều công cụ này không tính được: xe mất giá trong khi khoản nợ thì không. Nếu bạn trả trước ít và vay kỳ hạn dài, sẽ có một khoảng thời gian dư nợ còn lớn hơn giá trị chiếc xe — nghĩa là bán xe cũng không đủ trả hết nợ. Trả trước nhiều hơn và chọn kỳ hạn ngắn hơn sẽ thu hẹp khoảng đó.",
+    "Ngoài khoản trả mỗi tháng, hãy cân nhắc số tiền còn nợ nếu bạn cần bán xe sớm. Giá xe có thể giảm nhanh hơn số nợ còn lại, khiến tiền bán xe không đủ trả hết nợ. Công cụ này tính lịch trả nợ, chưa ước tính giá bán lại hay mức mất giá của xe.",
 
   scopeNoticeTitle: "Hai con số “còn lại” nói gì và không nói gì",
   scopeNotice:
-    "Hai con số “còn lại” ở đây là dòng tiền mỗi tháng, không phải kết luận về khả năng mua nhà và không phải đánh giá của bất kỳ nơi cho vay nào. Chúng cũng chưa trừ chi phí vận hành xe nếu bạn để 0, và chưa tính việc tiền trả trước cho xe làm vốn tự có mua nhà ít đi.",
+    "Hai con số “còn lại” ở đây là dòng tiền mỗi tháng theo đúng những gì bạn nhập, không phải đánh giá của bất kỳ nơi cho vay nào về việc bạn có được vay hay không. Chúng cũng chưa trừ chi phí vận hành xe nếu bạn để 0, và chưa tính phần xe mất giá theo thời gian.",
+
+  // The page's own next actions, all about the car. They cannot go through
+  // `TOOL_NEXT_STEPS`: that file's test requires every destination to be a
+  // P1/P2 tool on the home-buying path, and both of these are car pages off
+  // it (`thue-mua-xe` is P4, `chi-phi-nhien-lieu` P3). The guard exists to
+  // keep a mortgage funnel off pages like this one, so — as `thue-mua-xe`
+  // does — the links are content the route resolves through the registry,
+  // and a slug that stops being live fails the build instead of shipping a
+  // dead link the page told the reader to follow.
+  relatedTools: {
+    title: "Tiếp theo cho chiếc xe này",
+    intro:
+      "Không có con số nào được mang sang trang khác — ở đó bạn nhập lại chiếc xe và điều kiện của mình.",
+    items: [
+      {
+        slug: "thue-mua-xe",
+        why: "Thuê tài chính cùng chiếc xe này thì mỗi tháng trả bao nhiêu, và hết hạn bạn có sở hữu xe không?",
+      },
+      {
+        slug: "chi-phi-nhien-lieu",
+        why: "Tiền nhiên liệu cho quãng đường bạn đi là bao nhiêu mỗi chuyến và mỗi tháng — để điền vào ô chi phí vận hành ở trên?",
+      },
+    ],
+  },
 
   formula: {
     title: "Công thức tính",
     body: [
       "Số tiền phải vay bằng giá xe trừ tiền trả trước và trừ giá trị xe cũ thu lại. Đây là con số mà lãi được tính trên đó, không phải giá xe. Với mặc định: 800 − 300 − 100 = 400 triệu.",
       "Khoản trả hằng tháng tính theo công thức niên kim: A = P × r ÷ (1 − (1 + r)^(−n)), với P là số tiền vay, r là lãi suất mỗi tháng và n là số tháng vay. Với 400 triệu, 10%/năm và 60 tháng, con số là 8.498.818 ₫ mỗi tháng và 109.929.073 ₫ tổng lãi.",
-      "Ngân sách tháng là một phép cộng trừ thẳng: thu nhập thực nhận trừ chi phí thiết yếu, trừ nợ khác, trừ mức để dành — đó là cột “chưa mua xe”. Cột “sau khi mua xe” trừ thêm khoản trả nợ xe và chi phí vận hành nếu bạn nhập. Với mặc định: 40 − 22 − 3 − 3 = 12 triệu, rồi 12 − 8,50 = 3.501.182 ₫.",
+      "Ngân sách tháng là một phép cộng trừ: thu nhập thực nhận trừ chi phí thiết yếu, nợ khác và mức để dành — đó là cột “chưa mua xe”. Cột “sau khi mua xe” trừ thêm khoản trả nợ xe và chi phí vận hành nếu bạn nhập. Trong ví dụ điền sẵn, 40 − 22 − 3 − 3 = 12 triệu còn lại trước khi mua. Trừ khoảng 8,5 triệu trả nợ xe, bạn còn khoảng 3,5 triệu mỗi tháng; số chính xác là 3.501.182 ₫, chưa trừ chi phí vận hành vì ô đó đang là 0.",
       "Khoản trả xe được trừ đúng MỘT lần. Vì vậy ô “nợ khác đang trả” phải là mọi khoản nợ TRỪ chiếc xe này — nhập lại nó ở đó sẽ trừ hai lần và tạo ra một khoản thiếu không có thật. Chênh lệch giữa hai cột luôn đúng bằng chi phí xe mỗi tháng.",
-      "Tiền trả trước và giá trị xe cũ không xuất hiện trong bảng tháng, vì chúng không phải dòng tiền hằng tháng. Nhưng chúng là tiền thật: 300 triệu đưa cho chiếc xe là 300 triệu không còn nằm trong vốn tự có mua nhà. Đó là một cái giá riêng, ngoài khoản trả hằng tháng.",
+      "Tiền trả trước và giá trị xe cũ không xuất hiện trong bảng tháng, vì chúng không phải dòng tiền hằng tháng. Nhưng chúng là tiền thật, bỏ ra một lần lúc mua: 300 triệu đưa cho chiếc xe là 300 triệu không còn trong tài khoản của bạn. Đó là một cái giá riêng, ngoài khoản trả hằng tháng.",
     ],
   },
 
@@ -260,23 +292,25 @@ export const AUTO_LOAN = {
     items: [
       {
         q: "Nên trả trước bao nhiêu?",
-        a: "Công cụ không đặt một mức nào là đúng, và cũng không nói nơi cho vay yêu cầu bao nhiêu — mức tối thiểu nằm trong hợp đồng bạn được chào, không nằm ở đây. Điều công cụ cho thấy là hệ quả: trả trước nhiều hơn thì vay ít hơn, trả hằng tháng ít hơn, tổng lãi thấp hơn, và khoảng thời gian dư nợ lớn hơn giá trị xe ngắn hơn. Đổi lại, số tiền đó rời khỏi vốn tự có mua nhà ngay hôm nay. Hãy thử vài mức và đọc cả hai phần kết quả.",
+        a: "Hãy thử vài mức trả trước và xem cả tiền trả ngay lẫn khoản trả mỗi tháng. Với cùng giá xe, kỳ hạn và cách trả, trả trước nhiều hơn thì vay ít hơn và khoản trả hằng tháng thấp hơn; tổng lãi cũng thấp hơn nếu lãi suất dương. Đổi lại, bạn còn ít tiền mặt hơn cho chi tiêu và dự phòng. Mức trả trước tối thiểu cần đối chiếu với báo giá hoặc hợp đồng của nơi cho vay. Công cụ chưa ước tính giá bán lại của xe, nên không cho biết khi nào tiền bán xe sẽ đủ trả hết dư nợ.",
       },
       {
         q: "Vì sao kỳ hạn dài lại đắt hơn dù trả hằng tháng ít hơn?",
-        a: "Vì bạn trả lãi trong nhiều tháng hơn, và dư nợ giảm chậm hơn nên lãi tính trên số dư lớn hơn trong thời gian dài hơn. Hãy nhập cùng một khoản vay với kỳ hạn 3 năm và 7 năm để thấy chênh lệch tổng lãi. Kỳ hạn dài cũng đồng nghĩa nghĩa vụ hằng tháng đó còn chiếm chỗ trong ngân sách của hộ lâu hơn, đúng vào những năm bạn đang tích lũy tiền mua nhà.",
+        a: "Với cùng số tiền vay, cùng mức lãi dương và cùng cách trả, kỳ hạn dài làm dư nợ giảm chậm hơn và bạn trả lãi trong nhiều tháng hơn. Hãy thử cùng khoản vay với kỳ hạn 3 năm và 7 năm để so khoản trả mỗi tháng và tổng lãi. Nếu lãi suất là 0%, tổng lãi vẫn là 0 ở cả hai kỳ hạn. Dù vậy, kỳ hạn dài vẫn khiến khoản trả nợ chiếm chỗ trong ngân sách lâu hơn.",
       },
       {
-        q: "Hai con số “còn lại” có nghĩa là tôi mua được nhà hay không?",
-        a: "Không. Đó là dòng tiền còn lại mỗi tháng theo đúng những gì bạn nhập — không phải tầm giá nhà, không phải hạn mức được vay và không phải đánh giá của bất kỳ nơi cho vay nào. Tầm giá nhà còn phụ thuộc vốn tự có, lãi suất, kỳ hạn và chi phí giao dịch; công cụ “Khả năng mua nhà” tính riêng phần đó, và ở đó khoản trả xe được nhập vào ô nợ khác của hộ.",
+        q: "Hai con số “còn lại” có nghĩa là tôi được vay hay không?",
+        a: "Không. Đó là dòng tiền còn lại mỗi tháng theo đúng những gì bạn nhập — không phải hạn mức được vay và không phải đánh giá của bất kỳ nơi cho vay nào. Có được vay hay không, và với điều kiện gì, nằm trong hồ sơ và hợp đồng của bạn. Con số này trả lời một câu khác: sau khi trả nợ xe và chi phí vận hành, mỗi tháng bạn còn dư bao nhiêu để sống và để dành.",
       },
       {
-        q: "Tổng chi phí sở hữu xe gồm những gì?",
-        a: "Trong công cụ này, đó là tiền trả trước cộng giá trị xe cũ cộng tổng số tiền trả cho khoản vay. Chưa gồm chi phí vận hành như bảo hiểm, đăng kiểm, bảo dưỡng, nhiên liệu và phí đường bộ — bạn có thể nhập ước lượng của mình vào ô “chi phí vận hành xe mỗi tháng” để nó vào bảng ngân sách, còn nếu để 0 thì công cụ ghi rõ là chưa tính.",
+        q: "“Tổng tiền mua và vay” đã gồm mọi chi phí của xe chưa?",
+        a: "Con số này gồm tiền trả trước, giá trị xe cũ dùng để đổi và toàn bộ số tiền trả cho khoản vay. Nó chưa phải tổng chi phí sở hữu xe: còn nhiên liệu, bảo hiểm, đăng kiểm, bảo dưỡng, đỗ xe và phí đường bộ. Bạn có thể nhập ước lượng các khoản đó vào ô “chi phí vận hành xe mỗi tháng” để xem ngân sách còn lại; chúng không được cộng vào chỉ tiêu “Tổng tiền mua và vay”. Công cụ cũng chưa ước tính mức mất giá hay giá bán lại của xe.",
       },
       {
-        q: "Lãi suất vay mua xe có giống vay mua nhà không?",
-        a: "Hai khoản vay có cấu trúc khác nhau: kỳ hạn xe ngắn hơn và tài sản bảo đảm mất giá theo thời gian. Mức lãi cụ thể thì tùy báo giá bạn nhận được, nên hãy nhập đúng con số trong báo giá của mình. Nếu báo giá có lãi ưu đãi rồi chuyển sang thả nổi, hãy hỏi mức lãi sau ưu đãi và tính lại với mức đó — khoản trả hằng tháng khi ấy là con số sẽ nằm trong ngân sách của hộ phần lớn kỳ hạn.",
+        q: "Nên nhập lãi suất vay mua xe thế nào?",
+        // 2026-09-26 (independent review finding 9/16): a one-rate run at the
+        // later rate is a scenario, not the instalment the lender recomputes.
+        a: "Nhập đúng mức lãi theo năm ghi trong báo giá bạn nhận được — mức cụ thể tùy từng báo giá, công cụ không đặt sẵn một mức nào là đúng. Nếu báo giá có lãi ưu đãi rồi chuyển sang thả nổi, hãy hỏi mức lãi sau ưu đãi và chạy thêm một lần với mức đó để thử kịch bản; khoản trả thật sau ưu đãi được tính lại trên dư nợ còn lại, nên nếu cần con số đó hãy dùng công cụ Khoản vay lãi thả nổi.",
       },
     ],
   },

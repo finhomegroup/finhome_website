@@ -75,7 +75,10 @@ export const HOLDING_PERIOD = {
     noAnnualNotice:
       "Không có thời gian nắm giữ nên công cụ chỉ tính được lợi nhuận cả kỳ. Hãy nhập số năm để có con số theo năm — đó mới là con số so sánh được với lãi tiền gửi hoặc với một khoản đầu tư khác.",
     totalLossNotice:
-      "Tổng tiền thu về bằng 0 nên lợi nhuận cả kỳ là −100%. Không có mức lợi nhuận theo năm nào diễn tả được trường hợp này.",
+      // Aligned with roi.ts, 2026-09-26: −100%/năm DOES satisfy the formula
+      // for any positive holding period; the row is withheld because of what
+      // it would mean, not because it cannot be computed.
+      "Tổng tiền thu về bằng 0 nên lợi nhuận cả kỳ là −100%: mất toàn bộ số vốn. Công cụ để trống dòng theo năm vì con số duy nhất thỏa công thức là −100%/năm, và nó không phân biệt được một năm với hai mươi năm — con số −100% cả kỳ đã nói đúng kết quả rồi.",
   },
 
   splitNotice:
@@ -90,8 +93,12 @@ export const HOLDING_PERIOD = {
       "Lãi vốn = giá trị cuối kỳ − giá trị lúc mua. Lãi vốn tính theo phần trăm = lãi vốn ÷ giá trị lúc mua × 100. Với mặc định: (118 − 100) triệu chia 100 triệu bằng 18%.",
       "Lợi tức tính theo phần trăm = tiền đã nhận ÷ giá trị lúc mua × 100, tức 12 triệu chia 100 triệu bằng 12%. Chú ý mẫu số là giá trị lúc mua, không phải giá trị cuối kỳ — đó là quy ước, và nó giữ cho hai phần cộng lại đúng bằng tổng.",
       "Lợi nhuận cả kỳ nắm giữ = lãi vốn + lợi tức = 30%. Đây là lý do cả hai phần đều chia cho cùng một mẫu số.",
-      "Lợi nhuận theo năm dùng công thức lũy kép: (tổng tiền thu về ÷ giá trị lúc mua)^(1 ÷ số năm) − 1. Với mặc định là 1,3^(1/3) − 1 = 9,1393%/năm. Không phải 30 ÷ 3 = 10% — cách chia bỏ qua lãi kép và luôn cao hơn thực tế.",
-      "Khi tổng tiền thu về bằng 0, công cụ để trống ô lợi nhuận theo năm: không có mức lãi hữu hạn nào đưa một số tiền dương về đúng 0 sau một số năm hữu hạn. Nếu bạn đã nhận được một phần tiền trước khi mất trắng phần còn lại thì vẫn có con số theo năm, và nó âm.",
+      // "luôn cao hơn" scoped 2026-09-26: the simple division overstates only
+      // for a gain held longer than a year; under a year it understates.
+      "Lợi nhuận theo năm dùng công thức lũy kép: (tổng tiền thu về ÷ giá trị lúc mua)^(1 ÷ số năm) − 1. Với mặc định là 1,3^(1/3) − 1 = 9,1393%/năm. Không phải 30 ÷ 3 = 10%: cách chia bỏ qua lãi kép, và với một khoản có lãi giữ trên một năm — như ví dụ này — nó cho ra số cao hơn thực tế.",
+      // Same correction roi.ts already carries: −100%/năm satisfies the
+      // formula; the blank is a reading convention, not a limit of arithmetic.
+      "Khi tổng tiền thu về bằng 0, công cụ để trống ô lợi nhuận theo năm. Đây là một quy ước đọc, không phải giới hạn của phép tính: công thức vẫn cho ra đúng −100%/năm, nhưng con số đó hàm ý mất hết ngay trong năm đầu và không phân biệt được một năm với hai mươi năm. Nếu bạn đã nhận được một phần tiền trước khi mất trắng phần còn lại thì vẫn có con số theo năm, và nó âm.",
     ],
     // Editor-selected phrases, rendered as <strong> by `ProseText`.
     // Never markup inside the string: the paragraph stays one plain

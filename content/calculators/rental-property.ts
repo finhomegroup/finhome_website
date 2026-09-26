@@ -69,7 +69,9 @@ export const RENTAL_PROPERTY = {
     loanGroup: "Khoản vay",
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Mức lãi sau ưu đãi. Không dùng nếu bạn mua bằng tiền tươi.",
+    // 2026-09-26: the same constant-rate qualification the loan tools carry.
+    rateHelp:
+      "Mức lãi theo năm của khoản vay, ví dụ 9. Công cụ giữ một mức này suốt kỳ hạn, nên khoản trả nợ ở đây là một kịch bản lãi cố định; nếu báo giá có lãi ưu đãi rồi thả nổi, hãy chạy thêm một lần với mức sau ưu đãi. Không dùng nếu bạn mua bằng tiền tươi.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "9",
 
@@ -155,7 +157,7 @@ export const RENTAL_PROPERTY = {
     grossYieldLabel: "Tỷ suất gộp (thuê ÷ giá mua)",
     capRateLabel: "Cap rate (lợi nhuận vận hành ÷ giá mua)",
     cashOnCashRepeatLabel: "Tỷ suất trên vốn tự có (dòng tiền ÷ vốn bỏ ra)",
-    dscrLabel: "Hệ số trả nợ DSCR",
+    dscrLabel: "Hệ số trả nợ DSCR (lợi nhuận vận hành ÷ trả nợ cả năm)",
 
     detailTitle: "Chi tiết theo năm",
     grossRentLabel: "Tiền thuê cả năm nếu luôn có khách",
@@ -349,7 +351,8 @@ export const RENTAL_PROPERTY = {
       "Tỷ suất gộp = tiền thuê cả năm ÷ giá mua. Bỏ qua mọi chi phí, thuế và khoản vay. Chỉ dùng để lọc nhanh hàng chục tin bán nhà, không dùng để ra quyết định.",
       "Cap rate = lợi nhuận vận hành ÷ giá mua, trong đó lợi nhuận vận hành = tiền thuê thực thu − thuế cho thuê − chi phí vận hành. Cap rate KHÔNG phụ thuộc vào cách bạn thanh toán, nên nó là con số để so hai căn nhà với nhau. Với mặc định, 6,00% tụt xuống 4,90% khi tính đủ chi phí vận hành — ở mức thuê này doanh thu chưa vượt ngưỡng nên chưa phải nộp thuế; vượt ngưỡng thì cap rate còn tụt thêm.",
       "Tỷ suất trên vốn tự có = dòng tiền cả năm ÷ vốn tự có đã bỏ ra, trong đó dòng tiền = lợi nhuận vận hành − khoản trả nợ, và vốn tự có = tiền trả trước + chi phí mua một lần. Đây là con số của BẠN. Vay nợ có thể đẩy nó lên cao hơn cap rate, hoặc kéo nó xuống âm trong khi cap rate vẫn dương — đúng trường hợp mặc định ở đây.",
-      "DSCR = lợi nhuận vận hành ÷ khoản trả nợ cả năm. Dưới 1 nghĩa là tiền thuê không đủ trả nợ và phần thiếu lấy từ thu nhập khác của bạn. Ngân hàng thường muốn thấy DSCR từ 1,2 trở lên với bất động sản cho thuê. DSCR bằng 1 xảy ra đúng lúc dòng tiền bằng 0.",
+      // "thường muốn thấy 1,2" was an unsourced lending norm, 2026-09-26.
+      "DSCR = lợi nhuận vận hành ÷ khoản trả nợ cả năm. Dưới 1 nghĩa là tiền thuê không đủ trả nợ và phần thiếu lấy từ thu nhập khác của bạn. Nơi cho vay có thể đặt một mức DSCR tối thiểu cao hơn 1 khi thẩm định bất động sản cho thuê; mức cụ thể tùy từng nơi và trang này không biết. DSCR bằng 1 xảy ra đúng lúc dòng tiền bằng 0.",
       "Thuế cho thuê được tính trên DOANH THU, không trên lợi nhuận, nên vẫn bị thu khi căn nhà lỗ. Đây là hai loại thuế với hai căn cứ khác nhau, không phải một mức 10% gộp. Thuế GTGT 5% tính trên TOÀN BỘ tiền thuê thực thu, ngay khi doanh thu vượt ngưỡng — đây là bậc thang dựng đứng. Thuế TNCN 5% chỉ tính trên PHẦN vượt mức được trừ, vì mức đó trừ ra trước — đây là phần tăng dần. Với ngưỡng 1 tỷ điền sẵn: doanh thu 900 triệu không phải nộp loại nào; doanh thu 1,08 tỷ thì GTGT 54 triệu cộng TNCN 4 triệu, tổng 58 triệu — không phải 108 triệu như cách tính 10% trên toàn bộ.",
     ],
   },
@@ -363,7 +366,8 @@ export const RENTAL_PROPERTY = {
       },
       {
         q: "Tỷ lệ trống nên nhập bao nhiêu?",
-        a: "Đừng nhập 0. Mỗi lần đổi khách thường mất từ hai tuần đến hai tháng để tìm người mới và sửa sang, và khách thuê căn hộ ở Việt Nam thường chỉ ở 1–2 năm. Một tháng trống mỗi năm tương đương khoảng 8%; hai tháng là 17%. Nếu căn nhà ở vị trí khó cho thuê hoặc giá thuê cao so với khu vực, hãy nhập mức cao hơn.",
+        // Unsourced tenancy-length and turnaround ranges removed, 2026-09-26.
+        a: "Đừng nhập 0. Mỗi lần đổi khách đều mất thời gian tìm người mới và sửa sang, và hợp đồng thuê nhà ở thường không kéo dài nhiều năm. Một tháng trống mỗi năm tương đương khoảng 8%; hai tháng là 17%. Nếu căn nhà ở vị trí khó cho thuê hoặc giá thuê cao so với khu vực, hãy nhập mức cao hơn.",
       },
       {
         q: "Chi phí vận hành gồm những gì?",

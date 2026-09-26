@@ -63,7 +63,17 @@ const FORM_ID = "tai-khoan-tiet-kiem-y-te-hoa-ky-nhap";
 const RESULT_ID = "tai-khoan-tiet-kiem-y-te-hoa-ky-ket-qua";
 
 export function UsHsaCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Age, eligible months and years are counts; the rest lists.
+  const fields = useCalcFields(F.defaults, {
+    contribution: "money",
+    employer: "money",
+    wages: "money",
+    balance: "money",
+    federal: "rate",
+    state: "rate",
+    return: "rate",
+  });
   const viaPayroll = fields.values.payroll === "yes";
 
   const age = parseCount(fields.values.age);

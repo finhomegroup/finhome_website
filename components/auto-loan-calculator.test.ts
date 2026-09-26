@@ -22,9 +22,11 @@ import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  AUTO_LOAN_FORMATS,
   autoLoanFormState,
   type AutoLoanFormValues,
 } from "@/components/auto-loan-calculator";
+import { formatFieldValues } from "@/components/calc/use-calc-fields";
 import { formatMoney } from "@/lib/calc/number";
 import { AUTO_LOAN } from "@/content/calculators/auto-loan";
 import { TABLE_UI } from "@/content/calculators/table-ui";
@@ -407,6 +409,24 @@ describe("autoLoanFormState — the note is only for the real cause", () => {
  * correct reason rather than an accident of ordering.
  */
 function fieldFlags(html: string): Map<string, boolean> {
+  const flags = new Map<string, boolean>();
+  for (const [label, attributes] of inputsByLabel(html)) {
+    flags.set(label, /aria-invalid="true"/.test(attributes));
+  }
+  return flags;
+}
+
+/** The `data-format` grammar of each `<input>`, keyed by its visible label. */
+function fieldFormats(html: string): Map<string, string | undefined> {
+  const formats = new Map<string, string | undefined>();
+  for (const [label, attributes] of inputsByLabel(html)) {
+    formats.set(label, /\bdata-format="([^"]+)"/.exec(attributes)?.[1]);
+  }
+  return formats;
+}
+
+/** Each `<input>`'s attribute string, keyed by the label its `id` pairs with. */
+function inputsByLabel(html: string): Map<string, string> {
   const labelsFor = new Map<string, string>();
   for (const match of html.matchAll(
     /<label[^>]*\bfor="([^"]+)"[^>]*>(.*?)<\/label>/g,
@@ -414,16 +434,16 @@ function fieldFlags(html: string): Map<string, boolean> {
     labelsFor.set(match[1], match[2]);
   }
 
-  const flags = new Map<string, boolean>();
+  const inputs = new Map<string, string>();
   for (const match of html.matchAll(/<input\b([^>]*)>/g)) {
     const attributes = match[1];
     const id = /\bid="([^"]+)"/.exec(attributes)?.[1];
     if (id === undefined) continue;
     const label = labelsFor.get(id);
     if (label === undefined) continue;
-    flags.set(label, /aria-invalid="true"/.test(attributes));
+    inputs.set(label, attributes);
   }
-  return flags;
+  return inputs;
 }
 
 /** Render the calculator with the prefilled values overridden. */
@@ -596,5 +616,94 @@ describe("AutoLoanCalculator — the repayment table is readable on a phone", ()
     const html = await render({});
     expect(html).toContain(TABLE_UI.units.trieu);
     expect(html).not.toContain("0,000001");
+  });
+});
+
+/**
+ * The fields format as the reader types — the display side of
+ * `autoLoanFormState`'s dispatch, key for key.
+ *
+ * The reported defect: a household income typed as "2700000" stayed
+ * "2700000", because only the retirement pilot had opted into the formatter.
+ * These tests pin (a) that the map names the grammar each key is PARSED with,
+ * proven against the parse rather than read off the map, (b) that the page
+ * reads identical figures off formatted and raw strings, and (c) that the
+ * grammar reaches the rendered inputs by label. The keystroke behaviour
+ * itself is `lib/calc/number-input.test.ts`'s.
+ */
+describe("AutoLoanCalculator — the fields format as the reader types", () => {
+  const keysWith = (format: string) =>
+    (Object.keys(AUTO_LOAN_FORMATS) as (keyof AutoLoanFormValues)[])
+      .filter((key) => AUTO_LOAN_FORMATS[key] === format)
+      .sort();
+
+  it("names the money grammar for every đồng field, the decimal one for rate and term, none for the unit", () => {
+    expect(keysWith("money")).toEqual([
+      "down",
+      "essentials",
+      "netIncome",
+      "otherDebts",
+      "price",
+      "reserve",
+      "running",
+      "tradeIn",
+    ]);
+    expect(keysWith("rate")).toEqual(["rate", "term"]);
+    expect(AUTO_LOAN_FORMATS).not.toHaveProperty("termUnit");
+  });
+
+  it("matches the grammar each key is actually parsed with", () => {
+    // Under `parseMoney` a dot is grouping, so "1.000" and "1000" are one
+    // figure. Under `parseDecimal` "1.5" and "1,5" are one figure and "1.000"
+    // is 1 — a money key wrongly mapped "rate", or the reverse, fails here.
+    for (const key of keysWith("money")) {
+      const over = (v: string) => ({ [key]: v }) as Partial<AutoLoanFormValues>;
+      expect(state(over("1.000")), key).toEqual(state(over("1000")));
+    }
+    for (const key of keysWith("rate")) {
+      const over = (v: string) => ({ [key]: v }) as Partial<AutoLoanFormValues>;
+      expect(state(over("1.5")), key).toEqual(state(over("1,5")));
+      expect(state(over("1.000")), key).toEqual(state(over("1")));
+    }
+  });
+
+  it("reads the same page off formatted strings as off the raw defaults", () => {
+    const formatted = formatFieldValues(DEFAULTS, AUTO_LOAN_FORMATS);
+    expect(autoLoanFormState(formatted)).toEqual(autoLoanFormState(DEFAULTS));
+
+    // The reported case: a net income typed without dots groups live and
+    // still parses to 2.700.000 ₫.
+    const typed = formatFieldValues(
+      { ...DEFAULTS, netIncome: "2700000" },
+      AUTO_LOAN_FORMATS,
+    );
+    expect(typed.netIncome).toBe("2.700.000");
+    expect(autoLoanFormState(typed)).toEqual(state({ netIncome: "2700000" }));
+    expect(autoLoanFormState(typed).budget?.withoutCar).toBe(
+      2_700_000 - 22_000_000 - 3_000_000 - 3_000_000,
+    );
+
+    // A decimal term typed with a dot shows a comma and is still 66 months.
+    const term = formatFieldValues({ ...DEFAULTS, term: "5.5" }, AUTO_LOAN_FORMATS);
+    expect(term.term).toBe("5,5");
+    expect(autoLoanFormState(term).termMonths).toBe(66);
+    expect(autoLoanFormState(term)).toEqual(state({ term: "5.5" }));
+  });
+
+  it("puts each grammar on the rendered input it belongs to, by label", async () => {
+    const html = await render({});
+    const formats = fieldFormats(html);
+    expect(formats.get(`${D.netIncomeLabel} (${D.netIncomeUnit})`)).toBe("money");
+    expect(formats.get(`${D.priceLabel} (${D.priceUnit})`)).toBe("money");
+    expect(formats.get(`${D.downLabel} (${D.downUnit})`)).toBe("money");
+    expect(formats.get(`${D.tradeInLabel} (${D.tradeInUnit})`)).toBe("money");
+    expect(formats.get(`${D.runningLabel} (${D.runningUnit})`)).toBe("money");
+    expect(formats.get(`${D.rateLabel} (${D.rateUnit})`)).toBe("rate");
+    expect(formats.get(D.termLabel)).toBe("rate");
+    // Eight money inputs, two decimal ones, and nothing else carries a grammar.
+    expect(html.split('data-format="money"').length - 1).toBe(8);
+    expect(html.split('data-format="rate"').length - 1).toBe(2);
+    expect(html.split("data-format=").length - 1).toBe(10);
+    expect(/<select\b[^>]*data-format/.test(html)).toBe(false);
   });
 });

@@ -87,7 +87,9 @@ export const BOND = {
     yieldLabel: "Lợi suất yêu cầu",
     yieldUnit: "%/năm",
     yieldHelp:
-      "Mức lợi suất bạn đòi hỏi để mua trái phiếu này, tính theo quy ước danh nghĩa hằng năm.",
+      // "quy ước danh nghĩa" spelled out, 2026-09-26: on a bond it means the
+      // annual figure divided by the number of coupon periods, not compounded.
+      "Mức lợi suất bạn đòi hỏi để mua trái phiếu này, tính theo năm và chưa ghép lãi: lợi suất mỗi kỳ = con số này chia số lần trả lãi mỗi năm (quy ước danh nghĩa của thị trường trái phiếu).",
     yieldInvalid: "Vui lòng nhập một số.",
     defaultYield: "10",
 

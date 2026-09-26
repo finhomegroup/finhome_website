@@ -70,7 +70,20 @@ function usd(value: number): string {
  * it returns; the US scope; the covered/unmet notices and the invalid notice.
  */
 export function RetirementIncomeAnalysisCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The three ages are counts and format nothing.
+  const fields = useCalcFields(F.defaults, {
+    need: "money",
+    social: "money",
+    pension: "money",
+    work: "money",
+    other: "money",
+    balance: "money",
+    pensionIndex: "rate",
+    otherIndex: "rate",
+    returnPercent: "rate",
+    inflation: "rate",
+  });
   const v = fields.values;
 
   // Ages are whole counts: parseMoney reads "72,5" as 725 and marks it

@@ -30,14 +30,21 @@ export const COMMERCIAL_LOAN = {
     loanGroup: "Khoản vay",
     amountLabel: "Số tiền vay",
     amountUnit: "₫",
-    amountHelp: "Số tiền giải ngân.",
+    // Expanded 2026-09-26: says what figure to enter and how the model treats
+    // it. The engine charges grace-period interest on the full amount from
+    // month 1, i.e. it assumes one disbursement at the start.
+    amountHelp:
+      "Tổng số tiền vay theo hợp đồng, ví dụ 5.000.000.000. Công cụ coi toàn bộ số này được giải ngân một lần ở đầu kỳ và tính lãi trên đó ngay từ tháng đầu.",
     amountInvalid: "Vui lòng nhập số tiền vay lớn hơn 0.",
     defaultAmount: "5.000.000.000",
 
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
     rateHelp:
-      "Lãi suất danh nghĩa hằng năm. Vay kinh doanh thường cao hơn vay mua nhà.",
+      // 2026-09-26: "danh nghĩa" replaced by what to enter; the comparison
+      // with home-loan rates was a market claim this project has no source
+      // for, on a file whose own header says it drops such claims.
+      "Mức lãi theo năm ghi trong hợp đồng, ví dụ 11 nghĩa là 11% một năm. Công cụ giữ một mức lãi này suốt kỳ hạn, nên kết quả là một kịch bản lãi cố định.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "11",
 
@@ -190,7 +197,11 @@ export const COMMERCIAL_LOAN = {
       },
       {
         q: "Công cụ có tính phí không?",
-        a: "Không. Vay kinh doanh thường có phí thu xếp, phí thẩm định tài sản bảo đảm và phí cam kết rút vốn trên phần chưa giải ngân. Nếu bạn muốn quy tất cả về một mức lãi suất duy nhất để so giữa các ngân hàng, hãy dùng công cụ APR nâng cao của FinHome — nó có ô riêng cho từng loại phí.",
+        // 2026-09-26 (independent review finding 11). APR nâng cao models
+        // one-off fees at disbursement (or financed into principal). A
+        // commitment fee on the undrawn balance is an ongoing charge with no
+        // field anywhere in this suite, so the answer no longer promises it.
+        a: "Không. Vay kinh doanh có thể kèm phí thu xếp, phí thẩm định tài sản bảo đảm và phí cam kết rút vốn trên phần chưa giải ngân. Với các khoản phí trả một lần lúc giải ngân — thu xếp, thẩm định, công chứng, bảo hiểm năm đầu — công cụ APR nâng cao của FinHome có ô riêng cho từng khoản và quy chúng về một mức lãi để so giữa các ngân hàng. Phí cam kết rút vốn thì khác: nó thu định kỳ trên phần chưa giải ngân, và không công cụ nào trong bộ này có ô cho khoản đó — hãy hỏi ngân hàng mức phí rồi cộng riêng vào chi phí của bạn.",
       },
       {
         q: "Vì sao bảng trả nợ không về 0?",

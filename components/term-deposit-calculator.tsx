@@ -89,24 +89,37 @@ export function TermDepositCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    mode: C.form.defaultMode,
-    principal: C.form.defaultPrincipal,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    payout: C.form.defaultPayout,
-    cycles: C.form.defaultCycles,
-    compound: C.form.defaultCompound,
-    demandRate: C.form.defaultDemandRate,
-    breakAfter: C.form.defaultBreak,
-    startDay: C.form.defaultStartDay,
-    startMonth: C.form.defaultStartMonth,
-    startYear: C.form.defaultStartYear,
-    needDay: C.form.defaultNeedDay,
-    needMonth: C.form.defaultNeedMonth,
-    needYear: C.form.defaultNeedYear,
-    renew: C.form.defaultRenew,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The selects and the date parts format
+  // nothing.
+  const fields = useCalcFields(
+    {
+      mode: C.form.defaultMode,
+      principal: C.form.defaultPrincipal,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      payout: C.form.defaultPayout,
+      cycles: C.form.defaultCycles,
+      compound: C.form.defaultCompound,
+      demandRate: C.form.defaultDemandRate,
+      breakAfter: C.form.defaultBreak,
+      startDay: C.form.defaultStartDay,
+      startMonth: C.form.defaultStartMonth,
+      startYear: C.form.defaultStartYear,
+      needDay: C.form.defaultNeedDay,
+      needMonth: C.form.defaultNeedMonth,
+      needYear: C.form.defaultNeedYear,
+      renew: C.form.defaultRenew,
+    },
+    {
+      principal: "money",
+      rate: "rate",
+      term: "rate",
+      cycles: "rate",
+      demandRate: "rate",
+      breakAfter: "rate",
+    },
+  );
 
   const byDates = fields.values.mode === "dates";
 

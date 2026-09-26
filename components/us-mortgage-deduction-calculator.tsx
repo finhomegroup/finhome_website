@@ -47,7 +47,15 @@ const FORM_ID = "tiet-kiem-thue-vay-mua-nha-nhap";
 const RESULT_ID = "tiet-kiem-thue-vay-mua-nha-ket-qua";
 
 export function UsMortgageDeductionCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Vintage and filing status are lists.
+  const fields = useCalcFields(F.defaults, {
+    balance: "money",
+    interest: "money",
+    otherItemized: "money",
+    standard: "money",
+    rate: "rate",
+  });
 
   const balance = parseMoney(fields.values.balance);
   const interest = parseMoney(fields.values.interest);

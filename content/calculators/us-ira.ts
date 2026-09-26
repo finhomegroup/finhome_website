@@ -186,7 +186,12 @@ export const US_IRA = {
   // The RULE and the model's limit stay above the tool; the worked default
   // case is arithmetic, so it moved into the disclosure below.
   equalCostNotice:
-    "“Thuế suất khi rút thấp hơn hôm nay” chưa đủ để phương án truyền thống thắng: phần hoàn thuế của nó phải nằm trong một tài khoản thường và chịu thuế lãi vốn, nên mức hoàn vốn luôn thấp hơn thuế suất hôm nay một khoảng. Kết quả là một phép so sánh giữa hai lựa chọn dưới đúng những giả định bạn nhập — trong đó có một phỏng đoán về thuế suất của vài chục năm sau — chứ không phải một dự báo.",
+    // "luôn" scoped 2026-09-26: the engine taxes max(0, gain), so the
+    // break-even drops only when the side account actually pays tax —
+    // a 0% option, a zero or negative return leave it at today's rate,
+    // as `formula.body[2]` already says. Two sentences, inside the US
+    // entry budget (`u-entry-contract.test.ts`).
+    "“Thuế suất khi rút thấp hơn hôm nay” chưa đủ để phương án truyền thống thắng: phần hoàn thuế của nó phải nằm trong một tài khoản thường, và chỉ khi tài khoản đó có lãi phải nộp thuế lãi vốn thì mức hoàn vốn mới thấp hơn thuế suất hôm nay. Kết quả là một phép so sánh giữa hai lựa chọn dưới đúng những giả định bạn nhập — trong đó có một phỏng đoán về thuế suất của vài chục năm sau — chứ không phải một dự báo.",
   equalCostNoticeDetailTitle: "Cụ thể: các số mặc định nói gì",
   equalCostNoticeDetail:
     "Với các giá trị mặc định, thuế suất khi rút được đặt ở 22% — THẤP HƠN mức 24% hôm nay — và Roth vẫn cao hơn 4.029 USD. Lý do là mức hoàn vốn không nằm ở 24% mà ở 21,47%: phần hoàn thuế của phương án truyền thống phải nằm trong một tài khoản thường và chịu thuế lãi vốn, nên nó không theo kịp. Nói cách khác, để phương án truyền thống cao hơn thì thuế suất khi rút của bạn phải thấp hơn mức hôm nay ít nhất 2,53 điểm phần trăm, chứ không chỉ “thấp hơn”. Nếu bạn không đầu tư phần hoàn thuế mà tiêu nó, phương án truyền thống mất luôn phần bù đó và khoảng cách rộng ra rất nhiều. Công cụ tính khoảng hoàn vốn đó từ chính các số bạn nhập và hiển thị nó thành một dòng riêng trong kết quả, nên hãy đọc dòng đó trước khi kết luận.",

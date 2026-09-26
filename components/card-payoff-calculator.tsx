@@ -139,7 +139,18 @@ export function CardPayoffCalculator({
     startMonth: C.form.defaultStartMonth,
     startYear: C.form.defaultStartYear,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The month count, the date parts and the strategy switch
+  // format nothing.
+  const fields = useCalcFields(initial, {
+    balance: "money",
+    rate: "rate",
+    payment: "money",
+    percent: "rate",
+    floor: "money",
+    extra: "money",
+    budget: "money",
+  });
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],
   );

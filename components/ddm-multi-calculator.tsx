@@ -35,13 +35,23 @@ const FORM_ID = "co-phieu-khong-deu-nhap";
 const RESULT_ID = "co-phieu-khong-deu-ket-qua";
 
 export function DdmMultiCalculator() {
-  const fields = useCalcFields({
-    dividend: C.form.defaultDividend,
-    highGrowth: C.form.defaultHighGrowth,
-    years: C.form.defaultYears,
-    terminalGrowth: C.form.defaultTerminalGrowth,
-    required: C.form.defaultRequired,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Years is a count and formats nothing.
+  const fields = useCalcFields(
+    {
+      dividend: C.form.defaultDividend,
+      highGrowth: C.form.defaultHighGrowth,
+      years: C.form.defaultYears,
+      terminalGrowth: C.form.defaultTerminalGrowth,
+      required: C.form.defaultRequired,
+    },
+    {
+      dividend: "money",
+      highGrowth: "rate",
+      terminalGrowth: "rate",
+      required: "rate",
+    },
+  );
 
   const dividend = parseMoney(fields.values.dividend);
   const highGrowth = parseDecimal(fields.values.highGrowth);

@@ -34,7 +34,14 @@ const FORM_ID = "tin-phieu-kho-bac-hoa-ky-nhap";
 const RESULT_ID = "tin-phieu-kho-bac-hoa-ky-ket-qua";
 
 export function UsTbillCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Days is a count and formats nothing.
+  const fields = useCalcFields(F.defaults, {
+    face: "money",
+    discount: "rate",
+    federal: "rate",
+    state: "rate",
+  });
 
   const face = parseMoney(fields.values.face);
   const discount = parseDecimal(fields.values.discount);

@@ -64,7 +64,9 @@ function fromFraLabel(monthsFromFra: number): string {
 }
 
 export function UsSocialSecurityEstimateCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Years worked, birth year and claim age are counts.
+  const fields = useCalcFields(F.defaults, { earnings: "money" });
   const v = fields.values;
 
   const birthYear = parseCount(v.birthYear);

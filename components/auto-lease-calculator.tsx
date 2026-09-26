@@ -47,16 +47,30 @@ const RESULT_ID = "thue-mua-xe-ket-qua";
  * notice and the residual keeps its own.
  */
 export function AutoLeaseCalculator() {
-  const fields = useCalcFields({
-    price: C.form.defaultPrice,
-    down: C.form.defaultDown,
-    tradeIn: C.form.defaultTradeIn,
-    fees: C.form.defaultFees,
-    residual: C.form.defaultResidual,
-    term: C.form.defaultTerm,
-    rate: C.form.defaultRate,
-    tax: C.form.defaultTax,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The term is a month count and formats
+  // nothing.
+  const fields = useCalcFields(
+    {
+      price: C.form.defaultPrice,
+      down: C.form.defaultDown,
+      tradeIn: C.form.defaultTradeIn,
+      fees: C.form.defaultFees,
+      residual: C.form.defaultResidual,
+      term: C.form.defaultTerm,
+      rate: C.form.defaultRate,
+      tax: C.form.defaultTax,
+    },
+    {
+      price: "money",
+      down: "money",
+      tradeIn: "money",
+      fees: "money",
+      residual: "money",
+      rate: "rate",
+      tax: "rate",
+    },
+  );
 
   const price = parseMoney(fields.values.price);
   const down = parseMoney(fields.values.down);

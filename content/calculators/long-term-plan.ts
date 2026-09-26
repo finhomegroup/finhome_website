@@ -127,70 +127,80 @@ export const LONG_TERM_PLAN = {
    * solves the contribution, row 50 solves the spending — which
    * `RetirementFields`' `omit` handles. The labels are identical either way,
    * because it is the same input.
+   *
+   * EVERY HELP LINE TEACHES BY EXAMPLE, 2026-09-26. The reader-first review
+   * (`artifacts/finhome-retirement-content-review-2026-09-26.md`, P2) found
+   * the helps defined terms without showing what to type. Each now answers
+   * "what do I put here" with a worked figure the reader can scale — 5 triệu
+   * a month is 60 triệu a year — while keeping the model's own qualification
+   * where it changes the answer: the contribution is added ONCE a year, so a
+   * monthly example is a way to arrive at the annual total, not a monthly
+   * engine. The sentence that called living longer "không phải một điều may"
+   * is gone; the advice to plan for a longer life is not.
    */
   fields: {
     ageGroup: "Các mốc tuổi",
     balanceGroup: "Tích lũy",
     spendingGroup: "Chi tiêu khi nghỉ hưu",
     rateGroup: "Giả định lợi suất và lạm phát",
-    ageInvalid: "Vui lòng nhập một tuổi nguyên từ 0 đến 120.",
+    ageInvalid: "Vui lòng nhập một tuổi là số nguyên từ 0 đến 120.",
     moneyInvalid: "Vui lòng nhập một số tiền từ 0 trở lên, đơn vị đồng.",
     rateInvalid: "Vui lòng nhập một số từ −100 đến 100.",
     fields: {
       currentAge: {
         label: "Tuổi hiện tại",
         unit: "tuổi",
-        help: "Tuổi bắt đầu dự phóng.",
+        help: "Tuổi của bạn bây giờ. Kế hoạch được tính từ tuổi này.",
       },
       retirementAge: {
         label: "Tuổi dự định nghỉ",
         unit: "tuổi",
-        help: "Mốc do bạn chọn, không phải tuổi nghỉ hưu theo luật. Năm cuối còn góp là năm trước tuổi này.",
+        help: "Tuổi bạn dự định ngừng để dành và bắt đầu rút tiền ra chi tiêu. Đây là mốc do bạn chọn, không phải tuổi nghỉ hưu theo luật. Năm cuối còn để dành là năm trước tuổi này.",
       },
       endAge: {
         label: "Dự phóng đến tuổi",
         unit: "tuổi",
-        help: "Nên chọn cao hơn kỳ vọng sống của bạn: sống lâu hơn dự tính là một rủi ro tài chính, không phải một điều may.",
+        help: "Bạn muốn tiền đủ chi tiêu đến bao nhiêu tuổi? Ví dụ, chọn 85 nghĩa là kế hoạch tính chi tiêu cho các năm từ lúc nghỉ hưu đến khi bạn tròn 85 tuổi; năm 85 tuổi trở đi không nằm trong kế hoạch. Nên chọn cao hơn mức bạn nghĩ là vừa đủ, để kế hoạch vẫn vững nếu bạn sống lâu hơn dự tính.",
       },
       currentBalance: {
         label: "Số tiền dành cho hưu trí hiện có",
         unit: "₫",
-        help: "Tổng những khoản bạn đã để riêng cho mục tiêu hưu trí — tiền gửi, quỹ, chứng khoán. Không tính tiền dự phòng ngắn hạn.",
+        help: "Tổng những khoản bạn đã để riêng cho hưu trí — tiền gửi, quỹ, chứng khoán. Ví dụ, 300 triệu tiền gửi và 200 triệu chứng khoán là 500 triệu. Không tính tiền dự phòng cho việc gấp.",
       },
       annualContribution: {
         label: "Dành thêm mỗi năm",
         unit: "₫/năm",
-        help: "Tổng cả năm. Nếu bạn nghĩ theo tháng, hãy nhân 12 — mô hình cộng khoản này một lần mỗi năm.",
+        help: "Cộng tất cả số tiền bạn dự định để dành cho hưu trí trong một năm. Ví dụ, để dành 5 triệu mỗi tháng tương đương 60 triệu mỗi năm. Mô hình cộng khoản này một lần vào đầu mỗi năm.",
       },
       contributionGrowthPercent: {
         label: "Khoản dành thêm tăng mỗi năm",
         unit: "%/năm",
-        help: "Thường bằng tốc độ tăng thu nhập bạn tự giả định.",
+        help: "Bạn dự định tăng số tiền để dành bao nhiêu mỗi năm? Ví dụ, năm nay để dành 60 triệu, tăng 5% thì năm sau là 63 triệu. Nếu muốn giữ nguyên khoản để dành mỗi năm, nhập 0.",
       },
       desiredAnnualSpending: {
         label: "Chi tiêu mong muốn mỗi năm",
         unit: "₫/năm",
-        help: "Theo giá hôm nay. Công cụ tự quy đổi sang từng năm tương lai, nên bạn không cần tự cộng lạm phát.",
+        help: "Nếu nghỉ hưu với mức giá hiện nay, mỗi năm bạn muốn chi bao nhiêu? Ví dụ, 20 triệu mỗi tháng là 240 triệu mỗi năm. Bạn nhập theo giá hôm nay; công cụ tự tính thêm phần giá cả tăng trong tương lai.",
       },
       otherAnnualIncome: {
         label: "Thu nhập khác mỗi năm sau khi nghỉ",
         unit: "₫/năm",
-        help: "Lương hưu, tiền cho thuê, thu nhập từ công việc nhẹ. Cũng theo giá hôm nay.",
+        help: "Tiền bạn dự kiến nhận đều mỗi năm sau khi nghỉ mà không phải rút từ khoản dành dụm: lương hưu, tiền cho thuê, việc làm thêm. Ví dụ, lương hưu 3 triệu mỗi tháng là 36 triệu mỗi năm. Cũng nhập theo giá hôm nay.",
       },
       returnBeforePercent: {
         label: "Lợi suất trước khi nghỉ",
         unit: "%/năm",
-        help: "Danh nghĩa, chưa trừ lạm phát. Con số bạn tự giả định.",
+        help: "Mức sinh lời bạn giả định cho khoản tiền dành dụm, tính theo năm và chưa trừ lạm phát. Ví dụ 8% nghĩa là 100 triệu có thể thành 108 triệu sau một năm, trước thuế và phí, và chỉ khi giả định đó đạt được. Đây là ví dụ cách nhập, không phải mức sinh lời được bảo đảm.",
       },
       returnAfterPercent: {
         label: "Lợi suất sau khi nghỉ",
         unit: "%/năm",
-        help: "Thường thấp hơn, vì danh mục dịch dần sang tài sản ít biến động hơn.",
+        help: "Mức sinh lời bạn giả định sau khi nghỉ. Nhiều người đặt thấp hơn mức trước khi nghỉ, vì lúc đó thường chuyển sang các khoản ít biến động hơn. Ví dụ 5%. Cũng là con số bạn tự giả định.",
       },
       inflationPercent: {
         label: "Lạm phát",
         unit: "%/năm",
-        help: "Dùng để quy chi tiêu sang từng năm và quy mọi số dư về giá hôm nay.",
+        help: "Giá cả tăng bao nhiêu mỗi năm theo giả định của bạn. Ví dụ 4% nghĩa là món hàng 100.000 đồng hôm nay sẽ khoảng 104.000 đồng sau một năm. Công cụ dùng con số này để tính chi tiêu của từng năm và quy mọi số dư về giá hôm nay.",
       },
     },
   },
@@ -202,11 +212,23 @@ export const LONG_TERM_PLAN = {
    * pairing between a question and a URL is content, not layout, and
    * `next-steps.ts` already keeps slugs in a content file. `question` is what
    * the reader wants to know; `label` is the short form for the control.
+   *
+   * THE INTRO PROMISES ONLY WHAT THE PAGES DO, 2026-09-26. It used to say the
+   * four pages "không thể đưa ra những con số trái nhau", which a reader took
+   * as "my numbers travel with me" — the review changed the balance to
+   * 600.000.000 ₫, followed a link, and met 500.000.000 ₫ again. The shared
+   * formula is still true and still stated; what is added is the fact that
+   * nothing is stored or carried over, so the reader re-enters their figures.
+   * No persistence, no URL state and no handoff is implied or built.
+   *
+   * The text is INDEPENDENT of which view is current: it renders on all four
+   * routes, so it names no sibling and counts no "trang còn lại". The current
+   * page is marked by the control itself (`currentLabel`, `aria-current`).
    */
   views: {
     title: "Bốn câu hỏi về cùng một kế hoạch",
     intro:
-      "Bốn trang dưới đây dùng chung một bộ giả định và một phép dự phóng, nên chúng không thể đưa ra những con số trái nhau. Mỗi trang chỉ mở đầu bằng câu hỏi của nó.",
+      "Bốn trang dưới đây nhìn cùng một kế hoạch từ bốn câu hỏi; trang bạn đang xem được đánh dấu, và bạn có thể mở trang khác để tìm cách điều chỉnh. Bốn trang dùng chung một cách tính, nên cùng một bộ số sẽ cho cùng kết quả. Hiện tại, số bạn vừa nhập không được mang sang: khi chuyển trang, bạn cần nhập lại.",
     currentLabel: "Bạn đang xem",
     items: [
       {

@@ -46,7 +46,9 @@ const FORM_ID = "thue-luong-hoa-ky-nhap";
 const RESULT_ID = "thue-luong-hoa-ky-ket-qua";
 
 export function UsPayrollTaxCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The one amount groups; status, employment and year are lists.
+  const fields = useCalcFields(F.defaults, { wages: "money" });
   const selfEmployed = fields.values.employment === "selfEmployed";
 
   const wages = parseMoney(fields.values.wages);

@@ -39,11 +39,16 @@ export function RoiCalculator({
   /** The route's longer next-step block, below the answer. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    cost: C.form.defaultCost,
-    final: C.form.defaultFinal,
-    years: C.form.defaultYears,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`.
+  const fields = useCalcFields(
+    {
+      cost: C.form.defaultCost,
+      final: C.form.defaultFinal,
+      years: C.form.defaultYears,
+    },
+    { cost: "money", final: "money", years: "rate" },
+  );
 
   const cost = parseMoney(fields.values.cost);
   const final = parseMoney(fields.values.final);

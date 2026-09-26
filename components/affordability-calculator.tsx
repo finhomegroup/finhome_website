@@ -368,7 +368,25 @@ export function AffordabilityCalculator({
     housingRatio: C.form.defaultHousingRatio,
     totalRatio: C.form.defaultTotalRatio,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below —
+  // see `FieldFormats`. Every `parseMoney` key groups, every `parseDecimal`
+  // key takes a comma, the mode switch formats nothing.
+  const fields = useCalcFields(initial, {
+    netIncome: "money",
+    essentials: "money",
+    buffer: "money",
+    income: "money",
+    debts: "money",
+    down: "money",
+    reserve: "money",
+    purchaseCost: "rate",
+    ltv: "rate",
+    rate: "rate",
+    term: "rate",
+    housingCosts: "money",
+    housingRatio: "rate",
+    totalRatio: "rate",
+  });
 
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],

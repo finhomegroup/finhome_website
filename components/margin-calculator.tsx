@@ -59,6 +59,10 @@ const MODES = {
 const FORM_ID = "margin-nhap";
 const RESULT_ID = "margin-ket-qua";
 
+export const MARGIN_FORMATS = {
+  cost: "money", price: "money", margin: "rate", markup: "rate",
+} as const;
+
 /**
  * ROW 63: "Một khối ngắn, hai nhãn margin và markup giải thích bằng tiếng
  * Việt; không cần chart."
@@ -82,7 +86,7 @@ export function MarginCalculator() {
     price: C.form.defaultPrice,
     margin: C.form.defaultMargin,
     markup: C.form.defaultMarkup,
-  });
+  }, MARGIN_FORMATS);
 
   const mode = fields.values.mode as MarginMode;
   const active = MODES[mode];

@@ -52,7 +52,11 @@ export const BIWEEKLY = {
 
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Lãi suất danh nghĩa hằng năm, ví dụ 8,5.",
+    rateHelp:
+      // Qualified 2026-09-26 (independent review finding 9): one rate for the
+      // whole loan is a constant-rate scenario, not the payment a lender
+      // recomputes on the remaining balance after a promotion ends.
+      "Mức lãi ghi trong hợp đồng, tính theo năm: nhập 8,5 nghĩa là 8,5% một năm. Công cụ giữ một mức lãi này suốt kỳ hạn, nên cả hai lịch trả ở đây là kịch bản lãi cố định. Nếu báo giá có lãi ưu đãi rồi thả nổi, hãy chạy thêm một lần với mức sau ưu đãi; muốn thấy khoản trả được tính lại trên dư nợ còn lại khi đổi lãi, hãy dùng công cụ Khoản vay lãi thả nổi.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "8,5",
 
@@ -122,7 +126,10 @@ export const BIWEEKLY = {
       "Hai yếu tố đó không ngang nhau, và trang này từng nói như thể chúng ngang nhau. Với khoản vay mặc định 2 tỷ, lãi 8,5%/năm, kỳ hạn 20 năm, công cụ tách 442.837.513 ₫ tiền lãi tiết kiệm được thành 434.935.373 ₫ do trả thêm mỗi năm và 7.902.140 ₫ do trả thường xuyên hơn. Tỷ lệ là 98,2% và 1,8%: khoản tiết kiệm gần như hoàn toàn là chuyện số tiền, không phải chuyện lịch trả.",
       "Cách tách: công cụ dựng thêm một lịch trả trung gian, vẫn trả mỗi hai tuần nhưng mỗi kỳ chỉ trả 12/26 khoản trả hằng tháng, nên tổng tiền trả trong một năm bằng đúng lịch hằng tháng. Chênh lệch lãi từ lịch hằng tháng sang lịch trung gian là phần do tần suất, vì chỉ có thời điểm trả thay đổi; chênh lệch từ lịch trung gian sang lịch hai tuần đầy đủ là phần do trả thêm, vì chỉ có số tiền thay đổi. Hai phần cộng lại đúng bằng khoản tiết kiệm tổng, nên đây là một phép tách chứ không phải hai lần ước lượng.",
       "Mọi phép tách hai yếu tố đều phụ thuộc thứ tự đo, và trang này chọn thứ tự bất lợi cho chính lập luận của nó: phần tần suất được đo riêng, còn phần tương tác giữa hai yếu tố dồn vào phần trả thêm. Nếu đo ngược lại, tỷ lệ là 98,4% và 1,6%. Kết luận không đổi, nhưng hai con số thì đổi, nên đừng đọc chúng như số đo chính xác. Phần tần suất cũng mang theo kỳ tính lãi: lịch hai tuần tính lãi bằng lãi suất năm chia cho 26, ghép 26 lần một năm thay vì 12, và điều đó không tách được khỏi việc trả hai tuần một lần.",
-      "Điều này đổi việc cần làm. Nếu ngân hàng của bạn không có lịch trả hai tuần — phần lớn ngân hàng tại Việt Nam không có — bạn vẫn lấy được gần như toàn bộ khoản tiết kiệm bằng cách giữ lịch trả hằng tháng và trả thêm vào gốc mỗi tháng một khoản bằng khoảng một phần mười hai kỳ trả. Công cụ tính khoản vay mua nhà có chế độ trả thêm gốc để thử đúng phép tính đó, và nó nằm ở phần bước tiếp theo bên dưới.",
+      // "phần lớn ngân hàng tại Việt Nam không có" was the population claim
+      // this file's own header says it removed from the notice; it was still
+      // here. The FAQ's "không phải ngân hàng nào cũng có" is what is known.
+      "Điều này đổi việc cần làm. Nếu ngân hàng của bạn không có lịch trả hai tuần — không phải ngân hàng nào cũng có — bạn vẫn lấy được gần như toàn bộ khoản tiết kiệm bằng cách giữ lịch trả hằng tháng và trả thêm vào gốc mỗi tháng một khoản bằng khoảng một phần mười hai kỳ trả. Công cụ tính khoản vay mua nhà có chế độ trả thêm gốc để thử đúng phép tính đó, và nó nằm ở phần bước tiếp theo bên dưới.",
       "Công cụ tính lãi mỗi kỳ hai tuần bằng lãi suất năm chia cho 26, rồi chạy bảng trả nợ đến khi dư nợ về 0, và đem so với bảng trả nợ hằng tháng thông thường.",
     ],
     // Editor-selected phrases, as DATA beside the paragraph — never markup
