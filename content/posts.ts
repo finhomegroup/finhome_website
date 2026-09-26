@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-cho-phep-chuyen-nhuong-hop-dong-mua-ban-nha-chua-co-so-do",
+    title: "Bộ Xây dựng đề xuất cho phép chuyển nhượng hợp đồng mua bán nhà chưa có sổ đỏ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Đề xuất mở rộng nhóm hợp đồng BĐS được chuyển nhượng sang nhà ở và công trình xây sẵn chưa có sổ đỏ, nhưng chưa phải đã được phê duyệt.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-cho-phep-chuyen-nhuong-hop-dong-mua-ban-nha-chua-co-so-do.webp",
+    date: "2026-09-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-nha-chua-co-so-do-duoc-chuyen-nhuong-hop-dong-mua-ban-5125049.html",
+        "accessed": "2026-09-26"
+      },
+  },
+  {
     slug: "ngan-hang-tang-tuyen-dung-quan-ly-gia-san",
     title: "Ngân hàng tăng tuyển dụng nhân sự quản lý gia sản: Cuộc đua dịch vụ ngân hàng bước vào giai đoạn mới",
     category: "Tài chính",
