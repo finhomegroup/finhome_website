@@ -107,7 +107,7 @@ export function SiteHeader() {
   };
 
   return (
-    <div className="relative h-[87px]">
+    <div className="relative h-[87px]" data-finhome-site-chrome="header">
       <header
         className={cn(
           "inset-x-0 top-0 z-50 bg-transparent",

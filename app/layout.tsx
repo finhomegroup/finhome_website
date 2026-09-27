@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { SITE } from "@/content/site";
 import { canonicalPath } from "@/lib/seo";
+import { APP_PRESENTATION_BOOTSTRAP } from "@/lib/app-presentation";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -51,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="h-full antialiased">
+    <html lang="vi" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         {/*
           Marks JavaScript as RUNNING, which is what `html.js .fh-reveal` in
@@ -96,6 +97,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              ${APP_PRESENTATION_BOOTSTRAP}
               (function () {
                 var h = document.documentElement;
                 try {
