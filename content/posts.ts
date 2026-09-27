@@ -1,7 +1,10 @@
 // Blog post metadata. News bodies live in content/posts/<slug>.md and are read
 // at build time; education bodies are structured data in content/education/.
-
-import { SITE } from "./site";
+//
+// No runtime imports, on purpose. api/blog-posts.ts loads this file as native
+// ESM on Vercel, which needs "./x.js"; the Next build (Turbopack) bundles it
+// too and cannot resolve "./x.js" to x.ts. No specifier satisfies both, so
+// anything that needs another module (e.g. postCover → SITE) lives outside.
 
 export type Topic = "gia-cung" | "cau-thanh-khoan" | "khu-vuc-ha-tang" | "chinh-sach-su-kien";
 
@@ -66,7 +69,7 @@ export type Post = {
  *
  * No `cover`: their visual is a rendered SVG from the calculator's own engine,
  * and a stock photograph would be the only invented thing on the page. Share
- * cards fall back to the site card via `postCover()`.
+ * cards fall back to the site card via `postCover()` (content/post-cover.ts).
  *
  * No `source`: there is no third-party report behind them. The narrow
  * reference list lives inside each article, where each item says which single
@@ -3012,17 +3015,6 @@ export const POSTS: Post[] = [
 
 export function getPost(slug: string): Post | undefined {
   return POSTS.find((p) => p.slug === slug);
-}
-
-/**
- * The image to use for a post's share card and Article schema.
- *
- * Education articles have no photograph — their visual is a rendered SVG built
- * from the calculator's own engine — so they fall back to the site card rather
- * than to an invented stock cover. Pass the result through `img()`.
- */
-export function postCover(post: Post): string {
-  return post.cover ?? SITE.ogImage;
 }
 
 /** What kind an entry is, with `"news"` as the default for untagged entries. */

@@ -9,7 +9,8 @@ import {
   FH_CLICKABLE_CARD,
   FH_POINTER,
 } from "@/lib/interaction-styles";
-import { postCover, type Post, type Topic } from "@/content/posts";
+import { postCover } from "@/content/post-cover";
+import type { Post, Topic } from "@/content/posts";
 import { TOPICS, topicLabel } from "@/content/blog-topics";
 
 type TopicFilter = Topic | "all";

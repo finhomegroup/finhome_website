@@ -19,7 +19,8 @@ import {
 import { EducationArticleBody } from "@/components/education/education-article";
 import { getEducationArticle } from "@/content/education/articles";
 import { chapterForGroup } from "@/content/education/chapters";
-import { POSTS, getPost, postCover, postKind } from "@/content/posts";
+import { POSTS, getPost, postKind } from "@/content/posts";
+import { postCover } from "@/content/post-cover";
 import { canonicalPath, absUrl, articleSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 
