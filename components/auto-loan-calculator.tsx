@@ -14,6 +14,14 @@ import { FieldGroup } from "@/components/calc/field-group";
 import { NumberField } from "@/components/calc/number-field";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
+import {
+  announcementOf,
+  labelOf,
+  ResultStatusCard,
+  toneOf,
+  useSettledText,
+  type StatusView,
+} from "@/components/calc/result-status";
 import { ResultTable } from "@/components/calc/result-table";
 import { SelectField } from "@/components/calc/select-field";
 import {
@@ -28,6 +36,7 @@ import {
   parseMoney,
 } from "@/lib/calc/number";
 import { computeAutoLoan, type AutoLoanResult } from "@/lib/calc/auto-loan";
+import { compactMoney, fill } from "@/lib/calc/charts/labels";
 import { vehicleBudgetModel } from "@/lib/calc/charts/vehicle-budget-chart";
 import { yearlySummary } from "@/lib/calc/loan";
 import { countCell, moneyCell } from "@/lib/calc/table-cell";
@@ -35,6 +44,10 @@ import {
   compareVehicleBudget,
   type VehicleBudgetResult,
 } from "@/lib/calc/vehicle-budget";
+import {
+  vehicleBudgetStatus,
+  type VehicleBudgetStatus,
+} from "@/lib/calc/vehicle-budget-status";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
 
 /** The form's raw values, exactly as `useCalcFields` keeps them: strings. */
@@ -276,6 +289,110 @@ const FORM_ID = "vay-mua-xe-nhap";
 const RESULT_ID = "vay-mua-xe-ket-qua";
 
 /**
+ * The car page's semantic result card, worded from `vehicleBudgetStatus`.
+ *
+ * Exported and pure so the wording of every state can be pinned without a
+ * DOM. The amounts are rounded through `compactMoney` because they sit in a
+ * sentence; the exact đồng figure is the live row under the card. The page's
+ * cause-specific notices are the card's reasons — moved here, not repeated.
+ */
+export function autoLoanStatusView(
+  status: VehicleBudgetStatus,
+  budget: VehicleBudgetResult | null,
+): StatusView {
+  const F = C.form;
+  const rounded = (value: number) => compactMoney(value, C.chart);
+  const action = (field: keyof typeof F.statusActions) => ({
+    field,
+    label: F.statusActions[field],
+  });
+  const levers = [action("price"), action("down"), action("running")];
+  const running = status.runningExcluded ? F.runningExcludedNotice : null;
+
+  const view: StatusView = (() => {
+    switch (status.kind) {
+      case "short":
+        return {
+          tone: "shortfall",
+          title: fill(F.statusShortTitle, {
+            shortfall: rounded(status.shortfall ?? 0),
+          }),
+          reasons: [
+            F.shortfallNotice,
+            running,
+          ],
+          next: F.statusTryShort,
+          actions: levers,
+        };
+      case "shortBefore":
+        return {
+          tone: "shortfall",
+          title: fill(F.statusShortBeforeTitle, {
+            before: rounded(status.shortfallBefore ?? 0),
+          }),
+          fact:
+            status.shortfall === null
+              ? null
+              : fill(F.statusShortBeforeFact, {
+                  shortfall: rounded(status.shortfall),
+                }),
+          reasons: [F.shortfallBeforeNotice],
+          actions: [action("essentials")],
+        };
+      case "exactZero":
+        return {
+          tone: "caution",
+          title: F.statusExactZeroTitle,
+          reasons: [running],
+          next: F.statusTryShort,
+          actions: levers,
+        };
+      case "runningExcluded":
+        return {
+          tone: "caution",
+          title: fill(F.statusRunningExcludedTitle, {
+            surplus: rounded(status.surplus ?? 0),
+          }),
+          reasons: [F.runningExcludedNotice],
+          next: F.statusTryRunning,
+          actions: [action("running")],
+        };
+      case "surplus":
+        return {
+          tone: "met",
+          title: fill(F.statusSurplusTitle, {
+            surplus: rounded(status.surplus ?? 0),
+          }),
+          reasons: [F.statusMetNote],
+        };
+      case "limited":
+        return {
+          tone: "unknown",
+          title: F.statusLimitedTitle,
+          reasons: [F.budgetLimitedNotice],
+          actions: [action("essentials")],
+        };
+      case "paymentUnknown":
+        return {
+          tone: "unknown",
+          title: F.statusPaymentUnknownTitle,
+          reasons: [
+            F.paymentUnknownNotice,
+            budget?.runningCostsExcluded ? F.runningExcludedUnknownNotice : null,
+          ],
+        };
+      default:
+        return {
+          tone: "unknown",
+          title: F.statusUnknownTitle,
+          reasons: [F.statusUnknownReason],
+        };
+    }
+  })();
+  return { ...view, label: F.statusLabels[toneOf(view)] };
+}
+
+/**
  * The vehicle loan calculator, and what the instalment does to the month.
  *
  * The amount borrowed is derived (price less deposit less trade-in) rather
@@ -393,6 +510,11 @@ export function AutoLoanCalculator({
 
   const chart = vehicleBudgetModel(budget, C.chart);
 
+  // The semantic state, once: the card, the pinned summary, the announcement
+  // and the figure's annotation all read `vehicleBudgetStatus`.
+  const statusView = autoLoanStatusView(vehicleBudgetStatus(budget), budget);
+  const announcement = useSettledText(announcementOf(statusView));
+
   return (
     <CalculatorCard>
       <ExampleNotice
@@ -414,6 +536,7 @@ export function AutoLoanCalculator({
                 help={C.form.priceHelp}
                 error={C.form.priceInvalid}
                 invalid={priceInvalid}
+                fieldKey="price"
               />
               <NumberField
                 {...fields.bind("down")}
@@ -422,6 +545,7 @@ export function AutoLoanCalculator({
                 help={C.form.downHelp}
                 error={C.form.downInvalid}
                 invalid={downInvalid}
+                fieldKey="down"
               />
             </FieldGroup>
 
@@ -498,6 +622,7 @@ export function AutoLoanCalculator({
                 help={C.form.essentialsHelp}
                 error={C.form.essentialsInvalid}
                 invalid={essentialsInvalid}
+                fieldKey="essentials"
               />
               <NumberField
                 {...fields.bind("otherDebts")}
@@ -522,6 +647,7 @@ export function AutoLoanCalculator({
                 help={C.form.runningHelp}
                 error={C.form.runningInvalid}
                 invalid={runningInvalid}
+                fieldKey="running"
               />
             </FieldGroup>
           </>
@@ -539,6 +665,7 @@ export function AutoLoanCalculator({
             answer={{
               label: C.form.withCarLabel,
               value: money(budget?.withCar),
+              status: { tone: toneOf(statusView), label: labelOf(statusView) },
             }}
           />
         }
@@ -546,7 +673,12 @@ export function AutoLoanCalculator({
           <>
             {/* THE ANSWER. Live now, and the loan group below is not: docs §4
                 allows exactly one announced region per page. */}
-            <ResultGroup title={C.form.budgetTitle} anchorId={RESULT_ID}>
+            <ResultGroup
+              title={C.form.budgetTitle}
+              anchorId={RESULT_ID}
+              status={<ResultStatusCard status={statusView} formId={FORM_ID} />}
+              announcement={announcement}
+            >
               <ResultRow
                 label={C.form.withCarLabel}
                 value={money(budget?.withCar)}
@@ -571,41 +703,10 @@ export function AutoLoanCalculator({
               ) : null}
             </ResultGroup>
 
-            {/* The recovery for a withheld with-car leg. The rows above show
-                the placeholder rather than a 0, and this says why and what to
-                fix. */}
-            {budget?.vehicleCostUnknown ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {C.form.paymentUnknownNotice}
-              </p>
-            ) : null}
-
-            {budget?.limited ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {C.form.budgetLimitedNotice}
-              </p>
-            ) : null}
-
-            {budget?.shortfallWithoutVehicle ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {C.form.shortfallBeforeNotice}
-              </p>
-            ) : budget?.shortfall ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {C.form.shortfallNotice}
-              </p>
-            ) : null}
-
-            {/* The "higher than reality" comparison needs an after figure to
-                exist. With the instalment unknown the exclusion still matters,
-                but nothing can be claimed about a number that was withheld. */}
-            {budget?.runningCostsExcluded ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {budget.vehicleCostUnknown
-                  ? C.form.runningExcludedUnknownNotice
-                  : C.form.runningExcludedNotice}
-              </p>
-            ) : null}
+            {/* The five cause-specific notices that stood here — unknown
+                instalment, blank essentials, short before / after the car,
+                running costs excluded — are the status card's REASONS now,
+                above the rows, each still mounted only in its own state. */}
           </>
         }
         actions={actions ? <div className="mt-8">{actions}</div> : null}

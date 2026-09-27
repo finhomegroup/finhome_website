@@ -59,7 +59,9 @@ const HEADLINE = "md:text-3xl";
 describe("the month after the car is the answer", () => {
   it("emphasises the with-car residual and nothing else", async () => {
     const html = await render();
-    const live = markupRegion(html, 'data-results-live="true"');
+    // Since the status repair the rows are a VISIBLE block outside the live
+    // region (announcement mode); the live region holds only the sentence.
+    const live = markupRegion(html, 'data-calc-rows="true"');
     expect(live).not.toBeNull();
     expect(live!.split(HEADLINE).length - 1).toBe(1);
     expect(live!.slice(0, live!.indexOf(HEADLINE))).toContain(C.withCarLabel);
@@ -96,7 +98,7 @@ describe("the month after the car is the answer", () => {
 
   it("keeps the shortfall row and its wording beside the answer", async () => {
     const html = await render({ defaultNetIncome: "30.000.000" });
-    const live = markupRegion(html, 'data-results-live="true"');
+    const live = markupRegion(html, 'data-calc-rows="true"');
     expect(live!).toContain(C.shortfallLabel);
     expect(live!).toContain("6.498.818 ₫");
     expect(html).toContain(C.shortfallNotice);
@@ -168,13 +170,15 @@ describe("the layout wiring", () => {
     expect(html).toContain('aria-hidden="true" data-calc-answer="true"');
     expect(html.split('data-calc-answer="true"').length - 1).toBe(1);
     const pinned = html.slice(html.indexOf('data-calc-answer="true"'));
-    expect(pinned.slice(0, 400)).toContain(C.withCarLabel);
+    // 1200, not 400: the block now opens with the status word and its icon.
+    expect(pinned.slice(0, 1200)).toContain(C.withCarLabel);
     // The same formatted string as the announced row: one rounding of one
     // quantity, not two.
-    expect(pinned.slice(0, 400)).toContain("3.501.182 ₫");
+    expect(pinned.slice(0, 1200)).toContain("3.501.182 ₫");
     // Not the result column: no second live region and no chart in the form.
     expect(html.split('data-results-live="true"').length - 1).toBe(1);
-    expect(form!).not.toContain("<svg");
+    // The FIGURE, not any `<svg>`: the pinned status carries a 16px icon.
+    expect(form!).not.toContain("<figure");
   });
 
   it("puts every input in the form region, household fields included", async () => {
@@ -200,12 +204,162 @@ describe("the layout wiring", () => {
       nextSteps: createElement("div", { "data-test": "next-steps" }),
     });
     const result = markupRegion(html, 'data-calc-region="result"');
-    expect(result!).toContain("<svg");
+    // `<figure>` is the chart; an `<svg>` search would now find the status
+    // card's icon, which sits above the actions by design.
+    expect(result!).toContain("<figure");
     expect(result!.indexOf('data-test="actions"')).toBeLessThan(
-      result!.indexOf("<svg"),
+      result!.indexOf("<figure"),
     );
-    expect(result!.indexOf("<svg")).toBeLessThan(
+    expect(result!.indexOf("<figure")).toBeLessThan(
       result!.indexOf('data-test="next-steps"'),
     );
+  });
+});
+
+/**
+ * The 2026-09-27 semantic result status — the plan's SECOND pilot. The tone
+ * is `vehicleBudgetStatus`'s, read from `compareVehicleBudget`'s own flags.
+ * The two fixtures are the plan's own observation: running costs of 5 triệu
+ * leave −1.498.818 ₫ a month; 2 triệu leave +1.501.182 ₫. Appearance is not
+ * checked here.
+ */
+describe("the semantic result status", () => {
+  const status = (html: string) =>
+    html.match(/<section data-result-status="([a-z]+)"/)?.[1] ?? null;
+  const card = (html: string) => {
+    const start = html.indexOf("<section data-result-status=");
+    return html.slice(start, html.indexOf("</section>", start));
+  };
+
+  it("is a SHORTFALL at running costs of 5 triệu, rounded in the card, exact in the row", async () => {
+    const html = await render({ defaultRunning: "5.000.000" });
+    expect(status(html)).toBe("shortfall");
+    expect(card(html)).toContain(C.statusLabels.shortfall);
+    // The plan's own wording: "thiếu khoảng 1,5 triệu mỗi tháng".
+    expect(card(html)).toContain("thiếu khoảng 1,5 triệu mỗi tháng");
+    // The exact đồng figure stays a row of the primary group.
+    const live = markupRegion(html, 'data-calc-rows="true"')!;
+    expect(live).toContain("1.498.818 ₫");
+    // Priced levers, as jumps to this page's own fields.
+    for (const key of ["price", "down", "running"]) {
+      expect(card(html)).toContain(`data-calc-jump="${key}"`);
+      expect(html).toMatch(new RegExp(`<input[^>]*data-calc-field="${key}"`));
+    }
+    // A longer term is not offered as a free fix.
+    expect(card(html)).not.toContain('data-calc-jump="term"');
+    expect(card(html)).toContain("tổng lãi");
+  });
+
+  it("is MET at 2 triệu, with the scope stated and no approval implied", async () => {
+    const html = await render({ defaultRunning: "2.000.000" });
+    expect(status(html)).toBe("met");
+    expect(card(html)).toContain("còn khoảng 1,5 triệu mỗi tháng");
+    expect(card(html)).toContain("ngoài khoản để dành");
+    expect(card(html)).toContain(C.statusMetNote);
+  });
+
+  it("is CAUTION on the shipped default, whose running costs are 0", async () => {
+    const html = await render();
+    expect(status(html)).toBe("caution");
+    // The page's existing running-cost notice is the card's reason now.
+    expect(card(html)).toContain(C.runningExcludedNotice);
+    expect(card(html)).toContain('data-calc-jump="running"');
+  });
+
+  it("says a month already short BEFORE the car was short before it", async () => {
+    const html = await render({
+      defaultEssentials: "36.000.000",
+      defaultRunning: "1.000.000",
+    });
+    expect(status(html)).toBe("shortfall");
+    expect(card(html)).toContain("trước khi mua xe");
+  });
+
+  it("does not conclude while essentials are blank", async () => {
+    const html = await render({ defaultEssentials: "", defaultRunning: "2.000.000" });
+    expect(status(html)).toBe("unknown");
+    expect(card(html)).toContain(C.statusLabels.unknown);
+  });
+
+  it("does not give unconditional loan-term advice on a cash-only purchase", async () => {
+    // The real-UI fixture: 400 triệu covered by 300 + 100 triệu, so there is no
+    // loan to extend; 12 − 12 triệu running costs = an exact zero.
+    const html = await render({
+      defaultPrice: "400.000.000",
+      defaultDown: "300.000.000",
+      defaultTradeIn: "100.000.000",
+      defaultRunning: "12.000.000",
+    });
+    expect(status(html)).toBe("caution");
+    expect(card(html)).toContain(C.statusTryShort);
+    // The term sentence is conditional on still having an interest-bearing loan.
+    expect(C.statusTryShort).toMatch(/Nếu vẫn dùng khoản vay có lãi, kỳ hạn dài hơn/);
+    expect(card(html)).not.toContain(". Kỳ hạn dài hơn");
+  });
+
+  it("does not conclude a shortfall either while essentials are blank", async () => {
+    // The partial figures go negative here, but essentials are essential.
+    const html = await render({
+      defaultEssentials: "",
+      defaultNetIncome: "5.000.000",
+      defaultRunning: "2.000.000",
+    });
+    expect(status(html)).toBe("unknown");
+    expect(html).not.toContain('data-result-status="shortfall"');
+    expect(html).not.toContain('data-chart-mark="shortfall"');
+  });
+
+  it("keeps the without-car month and concludes nothing when the loan cannot be priced", async () => {
+    const html = await render({ defaultRate: "-1" });
+    expect(status(html)).toBe("unknown");
+    const live = markupRegion(html, 'data-calc-rows="true"')!;
+    expect(live).toContain("12.000.000 ₫");
+  });
+
+  it("announces ONLY the settled sentence: no row sits inside the live region", async () => {
+    const html = await render({ defaultRunning: "5.000.000" });
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live).not.toContain(C.withCarLabel);
+    expect(live).not.toContain("1.498.818 ₫");
+    expect(live).not.toContain(HEADLINE);
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
+    // The CTA still lands on the group that holds the rows.
+    expect(html).toContain('aria-controls="vay-mua-xe-ket-qua"');
+    expect(html).toMatch(/id="vay-mua-xe-ket-qua" tabindex="-1"/);
+  });
+
+  it("syncs the pinned summary, and keeps the CTA the brand's button", async () => {
+    const html = await render({ defaultRunning: "5.000.000" });
+    const pinned = html.slice(html.indexOf('data-calc-answer="true"'), html.indexOf("<button"));
+    expect(pinned).toContain('data-result-status="shortfall"');
+    expect(pinned).toContain(C.statusLabels.shortfall);
+    expect(html).toContain("bg-brand-green-ink");
+  });
+
+  it("keeps the settled announcer inside the one live region, empty at load", async () => {
+    const html = await render({ defaultRunning: "5.000.000" });
+    const live = markupRegion(html, 'data-results-live="true"')!;
+    expect(live).toMatch(/data-calc-status-announcement="true"><\/p>/);
+    expect(html.split('data-results-live="true"').length - 1).toBe(1);
+    expect(html).not.toContain('role="alert"');
+  });
+
+  it("marks only the excess in the figure, and does not flag an input", async () => {
+    const html = await render({ defaultRunning: "5.000.000" });
+    const figure = html.slice(html.indexOf("<figure"), html.indexOf("</figure>"));
+    expect(figure.split('data-chart-mark="shortfall"').length - 1).toBe(1);
+    expect(figure).toContain(AUTO_LOAN.chart.shortfallMark);
+    expect(html).not.toContain('aria-invalid="true"');
+  });
+
+  it("stays a car tool: no home-purchase framing in any status copy", () => {
+    const copy = Object.entries(C)
+      .filter(([key]) => key.startsWith("status"))
+      .flatMap(([, value]) =>
+        typeof value === "string" ? [value] : Object.values(value as object),
+      )
+      .join(" ");
+    expect(copy.length).toBeGreaterThan(200);
+    expect(copy).not.toMatch(/nhà/i);
   });
 });

@@ -37,6 +37,8 @@ export function ResultGroup({
   className,
   live = true,
   anchorId,
+  status,
+  announcement,
   children,
 }: {
   title: string;
@@ -45,9 +47,30 @@ export function ResultGroup({
   live?: boolean;
   /** Set on the ONE group `ResultCta` points at. See the note above. */
   anchorId?: string;
+  /**
+   * The semantic result card (`ResultStatusCard`), placed under the heading
+   * and ABOVE the live rows — the first thing read after arriving here, and
+   * OUTSIDE the live region, so its prose is not re-read on every keystroke.
+   */
+  status?: React.ReactNode;
+  /**
+   * ANNOUNCEMENT MODE (opt-in, the 2026-09-27 pilots). When set on a live
+   * group, the ONE live region holds ONLY this settled sentence — visually
+   * hidden, `aria-atomic`, label and figure together — and the rows move
+   * OUT of it into a plain visible block. So a keystroke no longer announces
+   * each changed row AND, 400 ms later, the sentence: it announces the
+   * sentence once. The calculator settles it with `useSettledText`.
+   *
+   * Absent (every non-pilot route), the rows ARE the live region, exactly as
+   * before. Either way there is one `data-results-live` region and the group
+   * keeps its `id` / `tabIndex` / `aria-labelledby` focus destination.
+   */
+  announcement?: string;
   children: React.ReactNode;
 }) {
   const titleId = anchorId ? `${anchorId}-title` : undefined;
+  const announcing = live && announcement !== undefined;
+  const rowsLive = live && !announcing;
 
   return (
     <div
@@ -67,19 +90,28 @@ export function ResultGroup({
       <h2 id={titleId} className="font-display text-base font-medium text-ink">
         {title}
       </h2>
+      {status}
       <div
         className="mt-2"
-        aria-live={live ? "polite" : undefined}
+        aria-live={rowsLive ? "polite" : undefined}
         // A stable hook for scripts/check-built-markup.mjs. The count of
         // `aria-live="polite"` in a page is not the thing the convention is
         // about — NumberField gives every help paragraph one — so counting
         // those cannot distinguish a legitimate page from a broken one. This
         // attribute marks exactly the live RESULTS region, and there must be
         // one per page.
-        data-results-live={live ? "true" : undefined}
+        data-results-live={rowsLive ? "true" : undefined}
+        data-calc-rows={announcing ? "true" : undefined}
       >
         {children}
       </div>
+      {announcing ? (
+        <div className="sr-only" aria-live="polite" data-results-live="true">
+          <p aria-atomic="true" data-calc-status-announcement="true">
+            {announcement}
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

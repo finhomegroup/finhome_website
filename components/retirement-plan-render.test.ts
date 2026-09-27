@@ -82,6 +82,8 @@ const count = (html: string, needle: string | RegExp): number =>
 /** The live results region, bounded by its own nesting. See `markupRegion`. */
 const liveRegion = (html: string) =>
   markupRegion(html, 'data-results-live="true"');
+/** The primary rows: visible, and OUTSIDE the live region since the repair. */
+const rowsRegion = (html: string) => markupRegion(html, 'data-calc-rows="true"');
 
 /**
  * The plan the page opens on, resolved the way the component resolves it.
@@ -204,7 +206,10 @@ describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
     const { result, input } = shipped();
     expect(result.depletionAge).not.toBeNull();
     expect(html).toContain(
-      fill(C.form.depletedHeadline, { depletionAge: result.depletionAge! }),
+      fill(C.form.depletedHeadline, {
+        depletionAge: result.depletionAge!,
+        endAge: input.endAge,
+      }),
     );
     expect(html).toContain(
       fill(C.form.depletedBody, {
@@ -285,7 +290,7 @@ describe("row 46's layout and CTA", () => {
     // one MOVED UP: `shortfallLabel` used to be the eighth figure on the page,
     // in the cash-flow group.
     const html = await render();
-    const live = liveRegion(html);
+    const live = rowsRegion(html);
     expect(live).not.toBeNull();
     expect(live).toContain(C.form.verdictLabel);
     expect(live).toContain(C.form.depletionLabel);
@@ -307,7 +312,12 @@ describe("row 46's layout and CTA", () => {
     // the next row's label.
     const emphasisAt = html.indexOf("md:text-3xl");
     expect(html.indexOf(C.form.verdictLabel)).toBeLessThan(emphasisAt);
-    expect(emphasisAt).toBeLessThan(html.indexOf(C.form.depletionLabel));
+    // The next ROW's label, as a label span: since 2026-09-27 the status
+    // card above the rows says "Tiền bắt đầu thiếu ở tuổi 82…" in a
+    // sentence, so a bare search would find the card instead.
+    expect(emphasisAt).toBeLessThan(
+      html.indexOf(`>${C.form.depletionLabel}</span>`),
+    );
   });
 
   it("wires the CTA to the region that carries the verdict", async () => {
@@ -338,7 +348,7 @@ describe("row 46's layout and CTA", () => {
 
   it("puts the years short beside the depletion age, not in the detail", async () => {
     const html = await render();
-    const live = liveRegion(html);
+    const live = rowsRegion(html);
     expect(live).not.toBeNull();
     expect(live).toContain(C.form.depletionLabel);
     expect(live).toContain(C.form.yearsShortLabel);
@@ -367,7 +377,9 @@ describe("row 46's layout and CTA", () => {
     // One formatted string, read twice — never two formattings of one value.
     const html = await render();
     expect(count(html, C.form.verdictNo)).toBe(2);
-    expect(html).not.toContain(C.form.verdictYes);
+    // As a whole value: the figure's status column now says "Đủ chi tiêu"
+    // for the covered years, which is not the verdict.
+    expect(html).not.toContain(`>${C.form.verdictYes}<`);
   });
 
   it("keeps the conditions beside the conclusion, and the method one click down", async () => {
@@ -435,13 +447,19 @@ describe("the funded boundary, on the rendered page", () => {
     // is funded: the unpaid part is 0,0000040531 ₫ of a 1,5e9 ₫ need in the
     // final year of the horizon. A verdict read straight off `depletionAge`
     // tells the reader their plan fails by four millionths of one đồng.
+    //
+    // Since the 2026-09-27 status pass it is funded AT THE BOUNDARY: the
+    // verdict row still says "Đủ", and the card says it is funded with
+    // nothing to spare — a caution, never a shortfall.
     const html = await render(FUNDED_BOUNDARY);
+    expect(html).toContain(`>${C.form.verdictYes}<`);
     expect(html).toContain(
-      fill(C.form.fundedHeadline, {
-        retirementAge: Number(FUNDED_BOUNDARY.retirementAge),
+      fill(C.form.boundaryHeadline, {
         endAge: Number(FUNDED_BOUNDARY.endAge),
       }),
     );
+    expect(html).toContain('data-result-status="caution"');
+    expect(html).not.toContain('data-result-status="shortfall"');
     expect(html).not.toContain("có thể không đáp ứng đủ");
     // And the shortfall sentence is the funded one: nothing is "còn thiếu".
     expect(html).toContain(C.form.shortfallNone);
@@ -454,6 +472,152 @@ describe("the funded boundary, on the rendered page", () => {
     // which the default scenario above proves it does not.
     const html = await render(FUNDED_BOUNDARY);
     expect(html).toContain("0,000004");
+  });
+});
+
+/**
+ * The 2026-09-27 semantic result status on this route — the plan's first
+ * pilot. The tone comes from `retirementStatus`, which reads
+ * `fundedAtBoundary`; nothing here infers it from a figure's sign or from a
+ * formatted string. Appearance is still not checked: a class or a data
+ * attribute is emitted, not seen.
+ */
+describe("the semantic result status", () => {
+  /** The markup between the result region and the detail region. */
+  const resultRegion = (html: string) =>
+    html.slice(
+      html.indexOf('data-calc-region="result"'),
+      html.indexOf('data-calc-region="detail"'),
+    );
+
+  it("opens on a SHORTFALL card naming the horizon, then the age and the gap", async () => {
+    const html = await render();
+    const { result, input } = shipped();
+    const region = resultRegion(html);
+    expect(region).toContain('data-result-status="shortfall"');
+    // The plan's own sentences, filled from the engine: "Kế hoạch chưa đủ
+    // đến tuổi 85" and "Tiền bắt đầu thiếu ở tuổi 82, sớm hơn mục tiêu 3 năm."
+    const title = fill(C.form.depletedHeadline, {
+      endAge: input.endAge,
+      depletionAge: result.depletionAge!,
+    });
+    expect(title).toContain(`${input.endAge}`);
+    expect(region).toContain(title);
+    expect(region).toContain(
+      fill(C.form.depletedBody, {
+        endAge: input.endAge,
+        depletionAge: result.depletionAge!,
+        yearsShort: result.yearsShort,
+      }),
+    );
+    // The card comes BEFORE the live rows it summarises.
+    expect(region.indexOf('data-result-status="shortfall"')).toBeLessThan(
+      region.indexOf(C.form.verdictLabel),
+    );
+  });
+
+  it("keeps the annual gap distinct from a contribution, beside the red card", async () => {
+    // "20,9 triệu/năm" is a spending gap in today's money, never silently
+    // turned into "góp thêm 20,9 triệu".
+    const html = await render();
+    expect(html).toContain(C.form.shortfallLabel);
+    expect(C.form.shortfallMeaning).toContain(
+      "không phải số tiền cần để dành thêm",
+    );
+    expect(html).not.toMatch(/góp thêm [0-9]/);
+  });
+
+  it("pins the SAME tone and word in the sticky summary", async () => {
+    const html = await render();
+    const pinned = html.slice(html.indexOf('data-calc-answer="true"'));
+    expect(pinned.slice(0, 600)).toContain('data-result-status="shortfall"');
+    expect(pinned.slice(0, 600)).toContain(C.form.statusLabels.shortfall);
+    // Still one live region, and the pinned block is still hidden from AT.
+    expect(count(html, 'data-results-live="true"')).toBe(1);
+  });
+
+  it("keeps one settled announcer in the live region, empty at page load", async () => {
+    const html = await render();
+    const { result, input } = shipped();
+    const live = liveRegion(html);
+    expect(live).toMatch(/data-calc-status-announcement="true"><\/p>/);
+    // And NOTHING else: the rows no longer announce on every keystroke.
+    expect(live).not.toContain(C.form.verdictLabel);
+    expect(live).not.toContain(C.form.shortfallLabel);
+    // What it WILL say once an edit settles: label and conclusion together.
+    const { announcementOf } = await import("@/components/calc/result-status");
+    const sentence = announcementOf({
+      tone: "shortfall",
+      label: C.form.statusLabels.shortfall,
+      title: fill(C.form.depletedHeadline, { endAge: input.endAge }),
+    });
+    expect(sentence).toContain(C.form.statusLabels.shortfall);
+    expect(sentence).toContain(
+      fill(C.form.depletedHeadline, {
+        endAge: input.endAge,
+        depletionAge: result.depletionAge!,
+      }),
+    );
+    expect(html).not.toContain('role="alert"');
+  });
+
+  it("offers the three levers as jumps to fields on THIS page", async () => {
+    const html = await render();
+    for (const key of ["annualContribution", "retirementAge", "desiredAnnualSpending"]) {
+      expect(html).toContain(`data-calc-jump="${key}"`);
+      expect(html).toMatch(new RegExp(`<input[^>]*data-calc-field="${key}"`));
+    }
+  });
+
+  it("is MET on a funded plan, with its scope stated and the assumptions still visible", async () => {
+    const html = await render({ desiredAnnualSpending: "60.000.000" });
+    const { input } = resolved({ desiredAnnualSpending: "60.000.000" });
+    expect(html).toContain('data-result-status="met"');
+    expect(html).toContain(fill(C.form.fundedHeadline, { endAge: input.endAge }));
+    expect(html).toContain(C.form.estimateNote);
+    expect(html).not.toContain('data-result-status="shortfall"');
+  });
+
+  it("says a pension-funded plan is funded by OTHER income", async () => {
+    // Other income at the whole desired spend, as the reader-first test below.
+    const html = await render({ otherAnnualIncome: "240.000.000" });
+    expect(html).toContain('data-result-status="met"');
+    expect(html).toContain(C.form.otherIncomeNote);
+    expect(html).toContain(fill(C.form.otherIncomeHeadline, { endAge: 85 }));
+  });
+
+  it("drops every conclusion to NEUTRAL on an invalid field, keeping no stale tone", async () => {
+    const html = await render({ currentAge: "90" });
+    expect(html).toContain('data-result-status="unknown"');
+    for (const tone of ["shortfall", "met", "caution"]) {
+      expect(html).not.toContain(`data-result-status="${tone}"`);
+    }
+    expect(html).toContain(C.form.invalidHeadline);
+    // The verdict row shows the placeholder, not a figure.
+    expect(html).not.toContain(`>${C.form.verdictNo}<`);
+    expect(html).not.toContain(`>${C.form.verdictYes}<`);
+  });
+
+  it("does not turn the input red for a financial shortfall", async () => {
+    // A deficit is a valid answer, not an input error.
+    const html = await render();
+    expect(html).not.toContain('aria-invalid="true"');
+  });
+
+  it("annotates the figure's unmet years in the drawing, the caption list and the table", async () => {
+    const html = await render();
+    const { result, input } = shipped();
+    const figure = html.slice(html.indexOf("<figure"), html.indexOf("</figure>"));
+    expect(figure).toContain('data-chart-band="shortfall"');
+    expect(figure).toContain(
+      fill(C.chart.unmetBand, {
+        depletionAge: result.depletionAge!,
+        endAge: input.endAge,
+        yearsShort: result.yearsShort,
+      }),
+    );
+    expect(figure).toContain(C.chart.statusColumn);
+    expect(figure).toContain(C.chart.statusUnmet);
   });
 });
 
@@ -522,9 +686,10 @@ describe("the reader-first reading of the result", () => {
     // `fundedByOtherIncome` is true, and the sentence has to say THAT rather
     // than crediting the savings for what the pension did.
     const html = await render({ otherAnnualIncome: "240.000.000" });
+    // 2026-09-27: the title itself now names the source — other income, not
+    // the savings — which is the plan's "nói rõ nguồn đó".
     expect(html).toContain(
-      fill(C.form.fundedHeadline, {
-        retirementAge: Number(LONG_TERM_PLAN.defaults.retirementAge),
+      fill(C.form.otherIncomeHeadline, {
         endAge: Number(LONG_TERM_PLAN.defaults.endAge),
       }),
     );

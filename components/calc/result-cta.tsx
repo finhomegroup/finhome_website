@@ -1,7 +1,9 @@
 "use client";
 
 import { useId } from "react";
+import { StatusIcon, TONE_INK } from "@/components/calc/status-tone";
 import { TOOL_SHELL as C } from "@/content/calculators/tool-shell";
+import type { ResultTone } from "@/lib/calc/result-status";
 import { PLACEHOLDER } from "@/lib/calc/number";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
@@ -108,7 +110,17 @@ export function ResultCta({
    * Only rendered when `sticky` is set: an in-flow restatement directly above
    * a result the reader can already see is noise.
    */
-  answer?: { label: string; value: string | null };
+  answer?: {
+    label: string;
+    value: string | null;
+    /**
+     * The SAME status the result card shows — its tone and its word — so the
+     * pinned summary and the card cannot disagree. Only the summary takes the
+     * tone; the button stays the brand's navigation control, never a red
+     * "destructive" one.
+     */
+    status?: { tone: ResultTone; label: string };
+  };
   /** Pin the block to the viewport bottom from `lg` up. Long forms only. */
   sticky?: boolean;
   className?: string;
@@ -140,8 +152,20 @@ export function ResultCta({
         <p
           aria-hidden="true"
           data-calc-answer="true"
-          className="mb-3 hidden items-baseline justify-between gap-3 lg:flex"
+          className="mb-3 hidden flex-wrap items-baseline justify-between gap-x-3 gap-y-1 lg:flex"
         >
+          {answer.status ? (
+            <span
+              data-result-status={answer.status.tone}
+              className={cn(
+                "flex w-full items-center gap-1.5 text-sm font-medium",
+                TONE_INK[answer.status.tone],
+              )}
+            >
+              <StatusIcon tone={answer.status.tone} />
+              {answer.status.label}
+            </span>
+          ) : null}
           <span className="text-sm leading-snug text-ink-2">
             {answer.label}
           </span>
@@ -206,7 +230,11 @@ function revealAncestors(el: Element): void {
   }
 }
 
-function focusAndScroll(el: HTMLElement): void {
+/**
+ * Reveal, scroll to and focus one element — the CTA's recovery, shared with
+ * the result card's field-jump actions so both land the same way.
+ */
+export function focusAndScroll(el: HTMLElement): void {
   revealAncestors(el);
   el.scrollIntoView({
     behavior: prefersReducedMotion() ? "auto" : "smooth",

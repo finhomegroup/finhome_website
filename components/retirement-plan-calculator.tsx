@@ -9,6 +9,14 @@ import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import {
+  announcementOf,
+  labelOf,
+  ResultStatusCard,
+  toneOf,
+  useSettledText,
+  type StatusView,
+} from "@/components/calc/result-status";
+import {
   longTermMoney,
   readRetirement,
   RetirementFields,
@@ -18,6 +26,7 @@ import { formatMoney, formatPercent, formatQuantity } from "@/lib/calc/number";
 import { compactMoney, compactMoneyPair, fill } from "@/lib/calc/charts/labels";
 import { longTermTrajectoryModel } from "@/lib/calc/charts/long-term-chart";
 import { fundedAtBoundary, resolveLongTermPlan } from "@/lib/calc/long-term-plan";
+import { retirementStatus } from "@/lib/calc/retirement-status";
 import { LONG_TERM_PLAN as L } from "@/content/calculators/long-term-plan";
 import { RETIREMENT_PLAN as C } from "@/content/calculators/retirement-plan";
 
@@ -124,51 +133,98 @@ export function RetirementPlanCalculator({
   const sentences = (parts: readonly (string | null)[]) =>
     parts.filter((part): part is string => part !== null).join(" ");
 
-  const conclusion =
-    result === null || input === null
+  /**
+   * The SEMANTIC state — 2026-09-27 result-status plan, first pilot.
+   *
+   * `retirementStatus` decides the tone from `fundedAtBoundary`, the same
+   * policy the verdict row above reads, so the card, the row, the pinned
+   * summary and the figure cannot disagree. Everything below only words it.
+   */
+  const status = retirementStatus(plan);
+
+  /** The funded body, when the capital (not other income) is what funds it. */
+  const fundedBody =
+    result === null || input === null || result.sustainableSpending === null
       ? null
-      : funded
+      : fill(F.fundedBody, {
+          sustainable: rounded(result.sustainableSpending),
+          desired: rounded(input.desiredAnnualSpending),
+          endAge: input.endAge,
+          // The engine's last year is `endAge − 1`: a horizon of 85 counts
+          // spending until the reader turns 85.
+          lastAge: input.endAge - 1,
+        });
+
+  const lever = (field: keyof typeof F.statusActions) => ({
+    field,
+    label: F.statusActions[field],
+  });
+
+  const statusView: StatusView =
+    result === null || input === null || status.kind === "unknown"
+      ? {
+          tone: "unknown",
+          title: F.invalidHeadline,
+          reasons: [F.invalidNotice],
+        }
+      : status.kind === "depleted" && status.depletionAge !== null
         ? {
-            headline: fill(F.fundedHeadline, {
-              retirementAge: input.retirementAge,
+            tone: "shortfall",
+            title: fill(F.depletedHeadline, { endAge: input.endAge }),
+            fact: fill(F.depletedBody, {
               endAge: input.endAge,
+              depletionAge: status.depletionAge,
+              yearsShort: status.yearsShort,
             }),
-            body: result.fundedByOtherIncome
-              ? F.otherIncomeNote
-              : result.sustainableSpending === null
+            reasons: [
+              result.lastWithdrawalPlanned === null ||
+              result.lastWithdrawalPaid === null
                 ? null
-                : fill(F.fundedBody, {
-                    sustainable: rounded(result.sustainableSpending),
-                    desired: rounded(input.desiredAnnualSpending),
-                    endAge: input.endAge,
-                    // The engine's last year is `endAge − 1`: a horizon of 85
-                    // counts spending until the reader turns 85.
-                    lastAge: input.endAge - 1,
-                  }),
-            next: F.fundedTry,
+                : result.lastWithdrawalPaid > 0
+                  ? fill(F.depletedPartial, {
+                      planned: rounded(result.lastWithdrawalPlanned),
+                      paid: rounded(result.lastWithdrawalPaid),
+                    })
+                  : F.depletedNothingLeft,
+            ],
+            next: F.depletedTry,
+            actions: [
+              lever("annualContribution"),
+              lever("retirementAge"),
+              lever("desiredAnnualSpending"),
+            ],
           }
-        : depletionAge === null
-          ? null
-          : {
-              headline: fill(F.depletedHeadline, { depletionAge }),
-              body: sentences([
-                fill(F.depletedBody, {
-                  endAge: input.endAge,
-                  depletionAge,
-                  yearsShort: result.yearsShort,
-                }),
-                result.lastWithdrawalPlanned === null ||
-                result.lastWithdrawalPaid === null
-                  ? null
-                  : result.lastWithdrawalPaid > 0
-                    ? fill(F.depletedPartial, {
-                        planned: rounded(result.lastWithdrawalPlanned),
-                        paid: rounded(result.lastWithdrawalPaid),
-                      })
-                    : F.depletedNothingLeft,
-              ]),
-              next: F.depletedTry,
-            };
+        : status.kind === "exactBoundary"
+          ? {
+              tone: "caution",
+              title: fill(F.boundaryHeadline, { endAge: input.endAge }),
+              reasons: [fill(F.boundaryBody, { endAge: input.endAge }), fundedBody],
+              next: F.fundedTry,
+              actions: [
+                lever("annualContribution"),
+                lever("desiredAnnualSpending"),
+                lever("returnAfterPercent"),
+              ],
+            }
+          : status.kind === "fundedByOtherIncome"
+            ? {
+                tone: "met",
+                title: fill(F.otherIncomeHeadline, { endAge: input.endAge }),
+                reasons: [F.otherIncomeNote],
+                next: F.fundedTry,
+                actions: [lever("endAge"), lever("returnAfterPercent")],
+              }
+            : {
+                tone: "met",
+                title: fill(F.fundedHeadline, { endAge: input.endAge }),
+                reasons: [fundedBody],
+                next: F.fundedTry,
+                actions: [lever("endAge"), lever("returnAfterPercent")],
+              };
+  const statusLabel = F.statusLabels[toneOf(statusView)];
+  const statusWithLabel: StatusView = { ...statusView, label: statusLabel };
+  // Announced once typing pauses, and withdrawn the moment it is stale.
+  const announcement = useSettledText(announcementOf(statusWithLabel));
 
   /**
    * What the promoted shortfall row means. It is the ANNUAL spending gap in
@@ -290,7 +346,12 @@ export function RetirementPlanCalculator({
             // bar one, and the route the browser pass measured the answer
             // scrolling out of sight on.
             sticky
-            answer={{ label: F.verdictLabel, value: verdict }}
+            // The card's own tone and word, from the one `statusView`.
+            answer={{
+              label: F.verdictLabel,
+              value: verdict,
+              status: { tone: toneOf(statusView), label: labelOf(statusWithLabel) },
+            }}
           />
         }
         primary={
@@ -300,7 +361,14 @@ export function RetirementPlanCalculator({
                 are MOUNTED conditionally rather than nulled: `ResultRow`
                 renders a dash beside a label, which reads as a figure the tool
                 failed to find. */}
-            <ResultGroup title={F.resultTitle} anchorId={RESULT_ID}>
+            <ResultGroup
+              title={F.resultTitle}
+              anchorId={RESULT_ID}
+              // The conclusion first, above the rows, outside the live region;
+              // the one settled sentence inside it.
+              status={<ResultStatusCard status={statusWithLabel} formId={FORM_ID} />}
+              announcement={announcement}
+            >
               <ResultRow
                 label={F.verdictLabel}
                 // The one main answer: this page answers "đủ hay không".
@@ -344,14 +412,11 @@ export function RetirementPlanCalculator({
               />
             </ResultGroup>
 
-            {conclusion !== null ? (
+            {result !== null ? (
               <div className="mt-4 space-y-2 text-sm leading-relaxed text-ink-2">
-                {/* The verdict as a sentence with the reader's ages in it,
-                    then what to try. Outside the live region on purpose: the
-                    rows above are the announcement, this is the reading. */}
-                <p className="font-medium text-ink">{conclusion.headline}</p>
-                {conclusion.body ? <p>{conclusion.body}</p> : null}
-                <p>{conclusion.next}</p>
+                {/* The verdict sentences MOVED into the status card above the
+                    rows (2026-09-27). What stays here is the reading of the
+                    rows: what the gap means, the conditions, the method. */}
                 {shortfallNote !== null ? (
                   <p className="text-ink-3">{shortfallNote}</p>
                 ) : null}
@@ -397,15 +462,8 @@ export function RetirementPlanCalculator({
               </p>
             ) : null}
 
-            {/* The invalid state's own recovery, beside the answer it is
-                standing in for. The authoritative rows above are already
-                showing a dash rather than a stale figure — `result` is null —
-                so this explains a gap rather than decorating one. */}
-            {result === null ? (
-              <p className="mt-4 text-sm leading-relaxed text-ink-3">
-                {F.invalidNotice}
-              </p>
-            ) : null}
+            {/* The invalid state's recovery is the NEUTRAL card's reason now,
+                above the rows that show a dash — one place, not two. */}
           </>
         }
         chart={

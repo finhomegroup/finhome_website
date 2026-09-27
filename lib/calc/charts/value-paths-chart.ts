@@ -59,6 +59,7 @@ import {
   countTicks,
   linearTicks,
   niceMax,
+  type ChartMarkTone,
   type ChartSeries,
   type ChartTable,
   type LineChartModel,
@@ -127,7 +128,7 @@ export type ValuePathsOptions = {
   /** Worked arithmetic about the figure, behind a labelled disclosure. */
   detail?: { title: string; body: string } | null;
   /** Vertical rules — the exit month, the month the fund runs out, arrival. */
-  markers?: readonly { period: number; label: string }[];
+  markers?: readonly { period: number; label: string; tone?: ChartMarkTone }[];
   /**
    * Horizontal rules — a target balance the reader typed.
    *

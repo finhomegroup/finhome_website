@@ -66,6 +66,12 @@ const TRAJECTORY = {
   yearColumn: "Năm thứ",
   realColumn: "Theo giá hôm nay",
   nominalColumn: "Danh nghĩa",
+  unmetBand: "Tuổi {depletionAge}–{endAge}: không đủ chi ({yearsShort} năm)",
+  statusColumn: "Tình trạng",
+  statusSaving: "Đang để dành",
+  statusCovered: "Đủ chi",
+  statusDepletes: "Bắt đầu thiếu",
+  statusUnmet: "Chưa đủ chi",
 };
 
 const WITHDRAWAL = {
@@ -241,7 +247,9 @@ describe("the trajectory figure (row 44)", () => {
   });
 
   it("tabulates the age beside the year, bounded, with both readings", () => {
-    expect(model.table.columns.map((c) => c.label)).toEqual([
+    // The fifth column is the status the figure's band shows, and exists only
+    // on a plan that falls short — see the status block below.
+    expect(model.table.columns.map((c) => c.label).slice(0, 4)).toEqual([
       "Tuổi",
       "Năm thứ",
       "Theo giá hôm nay",
@@ -259,6 +267,54 @@ describe("the trajectory figure (row 44)", () => {
 
   it("withholds the figure with no plan", () => {
     expect(longTermTrajectoryModel(null, TRAJECTORY).unavailable).not.toBeNull();
+  });
+
+  describe("the shortfall, annotated where it is (result-status plan)", () => {
+    it("tones the depletion marker as the answer's shortfall", () => {
+      expect(p.asEntered.depletionAge).not.toBeNull();
+      const depletion = model.markers.find((m) => m.label.startsWith("Cạn ở tuổi"));
+      expect(depletion?.tone).toBe("shortfall");
+      // The retirement marker is not part of the verdict and stays plain.
+      expect(model.markers.find((m) => m.label.startsWith("Nghỉ"))?.tone).toBeUndefined();
+    });
+
+    it("shades the unmet years from the depletion date to the horizon, and names them", () => {
+      const start = BASE.currentAge;
+      const depletionAge = p.asEntered.depletionAge!;
+      expect(model.bands).toEqual([
+        {
+          from: depletionAge - start,
+          to: BASE.endAge - start,
+          tone: "shortfall",
+          label: `Tuổi ${depletionAge}–${BASE.endAge}: không đủ chi (${p.asEntered.yearsShort} năm)`,
+        },
+      ]);
+    });
+
+    it("carries the same status in the table, row by row", () => {
+      expect(model.table.columns.map((c) => c.label)[4]).toBe("Tình trạng");
+      const cell = (value: unknown) => (value as { value: number }).value;
+      const statusAt = (age: number) =>
+        model.table.rows.find((row) => cell(row[0]) === age)?.[4];
+      expect(statusAt(BASE.currentAge)).toBe("Đang để dành");
+      expect(statusAt(BASE.retirementAge)).toBe("Đủ chi");
+      expect(statusAt(p.asEntered.depletionAge!)).toBe("Bắt đầu thiếu");
+      expect(statusAt(BASE.endAge)).toBe("Chưa đủ chi");
+      // Never a negative balance: the engine stops the fund at zero.
+      for (const row of model.table.rows) {
+        expect((row[2] as { value: number }).value).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it("adds no band, no toned marker and no status column to a funded plan", () => {
+      const funded = longTermTrajectoryModel(
+        plan({ desiredAnnualSpending: 1_000_000 }),
+        TRAJECTORY,
+      );
+      expect(funded.bands ?? []).toEqual([]);
+      expect(funded.markers.every((m) => m.tone === undefined)).toBe(true);
+      expect(funded.table.columns).toHaveLength(4);
+    });
   });
 });
 

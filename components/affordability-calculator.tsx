@@ -18,6 +18,14 @@ import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
+import {
+  announcementOf,
+  labelOf,
+  ResultStatusCard,
+  toneOf,
+  useSettledText,
+  type StatusView,
+} from "@/components/calc/result-status";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
 import { CHART_UI } from "@/content/calculators/chart-ui";
@@ -28,7 +36,13 @@ import { NOXH_LOAN } from "@/lib/calc/social-housing";
 import {
   monthlyAllocationModel,
   priceCompositionModel,
+  targetPriceModel,
 } from "@/lib/calc/charts/affordability-chart";
+import { compactMoney, fill } from "@/lib/calc/charts/labels";
+import {
+  affordabilityStatus,
+  type AffordabilityStatus,
+} from "@/lib/calc/affordability-status";
 import type { DisclosedSetting } from "@/lib/calc/disclosed-settings";
 import { moneyCell } from "@/lib/calc/table-cell";
 import {
@@ -57,6 +71,165 @@ function money(figure: number | null | undefined) {
   return figure === null || figure === undefined
     ? null
     : `${formatMoney(figure)} ₫`;
+}
+
+/**
+ * The semantic result card for the commercial route — 2026-09-27 pilot.
+ *
+ * Worded from `affordabilityStatus`, which compares one entered price with
+ * the engine's `maxPrice` and invents no formula. Rounded amounts in the
+ * sentences (`compactMoney`); the exact gap is a live row. The page's
+ * cause-specific notices are the card's reasons where the state is theirs,
+ * and the calculator does not render them a second time below.
+ */
+export function affordabilityStatusView(status: AffordabilityStatus): StatusView {
+  const F = C.form;
+  const r = (value: number) => compactMoney(value, CHART_UI.money);
+  const act = (field: keyof typeof F.statusActions) => ({
+    field,
+    label: F.statusActions[field],
+  });
+  const target = status.targetPrice === null ? "" : r(status.targetPrice);
+  const maxPrice = status.maxPrice === null ? "" : r(status.maxPrice);
+  const uncosted = [
+    status.costsExcluded ? F.purchaseCostsExcludedNotice : null,
+    status.noReserve ? F.statusNoReserveNote : null,
+  ];
+  const missing = ([
+    status.costsExcluded ? F.statusMissingCosts : null,
+    status.noReserve ? F.statusMissingReserve : null,
+  ] as (string | null)[]).filter((part): part is string => part !== null);
+  const lower =
+    missing.length > 0
+      ? fill(F.statusLowerStillNote, { missing: missing.join(F.statusMissingJoin) })
+      : null;
+
+  const view: StatusView = (() => {
+    switch (status.kind) {
+      case "targetInvalid":
+        return {
+          tone: "unknown",
+          title: F.statusTargetInvalidTitle,
+          reasons: [F.statusTargetInvalidNote],
+          actions: [act("targetPrice")],
+        };
+      case "cashShort":
+        return {
+          tone: "shortfall",
+          title: F.statusCashShortTitle,
+          reasons: [F.financingBlockedNotice],
+          actions: [act("down"), act("purchaseCost"), act("reserve")],
+        };
+      case "cashflowShort":
+        return {
+          tone: "shortfall",
+          title: F.statusCashflowShortTitle,
+          reasons: [F.infeasibleNotice],
+          actions: [act("essentials"), act("buffer"), act("debts")],
+        };
+      case "noMonthlyHeadroom":
+        return {
+          tone: "caution",
+          title: F.statusNoHeadroomTitle,
+          // Not the engine's `infeasibleNotice`: it repeats this and advises
+          // borrowing less, which is wrong advice for a cash-only range.
+          reasons: [F.statusNoHeadroomNote],
+          actions: [act("buffer"), act("debts"), act("targetPrice")],
+        };
+      case "noRoom":
+        return {
+          tone: "shortfall",
+          title: F.statusNoRoomTitle,
+          reasons: [F.noRoomNotice],
+          actions: [act("debts")],
+        };
+      case "aboveRange":
+        return {
+          tone: "shortfall",
+          title: fill(F.statusAboveTitle, {
+            target,
+            gap: r(status.priceGap ?? 0),
+          }),
+          reasons: [
+            status.priceBinding === "financing"
+              ? F.statusBindingFinancing
+              : F.statusBindingPayment,
+            F.statusGapNotCashNote,
+            lower,
+          ],
+          actions: [act("targetPrice"), act("down")],
+        };
+      case "atRange":
+        return {
+          tone: "caution",
+          title: fill(F.statusAtTitle, { target }),
+          reasons: uncosted,
+          actions: [act("targetPrice"), act("purchaseCost"), act("reserve")],
+        };
+      case "withinCeiling":
+        return {
+          tone: "unknown",
+          label: F.statusReferenceLabel,
+          title: fill(F.statusWithinCeilingTitle, {
+            target,
+            headroom: r(status.headroom ?? 0),
+          }),
+          reasons: [F.ceilingIsNotBudgetNotice],
+        };
+      case "limited":
+        return {
+          tone: "unknown",
+          title: F.statusLimitedTitle,
+          reasons: [F.essentialsUnknownNotice],
+          actions: [act("essentials")],
+        };
+      case "withinRangeUncosted":
+        return {
+          tone: "caution",
+          title: fill(F.statusWithinUncostedTitle, {
+            target,
+            headroom: r(status.headroom ?? 0),
+          }),
+          reasons: uncosted,
+          actions: [act("purchaseCost"), act("reserve")],
+        };
+      case "withinRange":
+        return {
+          tone: "met",
+          title: fill(F.statusWithinTitle, {
+            target,
+            headroom: r(status.headroom ?? 0),
+          }),
+          reasons: [F.statusMetNote],
+        };
+      case "ceiling":
+        return {
+          tone: "unknown",
+          label: F.statusReferenceLabel,
+          title: fill(F.statusCeilingTitle, { maxPrice }),
+          reasons: [F.ceilingIsNotBudgetNotice],
+          actions: [act("targetPrice")],
+        };
+      case "referenceUncosted":
+        return {
+          tone: "caution",
+          title: fill(F.statusReferenceTitle, { maxPrice }),
+          reasons: [F.statusReferenceNote, ...uncosted],
+          actions: [act("purchaseCost"), act("reserve"), act("targetPrice")],
+        };
+      case "reference":
+        return {
+          tone: "unknown",
+          label: F.statusReferenceLabel,
+          title: fill(F.statusReferenceTitle, { maxPrice }),
+          reasons: [F.statusReferenceNote],
+          actions: [act("targetPrice")],
+        };
+      default:
+        return { tone: "unknown", title: F.statusUnknownTitle };
+    }
+  })();
+  return { ...view, label: view.label ?? F.statusLabels[toneOf(view)] };
 }
 
 /**
@@ -343,6 +516,10 @@ export function AffordabilityCalculator({
   // `programme` to it. React always supplies a props object.
 }) {
   const noxh = programme === "social-housing";
+  // The 2026-09-27 result-status pilot covers /cong-cu/kha-nang-mua-nha/
+  // only. The NOXH route shares this component and renders exactly as before:
+  // no status card, no target-price field, no field-jump hooks.
+  const pilot = programme === "commercial";
   const ids = REGION_IDS[programme];
   const initial = {
     mode: C.form.defaultMode,
@@ -367,6 +544,7 @@ export function AffordabilityCalculator({
     housingCosts: C.form.defaultHousingCosts,
     housingRatio: C.form.defaultHousingRatio,
     totalRatio: C.form.defaultTotalRatio,
+    targetPrice: C.form.defaultTargetPrice,
   };
   // Formats while typing, by the grammar each key is PARSED with below —
   // see `FieldFormats`. Every `parseMoney` key groups, every `parseDecimal`
@@ -386,6 +564,7 @@ export function AffordabilityCalculator({
     housingCosts: "money",
     housingRatio: "rate",
     totalRatio: "rate",
+    targetPrice: "money",
   });
 
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
@@ -415,6 +594,14 @@ export function AffordabilityCalculator({
   const housingRatio = parseDecimal(fields.values.housingRatio);
   const totalRatio = parseDecimal(fields.values.totalRatio);
   const ltv = parseDecimal(fields.values.ltv);
+  // The OPTIONAL target: blank is "not looking at a home", never 0. A
+  // non-blank value that is not a positive price is a FIELD error on that
+  // field alone — the range it would be compared with is still computed.
+  const targetRaw = fields.values.targetPrice.trim();
+  const targetParsed = targetRaw === "" ? null : parseMoney(targetRaw);
+  const targetInvalid =
+    pilot && targetRaw !== "" && (targetParsed === null || targetParsed <= 0);
+  const targetPrice = pilot && !targetInvalid ? targetParsed : null;
 
   const incomeInvalid = income === null || income <= 0;
   const ltvInvalid = ltv === null || ltv < 0 || ltv > 100;
@@ -482,6 +669,20 @@ export function AffordabilityCalculator({
   const result: AffordabilityResult | null =
     input === null ? null : computeAffordability(input);
 
+  /*
+   * THE SEMANTIC STATE, once: the card, the pinned summary, the settled
+   * announcement and the target figure all read `status`. The hook runs on
+   * both routes (a hook cannot be conditional); only the pilot uses it.
+   */
+  const status = pilot
+    ? affordabilityStatus({ input, result, targetPrice, targetInvalid })
+    : null;
+  const statusView = status === null ? null : affordabilityStatusView(status);
+  const settled = useSettledText(statusView === null ? "" : announcementOf(statusView));
+  /** A notice the card already states is not rendered a second time below. */
+  const inCard = new Set(statusView?.reasons ?? []);
+  const below = (notice: string) => !inCard.has(notice);
+
   /**
    * ORIGINAL ROW 7 — the baseline-versus-changed comparison.
    *
@@ -544,6 +745,10 @@ export function AffordabilityCalculator({
     ...CHART_UI.money,
     ...C.priceChart,
   });
+  const targetChart =
+    status === null
+      ? null
+      : targetPriceModel(status, { ...CHART_UI.money, ...C.targetChart });
   const monthlyChart = monthlyAllocationModel(
     result,
     {
@@ -611,6 +816,7 @@ export function AffordabilityCalculator({
                 help={C.form.debtsHelp}
                 error={C.form.debtsInvalid}
                 invalid={debtsInvalid}
+                fieldKey={pilot ? "debts" : undefined}
               />
             </FieldGroup>
 
@@ -634,6 +840,7 @@ export function AffordabilityCalculator({
                   help={C.form.essentialsHelp}
                   error={C.form.essentialsInvalid}
                   invalid={essentialsInvalid}
+                  fieldKey={pilot ? "essentials" : undefined}
                 />
                 <NumberField
                   {...fields.bind("buffer")}
@@ -642,6 +849,7 @@ export function AffordabilityCalculator({
                   help={C.form.bufferHelp}
                   error={C.form.bufferInvalid}
                   invalid={bufferInvalid}
+                  fieldKey={pilot ? "buffer" : undefined}
                 />
               </FieldGroup>
             ) : null}
@@ -654,6 +862,7 @@ export function AffordabilityCalculator({
                 help={C.form.downHelp}
                 error={C.form.downInvalid}
                 invalid={downInvalid}
+                fieldKey={pilot ? "down" : undefined}
               />
               <NumberField
                 {...fields.bind("reserve")}
@@ -662,6 +871,7 @@ export function AffordabilityCalculator({
                 help={C.form.reserveHelp}
                 error={C.form.reserveInvalid}
                 invalid={reserveInvalid}
+                fieldKey={pilot ? "reserve" : undefined}
               />
               <NumberField
                 {...fields.bind("rate")}
@@ -683,6 +893,23 @@ export function AffordabilityCalculator({
               />
             </FieldGroup>
 
+            {/* The home the reader is looking at — optional, and only on the
+                pilot route. Before the advanced panel, because it is a
+                question the reader brings, not a modelling assumption. */}
+            {pilot ? (
+              <FieldGroup title={C.form.targetGroup} className="mt-8">
+                <NumberField
+                  {...fields.bind("targetPrice")}
+                  label={C.form.targetLabel}
+                  unit={C.form.targetUnit}
+                  help={C.form.targetHelp}
+                  error={C.form.targetInvalid}
+                  invalid={targetInvalid}
+                  fieldKey="targetPrice"
+                />
+              </FieldGroup>
+            ) : null}
+
             <AdvancedFields
               title={C.form.ratioGroup}
               settings={advancedSettings}
@@ -695,6 +922,7 @@ export function AffordabilityCalculator({
                 help={C.form.purchaseCostHelp}
                 error={C.form.purchaseCostInvalid}
                 invalid={purchaseCostInvalid}
+                fieldKey={pilot ? "purchaseCost" : undefined}
               />
               <NumberField
                 {...fields.bind("housingCosts")}
@@ -741,17 +969,38 @@ export function AffordabilityCalculator({
           <ResultCta
             formId={ids.form}
             targetId={ids.result}
-            invalid={!usable}
+            invalid={!usable || targetInvalid}
             answer={{
               label: C.form.maxPriceLabel,
               value: money(result?.maxPrice),
+              ...(statusView === null
+                ? {}
+                : {
+                    status: { tone: toneOf(statusView), label: labelOf(statusView) },
+                  }),
             }}
             sticky
           />
         }
         primary={
           <>
-            <ResultGroup title={C.form.resultTitle} anchorId={ids.result}>
+            <ResultGroup
+              title={C.form.resultTitle}
+              anchorId={ids.result}
+              status={
+                statusView === null ? undefined : (
+                  <ResultStatusCard status={statusView} formId={ids.form} />
+                )
+              }
+              announcement={statusView === null ? undefined : settled}
+            >
+              {/* With a target entered, say BEFORE the figures that they belong
+                  to the maximum reference price, not to that home. */}
+              {targetPrice !== null ? (
+                <p className="pb-2 text-sm leading-relaxed text-ink-2">
+                  {C.form.targetRowsNote}
+                </p>
+              ) : null}
               {/* The one emphasised row: row 1's "tầm giá". */}
               <ResultRow
                 label={C.form.maxPriceLabel}
@@ -759,7 +1008,9 @@ export function AffordabilityCalculator({
                 emphasis
               />
               <ResultRow
-                label={C.form.maxLoanLabel}
+                label={
+                  targetPrice !== null ? C.form.maxLoanAtRangeLabel : C.form.maxLoanLabel
+                }
                 value={money(result?.maxLoan)}
               />
               {/* THE BUDGET AND THE BILL ARE TWO ROWS. The budget is the
@@ -771,9 +1022,26 @@ export function AffordabilityCalculator({
                 value={money(result?.affordablePrincipalInterest)}
               />
               <ResultRow
-                label={C.form.expectedPaymentLabel}
+                label={
+                  targetPrice !== null
+                    ? C.form.expectedPaymentAtRangeLabel
+                    : C.form.expectedPaymentLabel
+                }
                 value={money(result?.expectedPrincipalInterest)}
               />
+              {/* The EXACT gap to the home being looked at; the card rounds
+                  it. Mounted only when there is a comparison. */}
+              {status?.priceGap != null ? (
+                <ResultRow
+                  label={C.form.targetAboveLabel}
+                  value={money(status.priceGap)}
+                />
+              ) : status?.headroom != null ? (
+                <ResultRow
+                  label={C.form.targetBelowLabel}
+                  value={money(status.headroom)}
+                />
+              ) : null}
             </ResultGroup>
 
             {/* The notices that qualify the figure sit immediately under it,
@@ -791,13 +1059,13 @@ export function AffordabilityCalculator({
               </p>
             ) : null}
 
-            {result?.conclusionLimited ? (
+            {result?.conclusionLimited && below(C.form.essentialsUnknownNotice) ? (
               <p className="mt-4 text-sm leading-relaxed text-ink-2">
                 {C.form.essentialsUnknownNotice}
               </p>
             ) : null}
 
-            {result && !household ? (
+            {result && !household && below(C.form.ceilingIsNotBudgetNotice) ? (
               <p className="mt-4 text-sm leading-relaxed text-ink-2">
                 {C.form.ceilingIsNotBudgetNotice}
               </p>
@@ -828,25 +1096,33 @@ export function AffordabilityCalculator({
               </p>
             ) : null}
 
-            {result?.financingBlocked ? (
+            {result?.financingBlocked && below(C.form.financingBlockedNotice) ? (
               <p className="mt-3 text-sm leading-relaxed text-ink-2">
                 {C.form.financingBlockedNotice}
               </p>
             ) : null}
 
-            {result?.infeasible ? (
+            {result?.infeasible &&
+            status?.kind !== "noMonthlyHeadroom" &&
+            below(C.form.infeasibleNotice) ? (
               <p className="mt-3 text-sm leading-relaxed text-ink-2">
                 {C.form.infeasibleNotice}
               </p>
             ) : null}
 
-            {result?.noRoom && !result.infeasible && !result.financingBlocked ? (
+            {result?.noRoom &&
+            !result.infeasible &&
+            !result.financingBlocked &&
+            below(C.form.noRoomNotice) ? (
               <p className="mt-3 text-sm leading-relaxed text-ink-2">
                 {C.form.noRoomNotice}
               </p>
             ) : null}
 
-            {result && result.purchaseCosts === 0 && result.maxPrice > 0 ? (
+            {result &&
+            result.purchaseCosts === 0 &&
+            result.maxPrice > 0 &&
+            below(C.form.purchaseCostsExcludedNotice) ? (
               <p className="mt-3 text-sm leading-relaxed text-ink-3">
                 {C.form.purchaseCostsExcludedNotice}
               </p>
@@ -898,6 +1174,14 @@ export function AffordabilityCalculator({
         }
         chart={
           <>
+            {/* The comparison the reader asked for, first — only when there
+                is a home to compare with. */}
+            {targetChart !== null ? (
+              <ChartFigure model={targetChart}>
+                <BarChart model={targetChart} />
+              </ChartFigure>
+            ) : null}
+
             <ChartFigure model={monthlyChart}>
               <BarChart model={monthlyChart} />
             </ChartFigure>

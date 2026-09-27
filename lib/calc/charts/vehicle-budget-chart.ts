@@ -45,10 +45,11 @@ import {
   segment,
   type BarFrameLabels,
 } from "@/lib/calc/charts/bars";
-import { compactMoney, fill } from "@/lib/calc/charts/labels";
+import { compactMoney, fill, fullMoney } from "@/lib/calc/charts/labels";
 import type { BarChartModel } from "@/lib/calc/charts/types";
 import { moneyCell } from "@/lib/calc/table-cell";
 import type { VehicleBudgetResult } from "@/lib/calc/vehicle-budget";
+import { vehicleBudgetStatus } from "@/lib/calc/vehicle-budget-status";
 
 export type VehicleBudgetLabels = BarFrameLabels & {
   /** The reference bar: net income, on its own. */
@@ -98,6 +99,10 @@ export type VehicleBudgetLabels = BarFrameLabels & {
   /** The month already failed before the vehicle. */
   brokenReason: string;
   brokenRecovery: string;
+  /** The word on the part of the with-car bar beyond the income. */
+  shortfallMark: string;
+  /** The word on the part of the month left over, when the month is met. */
+  surplusMark: string;
 };
 
 /** An empty model carrying a cause-specific reason and recovery. */
@@ -163,7 +168,7 @@ export function vehicleBudgetModel(
   // signed form — so this bar is the outgoings alone and is LONGER than the
   // income bar by exactly the shortfall. That is the honest picture; the
   // alternative (trimming the instalment to fit) would delete a real expense.
-  const withBar = barOf(
+  const withBarPlain = barOf(
     "with",
     labels.withBar,
     [
@@ -175,6 +180,42 @@ export function vehicleBudgetModel(
     labels,
     true,
   );
+
+  /*
+   * THE ANNOTATION FOLLOWS THE ANSWER'S STATUS, not the sign of a figure —
+   * the same `vehicleBudgetStatus` the result card reads, so the figure and
+   * the card cannot disagree. A shortfall marks ONLY the span beyond the
+   * income, from the income to the end of the outgoings; a met month marks
+   * exactly its leftover. A caution month (running costs not entered, or an
+   * exact zero) marks nothing: its leftover is not a surplus anyone has
+   * shown, and the card says why.
+   */
+  const status = vehicleBudgetStatus(result);
+  const marks =
+    status.kind === "short" && result.shortfallAmount !== null
+      ? [
+          {
+            key: "shortfall",
+            tone: "shortfall" as const,
+            label: labels.shortfallMark,
+            start: result.netIncome,
+            value: result.shortfallAmount,
+            valueLabel: fullMoney(result.shortfallAmount, labels),
+          },
+        ]
+      : status.tone === "met" && withCar > 0
+        ? [
+            {
+              key: "surplus",
+              tone: "met" as const,
+              label: labels.surplusMark,
+              start: withBarPlain.total - withCar,
+              value: withCar,
+              valueLabel: fullMoney(withCar, labels),
+            },
+          ]
+        : [];
+  const withBar = marks.length > 0 ? { ...withBarPlain, marks } : withBarPlain;
 
   // The residual is never clamped. `{with}` carries the signed figure in the
   // balanced sentence; the deficit gets its own sentence with `{shortfall}` as

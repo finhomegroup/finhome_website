@@ -1,5 +1,33 @@
 # Calculator Suite — Status and Handoff
 
+**Current follow-up, 2026-09-27: IMPLEMENTED; FINAL FULL GATE AND BOUNDED BROWSER CHECKS PASS; NOT DEPLOYED.**
+Codex's final native check at 03:52:31–03:53:51 UTC passes **316 files / 7,088 tests**,
+TypeScript, baseline lint (0 new), build (288 pages), and markup. Independent browser
+checks cover the three pilots on desktop/mobile, transitions, focus, chart/table agreement
+and measured contrast. Actual VoiceOver speech, real zoom and user comprehension remain
+unverified. See [the verification record](calculator-result-status-qa-2026-09-27.md).
+The earlier source-only handoff below is retained as history, not the final acceptance state.
+
+**Earlier implementation handoff (before independent verification):**
+Claude session `9af4faa6-44fd-4ae3-bbbd-c8fe59557bf6` implemented the approved semantic
+result-status plan on three pilots (`ke-hoach-huu-tri`, `vay-mua-xe`, `kha-nang-mua-nha`,
+the last with an optional target-price comparison); `nha-o-xa-hoi` is excluded by design.
+Codex verifies independently. No financial formula, parser or existing default changed;
+the comparison uses `computeAffordability`'s `maxPrice` and subtraction only, because the
+canonical engine repo is not in this workspace. New building blocks: `lib/calc/*-status.ts`
+(pure tone adapters), `ResultStatusCard` / `useSettledText`, `ResultGroup.status` /
+`announcement`, `ResultCta.answer.status`, `NumberField.fieldKey`, `StackedBar.marks`,
+`LineChartModel.bands`, and `--color-status-*` tokens. Steps run separately at
+03:30–03:31 UTC: 316 files / 7.062 tests, tsc, lint (3 baseline / 0 new), build (288 pages),
+markup (76 live / 0 planned + 202 other) — all exit 0. No commit, push or deploy. Browser,
+screen-reader and comprehension checks remain open; see
+`docs/finhome-tools-ux-2026-09-21.md` §1b for the mechanisms and the full NOT-verified list.
+**Same-day corrections after Codex review:** sentence-only live region in the pilots,
+essentials/malformed-target precedence plus an exact-zero "no headroom" caution, and chart
+status rails replacing the low-contrast hatch (§1b "Corrections"). The gate line above
+predates them; after the repairs only vitest (316 files / 7.080 tests), `tsc` and
+`check:lint` (0 new) were run — build and markup are left for Codex's full native check.
+
 **Current follow-up, 2026-09-26: COMPLETE AND LOCALLY VERIFIED.** After Claude session
 `d9588cd5-3a7f-4e8b-942c-704a5705eeb2` hit its limit, the user explicitly authorized
 Codex to finish, commit and push. Live money/rate formatting now uses explicit per-parser

@@ -162,6 +162,102 @@ export const AFFORDABILITY = {
     ltvInvalid: "Vui lòng nhập một số từ 0 đến 100.",
     defaultLtv: "100",
 
+    /**
+     * The OPTIONAL home the reader is looking at — 2026-09-27 result-status
+     * plan, step 2. Blank by default: without it this tool answers a range,
+     * and only with it can the page say "nằm trong" or "cao hơn tầm giá".
+     * The help says what the comparison does NOT do — it does not re-price
+     * the loan, the deposit or the fees at this price.
+     */
+    targetGroup: "Căn nhà bạn đang xem (không bắt buộc)",
+    targetLabel: "Giá căn nhà bạn đang xem",
+    targetUnit: "₫",
+    targetHelp:
+      "Để trống nếu chưa có căn cụ thể. Công cụ so giá này với tầm giá tính từ các ô trên; nó không tính lại khoản vay, tiền trả trước hay phí mua ở đúng giá này.",
+    targetInvalid: "Vui lòng nhập một giá lớn hơn 0, hoặc để trống ô này.",
+    defaultTargetPrice: "",
+    /** The exact gap, as a live row — the card's sentence rounds it. */
+    targetAboveLabel: "Giá căn nhà cao hơn tầm giá",
+    targetBelowLabel: "Giá căn nhà thấp hơn tầm giá",
+
+    /**
+     * The semantic result card. A positive range is NOT "đủ tiền mua nhà":
+     * without a home to compare with it is "tham khảo"; the cause-specific
+     * notices below are the card's reasons on this route. None of these is a
+     * bank's decision, and the copy never says so.
+     */
+    statusLabels: {
+      shortfall: "Chưa đủ",
+      met: "Trong tầm giá theo giả định",
+      caution: "Cần lưu ý",
+      unknown: "Chưa kết luận",
+    },
+    /** The neutral word for a range with nothing to compare it with. */
+    statusReferenceLabel: "Tầm giá tham khảo",
+    statusReferenceTitle:
+      "Tầm giá tham khảo theo ngân sách đã nhập: khoảng {maxPrice}.",
+    statusReferenceNote:
+      "Đây là mức giá cao nhất các giả định của bạn cho phép, chưa phải kết luận về một căn nhà cụ thể. Nếu đang xem một căn, hãy nhập giá của căn đó để so.",
+    statusNoReserveNote:
+      "Quỹ dự phòng giữ lại đang là 0: toàn bộ tiền tự có được tính vào căn nhà, nên không còn khoảng đệm cho việc bất ngờ sau khi mua.",
+    statusCeilingTitle: "Trần giả định theo tỷ lệ bạn nhập: khoảng {maxPrice}.",
+    statusLimitedTitle: "Chưa kết luận: chưa có chi phí sinh hoạt thiết yếu.",
+    statusCashShortTitle:
+      "Chưa đủ tiền tự có để trả phần phải tự có và phí mua, theo các giả định đã nhập.",
+    statusCashflowShortTitle:
+      "Ngân sách tháng không còn phần cho khoản trả nợ nhà.",
+    /**
+     * The engine's `infeasible` also covers a residual of EXACTLY zero. That
+     * is not a shortfall — nothing is short — so it gets its own caution.
+     */
+    statusNoHeadroomTitle:
+      "Ngoài khoản để dành đã nhập, ngân sách tháng không còn phần cho khoản trả nợ nhà — nhưng cũng không thiếu.",
+    statusNoHeadroomNote:
+      "Sau chi phí sinh hoạt, nợ đang trả và khoản để dành, phần còn lại mỗi tháng bằng đúng 0: khoản để dành bạn đã nhập vẫn được giữ, chỉ là không còn phần dư THÊM nào cho khoản trả nợ. Tầm giá lúc này chỉ dựa vào tiền tự có.",
+    statusNoRoomTitle: "Không còn chỗ cho khoản trả nợ nhà trong ngân sách tháng.",
+    statusAboveTitle:
+      "Căn nhà khoảng {target} cao hơn tầm giá khoảng {gap}.",
+    statusGapNotCashNote:
+      "Chênh lệch này là chênh lệch về GIÁ, không phải số tiền mặt cần góp thêm: số tiền thật sự cần còn phụ thuộc cấu trúc khoản vay và các khoản phí.",
+    /** The engine's binding ceiling, which is the one the target breaks. */
+    statusBindingPayment:
+      "Ở mức giá này, ngân sách trả nợ mỗi tháng theo giả định không gánh được khoản vay cần thiết.",
+    statusBindingFinancing:
+      "Ở mức giá này, tiền tự có sau phí mua, với tỷ lệ vay bạn giả định, không đủ cho phần phải tự trả.",
+    /**
+     * OPTIONAL omissions only LOWER the range, so above-the-range stays red
+     * with them. Missing essentials are not in this list: they withhold the
+     * verdict instead.
+     */
+    statusLowerStillNote:
+      "Tầm giá thực tế còn có thể thấp hơn, vì một số khoản chưa được tính: {missing}.",
+    statusMissingCosts: "phí mua nhà",
+    statusMissingReserve: "quỹ dự phòng",
+    statusMissingJoin: ", ",
+    statusAtTitle:
+      "Căn nhà khoảng {target} vừa bằng tầm giá tham khảo; không còn khoảng đệm theo các giả định.",
+    statusWithinTitle:
+      "Theo các giả định hiện tại, căn nhà khoảng {target} nằm trong tầm giá, thấp hơn khoảng {headroom}.",
+    statusWithinUncostedTitle:
+      "Căn nhà khoảng {target} thấp hơn tầm giá khoảng {headroom}, nhưng tầm giá chưa tính đủ các khoản.",
+    statusWithinCeilingTitle:
+      "Căn nhà khoảng {target} thấp hơn trần giả định khoảng {headroom}.",
+    statusMetNote:
+      "Đây là phép so với ngân sách và giả định bạn nhập, không phải xác nhận của ngân hàng và không phải lời khuyên nên mua căn nhà này.",
+    statusTargetInvalidTitle: "Chưa so được: giá căn nhà bạn nhập chưa hợp lệ.",
+    statusTargetInvalidNote: "Tầm giá bên dưới vẫn tính theo các ô còn lại.",
+    statusUnknownTitle: "Chưa kết luận: có ô nhập chưa hợp lệ.",
+    /** Jumps to this page's fields. They move focus and change nothing. */
+    statusActions: {
+      targetPrice: "Giá căn nhà đang xem",
+      purchaseCost: "Phí mua nhà",
+      reserve: "Quỹ dự phòng",
+      down: "Tiền tự có",
+      essentials: "Chi phí thiết yếu",
+      buffer: "Khoản để dành",
+      debts: "Nợ đang trả",
+    },
+
     // Renamed from "Mức nên nhắm" / "Giá nhà nên nhắm tới". The audit's
     // objection: that label reads as advice a bank has agreed to, when the
     // figure is the output of two ratios the user can change. It is a price to
@@ -176,6 +272,16 @@ export const AFFORDABILITY = {
     // coincide when the monthly payment is what caps the price.
     paymentLabel: "Ngân sách trả gốc và lãi mỗi tháng",
     expectedPaymentLabel: "Khoản trả của số tiền vay ở trên",
+    /**
+     * Once a target price is entered, the loan and payment rows would read as
+     * financing for THAT home. They are not — they belong to the maximum
+     * reference price, and no loan is computed at the target — so on the
+     * commercial route the labels say so and a note precedes the figures.
+     */
+    maxLoanAtRangeLabel: "Số tiền vay ở mức giá tối đa tham khảo",
+    expectedPaymentAtRangeLabel: "Khoản trả mỗi tháng của khoản vay ở mức giá tối đa",
+    targetRowsNote:
+      "Các con số dưới đây tính ở mức giá tối đa tham khảo, không phải cho căn nhà bạn đang xem: công cụ không tính khoản vay hay khoản trả mỗi tháng ở giá của căn đó.",
     expectedPaymentBelowBudgetNotice:
       "Hai con số này khác nhau vì tầm giá đang bị chặn bởi tiền tự có và giả định vay được, không phải bởi khoản trả: khoản vay thực dùng nhỏ hơn mức khoản trả của bạn gánh được, nên khoản trả hằng tháng cũng nhỏ hơn ngân sách. Phần ngân sách chênh ra vẫn là của bạn — có thể để dành, trả thêm gốc, hoặc nhắm căn đắt hơn nếu tích lũy thêm.",
 
@@ -313,6 +419,36 @@ export const AFFORDABILITY = {
       "Chưa vẽ được biểu đồ vì với các số này chưa có tầm giá nào.",
     unavailableRecovery:
       "Hãy kiểm tra thu nhập, nợ đang trả và chi phí sinh hoạt — phần giải thích ngay dưới kết quả cho biết điều gì đang chặn.",
+  },
+
+  /**
+   * The home being looked at against the range — drawn only when a target
+   * price is entered. Summaries use EXACT amounts: their content is a
+   * difference, and rounding its terms can make them contradict each other.
+   */
+  targetChart: {
+    title: "Căn nhà bạn đang xem so với tầm giá",
+    axis: "Giá nhà ({unit})",
+    rangeBar: "Tầm giá tham khảo",
+    targetBar: "Căn nhà bạn đang xem",
+    withinSegment: "Phần nằm trong tầm giá",
+    overSegment: "Phần cao hơn tầm giá",
+    overMark: "Cao hơn tầm giá",
+    headroomMark: "Còn cách tầm giá",
+    summaryAbove:
+      "Căn nhà giá {target}; tầm giá tham khảo là {range}. Giá căn nhà cao hơn tầm giá {gap}.",
+    summaryWithin:
+      "Căn nhà giá {target}; tầm giá tham khảo là {range}. Giá căn nhà thấp hơn tầm giá {headroom}.",
+    summaryAt: "Căn nhà giá {target} bằng tầm giá tham khảo {range}.",
+    assumptions: [
+      "Tầm giá tính từ các ô bạn nhập; giá căn nhà là con số bạn nhập, không phải định giá.",
+      "Chênh lệch là chênh lệch về giá, không phải số tiền mặt cần góp thêm: số tiền thật sự cần còn phụ thuộc cấu trúc khoản vay và phí.",
+    ],
+    tableCaption: "Giá căn nhà và tầm giá tham khảo",
+    itemColumn: "Khoản",
+    amountColumn: "Số tiền",
+    unavailableReason: "Chưa có căn nhà để so.",
+    unavailableRecovery: "Hãy nhập giá căn nhà bạn đang xem.",
   },
 
   monthlyChart: {

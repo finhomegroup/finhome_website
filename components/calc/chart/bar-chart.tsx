@@ -4,6 +4,7 @@ import {
   TextureDefs,
   textureFill,
 } from "@/components/calc/chart/chart-texture";
+import { StatusIcon, TONE_INK } from "@/components/calc/status-tone";
 import { stackSegments } from "@/lib/calc/charts/geometry";
 import {
   paletteIndexByKey,
@@ -131,6 +132,67 @@ export function BarChart({ model }: { model: BarChartModel }) {
               texturePrefix={prefix}
               className="mt-1.5"
             />
+            {/* THE STATUS RAIL — a separate strip directly under the track,
+                on the same 0..max axis, on a WHITE ground. The first version
+                hatched the excess OVER the category segments, and red over
+                the grey segment measured 1,37:1, over brand green 2,18:1 —
+                below the 3:1 a meaningful graphic needs. On its own rail the
+                adjacent pair is status ink against white (≥ 3:1, pinned in
+                `result-status-contrast.test.ts`), and every segment keeps its
+                category colour and texture untouched. */}
+            {bar.marks && bar.marks.length > 0 ? (
+              <svg
+                viewBox="0 0 100 2"
+                preserveAspectRatio="none"
+                className="mt-1 h-1.5 w-full"
+                aria-hidden="true"
+                focusable="false"
+                data-chart-rail="true"
+              >
+                <rect x={0} y={0} width={100} height={2} className="fill-white" />
+                {bar.marks.map((mark) => {
+                  const x = (mark.start / max) * 100;
+                  const width = (mark.value / max) * 100;
+                  if (!(width > 0) || !Number.isFinite(x)) return null;
+                  return (
+                    <rect
+                      key={mark.key}
+                      x={x}
+                      y={0}
+                      width={width}
+                      height={2}
+                      className={
+                        mark.tone === "shortfall"
+                          ? "fill-status-shortfall"
+                          : "fill-status-met"
+                      }
+                    />
+                  );
+                })}
+              </svg>
+            ) : null}
+            {/* The annotation IN WORDS, under its own bar: "Thiếu 1,50 triệu
+                ₫". The status rail above is the picture of it; this is what
+                a reader who cannot see the rail, or its colour, reads. */}
+            {bar.marks && bar.marks.length > 0 ? (
+              <ul className="mt-1 space-y-0.5">
+                {bar.marks.map((mark) => (
+                  <li
+                    key={mark.key}
+                    data-chart-mark={mark.tone}
+                    className={cn(
+                      "flex items-center gap-1 text-xs font-medium",
+                      TONE_INK[mark.tone],
+                    )}
+                  >
+                    <StatusIcon tone={mark.tone} className="size-3.5" />
+                    <span>
+                      {mark.label}: {mark.valueLabel}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </li>
         ))}
       </ul>

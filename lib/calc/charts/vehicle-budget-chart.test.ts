@@ -36,6 +36,8 @@ const LABELS = {
   limitedNote: "Chưa nhập chi phí thiết yếu.",
   runningExcludedNote: "Chưa tính chi phí vận hành.",
   upfrontNote: "Tiền trả trước và xe đổi không nằm trong bảng tháng này.",
+  shortfallMark: "Thiếu",
+  surplusMark: "Phần dư",
 };
 
 const PAYMENT = 8_498_817.884507332;
@@ -47,6 +49,70 @@ const BALANCED = compareVehicleBudget({
   reserveSaving: 3_000_000,
   vehiclePayment: PAYMENT,
 })!;
+
+/**
+ * 2026-09-27 result-status plan: "chỉ đánh dấu phần vượt thu nhập bằng đỏ +
+ * hatch/nhãn 'Thiếu', không nhuộm đỏ toàn bộ các khoản chi. Khi dư, đánh dấu
+ * đúng phần dư."
+ */
+describe("vehicleBudgetModel's status marks", () => {
+  const month = (running: number) =>
+    compareVehicleBudget({
+      netIncome: 40_000_000,
+      essentialExpenses: 22_000_000,
+      otherDebts: 3_000_000,
+      reserveSaving: 3_000_000,
+      vehiclePayment: PAYMENT,
+      vehicleRunningCosts: running,
+    })!;
+  const withBar = (model: ReturnType<typeof vehicleBudgetModel>) =>
+    model.bars.find((bar) => bar.key === "with")!;
+
+  it("marks ONLY the part of the with-car bar beyond the income, as Thiếu", () => {
+    const short = month(5_000_000);
+    const bar = withBar(vehicleBudgetModel(short, LABELS));
+    expect(bar.marks).toHaveLength(1);
+    const [mark] = bar.marks!;
+    expect(mark.tone).toBe("shortfall");
+    expect(mark.label).toBe("Thiếu");
+    expect(mark.start).toBe(40_000_000);
+    expect(mark.value).toBeCloseTo(short.shortfallAmount!, 6);
+    // The mark ends exactly where the outgoings do: nothing is invented.
+    expect(mark.start + mark.value).toBeCloseTo(bar.total, 4);
+    // Every expense keeps its own segment and key.
+    expect(bar.segments.map((s) => s.key)).toEqual([
+      "essentials",
+      "otherDebts",
+      "reserve",
+      "payment",
+      "running",
+    ]);
+  });
+
+  it("marks exactly the leftover as the surplus when the month is MET", () => {
+    const met = month(2_000_000);
+    const bar = withBar(vehicleBudgetModel(met, LABELS));
+    const leftover = bar.segments.find((s) => s.key === "leftover")!;
+    expect(bar.marks).toHaveLength(1);
+    const [mark] = bar.marks!;
+    expect(mark.tone).toBe("met");
+    expect(mark.label).toBe("Phần dư");
+    expect(mark.value).toBeCloseTo(leftover.value, 6);
+    expect(mark.start + mark.value).toBeCloseTo(bar.total, 4);
+  });
+
+  it("marks nothing while running costs are excluded — that month is a caution", () => {
+    const bar = withBar(vehicleBudgetModel(BALANCED, LABELS));
+    expect(bar.marks ?? []).toEqual([]);
+  });
+
+  it("never marks the without-car or income bars", () => {
+    const model = vehicleBudgetModel(month(5_000_000), LABELS);
+    for (const bar of model.bars.filter((b) => b.key !== "with")) {
+      expect(bar.marks ?? []).toEqual([]);
+    }
+  });
+});
 
 describe("vehicleBudgetModel on a month that balances", () => {
   const model = vehicleBudgetModel(BALANCED, LABELS);

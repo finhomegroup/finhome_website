@@ -96,6 +96,28 @@
   --color-ink-3: #727272;
   --color-ink-4: #bcbcbc;
 
+  /*
+   * RESULT-STATUS TONES, 2026-09-27 — shortfall / met / caution, each an INK
+   * (label, title, icon, chart annotation) and a pale TINT behind the card.
+   * Neutral ("chưa kết luận") needs no token: it is `ink-2` on white.
+   *
+   * Set by contrast, not by taste: every ink clears 4.5:1 on its own tint, on
+   * white (the pinned CTA card) and on `bg-soft` (the result panel), which
+   * `components/calc/result-status-contrast.test.ts` recomputes from these
+   * values on every run. `status-met` is the same value as `brand-green-ink`
+   * on purpose — one accessible green, not two — but is its own token so a
+   * brand change cannot silently change what "met" looks like.
+   *
+   * Colour never carries the meaning alone: every use pairs it with the
+   * tone's word and icon, and chart annotations add a texture.
+   */
+  --color-status-shortfall: #b42318;
+  --color-status-shortfall-bg: #fef3f2;
+  --color-status-met: #117f36;
+  --color-status-met-bg: #eef8ef;
+  --color-status-caution: #92400e;
+  --color-status-caution-bg: #fff7e6;
+
   /* Fonts — the Framer site uses Maison Neue Extended for headings AND body. */
   --font-sans: "Maison Neue Extended Book", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Maison Neue Extended Medium", "Maison Neue Extended Book", "Inter", sans-serif;

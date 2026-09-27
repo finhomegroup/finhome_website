@@ -145,11 +145,16 @@ export const RETIREMENT_PLAN = {
      * The conclusion in context. Filled by the component with the ages the
      * reader typed and the ages the engine found; nothing here quotes the
      * default scenario.
+     *
+     * 2026-09-27: these are now the TITLE and the ONE FACT of the semantic
+     * result card, in the plan's own words — "Kế hoạch chưa đủ đến tuổi 85",
+     * then "Tiền bắt đầu thiếu ở tuổi 82, sớm hơn mục tiêu 3 năm." The
+     * horizon leads because it is what the reader asked about; the age and
+     * the years short are the answer to "thiếu so với điều gì, bao nhiêu".
      */
-    depletedHeadline:
-      "Theo các con số bạn nhập, tiền dành cho hưu trí có thể không đáp ứng đủ nhu cầu chi tiêu từ tuổi {depletionAge}.",
+    depletedHeadline: "Kế hoạch chưa đủ đến tuổi {endAge}",
     depletedBody:
-      "Bạn muốn kế hoạch kéo dài đến tuổi {endAge}. Với cách để dành và mức chi hiện tại, tiền bắt đầu không đủ trong năm bạn {depletionAge} tuổi, sớm hơn mục tiêu {yearsShort} năm.",
+      "Tiền bắt đầu thiếu ở tuổi {depletionAge}, sớm hơn mục tiêu {yearsShort} năm.",
     /**
      * Appended when the depletion year still paid something. Both figures are
      * the PORTFOLIO's — the draw needed from the savings after other income,
@@ -171,13 +176,56 @@ export const RETIREMENT_PLAN = {
      * until the reader turns 85 — the age-85 year itself is outside the plan.
      * `{lastAge}` is `endAge − 1`, filled by the component, so the body can
      * say which year is the last one counted.
+     *
+     * Scoped to "các giả định hiện tại" on purpose: a funded verdict is a
+     * statement about the reader's own rates, not a promise of a safe
+     * retirement, and the assumptions stay visible under it.
      */
     fundedHeadline:
-      "Theo các con số bạn nhập, tiền dành cho hưu trí đủ đáp ứng mức chi mong muốn từ tuổi {retirementAge} đến tuổi {endAge}.",
+      "Theo các giả định hiện tại, kế hoạch đủ chi tiêu đến tuổi {endAge}.",
     fundedBody:
       "Số tiền khi nghỉ hưu có thể duy trì mức chi khoảng {sustainable} mỗi năm theo giá hôm nay đến tuổi {endAge}, tức năm cuối được tính là năm bạn {lastAge} tuổi; bạn đang muốn chi {desired}.",
     fundedTry:
       "Hãy thử tăng tuổi kết thúc thêm 5 hoặc 10 năm, hoặc hạ mức sinh lời giả định, để xem kế hoạch còn đủ không. Nếu vẫn đủ, kế hoạch của bạn có sức chịu đựng tốt hơn.",
+    /**
+     * Funded because other income covers the spend — NOT a funded portfolio,
+     * and the title says whose money it is. `otherIncomeNote` is its reason.
+     */
+    otherIncomeHeadline:
+      "Theo các giả định hiện tại, thu nhập khác sau khi nghỉ đủ chi tiêu đến tuổi {endAge}.",
+    /**
+     * Funded with NOTHING to spare: the engine forgave a sub-đồng residue in
+     * the final year, or the savings end the horizon at zero. A defined
+     * condition — "mức chi vừa chạm khả năng duy trì" — not a ratio the page
+     * invented, and never a shortfall.
+     */
+    boundaryHeadline:
+      "Theo các giả định hiện tại, kế hoạch vừa đủ chi tiêu đến tuổi {endAge}, không còn phần dư.",
+    boundaryBody:
+      "Mức chi bạn nhập bằng đúng mức mà số tiền này duy trì được: đến tuổi {endAge}, khoản dành dụm về 0. Chỉ cần sinh lời thấp hơn hoặc lạm phát cao hơn một chút, kế hoạch có thể thiếu.",
+    /** No verdict at all while a field is unusable — never a stale colour. */
+    invalidHeadline: "Chưa kết luận: có ô nhập chưa hợp lệ.",
+    /**
+     * The card's tone words on this route. Its own words rather than the
+     * shared ones because "đủ" is the question this page answers.
+     */
+    statusLabels: {
+      shortfall: "Chưa đủ",
+      met: "Đủ theo giả định",
+      caution: "Vừa đủ — cần lưu ý",
+      unknown: "Chưa kết luận",
+    },
+    /**
+     * The levers, as jumps to the fields on THIS page. They move focus; they
+     * change no value and carry nothing to another page.
+     */
+    statusActions: {
+      annualContribution: "Khoản để dành mỗi năm",
+      retirementAge: "Tuổi dự định nghỉ",
+      desiredAnnualSpending: "Mức chi mong muốn",
+      endAge: "Tuổi kết thúc kế hoạch",
+      returnAfterPercent: "Sinh lời sau khi nghỉ",
+    },
     /** When other income covers the whole spend, so the savings are never drawn. */
     otherIncomeNote:
       "Ở mức chi này, thu nhập khác sau khi nghỉ đã đủ trang trải, nên khoản dành dụm không bị rút đến.",
@@ -327,6 +375,17 @@ export const RETIREMENT_PLAN = {
     yearColumn: "Năm thứ",
     realColumn: "Theo giá hôm nay",
     nominalColumn: "Theo giá của năm đó",
+    /**
+     * The unmet years, as the figure's band and its words — 2026-09-27. The
+     * balance itself stops at zero; nothing is drawn below the axis.
+     */
+    unmetBand:
+      "Từ tuổi {depletionAge} đến tuổi {endAge}: khoản dành dụm không đủ chi tiêu ({yearsShort} năm)",
+    statusColumn: "Tình trạng",
+    statusSaving: "Đang để dành",
+    statusCovered: "Đủ chi tiêu",
+    statusDepletes: "Bắt đầu thiếu",
+    statusUnmet: "Chưa đủ chi tiêu",
   },
 
   /**

@@ -35,6 +35,7 @@ import type { LineChartModel } from "@/lib/calc/charts/types";
 export function LineChart({ model }: { model: LineChartModel }) {
   const { series, xMax, yMin, yMax, step } = model;
   if (series.length === 0 || yMax <= yMin || xMax <= 0) return null;
+  const bands = model.bands ?? [];
 
   return (
     <svg
@@ -43,6 +44,36 @@ export function LineChart({ model }: { model: LineChartModel }) {
       aria-hidden="true"
       focusable="false"
     >
+      {/* The span a plan does not pay for. The MEANING is a solid rail in the
+          status ink just under the baseline, on the plot's white ground
+          (≥ 3:1 against white; a 35%-opacity hatch behind the lines was not),
+          plus the toned marker and the figure's text note. The faint tint
+          behind the lines is decoration only and carries nothing alone. */}
+      {bands.map((band) => {
+        const x1 = xFor(band.from, xMax, BOX);
+        const x2 = xFor(band.to, xMax, BOX);
+        if (!(x2 > x1)) return null;
+        return (
+          <g key={`band-${band.from}-${band.to}`} data-chart-band={band.tone}>
+            <rect
+              x={x1}
+              y={BOX.top}
+              width={x2 - x1}
+              height={BOX.bottom - BOX.top}
+              className="fill-status-shortfall"
+              fillOpacity={0.06}
+            />
+            <rect
+              x={x1}
+              y={BOX.bottom + 3}
+              width={x2 - x1}
+              height={4}
+              className="fill-status-shortfall"
+            />
+          </g>
+        );
+      })}
+
       {/* Value grid. The labels are HTML, in `PlotFrame`. */}
       {model.yAxis.ticks.map((tick) => {
         const y = yForFraction(tick.at, BOX);
@@ -82,9 +113,14 @@ export function LineChart({ model }: { model: LineChartModel }) {
           x2={xFor(marker.period, xMax, BOX)}
           y1={BOX.top}
           y2={BOX.bottom}
-          className="stroke-ink-4"
-          strokeWidth={1}
-          strokeDasharray="2 3"
+          // The shortfall marker — the age the money runs out — is the one
+          // rule that is part of the ANSWER, so it is drawn in the shortfall
+          // ink with its own dash, and listed in words by `ChartFigure`.
+          className={
+            marker.tone === "shortfall" ? "stroke-status-shortfall" : "stroke-ink-4"
+          }
+          strokeWidth={marker.tone === "shortfall" ? 1.5 : 1}
+          strokeDasharray={marker.tone === "shortfall" ? "5 2" : "2 3"}
         />
       ))}
 

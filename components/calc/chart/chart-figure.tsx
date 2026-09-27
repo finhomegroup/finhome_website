@@ -5,6 +5,7 @@ import {
   textureKind,
 } from "@/components/calc/chart/chart-texture";
 import { PlotFrame } from "@/components/calc/chart/plot-frame";
+import { StatusIcon, TONE_INK } from "@/components/calc/status-tone";
 import { ResultTable } from "@/components/calc/result-table";
 import { PLOT, PLOT_TWO_AXES } from "@/lib/calc/charts/geometry";
 import { cn } from "@/lib/cn";
@@ -52,8 +53,9 @@ export function ChartFigure({
   children: React.ReactNode;
 }) {
   const legend = model.kind === "lines" ? [] : model.legend;
-  const markers =
+  const markers: { period: number; label: string; tone?: "shortfall" | "met" }[] =
     model.kind === "lines" || model.kind === "areas" ? model.markers : [];
+  const bands = model.kind === "lines" ? (model.bands ?? []) : [];
   const references = model.kind === "lines" ? model.references : [];
 
   /**
@@ -327,18 +329,43 @@ export function ChartFigure({
             </div>
           ) : null}
 
-          {markers.length > 0 ? (
+          {markers.length > 0 || bands.length > 0 ? (
             <div className="mt-3">
               <h4 className="text-xs font-medium uppercase tracking-wide text-ink-3">
                 {C.markersTitle}
               </h4>
               <ul className="mt-1 space-y-0.5">
-                {markers.map((marker) => (
+                {markers.map((marker) =>
+                  marker.tone ? (
+                    // The answer's own marker, with the tone's icon and ink.
+                    // The words are the channel; the colour only agrees.
+                    <li
+                      key={`${marker.period}-${marker.label}`}
+                      data-chart-note={marker.tone}
+                      className={`flex items-center gap-1.5 text-sm font-medium ${TONE_INK[marker.tone]}`}
+                    >
+                      <StatusIcon tone={marker.tone} className="size-3.5" />
+                      {marker.label}
+                    </li>
+                  ) : (
+                    <li
+                      key={`${marker.period}-${marker.label}`}
+                      className="text-sm text-ink-2"
+                    >
+                      {marker.label}
+                    </li>
+                  ),
+                )}
+                {/* A marked span says what it is in words too: a rail alone
+                    is a picture of a claim, not the claim. */}
+                {bands.map((band) => (
                   <li
-                    key={`${marker.period}-${marker.label}`}
-                    className="text-sm text-ink-2"
+                    key={`band-${band.from}-${band.to}`}
+                    data-chart-note={band.tone}
+                    className={`flex items-center gap-1.5 text-sm font-medium ${TONE_INK[band.tone]}`}
                   >
-                    {marker.label}
+                    <StatusIcon tone={band.tone} className="size-3.5" />
+                    {band.label}
                   </li>
                 ))}
               </ul>

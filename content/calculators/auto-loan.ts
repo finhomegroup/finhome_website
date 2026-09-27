@@ -179,6 +179,60 @@ export const AUTO_LOAN = {
     // on the live page — see `vehicle-budget.ts`'s docstring.
     paymentUnknownNotice:
       "Chưa tính được khoản trả nợ xe, nên phần “sau khi mua xe” và phần chênh lệch đang để trống thay vì hiển thị 0 — một khoản trả chưa tính được không phải một chiếc xe miễn phí. Hãy sửa các ô giá xe, lãi suất và kỳ hạn ở trên; con số “trước khi mua xe” vẫn dùng được.",
+
+    /**
+     * The semantic result card — 2026-09-27, the plan's second pilot.
+     *
+     * A CAR TOOL'S WORDS. Nothing here mentions a home: the question is
+     * whether the month still balances once this vehicle is paid for. The
+     * amounts are ROUNDED in these sentences; the exact đồng figure is the
+     * live row directly beneath the card. The notices above are the card's
+     * reasons rather than a second copy of them.
+     *
+     * "Còn dư" is scoped twice — to the saving already set aside, and to the
+     * figures entered — because a positive remainder is not a lending
+     * decision and not advice that the car is a good buy.
+     */
+    statusLabels: {
+      shortfall: "Thiếu ngân sách",
+      met: "Còn dư theo số bạn nhập",
+      caution: "Cần lưu ý",
+      unknown: "Chưa kết luận",
+    },
+    statusShortTitle: "Sau khi mua xe, ngân sách thiếu khoảng {shortfall} mỗi tháng.",
+    statusShortBeforeTitle:
+      "Ngân sách tháng đã thiếu khoảng {before} ngay trước khi mua xe.",
+    statusShortBeforeFact:
+      "Tính thêm khoản trả và chi phí xe, mỗi tháng thiếu khoảng {shortfall}; phần thiếu không đến hoàn toàn từ chiếc xe.",
+    statusSurplusTitle:
+      "Sau khi trả nợ và chi phí xe, còn khoảng {surplus} mỗi tháng, ngoài khoản để dành đã nhập.",
+    statusMetNote:
+      "Đây là dòng tiền theo đúng những gì bạn nhập, không phải kết luận rằng bạn được vay hay chiếc xe này là lựa chọn tốt.",
+    statusExactZeroTitle:
+      "Ngân sách vừa khớp; chưa có phần dư ngoài khoản để dành đã nhập.",
+    statusRunningExcludedTitle:
+      "Sau khi trả nợ xe, còn khoảng {surplus} mỗi tháng — nhưng chưa tính chi phí vận hành.",
+    statusLimitedTitle: "Chưa kết luận: chưa có chi phí sinh hoạt thiết yếu.",
+    statusPaymentUnknownTitle: "Chưa kết luận: chưa tính được khoản trả nợ xe.",
+    statusUnknownTitle: "Chưa kết luận: có ô ngân sách của hộ chưa hợp lệ.",
+    statusUnknownReason:
+      "Hãy kiểm tra thu nhập thực nhận, chi phí thiết yếu, nợ khác, khoản để dành và chi phí vận hành: mỗi ô cần một số từ 0 trở lên, và thu nhập phải lớn hơn 0.",
+    /**
+     * A longer term is NOT offered as a lever on its own: it lowers the
+     * monthly payment and raises the total interest, so the sentence says
+     * both and points at where the total is shown.
+     */
+    statusTryShort:
+      "Hãy thử giá xe thấp hơn, mức trả trước khác hoặc chi phí vận hành sát thực tế. Nếu vẫn dùng khoản vay có lãi, kỳ hạn dài hơn làm khoản trả mỗi tháng giảm nhưng tổng lãi tăng — hãy xem tổng lãi ở phần chi tiết khoản vay trước khi chọn.",
+    statusTryRunning:
+      "Hãy nhập chi phí vận hành sát thực tế để biết phần còn lại thật mỗi tháng.",
+    /** Jumps to this page's own fields. They move focus and change nothing. */
+    statusActions: {
+      price: "Giá xe",
+      down: "Tiền trả trước",
+      running: "Chi phí vận hành",
+      essentials: "Chi phí thiết yếu",
+    },
   },
 
   table: {
@@ -243,6 +297,9 @@ export const AUTO_LOAN = {
       "Chưa tính chi phí vận hành xe, nên phần còn lại “sau khi mua xe” đang CAO HƠN thực tế.",
     upfrontNote:
       "Tiền trả trước và giá trị xe cũ KHÔNG nằm trong bảng này: chúng là tiền bỏ ra một lần lúc mua, không phải khoản chi hằng tháng.",
+    // The status annotations on the "sau khi mua xe" bar — 2026-09-27.
+    shortfallMark: "Thiếu",
+    surplusMark: "Phần dư",
   },
 
   depreciationNotice:

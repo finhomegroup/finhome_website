@@ -58,6 +58,7 @@ export function NumberField({
   invalid = false,
   placeholder,
   format,
+  fieldKey,
 }: {
   label: string;
   /** e.g. "%" or "₫" — appended to the accessible label. */
@@ -71,6 +72,12 @@ export function NumberField({
   placeholder?: string;
   /** Format while typing: `"money"` groups thousands, `"rate"` shows a comma decimal mark. */
   format?: InputFormat;
+  /**
+   * The form key this input edits, emitted as `data-calc-field` so a result
+   * card's "thử điều chỉnh" action can focus it. Absent by default, so no
+   * other field's markup changes.
+   */
+  fieldKey?: string;
 }) {
   const id = useId();
   const helpId = `${id}-help`;
@@ -141,6 +148,7 @@ export function NumberField({
           }}
           onCompositionEnd={handleCompositionEnd}
           data-format={format}
+          data-calc-field={fieldKey}
           aria-describedby={helpId}
           aria-invalid={invalid}
           className={cn(
