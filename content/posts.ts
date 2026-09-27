@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "luu-y-khi-xuong-tien-theo-quang-cao-bat-dong-san",
+    title: "Xuống tiền theo quảng cáo bất động sản: Cần tính kỹ nghĩa vụ tài chính còn lại sau chuyển nhượng",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Chuyên gia cảnh báo người mua nhà cần tính toán kỹ nghĩa vụ tài chính còn lại sau chuyển nhượng đến khi sở hữu nhà, tránh rủi ro từ chủ cũ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/luu-y-khi-xuong-tien-theo-quang-cao-bat-dong-san.jpg",
+    date: "2026-09-27",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/luu-y-khi-xuong-tien-theo-quang-cao-tang-nha-0-dong-5125215.html",
+        "accessed": "2026-09-27"
+      },
+  },
+  {
     slug: "von-quoc-te-bat-dong-san-viet-nam-nang-hang-chung-khoan",
     title: "Nâng hạng chứng khoán mở cơ hội dòng vốn quốc tế cho bất động sản Việt Nam",
     category: "Thị trường",
