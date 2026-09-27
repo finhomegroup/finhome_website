@@ -44,11 +44,16 @@ function levelAt(result: FibonacciResult | null, ratioPercent: number) {
 }
 
 export function FibonacciCalculator() {
-  const fields = useCalcFields({
-    high: C.form.defaultHigh,
-    low: C.form.defaultLow,
-    direction: C.form.defaultDirection,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Direction is a list.
+  const fields = useCalcFields(
+    {
+      high: C.form.defaultHigh,
+      low: C.form.defaultLow,
+      direction: C.form.defaultDirection,
+    },
+    { high: "money", low: "money" },
+  );
 
   const high = parseMoney(fields.values.high);
   const low = parseMoney(fields.values.low);

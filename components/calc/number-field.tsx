@@ -1,7 +1,8 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef, type ChangeEvent, type CompositionEvent } from "react";
 import { cn } from "@/lib/cn";
+import { reformatInput, type InputFormat } from "@/lib/calc/number-input";
 
 /**
  * A numeric input with its label, unit, help text and validation message.
@@ -25,6 +26,27 @@ import { cn } from "@/lib/cn";
  * decimal separator Vietnamese keyboards produce, which is exactly what
  * `parseDecimal`/`parseMoney` are built to accept. `inputMode="decimal"`
  * still gives mobile the numeric keypad.
+ *
+ * `format` is an OPT-IN: without it the field hands the raw string up
+ * unchanged, as every calculator has always received it. With `"money"` the
+ * digits are grouped with dots as they arrive, with `"rate"` a typed "." is
+ * shown as ","; a count field never opts in, because `parseCount` takes
+ * digits only. The rules — parity with the parser, no silent repair of an
+ * invalid string, and where the caret lands — live in `lib/calc/number-input.ts`
+ * so a module test can see them. This component only:
+ *
+ * - writes the formatted string and caret back to the DOM INSIDE the change
+ *   handler, before React reconciles, so the controlled value it then
+ *   renders is already what the input holds and the caret is not reset to
+ *   the end;
+ * - leaves an IME composition alone until `compositionend`, because
+ *   rewriting the value mid-composition breaks the composition;
+ * - passes `InputEvent.inputType` through, which is how Backspace and Delete
+ *   on a grouping dot are told apart.
+ *
+ * The stored value is never formatted on render. The defaults are already in
+ * Vietnamese grammar, and a value that moved under the reader on hydration
+ * would be a server/client mismatch.
  */
 export function NumberField({
   label,
@@ -35,6 +57,7 @@ export function NumberField({
   onValueChange,
   invalid = false,
   placeholder,
+  format,
 }: {
   label: string;
   /** e.g. "%" or "₫" — appended to the accessible label. */
@@ -46,10 +69,52 @@ export function NumberField({
   onValueChange: (next: string) => void;
   invalid?: boolean;
   placeholder?: string;
+  /** Format while typing: `"money"` groups thousands, `"rate"` shows a comma decimal mark. */
+  format?: InputFormat;
 }) {
   const id = useId();
   const helpId = `${id}-help`;
   const showError = invalid && Boolean(error);
+  const composing = useRef(false);
+  const hadSelection = useRef(false);
+
+  function rememberSelection(input: HTMLInputElement) {
+    hadSelection.current = input.selectionStart !== input.selectionEnd;
+  }
+
+  function commit(input: HTMLInputElement, inputType?: string) {
+    const raw = input.value;
+    if (!format || composing.current) {
+      onValueChange(raw);
+      return;
+    }
+    const caret = input.selectionStart ?? raw.length;
+    const next = reformatInput({
+      previous: value, raw, caret, format, inputType,
+      hadSelection: hadSelection.current,
+    });
+    if (next.value !== raw || next.caret !== caret) {
+      input.value = next.value;
+      input.setSelectionRange(next.caret, next.caret);
+    }
+    onValueChange(next.value);
+    rememberSelection(input);
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    // `inputType` is on the native `InputEvent`; the synthetic event types it
+    // as a plain `Event`, and an old engine may not set it at all.
+    const native = event.nativeEvent as Partial<InputEvent>;
+    commit(
+      event.currentTarget,
+      typeof native.inputType === "string" ? native.inputType : undefined,
+    );
+  }
+
+  function handleCompositionEnd(event: CompositionEvent<HTMLInputElement>) {
+    composing.current = false;
+    commit(event.currentTarget);
+  }
 
   return (
     <div>
@@ -68,7 +133,14 @@ export function NumberField({
           autoComplete="off"
           value={value}
           placeholder={placeholder}
-          onChange={(event) => onValueChange(event.target.value)}
+          onChange={handleChange}
+          onSelect={(event) => rememberSelection(event.currentTarget)}
+          onKeyDown={(event) => rememberSelection(event.currentTarget)}
+          onCompositionStart={() => {
+            composing.current = true;
+          }}
+          onCompositionEnd={handleCompositionEnd}
+          data-format={format}
           aria-describedby={helpId}
           aria-invalid={invalid}
           className={cn(

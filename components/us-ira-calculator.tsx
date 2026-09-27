@@ -88,7 +88,14 @@ function verdictLabel(verdict: IraVerdict): string {
 }
 
 export function UsIraCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Age and years are counts; year and the gains rate are lists.
+  const fields = useCalcFields(F.defaults, {
+    contribution: "money",
+    currentRate: "rate",
+    retirementRate: "rate",
+    returnPercent: "rate",
+  });
   const v = fields.values;
 
   const age = parseCount(v.age);

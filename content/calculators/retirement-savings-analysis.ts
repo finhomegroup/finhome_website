@@ -265,7 +265,7 @@ export const RETIREMENT_SAVINGS_ANALYSIS = {
       },
       {
         q: "Mức dành thêm quy ra mỗi tháng có phải lịch nộp không?",
-        a: "Không. Mô hình cộng khoản dành thêm một lần mỗi năm, vào đầu năm, nên con số mỗi tháng chỉ là mức năm chia cho 12 để bạn so với thu nhập của mình. Mười hai khoản nộp cuối tháng sẽ về sau kế hoạch này một chút, chứ không bao giờ vượt lên, vì mười một trong số đó đến muộn hơn một khoản nộp vào tháng Một. Với các giả định mặc định, mức cần thiết là 70.007.403 ₫ mỗi năm, tức 5.833.950 ₫ mỗi tháng theo phép chia đó, và phần tăng thêm so với mức đang dành là 10.007.403 ₫ mỗi năm.",
+        a: "Không. Mô hình cộng khoản dành thêm một lần mỗi năm, vào đầu năm, nên con số mỗi tháng chỉ là mức năm chia cho 12 để bạn so với thu nhập của mình. Mười hai khoản nộp cuối tháng đến muộn hơn một khoản nộp vào tháng Một: với mức sinh lời dương, chúng về sau kế hoạch này một chút; ở mức 0% hai cách bằng nhau, và ở mức âm thì ngược lại. Với các giả định mặc định, mức cần thiết là 70.007.403 ₫ mỗi năm, tức 5.833.950 ₫ mỗi tháng theo phép chia đó, và phần tăng thêm so với mức đang dành là 10.007.403 ₫ mỗi năm.",
       },
       {
         q: "Tỷ lệ đáp ứng trên 100% thì có nên hạ mức dành thêm không?",
@@ -281,7 +281,7 @@ export const RETIREMENT_SAVINGS_ANALYSIS = {
       },
       {
         q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
-        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; trang này đo khoảng cách vốn và định lượng ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được, và vẽ thêm một nhánh sống lâu hơn 5 năm so với mốc bạn nhập. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
+        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: “Kế hoạch chạy ra sao” vẽ kế hoạch từng năm một; “Cần dành bao nhiêu” giải ra khoản phải dành thêm mỗi năm; trang này đo khoảng cách vốn và định lượng ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được, và vẽ thêm một nhánh sống lâu hơn 5 năm so với mốc bạn nhập. Cùng một bộ số sẽ cho cùng kết quả về số vốn khi nghỉ và năm tiền cạn; nhưng số bạn nhập không được lưu và không tự chuyển giữa các trang — khi đổi trang, bạn cần nhập lại.",
       },
     ],
   },

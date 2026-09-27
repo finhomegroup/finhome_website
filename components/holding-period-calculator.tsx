@@ -30,12 +30,17 @@ const FORM_ID = "ky-nam-giu-nhap";
 const RESULT_ID = "ky-nam-giu-ket-qua";
 
 export function HoldingPeriodCalculator() {
-  const fields = useCalcFields({
-    begin: C.form.defaultBegin,
-    end: C.form.defaultEnd,
-    income: C.form.defaultIncome,
-    years: C.form.defaultYears,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`.
+  const fields = useCalcFields(
+    {
+      begin: C.form.defaultBegin,
+      end: C.form.defaultEnd,
+      income: C.form.defaultIncome,
+      years: C.form.defaultYears,
+    },
+    { begin: "money", end: "money", income: "money", years: "rate" },
+  );
 
   const begin = parseMoney(fields.values.begin);
   const end = parseMoney(fields.values.end);

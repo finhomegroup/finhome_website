@@ -132,7 +132,9 @@ export const AUTO_LEASE = {
     residualLabel: "Giá trị còn lại cuối kỳ",
     residualUnit: "₫",
     residualHelp:
-      "Giá trị chiếc xe được ấn định khi hết hạn hợp đồng. Không được lớn hơn số tiền vốn hóa. Với xe 3 năm, mức 50–60% giá xe là phổ biến.",
+      // "50–60% là phổ biến" was an unsourced market range, 2026-09-26. The
+      // figure is the lessor's, from the reader's own quote.
+      "Giá trị chiếc xe được bên cho thuê ấn định cho thời điểm hết hạn hợp đồng — lấy đúng con số trong báo giá của bạn; 440 triệu điền sẵn chỉ là ví dụ. Không được lớn hơn số tiền vốn hóa.",
     residualInvalid:
       "Giá trị còn lại phải từ 0 trở lên và không vượt số tiền vốn hóa.",
     defaultResidual: "440.000.000",
@@ -145,7 +147,8 @@ export const AUTO_LEASE = {
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
     rateHelp:
-      "Lãi suất hằng năm của hợp đồng. Công cụ tự quy về hệ số tiền tệ bằng cách chia 2400.",
+      // "hệ số tiền tệ" defined where the reader meets it, 2026-09-26.
+      "Lãi suất hằng năm ghi trong hợp đồng, ví dụ 9 nghĩa là 9% một năm. Công cụ đổi nó thành “hệ số tiền tệ” — cách hợp đồng thuê tính phần phí tài chính — bằng cách chia cho 2400; phần Cách tính bên dưới giải thích con số 2400 đó.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "9",
 

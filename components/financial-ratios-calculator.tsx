@@ -115,11 +115,17 @@ export function readShareFields(values: { shares: string; price: string }): {
 }
 
 export function FinancialRatiosCalculator() {
-  const fields = useCalcFields({
-    ...C.form.defaults,
-    shares: C.form.defaultShares,
-    price: C.form.defaultPrice,
-  } as Record<string, string>);
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with — see `FieldFormats`. The statement lines get theirs inside
+  // `FinancialsFields`; these two are this page's own `parseMoney` fields.
+  const fields = useCalcFields(
+    {
+      ...C.form.defaults,
+      shares: C.form.defaultShares,
+      price: C.form.defaultPrice,
+    } as Record<string, string>,
+    { shares: "money", price: "money" },
+  );
 
   const statement = readStatement(fields.values);
 

@@ -73,6 +73,13 @@ const MODES = {
 const FORM_ID = "tang-luong-nhap";
 const RESULT_ID = "tang-luong-ket-qua";
 
+/** Mirror the parsers below, including inactive modes; date parts remain raw. */
+export const RAISE_FORMATS = {
+  current: "money", percent: "rate", amount: "money", target: "money",
+  perYear: "rate", netIncrease: "money", share: "rate", baseline: "money",
+  initial: "money", goalTarget: "money", goalRate: "rate",
+} as const;
+
 /**
  * ROW 65: "Giữ tăng theo tiền/phần trăm rõ ràng; đưa lương mới và tăng thực
  * mỗi tháng ngay dưới form."
@@ -121,7 +128,7 @@ export function RaiseCalculator({
     startMonth: C.form.defaultStartMonth,
     startYear: C.form.defaultStartYear,
   };
-  const fields = useCalcFields(initial0);
+  const fields = useCalcFields(initial0, RAISE_FORMATS);
 
   // The prefilled salary, the prefilled NET rise and the prefilled goal are
   // all a worked example. The NET field in particular must never look derived

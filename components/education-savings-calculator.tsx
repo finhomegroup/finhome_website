@@ -54,14 +54,27 @@ export function EducationSavingsCalculator({
   /** `ToolNextSteps promoted` for this slug. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    tuition: C.form.defaultTuition,
-    inflation: C.form.defaultInflation,
-    yearsUntil: C.form.defaultYearsUntil,
-    yearsOfStudy: C.form.defaultYearsOfStudy,
-    currentSavings: C.form.defaultCurrentSavings,
-    returnRate: C.form.defaultReturn,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Both year fields go through
+  // `parseDecimal` here, so they take the decimal display like the rates.
+  const fields = useCalcFields(
+    {
+      tuition: C.form.defaultTuition,
+      inflation: C.form.defaultInflation,
+      yearsUntil: C.form.defaultYearsUntil,
+      yearsOfStudy: C.form.defaultYearsOfStudy,
+      currentSavings: C.form.defaultCurrentSavings,
+      returnRate: C.form.defaultReturn,
+    },
+    {
+      tuition: "money",
+      inflation: "rate",
+      yearsUntil: "rate",
+      yearsOfStudy: "rate",
+      currentSavings: "money",
+      returnRate: "rate",
+    },
+  );
 
   const tuition = parseMoney(fields.values.tuition);
   const inflation = parseDecimal(fields.values.inflation);

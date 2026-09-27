@@ -89,7 +89,15 @@ function signedUsdCents(value: number): string {
 }
 
 export function AnnuityCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Years and deferral are counts; the selects are lists.
+  const fields = useCalcFields(F.defaults, {
+    premium: "money",
+    desiredPayment: "money",
+    quoted: "money",
+    rate: "rate",
+    tax: "rate",
+  });
   const v = fields.values;
 
   const mode = v.mode as AnnuityMode;

@@ -127,7 +127,8 @@ export const STOCK_RETURN = {
     feeLabel: "Phí môi giới",
     feeUnit: "% mỗi chiều",
     feeHelp:
-      "Tính trên giá trị giao dịch, thu cả khi mua và khi bán. Các công ty chứng khoán thường ở mức 0,1–0,35%.",
+      // "thường ở mức 0,1–0,35%" was an unsourced market range, 2026-09-26.
+      "Tính trên giá trị giao dịch, thu cả khi mua và khi bán. Lấy đúng mức trong biểu phí của công ty chứng khoán bạn dùng; 0,15% điền sẵn chỉ là ví dụ.",
     feeInvalid: "Vui lòng nhập một số từ 0 đến dưới 100.",
     defaultFee: "0,15",
 

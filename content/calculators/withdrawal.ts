@@ -52,7 +52,9 @@ export const WITHDRAWAL = {
     returnLabel: "Lợi nhuận danh mục",
     returnUnit: "%/năm",
     returnHelp:
-      "Lợi nhuận danh nghĩa bình quân bạn kỳ vọng, sau phí quản lý. Nếu bạn đang trả phí quỹ, hãy trừ ra trước khi nhập.",
+      // 2026-09-26: on this page "danh nghĩa" contrasts with "thực" (after
+      // inflation), so that is the gloss — not "before fees".
+      "Lợi nhuận bình quân mỗi năm bạn kỳ vọng, CHƯA trừ lạm phát (mức danh nghĩa) nhưng đã trừ phí quản lý. Nếu bạn đang trả phí quỹ, hãy trừ ra trước khi nhập. Đây là giả định của bạn, không phải mức được cam kết.",
     returnInvalid: "Vui lòng nhập một số lớn hơn −100.",
     defaultReturn: "8",
 
@@ -231,7 +233,10 @@ export const WITHDRAWAL = {
       "Công cụ mô phỏng theo từng tháng chứ không dùng công thức đóng, vì khoản rút tăng mỗi NĂM trong khi lợi nhuận ghép mỗi THÁNG — hai nhịp không khớp nhau. Mỗi tháng: số dư sinh lời, rồi trừ khoản rút của năm đó.",
       "Lợi nhuận mỗi tháng = (1 + lợi nhuận năm)^(1/12) − 1, không phải lợi nhuận năm chia 12, để đủ 12 tháng cộng lại đúng bằng mức năm.",
       "Khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm đó. Với mặc định, khoản rút của năm cuối lên tới 65.733.694 ₫/tháng — gấp hơn hai lần con số ban đầu, và đó là lý do danh mục cạn.",
-      "Lợi nhuận thực = (1 + lợi nhuận danh nghĩa) ÷ (1 + lạm phát) − 1, tức 3,8462% với mặc định. Không phải 8% − 4% = 4%; phép trừ là xấp xỉ và luôn cho ra số cao hơn thực tế.",
+      // "luôn cho ra số cao hơn" qualified 2026-09-26: the shortcut
+      // overstates only when inflation is positive and the return exceeds
+      // it; the field accepts negative inflation.
+      "Lợi nhuận thực = (1 + lợi nhuận danh nghĩa) ÷ (1 + lạm phát) − 1, tức 3,8462% với mặc định. Không phải 8% − 4% = 4%: phép trừ chỉ là xấp xỉ, và với lạm phát dương cùng lợi nhuận cao hơn lạm phát — như ví dụ mặc định — nó cho ra số cao hơn thực tế.",
       "Mức rút giữ được sức mua = danh mục × lợi nhuận thực quy về tháng. Nó được cấp bởi lợi nhuận thực vì khoản rút cũng phải tăng theo lạm phát — nếu dùng lợi nhuận danh nghĩa, số dư sẽ teo dần theo sức mua. Khi lợi nhuận thực bằng 0 hoặc âm, không có mức rút nào giữ được sức mua và công cụ để trống ô đó. Lưu ý cách đọc: con số này nói “nếu lợi nhuận và lạm phát đúng bằng mức bạn nhập và giữ nguyên như vậy thì số dư không teo đi theo sức mua” — nó là một phép tính trong mô hình, không phải một mức thu nhập được bảo đảm suốt đời.",
       "Mô phỏng dừng ở 100 năm và báo “không cạn” thay vì một con số rất lớn. Khoản rút cuối cùng được cắt bằng đúng số dư còn lại, nên số dư kết thúc ở đúng 0 — và vì vậy tháng cuối cùng thường KHÔNG trả đủ khoản rút theo kế hoạch. Phần chi tiết ghi rõ có bao nhiêu lần rút được trả đủ, lần cuối cần bao nhiêu và thiếu bao nhiêu.",
       "Đường “sức mua” trong biểu đồ là số dư quy về giá hôm nay, chia cho (1 + lạm phát)^(số tháng ÷ 12). Đây là một chỉ số TRƠN theo thời gian, khác với khoản rút — khoản rút tăng một bậc vào mỗi năm và giữ nguyên trong năm. Hai nhịp khác nhau là có chủ đích: một cái là lịch chi trả thật, một cái là câu hỏi “số tiền còn lại này mua được bao nhiêu theo giá hôm nay”. Vì vậy hai đường trong hình có thể trùng nhau hoặc tách ra tùy dữ liệu bạn nhập, và việc chúng không đi cùng nhịp không phải lỗi tính.",
@@ -247,7 +252,7 @@ export const WITHDRAWAL = {
       },
       {
         q: "Lợi nhuận thực sao không phải 8% − 4% = 4%?",
-        a: "Phép trừ là xấp xỉ. Con số đúng là (1,08 ÷ 1,04) − 1 = 3,8462%, vì cả lợi nhuận và lạm phát đều là tỷ lệ nhân chứ không phải số cộng. Chênh lệch nhỏ ở mức này nhưng rộng ra khi cả hai con số lớn — và nó là chênh lệch theo chiều bất lợi cho bạn.",
+        a: "Phép trừ là xấp xỉ. Con số đúng là (1,08 ÷ 1,04) − 1 = 3,8462%, vì cả lợi nhuận và lạm phát đều là tỷ lệ nhân chứ không phải số cộng. Chênh lệch nhỏ ở mức này nhưng rộng ra khi cả hai con số lớn — và ở ví dụ mặc định nó là chênh lệch theo chiều bất lợi cho bạn.",
       },
       {
         q: "Vì sao tháng đầu chưa tiêu vào gốc mà danh mục vẫn cạn?",
@@ -255,7 +260,7 @@ export const WITHDRAWAL = {
       },
       {
         q: "Rủi ro lớn nhất mà công cụ không tính là gì?",
-        a: "Thứ tự các năm lời lỗ. Công cụ dùng một mức lợi nhuận bình quân đều đặn, còn thị trường thật thì không đều — và một chuỗi năm xấu ngay đầu giai đoạn rút tiền gây thiệt hại lớn hơn nhiều so với cùng chuỗi đó ở cuối, vì bạn phải bán tài sản đang giảm giá để lấy tiền sống. Đây là lý do nhiều người giữ 2–3 năm chi phí bằng tiền gửi để không phải bán khi thị trường giảm.",
+        a: "Thứ tự các năm lời lỗ. Công cụ dùng một mức lợi nhuận bình quân đều đặn, còn thị trường thật thì không đều — và một chuỗi năm xấu ngay đầu giai đoạn rút tiền gây thiệt hại lớn hơn nhiều so với cùng chuỗi đó ở cuối, vì bạn phải bán tài sản đang giảm giá để lấy tiền sống. Một cách phòng ngừa thường được nhắc đến là giữ vài năm chi phí bằng tiền gửi để không phải bán khi thị trường giảm; công cụ này không mô phỏng cách đó.",
       },
       {
         q: "Kết quả có trừ thuế không?",

@@ -111,6 +111,21 @@ describe("ira-truyen-thong-hay-roth at its shipped defaults", () => {
     expect(C.equalCostNoticeDetail).toContain("2,53");
   });
 
+  it("drops the break-even only when the side account actually pays tax", () => {
+    // The engine taxes max(0, gain): a 0% option, a flat return or a loss
+    // leave the side account untaxed and the break-even at today's rate.
+    // The notice must not attribute the drop to the tax RATE alone —
+    // 2026-09-26 finding 18.
+    const today = shippedInput().currentRatePercent;
+    expect(run({ capitalGainsRatePercent: 0 }).breakEvenRetirementRatePercent).toBeCloseTo(today, 6);
+    expect(run({ returnPercent: 0 }).breakEvenRetirementRatePercent).toBeCloseTo(today, 6);
+    expect(run({ returnPercent: -2 }).breakEvenRetirementRatePercent).toBeCloseTo(today, 6);
+    expect(run().breakEvenRetirementRatePercent!).toBeLessThan(today);
+    expect(C.equalCostNotice).toContain("chỉ khi tài khoản đó có lãi");
+    expect(C.equalCostNotice).toContain("mới thấp hơn thuế suất hôm nay");
+    expect(C.equalCostNotice).not.toContain("khi mức thuế lãi vốn lớn hơn 0");
+  });
+
   it("pins the side account's own figures", () => {
     const r = run();
     expect(usdCents(r.upfrontTaxSaving)).toBe("1.800,00");

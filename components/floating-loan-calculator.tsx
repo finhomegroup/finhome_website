@@ -88,7 +88,16 @@ export function FloatingLoanCalculator({
     rateCap: C.form.defaultRateCap,
     budget: C.form.defaultBudget,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The three month counts format nothing.
+  const fields = useCalcFields(initial, {
+    amount: "money",
+    promoRate: "rate",
+    postRate: "rate",
+    adjustStep: "rate",
+    rateCap: "rate",
+    budget: "money",
+  });
 
   /**
    * ORIGINAL ROW 11 — the named hypothetical shift, as a SELECTION.

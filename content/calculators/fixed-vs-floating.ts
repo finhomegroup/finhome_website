@@ -154,7 +154,7 @@ export const FIXED_VS_FLOATING = {
     "Đừng đọc dòng “rẻ nhất tại mốc bạn chọn” như một câu trả lời cuối cùng: nó chỉ đúng với mức lãi sau ưu đãi mà chính bạn vừa nhập, và với đúng mốc bạn vừa chọn.",
   reframeDetailTitle: "Cách thử kết luận, và giá của sự chắc chắn",
   reframeDetail:
-    "Hãy chạy ít nhất hai lần — một lần với mức lãi sau ưu đãi bạn cho là hợp lý, một lần với mức cao hơn 2–3 điểm phần trăm — rồi xem kết luận có đổi chiều. Nếu có, quyết định của bạn phụ thuộc vào một điều không ai biết trước, và khi đó nên chọn theo khoản trả cao nhất mà bạn gánh được chứ không theo tổng chi phí. Lãi cố định về bản chất là bạn trả thêm một khoản để biết trước khoản trả. Cách định giá khoản đó bằng số của chính bạn: đọc “Chênh lệch với phương án đắt nhất” ở mốc bạn chọn — đó là phần bạn trả thêm (hoặc tiết kiệm được) trong kịch bản này — rồi mở bảng chi tiết và so hai dòng khoản trả. Phần chênh về chi phí là điều chưa chắc; mức tăng khoản trả khi hết ưu đãi thì gần như chắc chắn. Nếu khoản trả cao nhất của bên thả nổi vượt ngân sách của bạn, thì phần chênh của bên cố định đang mua một thứ có giá trị — kể cả khi về tổng chi phí nó đắt hơn.",
+    "Hãy chạy ít nhất hai lần — một lần với mức lãi sau ưu đãi bạn cho là hợp lý, một lần với mức cao hơn 2–3 điểm phần trăm — rồi xem kết luận có đổi chiều. Nếu có, quyết định của bạn phụ thuộc vào một điều không ai biết trước, và khi đó nên chọn theo khoản trả cao nhất mà bạn gánh được chứ không theo tổng chi phí. Lãi cố định về bản chất là bạn trả thêm một khoản để biết trước khoản trả. Cách định giá khoản đó bằng số của chính bạn: đọc “Chênh lệch với phương án đắt nhất” ở mốc bạn chọn — đó là phần bạn trả thêm (hoặc tiết kiệm được) trong kịch bản này — rồi mở bảng chi tiết và so hai dòng khoản trả. Phần chênh về chi phí là điều chưa chắc. Khoản trả sau ưu đãi đổi theo đúng mức lãi bạn nhập cho giai đoạn sau: cao hơn mức ưu đãi thì tăng, thấp hơn thì giảm — công cụ tính theo số bạn nhập, không dự báo chiều nào. Nếu khoản trả cao nhất của bên thả nổi vượt ngân sách của bạn, thì phần chênh của bên cố định đang mua một thứ có giá trị — kể cả khi về tổng chi phí nó đắt hơn.",
 
   formula: {
     title: "Cách tính",
@@ -163,7 +163,11 @@ export const FIXED_VS_FLOATING = {
       "Bên “lãi cố định cả kỳ hạn” là khoản vay niên kim thông thường ở một mức lãi duy nhất: để trống hai ô ưu đãi và mức lãi đó chạy suốt kỳ hạn. Bên “ưu đãi rồi thả nổi” được tính theo từng giai đoạn, và ở mỗi lần đổi lãi khoản trả được tính lại trên DƯ NỢ CÒN LẠI trong SỐ THÁNG CÒN LẠI. Đây là cách công cụ mô hình hóa khoản vay trả góp đều; hợp đồng của bạn có thể quy định khác.",
       "Cả hai bên đều nhập được ưu đãi, nên một báo giá “cố định 3 năm rồi thả nổi” mô hình hóa được ở bên trái: 36 tháng ưu đãi ở mức cố định, rồi mức sau đó. Khi bạn nhập như vậy, tên của bên đó đổi theo đúng cấu trúc — công cụ không gọi một lịch trả có đổi lãi là “cố định cả kỳ hạn”.",
       "Xếp hạng theo CHI PHÍ ĐẾN MỐC BẠN CHỌN: lãi phát sinh đến tháng đó, cộng phí trả ngay, cộng phí tất toán nếu bạn tất toán tại mốc đó và còn dư nợ. Dư nợ còn lại ở mốc đó cũng được hiện, nên một phương án chỉ hoãn trả gốc không thể trông rẻ. Bảng chi tiết hiện thêm chi phí cả kỳ hạn, và khi hai thước đo chọn ra hai phương án khác nhau thì trang nói rõ.",
-      "Một điều công cụ không tính: rủi ro. Bên thả nổi có thể rẻ hơn theo kịch bản bạn nhập, nhưng mức tăng khoản trả khi hết ưu đãi là gần như chắc chắn còn phần tiết kiệm thì không. Công cụ Khoản vay lãi thả nổi có nút thử tăng 1, 2 hoặc 3 điểm phần trăm để bạn xem khoản trả cao nhất trước khi quyết định.",
+      // "gần như chắc chắn" removed 2026-09-26 (independent review finding
+      // 4): the post-promo rate is an input, and a lower or equal one is a
+      // supported scenario. The risk is that nobody knows the rate, not that
+      // it rises.
+      "Một điều công cụ không tính: rủi ro. Bên thả nổi có thể rẻ hơn theo kịch bản bạn nhập, nhưng khoản trả sau ưu đãi của nó phụ thuộc vào một mức lãi chưa ai biết trước — phần tiết kiệm chỉ đúng nếu mức bạn nhập xảy ra. Công cụ Khoản vay lãi thả nổi có nút thử tăng 1, 2 hoặc 3 điểm phần trăm để bạn xem khoản trả cao nhất trước khi quyết định.",
     ],
   },
 

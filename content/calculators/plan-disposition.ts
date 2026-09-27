@@ -294,7 +294,8 @@ export const TOOL_DISPOSITIONS: ToolDisposition[] = [
     planIndex: 31,
     slug: "vay-mua-xe",
     priority: "P3",
-    question: "Mua xe ảnh hưởng tới tiền mua nhà ra sao?",
+    // Reframed 2026-09-26 with the page: the car page asks a car question.
+    question: "Vay mua xe thì mỗi tháng trả bao nhiêu và còn lại bao nhiêu?",
   },
   {
     planIndex: 32,

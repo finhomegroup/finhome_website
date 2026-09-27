@@ -58,12 +58,17 @@ export function WithdrawalCalculator({
   /** `ToolNextSteps promoted` for this slug. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    balance: C.form.defaultBalance,
-    withdrawal: C.form.defaultWithdrawal,
-    returnRate: C.form.defaultReturn,
-    inflation: C.form.defaultInflation,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`.
+  const fields = useCalcFields(
+    {
+      balance: C.form.defaultBalance,
+      withdrawal: C.form.defaultWithdrawal,
+      returnRate: C.form.defaultReturn,
+      inflation: C.form.defaultInflation,
+    },
+    { balance: "money", withdrawal: "money", returnRate: "rate", inflation: "rate" },
+  );
 
   const balance = parseMoney(fields.values.balance);
   const withdrawal = parseMoney(fields.values.withdrawal);

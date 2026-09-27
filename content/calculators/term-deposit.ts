@@ -111,7 +111,7 @@ export const TERM_DEPOSIT = {
     "Tính lãi tiền gửi có kỳ hạn theo đúng cách ngân hàng Việt Nam tính, kèm phương án tái tục và mức thiệt hại nếu rút trước hạn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Lãi trong một kỳ hạn là lãi đơn và chỉ ghép lãi khi bạn tái tục cả gốc lẫn lãi.",
+    "Gửi 500 triệu kỳ hạn 12 tháng ở 5,5%/năm thì cuối kỳ nhận 27.500.000 ₫ tiền lãi. Trong một kỳ, lãi chỉ tính trên tiền gốc; nó chỉ sinh thêm lãi khi bạn gửi tiếp cả gốc và lãi sang kỳ sau.",
   ledeDetailTitle: "Hai cách tính: theo số tháng, hoặc theo ngày",
   ledeDetail:
     "Chọn một trong hai cách tính: theo số tháng của kỳ hạn, hoặc theo NGÀY — ngày gửi, ngày đáo hạn và ngày bạn cần tiền, để biết tiền có sẵn đúng lúc hay phải rút trước hạn.",

@@ -45,8 +45,16 @@ export const SAVINGS_GOAL = {
     // CORRECTED. The three modes agree in the MODEL, on unrounded figures.
     // What the page displays is rounded to the đồng, so retyping a displayed
     // contribution reproduces the target to within that rounding, not exactly.
+    // REORDERED 2026-09-26 (independent review finding 5). The help opened by
+    // defending the model's internal consistency and rounding before telling
+    // the reader which mode to pick. The instruction now comes first; the
+    // rounding note stays, shorter, because it is still the answer to "why
+    // does retyping a result not land exactly".
     modeHelp:
-      "Ba chế độ dùng cùng một công thức nên chúng khớp nhau trong mô hình: mức góp giải ra, nếu nhập lại nguyên vẹn, sẽ về đúng mục tiêu ban đầu. Con số trên trang đã làm tròn tới đồng, nên khi bạn gõ lại mức đã làm tròn thì kết quả lệch một chút — đó là sai số làm tròn khi hiển thị, không phải hai công thức khác nhau.",
+      // "vài đồng" removed 2026-09-26 (independent review finding 8): a
+      // rounding difference compounds over a long horizon, so no fixed
+      // magnitude is promised.
+      "Chọn theo điều bạn đã biết chắc: có mốc thời gian cố định thì tính mức góp mỗi tháng; mức góp đã bị thu nhập giới hạn thì tính mất bao lâu; muốn xem góp thêm một triệu đổi được gì thì tính số cuối kỳ. Ba chế độ dùng cùng một phép tính; con số hiển thị đã làm tròn tới đồng, nên gõ lại một kết quả vào chế độ khác có thể cho kết quả lệch một chút do làm tròn — không phải do hai cách tính khác nhau.",
     modeContribution: "Mỗi tháng cần góp bao nhiêu",
     modeMonths: "Mất bao lâu để đạt mục tiêu",
     modeTarget: "Cuối kỳ có bao nhiêu",
@@ -200,7 +208,7 @@ export const SAVINGS_GOAL = {
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
     rateHelp:
-      "Lãi suất danh nghĩa hằng năm, giả định ghép lãi hằng tháng. Để 0 nếu bạn chỉ gom tiền mà không sinh lãi.",
+      "Mức lãi theo năm của nơi bạn gửi, ví dụ 6 nghĩa là 6% một năm; công cụ chia 12 cho mỗi tháng và ghép lãi hằng tháng. Để 0 nếu bạn chỉ gom tiền mà không sinh lãi.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "6",
 
@@ -333,22 +341,32 @@ export const SAVINGS_GOAL = {
   formula: {
     title: "Cách tính",
     body: [
-      "Cả ba chế độ đều dựa trên cùng một quan hệ niên kim: số cuối kỳ = số đã có × (1 + r)^n + góp mỗi tháng × ((1 + r)^n − 1) ÷ r, với r là lãi suất mỗi tháng và n là số tháng. Mỗi chế độ chỉ là giải phương trình đó cho một ẩn khác.",
-      "Với mặc định — 100 triệu ban đầu, mục tiêu 500 triệu, 60 tháng, 6%/năm — bạn cần góp 5.233.121 ₫ mỗi tháng. Tổng bạn bỏ vào là 413.987.237 ₫, phần còn lại 86.012.763 ₫ là do lãi, tức 17,2% số tiền cuối kỳ.",
-      "Lãi suất làm được nhiều hơn cảm nhận. Cùng mục tiêu đó ở mức 0%/năm cần góp 6.666.667 ₫ mỗi tháng — nhiều hơn gần 1,43 triệu mỗi tháng chỉ vì không có lãi.",
+      // REORDERED 2026-09-26 (independent review finding 5). "Cách tính" used
+      // to open with the annuity equation. The plain explanation and the
+      // worked example now come first; the equation itself moved to
+      // `detail`, the shell's disclosed method layer, where a reader who
+      // wants to verify the arithmetic can open it.
+      // READABILITY PASS 2026-09-26, after Codex read the rendered section on
+      // desktop and mobile: meaning first, one idea per paragraph, rounded
+      // triệu/tỷ in prose. Every exact đồng figure moved to `detail` below
+      // rather than being deleted, and `savings-goal.test.ts` derives each
+      // rounded figure from the engine so the prose cannot drift.
+      "Hiểu ngay: số tiền cuối kỳ gồm ba phần — số bạn đã có, các khoản bạn góp thêm, và lãi sinh ra trên cả hai. Bạn nhập hai trong ba điều — mục tiêu, số tháng, mức góp — và công cụ giải ra điều còn lại; ba chế độ chỉ là ba cách hỏi cùng một phép tính. Công thức đầy đủ và các con số chính xác của ví dụ nằm ở phần mở rộng cuối mục này.",
+      "Ví dụ mặc định: bạn đã có 100 triệu, muốn có 500 triệu sau 60 tháng và gửi ở mức 6%/năm. Công cụ cho ra mức góp khoảng 5,2 triệu mỗi tháng. Sau 5 năm, tiền của bạn — 100 triệu ban đầu cộng 60 lần góp — là khoảng 414 triệu; khoảng 86 triệu còn lại là lãi, tức khoảng 17% số tiền cuối kỳ.",
+      "Lãi suất làm được nhiều hơn cảm nhận. Cùng mục tiêu đó ở mức 0%/năm — chỉ gom tiền, không sinh lãi — bạn cần góp khoảng 6,7 triệu mỗi tháng, nhiều hơn khoảng 1,4 triệu mỗi tháng. Hãy thử đổi lãi suất về 0 ngay trên công cụ để thấy phần lãi biến mất khỏi biểu đồ.",
       // The example's own inputs are named, because "53,8 tháng" is
       // meaningless without them: 100 triệu ban đầu, mục tiêu 500 triệu, góp
       // 6 triệu/tháng, lãi 6%/năm ghép hằng tháng.
-      "Chế độ tính thời gian trả lời theo KỲ GÓP, không theo phần lẻ. Với 100 triệu ban đầu, mục tiêu 500 triệu, góp 6 triệu mỗi tháng và lãi 6%/năm ghép hằng tháng, phương trình niên kim cho 53,8 tháng — nhưng tiền chỉ vào cuối mỗi tháng nên 0,8 tháng không phải một khoản góp đã đến: kỳ góp trọn vẹn đầu tiên đủ mục tiêu là kỳ thứ 54, và số dư ở kỳ đó nhỉnh hơn mục tiêu một chút. Trang này lấy kỳ thứ 54 làm kết quả, giữ 53,8 ở phần chi tiết và gọi đúng tên nó là ước lượng liên tục.",
-      "Khi tổ hợp số liệu không có đáp án — mục tiêu đã đạt, mức góp cần thiết ra số âm, hoặc số dư không bao giờ đổi — công cụ để trống kết quả kèm ghi chú, thay vì hiển thị số 0 hay một con số âm trông như thật.",
+      "Chế độ tính thời gian trả lời theo KỲ GÓP, không theo phần lẻ. Ví dụ: đã có 100 triệu, mục tiêu 500 triệu, góp 6 triệu mỗi tháng ở 6%/năm. Phép tính cho ra 53,8 tháng, nhưng tiền chỉ vào cuối mỗi tháng nên 0,8 tháng không phải một khoản góp đã đến. Kỳ góp trọn vẹn đầu tiên đủ mục tiêu là kỳ thứ 54, và số dư ở kỳ đó nhỉnh hơn mục tiêu một chút. Trang lấy kỳ thứ 54 làm kết quả; con số 53,8 vẫn có ở phần chi tiết, dưới tên “ước lượng liên tục”.",
+      "Khi các số bạn nhập không có đáp án — mục tiêu đã đạt sẵn; số đã có tự sinh lãi vượt mục tiêu nên mức góp cần thiết ra số âm; hoặc góp 0 ở lãi 0% nên số dư không bao giờ đổi — công cụ để trống kết quả kèm ghi chú, thay vì hiển thị số 0 hay một con số âm trông như thật.",
       // ORIGINAL ROW 19. Figures from house-fund.ts on the inputs named here.
-      "Chế độ “Tính từ giá nhà” cộng ba khoản thành một mục tiêu: tiền trả trước = giá nhà × tỷ lệ trả trước, chi phí mua = giá nhà × tỷ lệ chi phí, cộng quỹ dự phòng bạn muốn giữ lại. Chi phí mua tính theo GIÁ NHÀ chứ không theo tiền trả trước, vì thuế và phí tăng theo giá trị căn nhà. Với giá 3 tỷ, trả trước 30%, chi phí 3% và dự phòng 150 triệu, mục tiêu là 900 + 90 + 150 = 1.140 triệu đồng — mỗi khoản đúng một lần.",
+      "Chế độ “Tính từ giá nhà” cộng ba khoản thành một mục tiêu: tiền trả trước (giá nhà × tỷ lệ trả trước), chi phí mua (giá nhà × tỷ lệ chi phí) và quỹ dự phòng bạn muốn giữ lại. Chi phí mua tính theo GIÁ NHÀ chứ không theo tiền trả trước, vì thuế và phí tăng theo giá trị căn nhà. Ví dụ: nhà 3 tỷ, trả trước 30%, chi phí 3%, dự phòng 150 triệu → 900 triệu + 90 triệu + 150 triệu = 1,14 tỷ, mỗi khoản đúng một lần.",
       // CORRECTED. This asserted the two definitions can never give the same
       // date. At a 0% rate, or with no reserve at all, they give exactly the
       // same one — and whole-cycle rounding can make them coincide at other
       // rates too.
-      "Quỹ dự phòng nằm TRONG mục tiêu, nên toàn bộ số tiền bạn đang có vẫn được tính vào mục tiêu đó. Cách định nghĩa khác — giữ dự phòng ra ngoài cả mục tiêu lẫn số tiền đã có — cho đúng cùng khoảng thiếu, nhưng có thể cho một NGÀY khác: phần giữ lại khi đó không sinh lãi trong mô hình nữa. Ở ví dụ trên, đã có 300 triệu và góp 15 triệu mỗi tháng ở lãi giả định 6%/năm thì kỳ góp trọn vẹn đầu tiên đủ 1,14 tỷ là kỳ thứ 46, còn định nghĩa kia cho một mốc muộn hơn. Khi lãi suất bằng 0 hoặc bạn không giữ dự phòng, hai cách trùng nhau; việc làm tròn theo kỳ góp trọn vẹn cũng có thể khiến chúng trùng. Vì vậy trang nói rõ mình dùng cách nào thay vì gọi hai cách là tương đương.",
-      "Số tháng được đổi thành ngày bằng cách cộng đúng số tháng trọn vẹn vào ngày bắt đầu, giữ nguyên ngày trong tháng và chỉ co lại ở tháng ngắn. Bắt đầu 15/9/2026, kỳ thứ 46 là 15/7/2030. Nếu góp 20 triệu mỗi tháng thì đủ ở kỳ thứ 36, tức 15/9/2029 — sớm hơn 10 tháng, và đổi lại bạn bỏ vào 1,02 tỷ tiền của mình thay vì 990 triệu. Đây là mốc để lên kế hoạch, không phải một lịch hẹn đã được đặt: công cụ không lưu, không nhắc và không gửi gì đi.",
+      "Quỹ dự phòng nằm TRONG mục tiêu, nên toàn bộ số tiền bạn đang có vẫn được tính vào mục tiêu đó, và mô hình cho cả số dư — kể cả phần sau này giữ làm dự phòng — sinh lãi ở mức bạn nhập. Có một cách định nghĩa khác: để dự phòng ra ngoài cả mục tiêu lẫn số đã có. Cách đó cho cùng khoảng thiếu nhưng có thể cho một NGÀY khác, vì phần giữ lại không còn sinh lãi trong mô hình. Ở ví dụ trên — đã có 300 triệu, góp 15 triệu mỗi tháng, lãi giả định 6%/năm — kỳ góp trọn vẹn đầu tiên đủ 1,14 tỷ là kỳ thứ 46; cách kia cho một mốc muộn hơn. Khi lãi suất bằng 0 hoặc bạn không giữ dự phòng, hai cách trùng nhau; làm tròn theo kỳ góp trọn vẹn cũng có thể khiến chúng trùng. Vì vậy trang nói rõ mình dùng cách nào.",
+      "Số tháng được đổi thành ngày bằng cách cộng đúng số tháng trọn vẹn vào ngày bắt đầu, giữ nguyên ngày trong tháng và chỉ co lại ở tháng ngắn. Bắt đầu 15/9/2026 thì kỳ thứ 46 là 15/7/2030. Nếu góp 20 triệu mỗi tháng, bạn đủ ở kỳ thứ 36, tức 15/9/2029 — sớm hơn 10 tháng; đổi lại, tiền của bạn bỏ vào là khoảng 1,02 tỷ thay vì khoảng 990 triệu. Đây là mốc để lên kế hoạch, không phải một lịch hẹn đã được đặt: công cụ không lưu, không nhắc và không gửi gì đi.",
     ],
     // What the reader controls versus what they are assuming, plus the
     // whole-cycle convention that makes the answer a date rather than a
@@ -357,6 +375,19 @@ export const SAVINGS_GOAL = {
       "Chế độ tính thời gian trả lời theo KỲ GÓP, không theo phần lẻ",
       "Đây là mốc để lên kế hoạch, không phải một lịch hẹn đã được đặt",
     ],
+    // The equation, moved out of `body` on 2026-09-26. Same formula the
+    // engine solves; the r = 0 line is its algebraic limit, which is the case
+    // the 6.666.667 ₫ example above already exercises.
+    detail: {
+      title: "Công thức đầy đủ",
+      body: [
+        "Cả ba chế độ đều dựa trên cùng một quan hệ niên kim: số cuối kỳ = số đã có × (1 + r)^n + góp mỗi tháng × ((1 + r)^n − 1) ÷ r, với r là lãi suất mỗi tháng (lãi suất năm chia 12 rồi chia 100) và n là số tháng. Mỗi chế độ chỉ là giải phương trình đó cho một ẩn khác: mức góp và số cuối kỳ giải trực tiếp, số tháng giải bằng lôgarit rồi làm tròn lên kỳ góp trọn vẹn.",
+        "Khi lãi suất bằng 0, quan hệ trên rút gọn thành: số cuối kỳ = số đã có + góp mỗi tháng × n. Đó là lý do ở 0%/năm mức góp cho ví dụ mặc định đúng bằng (500 − 100) triệu chia 60 tháng.",
+        // The exact figures the rounded prose above stands for. Same engine
+        // output; `savings-goal.test.ts` pins each one.
+        "Số liệu chính xác của ví dụ mặc định (100 triệu đã có, mục tiêu 500 triệu, 60 tháng, 6%/năm ghép hằng tháng): mức góp 5.233.121 ₫ mỗi tháng; tổng tiền của bạn bỏ vào 413.987.237 ₫; phần do lãi 86.012.763 ₫, bằng 17,2% số tiền cuối kỳ. Ở 0%/năm, mức góp là 6.666.667 ₫ mỗi tháng.",
+      ],
+    },
   },
 
   faq: {

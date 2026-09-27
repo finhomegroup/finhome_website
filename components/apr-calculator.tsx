@@ -142,24 +142,40 @@ export function AprCalculator({
   const advanced = mode === "advanced";
   const ids = REGION_IDS[initialMode];
 
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    // The basic mode's single total lives in `arrangement`; the other four
-    // ship blank so the two modes agree on the total from the first render.
-    // Seeded FROM CONTENT, not hardcoded: hardcoding them left
-    // `defaultAppraisal` and friends as dead keys nothing could change, and
-    // a default that no content file owns is a default no test can vary.
-    arrangement: C.form.defaultUpfront,
-    appraisal: A.form.defaultAppraisal,
-    notary: A.form.defaultNotary,
-    insurance: A.form.defaultInsurance,
-    other: A.form.defaultOther,
-    points: C.form.defaultPoints,
-    financed: A.form.defaultFinanced,
-    payoff: A.form.defaultPayoff,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Every fee box goes through `feeOf`, which
+  // is `parseMoney`; term and payoff are month counts and format nothing.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      // The basic mode's single total lives in `arrangement`; the other four
+      // ship blank so the two modes agree on the total from the first render.
+      // Seeded FROM CONTENT, not hardcoded: hardcoding them left
+      // `defaultAppraisal` and friends as dead keys nothing could change, and
+      // a default that no content file owns is a default no test can vary.
+      arrangement: C.form.defaultUpfront,
+      appraisal: A.form.defaultAppraisal,
+      notary: A.form.defaultNotary,
+      insurance: A.form.defaultInsurance,
+      other: A.form.defaultOther,
+      points: C.form.defaultPoints,
+      financed: A.form.defaultFinanced,
+      payoff: A.form.defaultPayoff,
+    },
+    {
+      amount: "money",
+      rate: "rate",
+      arrangement: "money",
+      appraisal: "money",
+      notary: "money",
+      insurance: "money",
+      other: "money",
+      points: "rate",
+      financed: "money",
+    },
+  );
 
   const amount = parseMoney(fields.values.amount);
   const rate = parseDecimal(fields.values.rate);

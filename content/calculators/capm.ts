@@ -58,7 +58,9 @@ export const CAPM = {
     marketPremiumLabel: "Phần bù rủi ro thị trường",
     marketPremiumUnit: "%/năm",
     marketPremiumHelp:
-      "Phần thị trường sinh lời vượt trên lãi suất phi rủi ro. Với thị trường mới nổi, các ước lượng thường nằm trong khoảng 6–10%.",
+      // The "6–10%" range was an unsourced market claim, 2026-09-26. The
+      // figure is the reader's estimate; the notice below says how to test it.
+      "Phần thị trường sinh lời vượt trên lãi suất phi rủi ro. Đây là một ước lượng, không có con số chuẩn; mức 8 điền sẵn chỉ là ví dụ — hãy thử vài mức để xem kết luận của bạn có đổi.",
     marketPremiumInvalid: "Vui lòng nhập một số.",
     defaultMarketPremium: "8",
 
@@ -140,7 +142,7 @@ export const CAPM = {
       },
       {
         q: "Phần bù rủi ro thị trường ở Việt Nam nên lấy bao nhiêu?",
-        a: "Không có con số chuẩn. Các ước lượng cho thị trường mới nổi thường nằm trong khoảng 6–10%, cao hơn thị trường phát triển vì rủi ro quốc gia và rủi ro thanh khoản. Vì kết quả CAPM tỷ lệ thuận với con số này, hãy chạy công cụ ở cả hai đầu của khoảng và xem quyết định của bạn có phụ thuộc vào nó hay không.",
+        a: "Không có con số chuẩn, và trang này không đưa ra một khoảng tham chiếu: các ước lượng cho thị trường mới nổi khác nhau đáng kể giữa các nguồn, và thường được lập luận là cao hơn thị trường phát triển vì rủi ro quốc gia và rủi ro thanh khoản. Vì kết quả CAPM tỷ lệ thuận với con số này, hãy chạy công cụ ở vài mức — chẳng hạn 6%, 8% và 10% như phần ghi chú phía trên gợi ý — và xem quyết định của bạn có phụ thuộc vào nó hay không.",
       },
       {
         q: "Lãi suất phi rủi ro nên lấy kỳ hạn nào?",

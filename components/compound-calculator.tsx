@@ -56,13 +56,18 @@ export function CompoundCalculator({
   /** The route's longer next-step block, below the figure. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    principal: C.form.defaultPrincipal,
-    rate: C.form.defaultRate,
-    years: C.form.defaultYears,
-    compounding: C.form.defaultCompounding,
-    contribution: C.form.defaultContribution,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The compounding select formats nothing.
+  const fields = useCalcFields(
+    {
+      principal: C.form.defaultPrincipal,
+      rate: C.form.defaultRate,
+      years: C.form.defaultYears,
+      compounding: C.form.defaultCompounding,
+      contribution: C.form.defaultContribution,
+    },
+    { principal: "money", rate: "rate", years: "rate", contribution: "money" },
+  );
 
   const principal = parseMoney(fields.values.principal);
   const rate = parseDecimal(fields.values.rate);

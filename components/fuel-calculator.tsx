@@ -86,21 +86,27 @@ export function FuelCalculator({
   /** The further questions and the retention panel — `<ToolNextSteps promoted>`. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    // ROW 70: which of the two questions is on screen.
-    purpose: C.form.defaultPurpose,
-    distance: C.form.defaultDistance,
-    roundTrip: C.form.defaultRoundTrip,
-    consumption: C.form.defaultConsumption,
-    consumptionUnit: C.form.defaultConsumptionUnit,
-    price: C.form.defaultPrice,
-    people: C.form.defaultPeople,
-    trips: C.form.defaultTrips,
-    // Original row 68: two candidate homes on one basis.
-    homeA: C.form.defaultHomeA,
-    homeB: C.form.defaultHomeB,
-    workdays: C.form.defaultWorkdays,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The distances go through
+  // `parseMagnitude` and workdays through `parseCount`; neither formats.
+  const fields = useCalcFields(
+    {
+      // ROW 70: which of the two questions is on screen.
+      purpose: C.form.defaultPurpose,
+      distance: C.form.defaultDistance,
+      roundTrip: C.form.defaultRoundTrip,
+      consumption: C.form.defaultConsumption,
+      consumptionUnit: C.form.defaultConsumptionUnit,
+      price: C.form.defaultPrice,
+      people: C.form.defaultPeople,
+      trips: C.form.defaultTrips,
+      // Original row 68: two candidate homes on one basis.
+      homeA: C.form.defaultHomeA,
+      homeB: C.form.defaultHomeB,
+      workdays: C.form.defaultWorkdays,
+    },
+    { consumption: "rate", price: "money", people: "rate", trips: "rate" },
+  );
 
   /** ROW 70: the chosen question. Everything else keys off this one string. */
   const homesMode = fields.values.purpose === "homes";

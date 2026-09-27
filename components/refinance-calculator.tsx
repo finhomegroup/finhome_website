@@ -46,7 +46,15 @@ export function RefinanceCalculator({
     newTerm: C.form.defaultNewTerm, costs: C.form.defaultCosts,
     oldFee: C.form.defaultOldFee, horizon: C.form.defaultHorizon,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The three month counts format nothing.
+  const fields = useCalcFields(initial, {
+    balance: "money",
+    currentRate: "rate",
+    newRate: "rate",
+    costs: "money",
+    oldFee: "money",
+  });
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every((key) => fields.values[key] === initial[key]);
   const balance = parseMoney(fields.values.balance);
   const currentRate = parseDecimal(fields.values.currentRate);

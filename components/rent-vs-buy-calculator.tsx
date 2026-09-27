@@ -112,7 +112,23 @@ export function RentVsBuyCalculator({
     deposit: C.form.defaultDeposit,
     investment: C.form.defaultInvestment,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`: six đồng amounts group, the seven decimals take a comma.
+  const fields = useCalcFields(initial, {
+    price: "money",
+    down: "money",
+    rate: "rate",
+    term: "rate",
+    rent: "money",
+    horizon: "rate",
+    purchaseCosts: "money",
+    ownerCosts: "money",
+    growth: "rate",
+    sellingCost: "rate",
+    rentGrowth: "rate",
+    deposit: "money",
+    investment: "rate",
+  });
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],
   );

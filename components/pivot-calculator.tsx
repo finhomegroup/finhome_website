@@ -25,12 +25,17 @@ const FORM_ID = "diem-pivot-nhap";
 const RESULT_ID = "diem-pivot-ket-qua";
 
 export function PivotCalculator() {
-  const fields = useCalcFields({
-    high: C.form.defaultHigh,
-    low: C.form.defaultLow,
-    close: C.form.defaultClose,
-    open: C.form.defaultOpen,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`: four prices, all `parseMoney`.
+  const fields = useCalcFields(
+    {
+      high: C.form.defaultHigh,
+      low: C.form.defaultLow,
+      close: C.form.defaultClose,
+      open: C.form.defaultOpen,
+    },
+    { high: "money", low: "money", close: "money", open: "money" },
+  );
 
   const high = parseMoney(fields.values.high);
   const low = parseMoney(fields.values.low);

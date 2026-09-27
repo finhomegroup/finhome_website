@@ -110,7 +110,20 @@ export function SavingsGoalCalculator({
     startYear: C.form.defaultStartYear,
     higherContribution: C.form.defaultHigherContribution,
   };
-  const fields = useCalcFields(initialValues);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. The month count, the date parts and the two selects
+  // format nothing.
+  const fields = useCalcFields(initialValues, {
+    initial: "money",
+    target: "money",
+    price: "money",
+    downPercent: "rate",
+    costPercent: "rate",
+    reserve: "money",
+    contribution: "money",
+    rate: "rate",
+    higherContribution: "money",
+  });
 
   const pristine = (
     Object.keys(initialValues) as (keyof typeof initialValues)[]

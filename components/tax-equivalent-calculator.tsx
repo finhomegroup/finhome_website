@@ -40,11 +40,16 @@ export function TaxEquivalentCalculator({
   /** The route's longer next-step block, below the answer. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    direction: C.form.defaultDirection,
-    yieldValue: C.form.defaultYield,
-    taxRate: C.form.defaultTaxRate,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Direction is a list.
+  const fields = useCalcFields(
+    {
+      direction: C.form.defaultDirection,
+      yieldValue: C.form.defaultYield,
+      taxRate: C.form.defaultTaxRate,
+    },
+    { yieldValue: "rate", taxRate: "rate" },
+  );
 
   const direction = fields.values.direction as TaxEquivalentDirection;
 

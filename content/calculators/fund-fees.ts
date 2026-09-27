@@ -70,7 +70,7 @@ export const FUND_FEES = {
     managementFeeLabel: "Phí quản lý",
     managementFeeUnit: "%/năm tài sản",
     managementFeeHelp:
-      "Tính trên giá trị tài sản mỗi năm. Đây là khoản đắt nhất, và cũng là khoản dễ bị coi nhẹ nhất.",
+      "Tính trên giá trị tài sản mỗi năm, năm nào cũng thu. Trong ví dụ mặc định đây là khoản lớn nhất, và nó dễ bị coi nhẹ vì con số phần trăm nghe nhỏ.",
     managementFeeInvalid: "Vui lòng nhập một số từ 0 đến 100.",
     defaultManagementFee: "2",
 

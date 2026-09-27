@@ -41,16 +41,31 @@ const FORM_ID = "loi-nhuan-co-phieu-nhap";
 const RESULT_ID = "loi-nhuan-co-phieu-ket-qua";
 
 export function StockReturnCalculator() {
-  const fields = useCalcFields({
-    shares: C.form.defaultShares,
-    buy: C.form.defaultBuy,
-    sell: C.form.defaultSell,
-    dividend: C.form.defaultDividend,
-    years: C.form.defaultYears,
-    fee: C.form.defaultFee,
-    transferTax: C.form.defaultTransferTax,
-    dividendTax: C.form.defaultDividendTax,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Shares go through `parseMoney` here, so
+  // they group like an amount.
+  const fields = useCalcFields(
+    {
+      shares: C.form.defaultShares,
+      buy: C.form.defaultBuy,
+      sell: C.form.defaultSell,
+      dividend: C.form.defaultDividend,
+      years: C.form.defaultYears,
+      fee: C.form.defaultFee,
+      transferTax: C.form.defaultTransferTax,
+      dividendTax: C.form.defaultDividendTax,
+    },
+    {
+      shares: "money",
+      buy: "money",
+      sell: "money",
+      dividend: "money",
+      years: "rate",
+      fee: "rate",
+      transferTax: "rate",
+      dividendTax: "rate",
+    },
+  );
 
   const shares = parseMoney(fields.values.shares);
   const buy = parseMoney(fields.values.buy);

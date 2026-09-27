@@ -39,13 +39,33 @@ describe("apr-nang-cao's copy", () => {
     }
   });
 
-  it("still tells the reader how to handle an early-repayment fee", () => {
-    // Removing the invented range must not remove the actionable half. The
-    // answer has to keep naming the workaround — putting the fee in the
-    // other-fees field — and has to say where the real number comes from.
-    const copy = everyString(C).join(" ");
-    expect(copy).toContain("phí khác");
-    expect(copy).toContain("hợp đồng");
+  it("tells the reader the exit fee is excluded, when it falls due, and where it is counted", () => {
+    // 2026-09-26. The earlier assertion pinned the OLD workaround — put the
+    // exit fee in the other-fees field. That advice was the fee-timing error
+    // `form.settlementFeeNotice` on the same page warns against: a fee paid
+    // at the settlement month is not a fee paid at disbursement, and adding
+    // it at month 0 overstates the APR. The FAQ now agrees with the notice,
+    // and this test pins the agreement rather than the mistake.
+    const item = C.faq.items.find((entry) => entry.q.includes("trước hạn"));
+    expect(item, "the exit-fee FAQ item is gone").toBeDefined();
+    const answer = item!.a;
+    // Excluded, not zero — and the reader is told where the real number lives.
+    expect(answer).toContain("không cộng phí trả nợ trước hạn");
+    expect(answer).toContain("hợp đồng");
+    // Timing: do NOT add it to the upfront-fee boxes, and say why.
+    expect(answer).toContain("Đừng cộng khoản này vào ô phí trả ngay");
+    expect(answer).toContain("không phải phí trả lúc giải ngân");
+    // Destination: the comparison tool has a box for it and charges it at
+    // the horizon the reader chose.
+    expect(answer).toContain("So sánh khoản vay");
+    expect(answer).toContain("mốc bạn chọn");
+    // The old workaround must not come back under any wording.
+    expect(answer).not.toContain("ô “phí khác”");
+    expect(answer).not.toContain("Cách gần đúng");
+    // And the visible notice beside the result says the same thing, so the
+    // page cannot contradict itself between its result and its FAQ.
+    expect(C.form.settlementFeeNotice).toContain("đừng cộng nó vào ô phí trả ngay");
+    expect(C.form.settlementFeeNotice).toContain("So sánh khoản vay");
   });
 
   it("does not claim a fee is universal", () => {

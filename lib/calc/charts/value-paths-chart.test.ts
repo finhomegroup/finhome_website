@@ -299,3 +299,23 @@ describe("refusals", () => {
     expect(model.assumptions).toEqual(["Giả định riêng."]);
   });
 });
+
+describe("valuePathsModel labels its x ticks through the caller when asked", () => {
+  it("reads the axis in another unit while still drawing it from zero", () => {
+    // The retirement trajectory's case: periods are years from today, but a
+    // reader should see ages. Positions do not move — only the label does.
+    const path = ramp("a", "Một", 100, 1, 50);
+    const aged = valuePathsModel([path], LABELS, {
+      summary: "…",
+      xTickLabel: (period) => String(35 + period),
+    });
+    const plain = valuePathsModel([path], LABELS, { summary: "…" });
+    expect(aged.xMax).toBe(50);
+    expect(aged.xAxis.ticks[0]).toMatchObject({ at: 0, label: "35" });
+    expect(aged.xAxis.ticks.at(-1)).toMatchObject({ at: 1, label: "85" });
+    expect(aged.xAxis.ticks.map((t) => t.at)).toEqual(
+      plain.xAxis.ticks.map((t) => t.at),
+    );
+    expect(plain.xAxis.ticks.at(-1)!.label).toBe("50");
+  });
+});

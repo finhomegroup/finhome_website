@@ -49,7 +49,16 @@ const FORM_ID = "du-bao-kinh-doanh-nhap";
 const RESULT_ID = "du-bao-kinh-doanh-ket-qua";
 
 export function BusinessForecastCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Years and the base year are counts and format nothing.
+  const fields = useCalcFields(F.defaults, {
+    revenue: "money",
+    fixed: "money",
+    growth: "rate",
+    variable: "rate",
+    fixedGrowth: "rate",
+    tax: "rate",
+  });
 
   const revenue = parseMoney(fields.values.revenue);
   const growth = parseDecimal(fields.values.growth);

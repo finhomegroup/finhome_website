@@ -110,7 +110,20 @@ export function LoanCalculator({
     price: "",
     pmiMode: C.form.defaultPmiMode,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below —
+  // see `FieldFormats`. Money groups, a decimal takes a comma, the selects
+  // format nothing.
+  const fields = useCalcFields(initial, {
+    amount: "money",
+    rate: "rate",
+    term: "rate",
+    extra: "money",
+    tax: "money",
+    insurance: "money",
+    otherFee: "money",
+    pmi: "rate",
+    price: "money",
+  });
   const [granularity, setGranularity] = useState<LoanChartGranularity>("year");
 
   // "Still the worked example" is a plain comparison against the values the

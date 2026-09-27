@@ -19,19 +19,24 @@ export const LOAN_ANALYSIS = {
     "Xem tổng lãi bằng bao nhiêu phần trăm số tiền vay, bao lâu mới trả nhiều gốc hơn lãi, và cơ cấu gốc–lãi từng phần tư kỳ hạn. Công cụ miễn phí của FinHome.",
 
   lede:
-    "Khoản trả hằng tháng của một khoản vay trả góp đều là con số không đổi, nhưng ruột của nó thay đổi từng tháng: những năm đầu gần như toàn bộ là lãi, những năm cuối gần như toàn bộ là gốc. Công cụ này bóc tách phần ruột đó.",
+    // 2026-09-26: the universal "gần như toàn bộ là lãi" became a statement
+    // about the shipped example, which `loan-analysis-calculator.test.ts`
+    // pins (81,62% in month 1). The direction holds for any positive rate;
+    // the magnitude is the example's.
+    "Khoản trả hằng tháng của một khoản vay trả góp đều là con số không đổi, nhưng ruột của nó thay đổi từng tháng: phần lãi lớn nhất khi dư nợ còn cao rồi nhường chỗ dần cho phần gốc. Với ví dụ mặc định — 2 tỷ, 8,5%/năm, 20 năm — tháng đầu có hơn 80% là lãi, tháng cuối gần như toàn gốc. Công cụ này bóc tách phần ruột đó.",
 
   form: {
     loanGroup: "Khoản vay",
     amountLabel: "Số tiền vay",
     amountUnit: "₫",
-    amountHelp: "Số tiền thực nhận từ ngân hàng.",
+    amountHelp: "Số tiền vay gốc ghi trên hợp đồng, ví dụ 2.000.000.000.",
     amountInvalid: "Vui lòng nhập số tiền vay lớn hơn 0.",
     defaultAmount: "2.000.000.000",
 
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Lãi suất danh nghĩa hằng năm, ví dụ 8,5.",
+    rateHelp:
+      "Mức lãi ghi trong hợp đồng, tính theo năm: nhập 8,5 nghĩa là 8,5% một năm. Công cụ giữ một mức lãi này suốt kỳ hạn, nên cơ cấu bên dưới là của một kịch bản lãi cố định.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "8,5",
 
@@ -181,7 +186,7 @@ export const LOAN_ANALYSIS = {
     title: "Câu hỏi thường gặp",
     items: [
       {
-        q: "Vì sao những năm đầu gần như chỉ trả lãi?",
+        q: "Vì sao những năm đầu phần lãi lại lớn đến vậy?",
         a: "Vì lãi mỗi tháng được tính trên dư nợ còn lại, và tháng đầu tiên dư nợ đúng bằng toàn bộ số tiền vay. Khoản trả hằng tháng được thiết kế cố định để bạn dễ thu xếp, nên khi phần lãi lớn thì phần gốc còn lại rất nhỏ. Dư nợ giảm chậm ở đầu kỳ, và mỗi tháng giảm được một chút thì phần lãi tháng sau nhỏ hơn một chút — quá trình này tăng tốc dần về cuối kỳ.",
       },
       {
@@ -198,7 +203,11 @@ export const LOAN_ANALYSIS = {
       },
       {
         q: "Kết quả có tính lãi suất thả nổi không?",
-        a: "Không. Công cụ giả định lãi suất không đổi trong suốt kỳ hạn. Khoản vay mua nhà tại Việt Nam thường có lãi ưu đãi 6–24 tháng đầu rồi chuyển sang lãi thả nổi, nên hãy nhập mức lãi sau ưu đãi để thấy bức tranh gần thực tế hơn. Cơ cấu lãi dồn về đầu kỳ vẫn đúng dù lãi suất thay đổi — thậm chí còn rõ hơn, vì lãi suất thường tăng sau thời gian ưu đãi.",
+        // 2026-09-26 (independent review finding 16). This page runs ONE rate
+        // on the original term; it says so, and makes no claim about where a
+        // later rate goes or where the high-interest stretch would land after
+        // a reset. No market range for promotional periods.
+        a: "Không. Trang này minh họa đúng một mức lãi bạn chọn trên nguyên kỳ hạn, nên mọi con số ở đây là của một kịch bản lãi cố định. Với khoản vay có lãi ưu đãi rồi thả nổi, mỗi mức bạn nhập cho một kịch bản riêng, và không kịch bản nào là lịch trả thật của cả kỳ: khi lãi đổi ở một mốc, khoản trả được tính lại trên dư nợ còn lại, và thời điểm phần lãi lớn nhất cũng có thể dịch theo. Muốn xem đúng một lần đổi lãi như vậy, hãy dùng công cụ Khoản vay lãi thả nổi.",
       },
     ],
   },

@@ -43,12 +43,17 @@ export function BiweeklyCalculator({
    */
   actions?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    amount: C.form.defaultAmount,
-    rate: C.form.defaultRate,
-    term: C.form.defaultTerm,
-    termUnit: C.form.defaultTermUnit,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. The unit select formats nothing.
+  const fields = useCalcFields(
+    {
+      amount: C.form.defaultAmount,
+      rate: C.form.defaultRate,
+      term: C.form.defaultTerm,
+      termUnit: C.form.defaultTermUnit,
+    },
+    { amount: "money", rate: "rate", term: "rate" },
+  );
 
   const amount = parseMoney(fields.values.amount);
   const rate = parseDecimal(fields.values.rate);

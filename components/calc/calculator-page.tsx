@@ -101,11 +101,20 @@ export function CalculatorPage({
    * the content. It is OPTIONAL on purpose: a tip calculator's method needs a
    * direct answer and nothing else, and `content/calculators/plan-disposition.ts`
    * records which of the 75 tools are deliberately left plain.
+   *
+   * `detail` is an optional second layer — the full formulas, timing rules
+   * and rounding notes — rendered after `body` behind a labelled `<details>`,
+   * the same native disclosure the notice and the lede already use. A route
+   * with a genuinely two-level method (understand it, then verify it) asks
+   * for it; most tools do not need it and pass nothing. The disclosed
+   * paragraphs are rendered PLAIN: `emphasis` applies to `body` only, so a
+   * phrase is never bolded twice on one page.
    */
   prose: {
     title: string;
     body: readonly string[];
     emphasis?: readonly string[];
+    detail?: { title: string; body: readonly string[] };
   };
   faq: { title: string; items: readonly { q: string; a: string }[] };
   /**
@@ -262,6 +271,23 @@ export function CalculatorPage({
                   </p>
                 ))}
               </div>
+              {prose.detail ? (
+                <details className="mt-4">
+                  <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+                    {prose.detail.title}
+                  </summary>
+                  <div className="mt-3 space-y-3">
+                    {prose.detail.body.map((paragraph) => (
+                      <p
+                        key={paragraph}
+                        className="text-sm leading-relaxed text-ink-2"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
             </section>
 
             <section>

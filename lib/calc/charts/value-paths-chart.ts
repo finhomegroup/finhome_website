@@ -144,6 +144,18 @@ export type ValuePathsOptions = {
   /** Keep zero inside the plot and allow points below it. */
   allowNegative?: boolean;
   /**
+   * Label an x tick from its period, when the axis should READ in another
+   * unit than it is drawn in.
+   *
+   * The coordinate stays years (or months) elapsed from period 0, because the
+   * geometry positions a period at `period / xMax` and an axis of ages would
+   * start 41% across the plot. What a reader is asked to read can still be
+   * the age: the retirement trajectory passes `(period) => startAge + period`
+   * so its ticks say 35 … 85 instead of 0 … 50. The default formats the period
+   * itself.
+   */
+  xTickLabel?: (period: number) => string;
+  /**
    * Replaces the shared empty-state text for a case the caller can name.
    *
    * `ChartFigure` renders `unavailable.reason` and `.recovery` INSTEAD of the
@@ -299,10 +311,14 @@ export function valuePathsModel(
       // `countTicks`, NOT `linearTicks`: this axis carries whole periods, and
       // equal intervals with a rounding formatter drew "0, 1, 2, 2, 3" on a
       // three-year plan. See `countTicks` in `types.ts`.
-      ticks: countTicks(xMax, 5, (value) =>
-        Number.isInteger(value)
-          ? formatDecimal(value, 0)
-          : formatDecimal(value, 1),
+      ticks: countTicks(
+        xMax,
+        5,
+        options.xTickLabel ??
+          ((value) =>
+            Number.isInteger(value)
+              ? formatDecimal(value, 0)
+              : formatDecimal(value, 1)),
       ),
     },
     yAxis: {

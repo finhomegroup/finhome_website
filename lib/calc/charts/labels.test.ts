@@ -3,6 +3,7 @@ import {
   axisTickLabel,
   axisUnit,
   compactMoney,
+  compactMoneyPair,
   fill,
   fullMoney,
   type MoneyWords,
@@ -137,5 +138,30 @@ describe("fill", () => {
 
   it("leaves text with no placeholders untouched", () => {
     expect(fill("không có gì", { a: "1" })).toBe("không có gì");
+  });
+});
+
+describe("compactMoneyPair", () => {
+  it("rounds both amounts when their labels still differ", () => {
+    expect(compactMoneyPair(10_902_417_350, 4_089_679_933, WORDS)).toEqual([
+      "10,9 tỷ",
+      "4,1 tỷ",
+    ]);
+  });
+
+  it("keeps genuinely equal amounts compact: nothing was rounded away", () => {
+    expect(compactMoneyPair(500_000_000, 500_000_000, WORDS)).toEqual([
+      "500,0 triệu",
+      "500,0 triệu",
+    ]);
+  });
+
+  it("goes exact when only the rounding made two different amounts look equal", () => {
+    // 10,92 tỷ and 10,88 tỷ are both "10,9 tỷ" at one decimal place. A
+    // sentence comparing them must not show identical figures.
+    expect(compactMoneyPair(10_920_000_000, 10_880_000_000, WORDS)).toEqual([
+      "10.920.000.000 ₫",
+      "10.880.000.000 ₫",
+    ]);
   });
 });

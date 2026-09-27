@@ -14,8 +14,8 @@ import {
   RetirementFields,
 } from "@/components/calc/retirement-fields";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
-import { formatMoney, formatPercent } from "@/lib/calc/number";
-import { fill } from "@/lib/calc/charts/labels";
+import { formatMoney, formatPercent, formatQuantity } from "@/lib/calc/number";
+import { compactMoney, compactMoneyPair, fill } from "@/lib/calc/charts/labels";
 import { longTermTrajectoryModel } from "@/lib/calc/charts/long-term-chart";
 import { fundedAtBoundary, resolveLongTermPlan } from "@/lib/calc/long-term-plan";
 import { LONG_TERM_PLAN as L } from "@/content/calculators/long-term-plan";
@@ -100,6 +100,152 @@ export function RetirementPlanCalculator({
     result === null ? null : funded ? F.verdictYes : F.verdictNo;
 
   const chart = longTermTrajectoryModel(plan, C.chart);
+
+  /**
+   * The conclusion in the reader's own context — 2026-09-26.
+   *
+   * The review read "Không đủ / 82 / 3 năm / 20.942.597 ₫" as four figures
+   * with no sentence joining them. These sentences are assembled HERE, from
+   * the engine's result and the content templates, never from the default
+   * scenario: the ages are the ones the reader typed and the ones the
+   * projection found, and every amount is rounded through `compactMoney`
+   * because a sentence beside a verdict is not the place for an eleven-digit
+   * figure. The exact values are the rows above and the detail below.
+   *
+   * Three states, each read off the plan rather than inferred: SHORT (with
+   * the depletion year's partial payment when it paid anything), FUNDED (with
+   * the level spend the capital supports beside the spend that was asked
+   * for), and funded BY OTHER INCOME, which is not a funded portfolio and
+   * must not be described as one.
+   */
+  const input = plan?.input ?? null;
+  const rounded = (value: number) => compactMoney(value, L.money);
+  const rate = (value: number) => formatQuantity(value, 4);
+  const sentences = (parts: readonly (string | null)[]) =>
+    parts.filter((part): part is string => part !== null).join(" ");
+
+  const conclusion =
+    result === null || input === null
+      ? null
+      : funded
+        ? {
+            headline: fill(F.fundedHeadline, {
+              retirementAge: input.retirementAge,
+              endAge: input.endAge,
+            }),
+            body: result.fundedByOtherIncome
+              ? F.otherIncomeNote
+              : result.sustainableSpending === null
+                ? null
+                : fill(F.fundedBody, {
+                    sustainable: rounded(result.sustainableSpending),
+                    desired: rounded(input.desiredAnnualSpending),
+                    endAge: input.endAge,
+                    // The engine's last year is `endAge − 1`: a horizon of 85
+                    // counts spending until the reader turns 85.
+                    lastAge: input.endAge - 1,
+                  }),
+            next: F.fundedTry,
+          }
+        : depletionAge === null
+          ? null
+          : {
+              headline: fill(F.depletedHeadline, { depletionAge }),
+              body: sentences([
+                fill(F.depletedBody, {
+                  endAge: input.endAge,
+                  depletionAge,
+                  yearsShort: result.yearsShort,
+                }),
+                result.lastWithdrawalPlanned === null ||
+                result.lastWithdrawalPaid === null
+                  ? null
+                  : result.lastWithdrawalPaid > 0
+                    ? fill(F.depletedPartial, {
+                        planned: rounded(result.lastWithdrawalPlanned),
+                        paid: rounded(result.lastWithdrawalPaid),
+                      })
+                    : F.depletedNothingLeft,
+              ]),
+              next: F.depletedTry,
+            };
+
+  /**
+   * What the promoted shortfall row means. It is the ANNUAL spending gap in
+   * today's money — not a contribution, not a capital shortage — and the
+   * sentence says so. Withheld when the plan is short but the closed-form gap
+   * is zero, which the engine does not produce for a genuinely short plan.
+   */
+  const shortfallNote =
+    result === null
+      ? null
+      : funded
+        ? F.shortfallNone
+        : result.spendingShortfall > 0
+          ? fill(F.shortfallMeaning, {
+              shortfall: rounded(result.spendingShortfall),
+            })
+          : null;
+
+  /** The reader's own rates, stated beside the conclusion they produced. */
+  const assumptions =
+    input === null
+      ? null
+      : fill(F.assumptionsUsed, {
+          before: rate(input.returnBeforePercent),
+          after: rate(input.returnAfterPercent),
+          inflation: rate(input.inflationPercent),
+          growth: rate(input.contributionGrowthPercent),
+        });
+
+  /**
+   * Purchasing power, after the result, with the reader's figures. The pair
+   * helper keeps the two readings from rounding to one label; the draw
+   * sentence is added only when the first retirement year draws anything; a
+   * zero or negative inflation gets its own sentence, because "mua được ít
+   * đồ hơn" is false there; and retiring TODAY gets its own too, because with
+   * no accumulation year the two readings of the capital coincide and the
+   * standard sentence would compare a figure with itself.
+   */
+  const purchasingPower =
+    result === null || input === null
+      ? null
+      : (() => {
+          const [capital, realCapital] = compactMoneyPair(
+            result.balanceAtRetirement,
+            result.realBalanceAtRetirement,
+            L.money,
+          );
+          if (input.inflationPercent <= 0) {
+            return fill(F.purchasingPowerFlat, {
+              inflation: rate(input.inflationPercent),
+              retirementAge: input.retirementAge,
+              capital,
+              realCapital,
+            });
+          }
+          if (input.retirementAge <= input.currentAge) {
+            return fill(F.purchasingPowerToday, {
+              inflation: rate(input.inflationPercent),
+              capital,
+            });
+          }
+          return sentences([
+            fill(F.purchasingPower, {
+              inflation: rate(input.inflationPercent),
+              retirementAge: input.retirementAge,
+              capital,
+              realCapital,
+            }),
+            firstWithdrawal !== undefined && firstWithdrawal.withdrawal > 0
+              ? fill(F.purchasingPowerDraw, {
+                  nominalDraw: rounded(firstWithdrawal.withdrawal),
+                  realDraw: rounded(firstWithdrawal.realWithdrawal),
+                })
+              : null,
+            F.purchasingPowerClose,
+          ]);
+        })();
 
   /*
    * A "Hai cột" row in the audit (CSV row 46), whose action is "Desktop: form
@@ -198,14 +344,37 @@ export function RetirementPlanCalculator({
               />
             </ResultGroup>
 
-            {result !== null ? (
-              <div className="mt-4">
-                <p className="text-sm leading-relaxed text-ink-3">
-                  {funded ? F.fundedNotice : F.depletionNotice}
-                </p>
-                {/* The rest of the reading guidance, labelled. Not a warning:
-                    the model limitation is the notice above the tool and the
-                    figure's own assumptions, both visible. */}
+            {conclusion !== null ? (
+              <div className="mt-4 space-y-2 text-sm leading-relaxed text-ink-2">
+                {/* The verdict as a sentence with the reader's ages in it,
+                    then what to try. Outside the live region on purpose: the
+                    rows above are the announcement, this is the reading. */}
+                <p className="font-medium text-ink">{conclusion.headline}</p>
+                {conclusion.body ? <p>{conclusion.body}</p> : null}
+                <p>{conclusion.next}</p>
+                {shortfallNote !== null ? (
+                  <p className="text-ink-3">{shortfallNote}</p>
+                ) : null}
+                {/* The conditions that can change the conclusion stay beside
+                    it — the approved contract's never-collapse rule. */}
+                <p className="text-ink-3">{F.estimateNote}</p>
+                {assumptions !== null ? (
+                  <p className="text-ink-3">{assumptions}</p>
+                ) : null}
+                {/* Purchasing power, explained AFTER the result with the
+                    reader's own figures, behind a summary that names it. The
+                    figure's caption and assumptions carry the same lesson
+                    visibly, so nothing load-bearing is only in here. */}
+                {purchasingPower !== null ? (
+                  <details className="mt-1">
+                    <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
+                      {F.purchasingPowerTitle}
+                    </summary>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                      {purchasingPower}
+                    </p>
+                  </details>
+                ) : null}
                 <details className="mt-1">
                   <summary className="cursor-pointer text-sm font-medium text-ink-2 hover:text-brand-green-ink">
                     {F.verdictDetailTitle}

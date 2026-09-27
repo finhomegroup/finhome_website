@@ -6,6 +6,11 @@
 // went looking for.
 import { describe, expect, it } from "vitest";
 import {
+  compactMoney,
+  compactMoneyPair,
+  fullMoney,
+} from "@/lib/calc/charts/labels";
+import {
   fundedAtBoundary,
   resolveLongTermPlan,
 } from "@/lib/calc/long-term-plan";
@@ -50,9 +55,9 @@ const TRAJECTORY = {
   depletionMarker: "Cạn ở tuổi {age} (năm thứ {year})",
   horizonMarker: "Hết mô phỏng: tuổi {age} (năm thứ {year})",
   summaryFunded:
-    "Nghỉ ở tuổi {retirementAge} với {capital} ({realCapital} theo giá hôm nay), đủ đến tuổi {endAge}.",
+    "Bắt đầu ở tuổi {startAge} với {startCapital}. Nghỉ ở tuổi {retirementAge} với {capital} ({realCapital} theo giá hôm nay), đủ đến tuổi {endAge}.",
   summaryDepleted:
-    "Nghỉ ở tuổi {retirementAge} với {capital} ({realCapital} theo giá hôm nay), cạn ở tuổi {depletionAge}, thiếu {yearsShort} năm.",
+    "Bắt đầu ở tuổi {startAge} với {startCapital}. Nghỉ ở tuổi {retirementAge} với {capital} ({realCapital} theo giá hôm nay), cạn ở tuổi {depletionAge}, thiếu {yearsShort} năm.",
   partialNote: "Năm cạn cần {planned}, chỉ trả được {paid}, thiếu {short}.",
   partialTitle: "Năm cạn trả được bao nhiêu",
   otherIncomeNote: "Thu nhập khác đã đủ cho mức chi tiêu.",
@@ -108,9 +113,63 @@ describe("the trajectory figure (row 44)", () => {
     }
     expect(model.xMax).toBe(BASE.endAge - BASE.currentAge);
     expect(model.xAxis.ticks[0].at).toBe(0);
-    expect(model.xAxis.ticks.at(-1)!.label).toBe(
-      String(BASE.endAge - BASE.currentAge),
+    // DRAWN in years elapsed, READ in ages (2026-09-26): the first tick is
+    // today's age and the last the horizon age, so nobody adds 35 to 50.
+    expect(model.xAxis.ticks[0].label).toBe(String(BASE.currentAge));
+    expect(model.xAxis.ticks.at(-1)!.label).toBe(String(BASE.endAge));
+    for (const tick of model.xAxis.ticks) {
+      expect(Number(tick.label)).toBeCloseTo(
+        BASE.currentAge + tick.at * model.xMax,
+        9,
+      );
+    }
+  });
+
+  it("rounds the caption's amounts and names where the plan starts", () => {
+    // "khoảng 10,9 tỷ" beside "khoảng 4,1 tỷ": a caption is prose, and the
+    // exact đồng figures are the table's. `{startAge}` and `{startCapital}`
+    // are filled so the caption names the three moments the review asked
+    // for: starting to save, retiring, and the money falling short.
+    const [capital, real] = compactMoneyPair(
+      p.asEntered.balanceAtRetirement,
+      p.asEntered.realBalanceAtRetirement,
+      TRAJECTORY,
     );
+    expect(capital).not.toBe(real);
+    expect(model.summary).toContain(capital);
+    expect(model.summary).toContain(real);
+    expect(model.summary).not.toContain(
+      fullMoney(p.asEntered.balanceAtRetirement, TRAJECTORY),
+    );
+    expect(model.summary).toContain(`Bắt đầu ở tuổi ${BASE.currentAge}`);
+    expect(model.summary).toContain(
+      compactMoney(BASE.currentBalance, TRAJECTORY),
+    );
+    // The exact figure is in the table, at the retirement date.
+    const value = (cell: unknown) => (cell as { value: number }).value;
+    const retirementRow = model.table.rows.find(
+      (row) => value(row[0]) === BASE.retirementAge,
+    )!;
+    expect(value(retirementRow[3])).toBeCloseTo(
+      p.asEntered.balanceAtRetirement,
+      6,
+    );
+  });
+
+  it("goes exact when rounding alone would make the two readings look equal", () => {
+    // 0,01% inflation over 25 years leaves the real balance 0,25% below the
+    // nominal one — a real difference, and both "10,9 tỷ" at one decimal
+    // place. A caption saying one is "tương đương" the other with identical
+    // figures would read as if inflation did nothing, so both go exact.
+    const tiny = plan({ inflationPercent: 0.01 });
+    const r = tiny.asEntered;
+    expect(compactMoney(r.balanceAtRetirement, TRAJECTORY)).toBe(
+      compactMoney(r.realBalanceAtRetirement, TRAJECTORY),
+    );
+    expect(r.balanceAtRetirement).not.toBe(r.realBalanceAtRetirement);
+    const summary = longTermTrajectoryModel(tiny, TRAJECTORY).summary;
+    expect(summary).toContain(fullMoney(r.balanceAtRetirement, TRAJECTORY));
+    expect(summary).toContain(fullMoney(r.realBalanceAtRetirement, TRAJECTORY));
   });
 
   it("marks the retirement DATE, where the capital at retirement is", () => {

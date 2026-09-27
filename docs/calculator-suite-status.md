@@ -1,5 +1,37 @@
 # Calculator Suite — Status and Handoff
 
+**Current follow-up, 2026-09-26: COMPLETE AND LOCALLY VERIFIED.** After Claude session
+`d9588cd5-3a7f-4e8b-942c-704a5705eeb2` hit its limit, the user explicitly authorized
+Codex to finish, commit and push. Live money/rate formatting now uses explicit per-parser
+field maps across the suite, including separate keys in percent, raise and margin modes.
+Count/date/year/magnitude fields retain their original grammar. The car-loan page is
+standalone: no home-purchase framing in its main content, results, FAQ or next actions.
+Review fixes distinguish ownership costs from purchase/loan outlay, qualify depreciation,
+separate rounded examples from exact amounts, and correct the count-parser comment.
+The fuel destination supports the promised monthly estimate; no destination change needed.
+
+Final full gate, 15:55:45–15:56:31 UTC: **307 files / 6,961 tests**, TypeScript,
+baseline-aware lint (3 existing / 0 new), build (282 pages) and markup (76 live / 0 planned
++ 196 other pages) all pass. Rebuilt preview 3236: 76 default routes have unchanged numeric
+inputs/results/figure counts and no document overflow at 390×844 or 1440×1000. Of 548
+default-visible text inputs, 451 carry live formatting; no visible money-labelled field
+is missing it. Actual typing, blank validation and caret edits pass on car-loan; selected
+percent/raise/margin mode switches preserve appropriate money/decimal formats. These are
+bounded runtime/geometry checks, not exhaustive visual, accessibility or comprehension tests.
+No financial formula, parser or numeric default changed. Commit/push are authorized for
+this verified source; production deployment and merge are not part of this change.
+
+**Earlier 2026-09-26 reader-first verification (historical checkpoint):** see
+[`tools-reader-first-2026-09-26.md`](tools-reader-first-2026-09-26.md) before continuing.
+All 76 live routes have a disposition: 35 copy-edited, 40 reviewed and retained, plus the
+accepted retirement pilot. Claude implemented; Codex independently reviewed and verified.
+Final full gate at 12:39 UTC passed: 305 files / 6,753 tests, TypeScript, baseline-aware lint
+(3 existing / 0 new), build (282 pages) and markup. Geometry checks cover all 76 default
+pages at mobile/desktop widths; selected screenshots and interactions were reviewed, not
+all-page visual or user-comprehension acceptance. Calculation-module hashes and numeric
+defaults are unchanged by the expansion. No commit, push, PR or publication; preview 3236
+is intentionally retained. Historical suite figures below retain their stated date.
+
 **Read this before touching anything under `app/cong-cu/`, `lib/calc/`, `components/calc/` or `content/calculators/`.**
 
 **And read `docs/finhome-tools-ux-2026-09-21.md` too if you are moving a tool's LAYOUT,
@@ -182,6 +214,7 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | Module | Exports |
 |---|---|
 | `number.ts` | `parseDecimal`, `parseMoney`, `parseCount`, `parseMagnitude`, `formatDecimal`, `formatMoney`, `formatPercent`, `PLACEHOLDER` |
+| `number-input.ts` | `formatMoneyInput`, `formatRateInput`, `reformatInput` — the DISPLAY side of the money and rate grammars while the reader TYPES, behind `NumberField`'s opt-in `format`. Pure string work, no `Number`: a formatted string parses to the same figure as the raw one (pinned against `parseMoney`/`parseDecimal`), an invalid string passes through untouched rather than being repaired into a valid one, and `reformatInput` places the caret — including Backspace/Delete on a grouping dot, told apart by `InputEvent.inputType`. Never for a count: `parseCount` rejects a dot |
 | `finance.ts` | `pmt`, `pv`, `fv`, `nper`, `solveRate`, `periodsPerYear`, `toEffective`, `toNominal`, `amortize` |
 | `solve.ts` | `bisect` — root finder, returns `null` when not bracketed |
 | `loan.ts` | `computeLoan`, `yearlySummary` |
@@ -257,6 +290,34 @@ Copy `app/cong-cu/tinh-phan-tram/page.tsx` as your page template — it is the s
 | `annuity.ts` | `computeAnnuity` — period certain, exclusion ratio, and the quote inverted |
 
 **UI** (`components/calc/`): `CalculatorPage`, `calculatorMetadata`, `CalculatorCard`, `FieldGroup`, `NumberField`, `SelectField`, `RadioGroupField`, `ResultGroup`, `ResultRow`, `ResultTable`, `DetailFigures`, `CalculatorDisclaimer`, `useCalcFields`.
+
+**`NumberField` formats while typing, and the grammar comes from the PARSE.** `format="money"`
+groups thousands with dots as the digits arrive and `format="rate"` shows a typed "." as
+","; both go through `lib/calc/number-input.ts`, the formatted string is what reaches the
+calculator's state, and the input carries `data-format` so a browser test can find it. A
+field without `format` hands the raw string up unchanged. The stored value is never
+formatted on render — the defaults are already in Vietnamese grammar, and a value moving on
+hydration would be a mismatch. Deletion beside a grouping dot may consume the adjacent digit
+only for a collapsed caret; deleting a selected dot must never remove a digit outside the
+selected range, and the formatter's regression tests pin this rule.
+
+**How a calculator opts in (2026-09-26, suite-wide):** `useCalcFields(initial, formats)` takes
+an explicit per-key `FieldFormats` map and `bind(key)` carries the `format` to `NumberField`.
+The map is written beside the form's parse and mirrors it key for key — a `parseMoney` key is
+`"money"`, a `parseDecimal` key is `"rate"` (this includes decimal years and months, which
+`parseDecimal` reads), and a `parseCount`/`parseMagnitude` key, a date part, a year or a
+select is ABSENT, because `parseCount` rejects a dot. Never infer the grammar from the value's
+shape: "3.000" is rejected in a count field and means three thousand in a money field. The mapped type
+makes a key the form does not have a compile error. `RetirementFields` wires the same rule for
+its eleven keys by hand; `FinancialsFields` sets `format="money"` directly because every
+statement line is `parseMoney`. `components/calc/field-formats.test.ts` renders every wired
+calculator and checks each input's `data-format` against its visible label — a formatted input
+that is not a listed money/decimal field fails, as does a listed field that renders unformatted.
+`margin`, `percent` and `raise` have a DIFFERENT stored key for each mode; their explicit maps
+cover every mode with its own money/decimal grammar. Changing a mode does not reinterpret the
+previous mode's input. Not wired deliberately: date parts, the day offset in `dates`, and
+`units`' `parseMagnitude` field. Their count/date/measurement meaning must not receive money
+grouping. Do not wire a count field, and do not "fix" an invalid string inside the formatter.
 
 **Editorial emphasis is DATA beside the paragraph, never markup inside it.**
 `lib/prose-emphasis.ts` (`emphasise`, `missingPhrases`, `emphasisShare`) plus
@@ -557,6 +618,17 @@ one page. Three shared pieces, and which one owns what matters:
 - **`longTermMoney`** in `components/calc/retirement-fields.tsx` is the one
   formatter these four use: `formatMoney` plus the shared `₫` suffix, so the
   suffix is not re-typed per call site.
+
+**Row 44's copy was rewritten reader-first on 2026-09-26** — see
+`docs/retirement-reader-first-2026-09-26.md` for the scope, the preserved
+financial semantics and what was not verified. Three things a later agent will
+otherwise trip on: the verdict sentences under the result are TEMPLATES filled
+from `resolveLongTermPlan` at render time, never static copy; the trajectory
+figure's axis is drawn in years elapsed and LABELLED in ages through
+`valuePathsModel`'s `xTickLabel`; and the old length caps on this route's lede
+and notices were retired by decision, so do not reintroduce them as a proxy for
+readability. `CalculatorPage.prose.detail` is the disclosed method layer that
+rewrite added; it is optional and only this route passes it.
 
 **Only two of the four render a chart**: row 44's `longTermTrajectoryModel` and
 row 50's `longTermWithdrawalModel`, both from

@@ -91,7 +91,9 @@ export const IRR_NPV = {
     timesUnit: "lần",
 
     noIrrManySigns:
-      "Dòng tiền đổi dấu nhiều hơn một lần, nên có thể có vài mức lãi suất khác nhau đều làm NPV bằng 0. Không có “IRR” duy nhất, và công cụ để trống ô đó thay vì chọn bừa một nghiệm. Hãy dùng NPV để ra quyết định, và dùng MIRR nếu cần một con số tỷ lệ.",
+      // 2026-09-26 (independent review finding 14): a blank is the tool's
+      // conservative refusal, not a proof that no unique IRR exists.
+      "Dòng tiền đổi dấu nhiều hơn một lần, nên có thể có vài mức lãi suất khác nhau đều làm NPV bằng 0. Công cụ chọn cách thận trọng là không tìm IRR trong trường hợp này và để trống ô đó, thay vì chọn một nghiệm. Hãy dùng NPV để ra quyết định, và dùng MIRR nếu cần một con số tỷ lệ.",
     noIrrSameSign:
       "Tất cả dòng tiền cùng dấu, nên không có điểm hòa vốn nào để tính IRR. Nếu bạn định nhập một dự án, hãy đảm bảo kỳ 0 là số âm.",
     // MIRR's own refusal. `computeIrrNpv` returns null for it when there is
@@ -116,10 +118,14 @@ export const IRR_NPV = {
     body: [
       "NPV = tổng của dòng tiền kỳ t chia (1 + lãi suất chiết khấu)^t, với t chạy từ 0. Kỳ 0 không bị chiết khấu vì nó xảy ra ngay hôm nay. Với dự án mặc định ở mức chiết khấu 10%: NPV là 137.236.031 ₫.",
       "IRR là mức lãi suất làm NPV bằng 0. Không có công thức đóng, nên công cụ giải bằng phương pháp chia đôi khoảng trong dải từ gần −100% đến 1000% mỗi kỳ. IRR của dự án mặc định là 15,2382%/kỳ — cao hơn mức chiết khấu 10%, khớp với việc NPV dương.",
-      "Công cụ chỉ đưa ra IRR khi dòng tiền đổi dấu đúng một lần. Đổi dấu hai lần trở lên có thể cho nhiều nghiệm, và gọi một trong số đó là “IRR” là sai; khi đó ô IRR để trống và số lần đổi dấu được hiển thị để bạn biết lý do.",
-      "MIRR gộp các dòng tiền dương về cuối kỳ theo lãi suất tái đầu tư, quy các dòng tiền âm về hiện tại theo lãi suất chiết khấu, rồi tìm mức lãi nối hai đầu: MIRR = (giá trị cuối kỳ ÷ giá trị hiện tại)^(1 ÷ số kỳ) − 1. Vì nó không giả định tái đầu tư ở mức IRR, MIRR là duy nhất khi dòng tiền có cả kỳ âm và kỳ dương — kể cả khi IRR không tồn tại vì đổi dấu nhiều lần. Nhưng nó không phải lúc nào cũng tồn tại: nếu mọi dòng tiền cùng dấu thì một trong hai đầu của phép chia bằng 0 và ô MIRR để trống, giống ô IRR.",
+      // 2026-09-26 (finding 14): "may", not "does" — and the blank is a
+      // refusal to search, not a nonexistence proof.
+      "Công cụ chỉ đưa ra IRR khi dòng tiền đổi dấu đúng một lần — khi đó phương trình NPV = 0 có nhiều nhất một nghiệm. Đổi dấu hai lần trở lên thì có thể có nhiều nghiệm, cũng có thể vẫn chỉ một; công cụ chọn cách thận trọng là không tìm và để trống ô IRR, kèm số lần đổi dấu để bạn biết lý do. Ô trống ở đây nghĩa là “công cụ không đưa ra”, không phải bằng chứng rằng IRR không tồn tại.",
+      "MIRR gộp các dòng tiền dương về cuối kỳ theo lãi suất tái đầu tư, quy các dòng tiền âm về hiện tại theo lãi suất chiết khấu, rồi tìm mức lãi nối hai đầu: MIRR = (giá trị cuối kỳ ÷ giá trị hiện tại)^(1 ÷ số kỳ) − 1. Vì nó không giả định tái đầu tư ở mức IRR, MIRR là duy nhất khi dòng tiền có cả kỳ âm và kỳ dương — kể cả khi công cụ không đưa ra IRR vì đổi dấu nhiều lần. Nhưng nó không phải lúc nào cũng tồn tại: nếu mọi dòng tiền cùng dấu thì một trong hai đầu của phép chia bằng 0 và ô MIRR để trống, giống ô IRR.",
       "Chỉ số sinh lời = giá trị hiện tại của dòng tiền vào chia giá trị hiện tại của dòng tiền ra. Lớn hơn 1 đúng khi NPV dương. Nó hữu ích khi so hai dự án có quy mô vốn khác nhau: 1,1372 nghĩa là mỗi đồng bỏ ra tạo ra 1,1372 đồng theo giá trị hôm nay.",
-      "Thời gian hoàn vốn là kỳ đầu tiên dòng tiền tích lũy chuyển sang không âm, có nội suy trong kỳ: 3,33 kỳ nghĩa là một phần ba đường vào kỳ thứ tư. Bản có chiết khấu tính trên dòng tiền đã chiết khấu, nên luôn dài hơn — 4,26 kỳ với dự án mặc định. Cả hai đều bỏ qua mọi dòng tiền sau thời điểm hoàn vốn, nên đừng dùng chúng làm tiêu chí quyết định.",
+      // "luôn dài hơn" qualified 2026-09-26 (finding 14): the engine accepts
+      // a zero or negative discount rate.
+      "Thời gian hoàn vốn là kỳ đầu tiên dòng tiền tích lũy chuyển sang không âm, có nội suy trong kỳ: 3,33 kỳ nghĩa là một phần ba đường vào kỳ thứ tư. Bản có chiết khấu tính trên dòng tiền đã chiết khấu: với lãi suất chiết khấu dương, tiền về sau đáng giá ít hơn nên mốc hoàn vốn lùi lại — 4,26 kỳ thay vì 3,33 với dự án mặc định; ở mức 0% hai mốc trùng nhau, và ở mức âm (công cụ vẫn chấp nhận) mốc có thể sớm hơn. Cả hai đều bỏ qua mọi dòng tiền sau thời điểm hoàn vốn, nên đừng dùng chúng làm tiêu chí quyết định.",
     ],
     // Editor-selected phrases, rendered as <strong> by `ProseText`.
     // Never markup inside the string: the paragraph stays one plain
@@ -150,7 +156,7 @@ export const IRR_NPV = {
       },
       {
         q: "Vì sao IRR đôi khi không có?",
-        a: "Hai trường hợp. Một là mọi dòng tiền cùng dấu — không có gì để hòa vốn. Hai là dòng tiền đổi dấu nhiều lần, ví dụ dự án cần bỏ thêm vốn giữa kỳ để nâng cấp; khi đó phương trình NPV = 0 có thể có nhiều nghiệm và không nghiệm nào đáng gọi là “tỷ suất”. Công cụ hiển thị số lần đổi dấu để bạn nhận ra tình huống này.",
+        a: "Hai trường hợp. Một là mọi dòng tiền cùng dấu — không có gì để hòa vốn. Hai là dòng tiền đổi dấu nhiều lần, ví dụ dự án cần bỏ thêm vốn giữa kỳ để nâng cấp; khi đó phương trình NPV = 0 có thể có nhiều nghiệm, nên công cụ không đưa ra IRR — đó là lựa chọn thận trọng của công cụ, không phải kết luận rằng IRR không tồn tại với dòng tiền của bạn. Công cụ hiển thị số lần đổi dấu để bạn nhận ra tình huống này.",
       },
       {
         q: "Kỳ ở đây là năm hay tháng?",

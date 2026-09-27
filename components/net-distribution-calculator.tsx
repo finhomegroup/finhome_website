@@ -75,15 +75,27 @@ export function NetDistributionCalculator({
   /** The further questions and the retention panel — `<ToolNextSteps promoted>`. */
   nextSteps?: React.ReactNode;
 }) {
-  const fields = useCalcFields({
-    direction: C.form.defaultDirection,
-    amount: C.form.defaultAmount,
-    percent1: C.form.defaultPercent1,
-    percent2: C.form.defaultPercent2,
-    percent3: C.form.defaultPercent3,
-    fixed1: C.form.defaultFixed1,
-    fixed2: C.form.defaultFixed2,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Direction is a list.
+  const fields = useCalcFields(
+    {
+      direction: C.form.defaultDirection,
+      amount: C.form.defaultAmount,
+      percent1: C.form.defaultPercent1,
+      percent2: C.form.defaultPercent2,
+      percent3: C.form.defaultPercent3,
+      fixed1: C.form.defaultFixed1,
+      fixed2: C.form.defaultFixed2,
+    },
+    {
+      amount: "money",
+      percent1: "rate",
+      percent2: "rate",
+      percent3: "rate",
+      fixed1: "money",
+      fixed2: "money",
+    },
+  );
 
   const amount = parseMoney(fields.values.amount);
   const percents = [

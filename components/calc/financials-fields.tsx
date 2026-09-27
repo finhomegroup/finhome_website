@@ -161,6 +161,9 @@ export function StatementFields({
         <NumberField
           key={key}
           {...bind(`${prefix}${key}`)}
+          // Every statement line is read through `parseMoney` (see
+          // `readStatement`), so every one groups as it is typed.
+          format="money"
           label={copy.lines[key].label}
           unit={copy.unit}
           help={copy.lines[key].help}

@@ -39,7 +39,12 @@ export const LOAN = {
 
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Lãi suất danh nghĩa hằng năm, ví dụ 8,5.",
+    rateHelp:
+      // Qualified 2026-09-26 (independent review finding 9). One rate on the
+      // whole original principal for the whole original term is a SCENARIO;
+      // a real post-promotion reset recomputes on the remaining balance and
+      // remaining months, which is what the floating-rate tool does.
+      "Mức lãi ghi trong hợp đồng, tính theo năm: nhập 8,5 nghĩa là 8,5% một năm. Công cụ giữ một mức lãi này cho cả khoản vay và cả kỳ hạn, nên kết quả là một kịch bản lãi cố định. Nếu báo giá có lãi ưu đãi rồi thả nổi, hãy chạy thêm một lần với mức sau ưu đãi để thấy kịch bản đó; muốn thấy khoản trả được tính lại trên dư nợ còn lại khi đổi lãi, hãy dùng công cụ Khoản vay lãi thả nổi.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "8,5",
 
@@ -164,7 +169,12 @@ export const LOAN = {
   table: {
     caption: "Bảng trả nợ theo từng năm",
     intro:
-      "Mỗi dòng là một năm. Ở những năm đầu, phần lớn số tiền bạn trả là lãi; càng về sau tỷ lệ trả gốc càng tăng.",
+      // Reworded 2026-09-26 (independent review finding 7). Any claim about
+      // the SHAPE of the split — interest largest at first, principal rising
+      // — fails somewhere the tool accepts: at 0% every interest cell is
+      // zero, and under flat-principal repayment the principal column is
+      // constant. What is true of every row is what each column MEANS.
+      "Mỗi dòng là một năm. Cột “Gốc trả trong năm” là phần làm số nợ giảm đi; cột “Lãi trả trong năm” là tiền trả cho việc được vay; cột “Dư nợ cuối năm” là số còn nợ sau năm đó. Gốc và lãi chia nhau thế nào trong từng năm tùy cách trả nợ bạn chọn ở trên — hãy so hai cột đầu qua các năm để thấy điều đó.",
     yearColumn: "Năm",
     interestColumn: "Lãi trả trong năm",
     principalColumn: "Gốc trả trong năm",
@@ -222,9 +232,17 @@ export const LOAN = {
     yAxis: "Gốc và lãi mỗi kỳ ({unit})",
     overlayAxis: "Dư nợ còn lại ({unit})",
     summaryYear:
-      "Trong {periods} năm, bạn trả {interest} tiền lãi và {principal} tiền gốc. Cột càng về sau càng nhiều gốc, vì lãi tính trên dư nợ đang giảm.",
+      // Neutralised 2026-09-26 (independent review finding 15): the yearly
+      // caption serves every repayment method, 0% and a partial final year,
+      // where "càng về sau càng nhiều gốc" does not hold. It now says what a
+      // column shows and what to compare.
+      "Trong {periods} năm, bạn trả {interest} tiền lãi và {principal} tiền gốc. Mỗi cột là một năm, tách phần lãi và phần gốc của năm đó; chỉ phần gốc làm dư nợ giảm — hãy so hai phần qua các năm theo cách trả nợ bạn đã chọn.",
     summaryMonths:
-      "Trong {window} tháng đầu, bạn trả {interest} tiền lãi và chỉ {principal} tiền gốc — đây là lý do dư nợ gần như không giảm trong giai đoạn này.",
+      // Reworded 2026-09-26: "chỉ … gần như không giảm" assumed the default
+      // shape. At 0% or with flat-principal repayment the window is not
+      // interest-dominated, so the caption now reads the two figures and
+      // says what the principal figure is.
+      "Trong {window} tháng đầu, bạn trả {interest} tiền lãi và {principal} tiền gốc. Chỉ phần gốc làm dư nợ giảm — hãy so hai con số này để thấy dư nợ giảm nhanh hay chậm trong giai đoạn đầu.",
     extraNote: "Biểu đồ đã tính cả khoản trả thêm của bạn.",
     methodAnnuity: "Cách trả: trả góp đều.",
     methodFlatPrincipal: "Cách trả: trả gốc đều.",
@@ -243,12 +261,21 @@ export const LOAN = {
     granularityYear: "Từng năm",
     granularityMonths: "24 tháng đầu",
     granularityHelp:
-      "Xem theo năm để thấy toàn bộ kỳ hạn; xem 24 tháng đầu để thấy rõ vì sao giai đoạn đầu gần như chỉ trả lãi.",
+      // Reworded 2026-09-26 (independent review finding 2): "gần như chỉ trả
+      // lãi" is not true of every supported rate or repayment style, zero
+      // interest included. Neutral: compare the two parts early on.
+      "Xem theo năm để thấy toàn bộ kỳ hạn; xem 24 tháng đầu để so phần gốc và phần lãi trong từng khoản trả ở giai đoạn dư nợ còn cao nhất.",
   },
 
   formula: {
     title: "Công thức tính",
     body: [
+      // Reader-first opening, 2026-09-26: the two parts of one instalment in
+      // plain words, on the shipped defaults. Every figure is the engine's
+      // own (`loan.test.ts` pins them): 2 tỷ × 8,5% ÷ 12 is the first month's
+      // interest, and the instalment minus that is the first month's
+      // principal.
+      "Hiểu ngay: mỗi tháng bạn trả một khoản gồm hai phần. Phần lãi tính trên số còn nợ; phần gốc làm số nợ giảm đi. Với ví dụ mặc định — vay 2 tỷ, lãi 8,5%/năm, 20 năm — khoản trả là 17.356.465 ₫ mỗi tháng: tháng đầu có 14.166.667 ₫ là lãi (2 tỷ × 8,5% ÷ 12) và 3.189.798 ₫ là gốc. Tháng sau số nợ nhỏ hơn một chút nên phần lãi giảm, phần gốc tăng, còn tổng không đổi.",
       "Khoản trả gốc và lãi hằng tháng được tính theo công thức niên kim: A = P × r ÷ (1 − (1 + r)^(−n)), trong đó P là số tiền vay, r là lãi suất mỗi tháng (lãi suất năm chia 12 rồi chia 100) và n là số tháng vay.",
       "Mỗi tháng, tiền lãi bằng dư nợ đầu kỳ nhân lãi suất tháng; phần còn lại của khoản trả được dùng để giảm gốc. Vì dư nợ giảm dần nên tiền lãi giảm dần và phần trả gốc tăng dần, dù tổng số tiền trả mỗi tháng không đổi.",
       "Khi bạn trả thêm vào gốc, dư nợ giảm nhanh hơn nên tổng tiền lãi giảm và kỳ hạn được rút ngắn. Công cụ tính cả hai trường hợp rồi lấy phần chênh lệch.",

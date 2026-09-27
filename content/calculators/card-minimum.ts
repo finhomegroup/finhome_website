@@ -35,7 +35,11 @@ export const CARD_MINIMUM = {
   // — the minimum shrinks as fast as the balance does. The comparison it sets
   // up is `trapNotice`'s subject, so it is not repeated here.
   lede:
-    "Mức trả tối thiểu là một tỷ lệ phần trăm của dư nợ, nên nó nhỏ dần đúng theo tốc độ dư nợ giảm — đó là lý do trả tối thiểu mất nhiều năm. Trang này mở sẵn chế độ trả tối thiểu của công cụ trả hết nợ thẻ, nên bạn thấy cả hai đường dư nợ và hai ngày hết nợ cạnh nhau.",
+    // 2026-09-26 (independent review finding 13): the floor is part of the
+    // simple explanation, not an afterthought — it is what ends the debt.
+    // Kept inside the E-shelf entry budget by trimming a redundancy in
+    // `trapNotice` below, not by dropping a limit.
+    "Mức trả tối thiểu là một tỷ lệ phần trăm của dư nợ, không thấp hơn một mức sàn: nó nhỏ dần cùng dư nợ cho tới khi chạm sàn, nên trả tối thiểu mất nhiều năm. Trang này mở sẵn chế độ trả tối thiểu của công cụ trả hết nợ thẻ, hiện hai đường dư nợ và hai ngày hết nợ cạnh nhau.",
 
   // §5: the comparison and the "these are illustrative, read your own card's
   // schedule" warning stay visible. The seven-figure worked example behind
@@ -43,7 +47,7 @@ export const CARD_MINIMUM = {
   // disclosure. Nothing was deleted: `card-payoff.test.ts` reads this whole
   // FILE and still binds every figure to what the module computes.
   trapNotice:
-    "Trả tối thiểu mất nhiều năm vì mức trả nhỏ dần cùng dư nợ; trả CỐ ĐỊNH đúng số tiền tối thiểu của tháng đầu thì hết nợ nhanh hơn nhiều lần, với cùng số tiền ở tháng đầu. Cả tỷ lệ tối thiểu và mức sàn ở đây là ví dụ minh họa — hãy nhập theo biểu phí của thẻ bạn dùng.",
+    "Trả tối thiểu mất nhiều năm vì mức trả nhỏ dần cùng dư nợ; trả CỐ ĐỊNH đúng số tiền tối thiểu của tháng đầu thì hết nợ nhanh hơn nhiều lần. Cả tỷ lệ tối thiểu và mức sàn ở đây là ví dụ minh họa — hãy nhập theo biểu phí của thẻ bạn dùng.",
   trapNoticeDetailTitle: "Con số đáng nhớ nhất của trang này",
   trapNoticeDetail:
     "Dư nợ 50 triệu trên thẻ 30%/năm, trả tối thiểu 5% với sàn 500.000 ₫: mất 90 tháng — bảy năm rưỡi, tức tới ngày 15/3/2034 nếu bắt đầu ngày 15/9/2026 — và tổng lãi 43.091.470 ₫, gần bằng số đã nợ. Mức tối thiểu tháng đầu là 2.563.261 ₫. Nếu bạn trả ĐÚNG 2.563.261 ₫ đó mỗi tháng nhưng giữ nguyên không giảm: hết nợ sau 28 tháng và tổng lãi 19.799.257 ₫. Cùng một số tiền ở tháng đầu, chênh nhau 62 tháng và hơn 23 triệu tiền lãi. Khác biệt duy nhất là bạn không hạ mức trả xuống khi dư nợ giảm.",

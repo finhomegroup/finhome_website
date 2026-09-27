@@ -16,7 +16,10 @@ import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
 import { SelectField } from "@/components/calc/select-field";
-import { useCalcFields } from "@/components/calc/use-calc-fields";
+import {
+  useCalcFields,
+  type FieldFormats,
+} from "@/components/calc/use-calc-fields";
 import {
   formatDecimal,
   formatMoney,
@@ -51,6 +54,28 @@ export type AutoLoanFormValues = {
   otherDebts: string;
   reserve: string;
   running: string;
+};
+
+/**
+ * Which fields format while the reader types — the display side of the
+ * dispatch `autoLoanFormState` makes below, key for key: every `parseMoney`
+ * field groups its digits, the two `parseDecimal` fields show a comma decimal
+ * mark, and the term-unit select is a list and formats nothing. A household
+ * income typed as "2700000" used to stay that way; it now reads
+ * "2.700.000" as it is typed, and parses to the same figure either way —
+ * `auto-loan-calculator.test.ts` proves both halves against the parse.
+ */
+export const AUTO_LOAN_FORMATS: FieldFormats<AutoLoanFormValues> = {
+  price: "money",
+  down: "money",
+  tradeIn: "money",
+  rate: "rate",
+  term: "rate",
+  netIncome: "money",
+  essentials: "money",
+  otherDebts: "money",
+  reserve: "money",
+  running: "money",
 };
 
 /** Everything the page derives from those strings. */
@@ -304,7 +329,7 @@ export function AutoLoanCalculator({
     reserve: C.form.defaultReserve,
     running: C.form.defaultRunning,
   };
-  const fields = useCalcFields(initial);
+  const fields = useCalcFields(initial, AUTO_LOAN_FORMATS);
 
   // Whether anything on the page is still the worked example. `ExampleNotice`
   // turns this into a visible badge and a reset, which is the repair for a

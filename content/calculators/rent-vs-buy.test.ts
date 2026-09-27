@@ -218,4 +218,22 @@ describe("the charts the page renders at its defaults", () => {
     }
     expect(block.note).toContain("không phải kết quả nghiên cứu");
   });
+
+  it("puts each transaction cost at its own time and promises no recovery", () => {
+    // 2026-09-26 finding 17: purchase costs are upfront, the selling cost is
+    // a share of the HORIZON house value; neither is "lost at month 0".
+    const item = RENT_VS_BUY.faq.items.find((f) => f.q.includes("Khoảng thời gian"));
+    expect(item).toBeDefined();
+    const a = item!.a;
+    expect(a).toContain("phí mua trả ngay lúc mua");
+    expect(a).toContain("phí bán tính trên giá nhà ở thời điểm bán");
+    expect(a).toContain("không có gì bảo đảm");
+    expect(a).not.toContain("tháng 0");
+    expect(a).not.toContain("mất hẳn");
+    expect(result!.buyerUpfront).toBe(input.downPayment + input.purchaseCosts);
+    expect(result!.sellingCost).toBeCloseTo(
+      result!.houseValue * (input.sellingCostPercent / 100),
+      6,
+    );
+  });
 });

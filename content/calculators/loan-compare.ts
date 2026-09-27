@@ -19,7 +19,11 @@ export const LOAN_COMPARE = {
   lede: "Nhập hai báo giá để xem phương án nào thực sự rẻ hơn.",
   ledeDetailTitle: "Vì sao trả ít mỗi tháng chưa chắc là rẻ",
   ledeDetail:
-    "Phương án có khoản trả hằng tháng thấp nhất thường không phải phương án rẻ nhất: kéo dài kỳ hạn luôn làm khoản trả nhỏ đi trong khi tổng lãi tăng lên. Công cụ giữ cùng một số tiền vay cho mọi phương án — chỉ khi đó lãi suất và phí mới so sánh được — và xếp hạng theo chi phí đến MỐC bạn dự kiến giữ khoản vay: lãi đến tháng đó cộng phí, với dư nợ còn lại hiện ngay bên cạnh. Chi phí cả kỳ hạn là một thước đo riêng, cũng có trong bảng. Có thể thêm phương án thứ ba nếu bạn có ba báo giá.",
+    // "luôn" qualified 2026-09-26 (independent review finding 3): the claim
+    // holds for the same amount, a positive rate and the same repayment
+    // style — which is what `rankingNotice` already says, and zero interest
+    // is a supported input.
+    "Phương án có khoản trả hằng tháng thấp nhất thường không phải phương án rẻ nhất: với cùng số tiền, cùng lãi suất dương và cùng cách trả, kéo dài kỳ hạn làm khoản trả nhỏ đi nhưng tổng lãi tăng lên. Công cụ giữ cùng một số tiền vay cho mọi phương án — chỉ khi đó lãi suất và phí mới so sánh được — và xếp hạng theo chi phí đến MỐC bạn dự kiến giữ khoản vay: lãi đến tháng đó cộng phí, với dư nợ còn lại hiện ngay bên cạnh. Chi phí cả kỳ hạn là một thước đo riêng, cũng có trong bảng. Có thể thêm phương án thứ ba nếu bạn có ba báo giá.",
 
   form: {
     amountGroup: "Số tiền vay",
@@ -37,7 +41,8 @@ export const LOAN_COMPARE = {
 
     rateLabel: "Lãi suất",
     rateUnit: "%/năm",
-    rateHelp: "Lãi suất danh nghĩa hằng năm, ví dụ 8,5.",
+    rateHelp:
+      "Mức lãi ghi trong báo giá, tính theo năm, ví dụ 8,5. Nếu báo giá có lãi ưu đãi thì đây là mức SAU ưu đãi; mức ưu đãi và số tháng ưu đãi nhập ở phần “Phí và lãi ưu đãi” của báo giá đó.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
 
     termLabel: "Kỳ hạn",
@@ -232,7 +237,7 @@ export const LOAN_COMPARE = {
     exclusionNote:
       "Chưa tính bảo hiểm khoản vay, phí trả nợ trước hạn và phí thẩm định trừ khi bạn nhập vào ô phí. Lãi ưu đãi, lãi sau ưu đãi và mốc so sánh đều là giả định bạn nhập.",
     assumptions: [
-      "Cả ba phương án dùng chung một số tiền vay và một mốc so sánh; chỉ khi đó lãi suất và phí mới so sánh được.",
+      "Mọi phương án dùng chung một số tiền vay và một mốc so sánh; chỉ khi đó lãi suất và phí mới so sánh được.",
       "Sau giai đoạn ưu đãi, mỗi phương án giữ mức lãi sau ưu đãi bạn nhập cho phần còn lại của kỳ hạn. Hợp đồng thật có thể điều chỉnh tiếp theo lãi cơ sở.",
       "Đây là các báo giá bạn tự nhập. Công cụ không biết và không xếp hạng ngân hàng nào.",
     ],
@@ -311,11 +316,18 @@ export const LOAN_COMPARE = {
       },
       {
         q: "Nếu ngân hàng chỉ ưu đãi lãi suất trong hai năm đầu thì so sánh thế nào?",
-        a: "Công cụ này giả định lãi suất không đổi trong suốt kỳ hạn, nên đừng nhập mức lãi ưu đãi. Hãy hỏi ngân hàng mức lãi sau ưu đãi — thường là lãi cơ sở cộng biên độ — và nhập mức đó, vì đó là mức bạn trả trong phần lớn thời gian vay. Nếu muốn thấy khoảng dao động, hãy chạy công cụ hai lần: một lần với mức lãi ưu đãi, một lần với mức sau ưu đãi.",
+        // CORRECTED 2026-09-26. This still said the tool assumes one constant
+        // rate and told the reader NOT to enter the promotional rate — while
+        // the form above it has had promo fields for months. A FAQ that
+        // contradicts the form is worse than none.
+        a: "Nhập cả hai giai đoạn vào báo giá đó: số tháng ưu đãi và mức lãi ưu đãi trong phần “Phí và lãi ưu đãi của báo giá này”, còn mức lãi SAU ưu đãi vào ô “Lãi suất”. Công cụ chạy khoản vay theo hai giai đoạn và tính lại khoản trả khi hết ưu đãi trên dư nợ còn lại, nên bạn thấy cả khoản trả lúc đầu và khoản trả sau đó. Nếu ngân hàng chưa cho biết mức sau ưu đãi, hãy hỏi bằng văn bản — thường là lãi cơ sở cộng biên độ — vì đó là mức bạn trả trong phần lớn thời gian vay. Muốn thấy khoảng dao động, hãy chạy hai lần với hai mức sau ưu đãi khác nhau.",
       },
       {
         q: "Còn phí trả nợ trước hạn thì sao?",
-        a: "Công cụ chưa tính, vì nó chỉ phát sinh nếu bạn tất toán sớm và mỗi ngân hàng quy định một biểu phí khác nhau, thường giảm dần theo số năm đã vay. Nếu bạn dự định trả trước hạn, hãy hỏi rõ mức phí và số năm bị áp phí, rồi cộng thủ công vào chi phí vay của phương án đó.",
+        // CORRECTED 2026-09-26. The form has a dedicated exit-fee box, charged
+        // at the horizon; this answer still said the tool does not count it
+        // and told the reader to add it by hand.
+        a: "Có ô riêng cho nó: “Phí trả nợ trước hạn tại mốc so sánh” trong phần phí của từng báo giá, và công cụ tính khoản đó đúng tại tháng bạn tất toán chứ không phải lúc giải ngân. Nếu bạn để trống, chi phí tại mốc so sánh CHƯA gồm phí này — đó là khoản công cụ chưa biết, không phải bằng 0. Mức phí và số năm bị áp phí do hợp đồng quy định, thường giảm dần theo số năm đã vay, nên hãy hỏi ngân hàng rồi nhập vào ô đó.",
       },
       {
         q: "Tôi chỉ muốn so sánh hai phương án, phải làm gì với phương án C?",

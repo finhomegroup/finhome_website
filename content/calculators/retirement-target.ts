@@ -198,7 +198,7 @@ export const RETIREMENT_TARGET = {
       "Lý do phải làm vòng vo như vậy: bản dự phóng có một cái sàn mà công thức niên kim không có — khoản rút của một năm không bao giờ vượt số dư còn lại. Giải theo công thức rồi hiển thị bản dự phóng chính là cách một trang tuyên bố kế hoạch đủ trong khi bảng số của chính nó cho thấy tiền cạn giữa kỳ.",
       "Mức chi tiêu mong muốn được nhập theo giá hôm nay và được quy đổi sang từng năm tương lai theo lạm phát. Thu nhập khác cũng vậy, nên mỗi đồng lương hưu hay tiền cho thuê bạn nhập vào sẽ giảm trực tiếp phần phải rút từ danh mục — và giảm theo đúng tỷ lệ đó khoản bạn phải dành thêm hôm nay.",
       "Khoản được giải là khoản của năm đầu. Từ năm sau nó tăng theo tỷ lệ ở ô “khoản dành thêm tăng mỗi năm”, nên tổng số tiền bạn thực sự bỏ ra lớn hơn 25 lần con số đầu tiên: 3.341.250.252 ₫ so với 1.750.185.081 ₫, theo các giả định mặc định.",
-      "Dòng “cùng khoản đó chia cho 12” đúng như tên gọi của nó: một phép quy đổi để dễ hình dung chứ không phải một kế hoạch góp hằng tháng. Mô hình cộng cả khoản của năm vào một lần, ở đầu năm, nên nếu thực tế bạn nộp mỗi tháng một ít thì mười một khoản trong số đó đến muộn và bạn sẽ về sau kế hoạch này một chút — không bao giờ vượt lên.",
+      "Dòng “cùng khoản đó chia cho 12” đúng như tên gọi của nó: một phép quy đổi để dễ hình dung chứ không phải một kế hoạch góp hằng tháng. Mô hình cộng cả khoản của năm vào một lần, ở đầu năm, nên nếu thực tế bạn nộp mỗi tháng một ít thì mười một khoản trong số đó đến muộn hơn: với mức sinh lời dương bạn sẽ về sau kế hoạch này một chút, ở mức 0% hai cách bằng nhau, và ở mức âm thì ngược lại.",
       "Nếu số tiền hiện có đã tự nuôi được cả kỳ, kết quả là 0 chứ không phải một con số nhỏ mà phép dò tình cờ dừng lại ở đó. Nếu ngay cả mức tối đa công cụ dò cũng không đủ, kết quả là “không có nghiệm” chứ không phải một con số trông có vẻ hợp lý.",
       "Hai phép kiểm chứng nằm sẵn trong phần kết quả. Dòng “mức chi giữ được đến hết” phải trùng với mức chi tiêu bạn đã nhập, và dòng “vốn khi nghỉ, theo giá hôm nay” phải trùng với dòng “vốn cần có” — 4.557.557.871 ₫ trên các giả định mặc định. Hai con số ấy đi hai đường khác nhau, một từ phép dò trên bản dự phóng và một từ hệ số niên kim đầu kỳ theo lợi suất thực, nên chúng trùng nhau là bằng chứng cả hai đều đúng.",
     ],
@@ -237,7 +237,7 @@ export const RETIREMENT_TARGET = {
       },
       {
         q: "Con số “chia cho 12” có phải là kế hoạch góp hằng tháng không?",
-        a: "Không, và đó là lý do dòng đó được đặt tên như vậy chứ không gọi là khoản góp mỗi tháng. Mô hình cộng cả khoản của năm vào một lần ở đầu năm, nên nó mô tả một khoản nộp vào tháng Một và khoản đó được hưởng đủ một năm lợi suất. Mười hai khoản nộp vào cuối mỗi tháng, mỗi khoản một phần mười hai, thì mười một khoản đến muộn: kết quả là bạn về sau kế hoạch này một chút, không bao giờ vượt lên. Con số mỗi tháng ở đây là để bạn so với ngân sách của mình, không phải một chỉ dẫn nộp tiền mà công cụ đã kiểm chứng.",
+        a: "Không, và đó là lý do dòng đó được đặt tên như vậy chứ không gọi là khoản góp mỗi tháng. Mô hình cộng cả khoản của năm vào một lần ở đầu năm, nên nó mô tả một khoản nộp vào tháng Một và khoản đó được hưởng đủ một năm lợi suất. Mười hai khoản nộp vào cuối mỗi tháng, mỗi khoản một phần mười hai, thì mười một khoản đến muộn hơn: với mức sinh lời dương, bạn về sau kế hoạch này một chút; ở mức 0% hai cách bằng nhau, và ở mức âm thì ngược lại. Con số mỗi tháng ở đây là để bạn so với ngân sách của mình, không phải một chỉ dẫn nộp tiền mà công cụ đã kiểm chứng.",
       },
       {
         q: "Vì sao tổng tăng trưởng lớn hơn tổng đã dành nhiều lần?",
@@ -245,7 +245,7 @@ export const RETIREMENT_TARGET = {
       },
       {
         q: "Tỷ lệ rút năm đầu 4,48% có an toàn không?",
-        a: "Đây là một chỉ dấu, không phải một kết luận, và công cụ không so nó với bất kỳ ngưỡng nào — làm vậy sẽ là một khẳng định về thị trường mà trang này không có cơ sở để đưa ra. Con số đáng dùng nằm ngay bên dưới: “mức chi giữ được đến hết” được giải từ chính số vốn và chính các giả định bạn nhập, nên nó trả lời cùng câu hỏi bằng tiền thay vì bằng tỷ lệ. Ở mức dành thêm đã giải, nó bằng đúng 240.000.000 ₫ bạn đã nhập, và đó chính là định nghĩa của khoản vừa đủ.",
+        a: "Tỷ lệ này cho biết năm đầu nghỉ hưu kế hoạch rút bao nhiêu phần trăm số vốn có lúc nghỉ. Một mình nó chưa nói được kế hoạch có an toàn hay không, vì kết quả còn tùy mức sinh lời từng năm, lạm phát và bạn sống bao lâu; công cụ vì thế không so nó với một ngưỡng nào. Con số đáng dùng nằm ngay bên dưới: “mức chi giữ được đến hết” được giải từ chính số vốn và chính các giả định bạn nhập, nên nó trả lời cùng câu hỏi bằng tiền thay vì bằng tỷ lệ. Ở mức dành thêm đã giải, nó bằng đúng 240.000.000 ₫ bạn đã nhập, và đó chính là định nghĩa của khoản vừa đủ.",
       },
       {
         q: "Vì sao tiền vừa hết đúng tuổi kết thúc, không dư đồng nào?",
@@ -257,7 +257,7 @@ export const RETIREMENT_TARGET = {
       },
       {
         q: "Bốn trang kế hoạch hưu trí khác nhau ở đâu?",
-        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: trang này giải ra khoản phải dành thêm mỗi năm; “Kế hoạch chạy ra sao” vẽ diễn biến từng năm một; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được. Vì cả bốn đọc từ cùng một kết quả, chúng không thể đưa ra những con số trái nhau về số vốn khi nghỉ hay về năm tiền cạn.",
+        a: "Chúng dùng chung một bộ giả định và một phép dự phóng, rồi mỗi trang mở đầu bằng một câu hỏi khác: trang này giải ra khoản phải dành thêm mỗi năm; “Kế hoạch chạy ra sao” vẽ diễn biến từng năm một; “Thiếu bao nhiêu” đo khoảng cách vốn và định giá ba cách bù; “Tiêu được bao nhiêu” tính mức chi mà số vốn duy trì được. Cùng một bộ số sẽ cho cùng kết quả về số vốn khi nghỉ và năm tiền cạn; nhưng số bạn nhập không được lưu và không tự chuyển giữa các trang — khi đổi trang, bạn cần nhập lại.",
       },
     ],
   },

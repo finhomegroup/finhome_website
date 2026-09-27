@@ -18,6 +18,7 @@ import { readFileSync } from "node:fs";
 import { CARD_PAYOFF } from "@/content/calculators/card-payoff";
 import { CARD_MINIMUM } from "@/content/calculators/card-minimum";
 import { planCardPayoff, type CardPlanResult } from "@/lib/calc/card-plan";
+import { paymentForMonths } from "@/lib/calc/card-debt";
 import { readDateFields } from "@/lib/calc/date-input";
 import { addMonths } from "@/lib/calc/dates";
 import {
@@ -302,6 +303,39 @@ describe("the assumptions are stated as assumptions", () => {
     expect(assumptions).toContain("phí thường niên");
     expect(assumptions).toContain("miễn lãi");
     expect(assumptions).toContain("neo theo ngày bắt đầu");
+  });
+});
+
+describe("the refusal and the formula follow the engine's branches", () => {
+  it("says a payment equal to the interest leaves the debt standing still", () => {
+    // `payFixed` refuses on `payment <= interest`, so the notice has to cover
+    // equality (debt flat) as well as a shortfall (debt grows) — 2026-09-26
+    // finding 19.
+    const notice = CARD_PAYOFF.form.noPayoffNotice;
+    expect(notice).toContain("dư nợ không giảm");
+    expect(notice).toContain("đứng yên");
+    expect(notice).toContain("thấp hơn thì");
+    expect(notice).not.toContain("nên mỗi tháng dư nợ tăng thêm phần lãi chưa trả và không bao giờ hết");
+  });
+
+  it("gives the payment field's help all three outcomes, equality included", () => {
+    // Sibling of finding 19, found in the final browser pass: the help used
+    // to say any payment not above the interest makes the debt grow.
+    const help = CARD_PAYOFF.form.paymentHelp;
+    expect(help).toContain("trả nhiều hơn thì dư nợ giảm");
+    expect(help).toContain("trả bằng đúng thì dư nợ đứng yên");
+    expect(help).toContain("trả ít hơn thì dư nợ tăng");
+    expect(help).not.toContain("nếu không dư nợ sẽ tăng thay vì giảm");
+  });
+
+  it("gives the reader the zero-rate branch the annuity formula needs", () => {
+    // At 0% the closed form is 0 ÷ 0; the engine divides the balance by the
+    // months instead, and the disclosed formula has to say so.
+    expect(paymentForMonths({ balance: 50_000_000, annualRatePercent: 0, months: 10 })).toBe(5_000_000);
+    const formula = CARD_PAYOFF.formula.detail.body[1];
+    expect(formula).toContain("(1 + r)^n");
+    expect(formula).toContain("0%");
+    expect(formula).toContain("dư nợ ÷ n");
   });
 });
 

@@ -212,9 +212,11 @@ export const AFFORDABILITY = {
     purchaseCostsExcludedNotice:
       "Chi phí mua nhà ngoài giá đang để 0, nên tầm giá ở trên CHƯA trừ thuế, phí công chứng, phí sang tên và tiền hoàn thiện. Những khoản này thường vài phần trăm giá nhà và lấy từ cùng số tiền bạn dùng để trả trước.",
     infeasibleNotice:
-      "Với thu nhập thực nhận, chi phí sinh hoạt, nợ đang trả và khoản muốn để dành như trên, hộ của bạn không còn đồng nào cho khoản trả nhà. Đây là kết quả thật, không phải lỗi. Ba việc thực sự thay đổi được con số: giảm nợ đang trả, hạ khoản muốn để dành trong giai đoạn đầu, hoặc chờ thêm để tích lũy nhiều hơn và vay ít hơn.",
+      // "không phải lỗi" replaced 2026-09-26: say where the zero comes from
+      // instead of defending the arithmetic.
+      "Với thu nhập thực nhận, chi phí sinh hoạt, nợ đang trả và khoản muốn để dành như trên, hộ của bạn không còn đồng nào cho khoản trả nhà: bốn khoản đó đã dùng hết thu nhập thực nhận. Ba việc thực sự thay đổi được con số: giảm nợ đang trả, hạ khoản muốn để dành trong giai đoạn đầu, hoặc chờ thêm để tích lũy nhiều hơn và vay ít hơn.",
     noRoomNotice:
-      "Với các con số này, không còn chỗ cho một khoản vay mua nhà: nợ đang trả và chi phí nhà ở khác đã dùng hết ngân sách mà các giới hạn cho phép. Đây là kết quả thật, không phải lỗi. Hãy thử giảm nợ hiện có, tăng thu nhập chứng minh được, hoặc chờ thêm để tích lũy.",
+      "Với các con số này, không còn chỗ cho một khoản vay mua nhà: nợ đang trả và chi phí nhà ở khác đã dùng hết ngân sách mà các giới hạn cho phép, nên phần còn lại cho khoản trả nhà bằng 0. Hãy thử giảm nợ hiện có, tăng thu nhập chứng minh được, hoặc chờ thêm để tích lũy.",
 
     // ORIGINAL ROW 7: "so kịch bản". A real baseline-versus-changed comparison
     // on the same model, held only while this page is open.
@@ -397,8 +399,16 @@ export const AFFORDABILITY = {
         a: "Vì con số ở đây tính từ giả định của bạn, còn ngân hàng thẩm định theo hồ sơ thật. Ba chỗ hay lệch nhất: thu nhập được xét là thu nhập chứng minh được qua sao kê và hợp đồng lao động, thường thấp hơn thu nhập thực của hộ; mức trả tối thiểu của thẻ tín dụng và các khoản trả góp nhỏ đều được tính vào nợ hiện có, kể cả khi bạn luôn trả hết dư nợ thẻ; và phần được vay còn phụ thuộc giá thẩm định tài sản bảo đảm, chứ không phải giá bạn mua. Hãy hỏi ngân hàng cho vay bao nhiêu phần trăm giá nhà rồi nhập vào ô “Giả định vay được tối đa”.",
       },
       {
-        q: "Tiền tích lũy nên để bao nhiêu cho trả trước?",
-        a: "Không phải toàn bộ. Hãy giữ lại quỹ dự phòng bằng 3–6 tháng chi phí sinh hoạt cộng với khoản trả nợ, rồi mới nhập phần còn lại vào ô này. Ngoài ra còn thuế, phí công chứng, phí sang tên, phí đăng ký giao dịch bảo đảm và tiền hoàn thiện nội thất — những khoản này không nằm trong phép tính và thường lên tới vài phần trăm giá nhà.",
+        // CORRECTED 2026-09-26. The old answer told the reader to subtract a
+        // reserve BEFORE entering savings and said purchase fees were outside
+        // the model. Both contradict the form above it: "Tiền tích lũy đang
+        // có" takes the whole amount, "Giữ lại làm quỹ dự phòng" subtracts it
+        // once, and "Chi phí mua nhà ngoài giá" models the fees from the same
+        // cash. Following the old advice double-counted the reserve. No
+        // reserve size is prescribed: none was verified, and the suite makes
+        // no unverified population claim.
+        q: "Tôi có nên nhập toàn bộ tiền tích lũy không?",
+        a: "Có. Ô “Tiền tích lũy đang có” nhận toàn bộ số tiền bạn có sẵn; phần muốn giữ lại cho việc bất ngờ nhập vào ô “Giữ lại làm quỹ dự phòng”, và công cụ trừ phần đó đúng một lần. Giữ lại bao nhiêu là quyết định của bạn — hãy nghĩ tới số tháng sinh hoạt và trả nợ bạn muốn được che chắn nếu thu nhập gián đoạn. Thuế, phí công chứng, phí sang tên và tiền hoàn thiện cũng đã có chỗ: nhập tỷ lệ vào ô “Chi phí mua nhà ngoài giá” và công cụ lấy chúng từ cùng số tiền đó, bạn không cần tự trừ trước. Nếu để ô đó bằng 0, kết quả sẽ nói rõ là chưa tính.",
       },
       {
         q: "Kéo dài kỳ hạn để mua nhà đắt hơn có nên không?",

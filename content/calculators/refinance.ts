@@ -77,6 +77,7 @@ export const REFINANCE = {
   formula: {
     title: "Cách đọc phép so sánh",
     body: [
+      "Hiểu ngay: chuyển sang khoản vay mới chỉ có lợi khi phần lãi tiết kiệm được lớn hơn tổng phí phải trả để chuyển, tính đến đúng tháng bạn còn giữ khoản vay. Công cụ vẽ hai đường vì có hai câu hỏi khác nhau: đường tiết kiệm chi phí tính cả số còn nợ, nên nó trả lời “có rẻ hơn thật không”; đường tiền đã chi chỉ tính tiền đã rời ví, nên nó trả lời “tiền mặt có nhẹ hơn không”. Kỳ hạn mới dài hơn thường làm đường thứ hai trông đẹp trước, trong khi đường thứ nhất vẫn âm.",
       "Ở tháng H bạn chọn, chi phí phía cũ = tổng gốc và lãi đã trả + dư nợ cũ; phía mới = tổng gốc và lãi đã trả + dư nợ mới + tất cả phí trả ngay. Tiết kiệm là phía cũ trừ phía mới. Vì gốc ban đầu bằng nhau, kết quả cũng bằng lãi cũ đã trả − lãi mới đã trả − phí.",
       "Chênh lệch tiền đã chi = khoản đã trả của gói cũ − khoản đã trả của gói mới − phí. Con số này không tính dư nợ nên chỉ mô tả dòng tiền, không phải tổng lợi ích kinh tế. Khi cả hai khoản vay đã trả hết, hai thước đo mới trùng nhau.",
       "Mốc bù phí chi phí là tháng đầu lãi tiết kiệm lũy kế bù được phí trong khoảng bạn chọn. Nếu không có phí, hai bên hòa tại tháng 0, kể cả khi chuyển khoản vay sẽ đắt hơn sau đó. Một lần cắt đường 0 không bảo đảm luôn có lợi về sau.",

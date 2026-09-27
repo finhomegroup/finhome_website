@@ -135,7 +135,9 @@ export const US_INFLATION = {
   // before trusting two rows that look like they should agree.
   conflationNoticeDetailTitle: "Cụ thể: hai con số trên cùng một mức giá",
   conflationNoticeDetail:
-    "Giá tăng gấp đôi là lạm phát 100%, nhưng 1 USD giờ mua được nửa số hàng chứ không phải không mua được gì — nên sức mua mất 50%. Giá tăng gấp ba là lạm phát 200% và sức mua mất 66,67%. Công cụ hiển thị cả hai dòng riêng biệt, và bộ kiểm thử quét một dải rộng để bảo đảm dòng thứ hai luôn nhỏ hơn dòng thứ nhất.",
+    // 2026-09-26: the closing clause praised the test suite to the reader.
+    // What the reader needs is why the two rows are separate.
+    "Giá tăng gấp đôi là lạm phát 100%, nhưng 1 USD giờ mua được nửa số hàng chứ không phải không mua được gì — nên sức mua mất 50%. Giá tăng gấp ba là lạm phát 200% và sức mua mất 66,67%. Công cụ hiển thị cả hai dòng riêng biệt để bạn không đọc dòng này thành dòng kia: dòng đầu nói giá đã tăng bao nhiêu, dòng sau nói tiền của bạn còn mua được bao nhiêu.",
 
   formula: {
     title: "Cách tính",

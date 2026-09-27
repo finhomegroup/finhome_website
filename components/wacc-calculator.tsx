@@ -46,15 +46,28 @@ const FORM_ID = "wacc-nhap";
 const RESULT_ID = "wacc-ket-qua";
 
 export function WaccCalculator() {
-  const fields = useCalcFields({
-    equityValue: C.form.defaultEquityValue,
-    costOfEquity: C.form.defaultCostOfEquity,
-    debtValue: C.form.defaultDebtValue,
-    costOfDebt: C.form.defaultCostOfDebt,
-    tax: C.form.defaultTax,
-    preferredValue: C.form.defaultPreferredValue,
-    costOfPreferred: C.form.defaultCostOfPreferred,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`.
+  const fields = useCalcFields(
+    {
+      equityValue: C.form.defaultEquityValue,
+      costOfEquity: C.form.defaultCostOfEquity,
+      debtValue: C.form.defaultDebtValue,
+      costOfDebt: C.form.defaultCostOfDebt,
+      tax: C.form.defaultTax,
+      preferredValue: C.form.defaultPreferredValue,
+      costOfPreferred: C.form.defaultCostOfPreferred,
+    },
+    {
+      equityValue: "money",
+      costOfEquity: "rate",
+      debtValue: "money",
+      costOfDebt: "rate",
+      tax: "rate",
+      preferredValue: "money",
+      costOfPreferred: "rate",
+    },
+  );
 
   const equityValue = parseMoney(fields.values.equityValue);
   const costOfEquity = parseDecimal(fields.values.costOfEquity);

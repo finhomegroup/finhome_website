@@ -288,4 +288,25 @@ describe("the page's honesty copy", () => {
     expect(C.form.methodHelp).toContain("Trả gốc đều");
     expect(C.form.methodHelp).toContain("tổng lãi");
   });
+
+  it("opens the method with the first month's split, read off the engine", () => {
+    // 2026-09-26: the reader-first opening paragraph names the instalment
+    // and its first-month interest and principal on the shipped defaults.
+    // Each figure is the schedule's own, so a moved default is a red test.
+    const result = computeLoan({
+      amount: parseMoney(C.form.defaultAmount)!,
+      annualRatePercent: parseDecimal(C.form.defaultRate)!,
+      // `defaultTerm` is in years on this route.
+      termMonths: Number(C.form.defaultTerm) * 12,
+    })!;
+    const first = result.schedule[0];
+    const opening = C.formula.body[0];
+    expect(opening).toContain(formatMoney(result.monthlyPrincipalInterest));
+    expect(opening).toContain(formatMoney(first.interest));
+    expect(opening).toContain(formatMoney(first.principal));
+    expect(first.interest + first.principal).toBeCloseTo(
+      result.monthlyPrincipalInterest,
+      6,
+    );
+  });
 });

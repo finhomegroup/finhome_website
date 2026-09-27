@@ -82,7 +82,13 @@ export function InterestOnlyCalculator({
     promoRate: C.form.defaultPromoRate,
     postRate: C.form.defaultPostRate,
   };
-  const fields = useCalcFields(initial);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Term, grace and promo months are counts and format nothing.
+  const fields = useCalcFields(initial, {
+    amount: "money",
+    promoRate: "rate",
+    postRate: "rate",
+  });
 
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],

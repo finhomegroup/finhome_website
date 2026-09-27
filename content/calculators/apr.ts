@@ -37,7 +37,11 @@ export const APR = {
     // every month of the term. A promotional offer belongs in the comparison
     // tool, which prices the two phases.
     rateHelp:
-      "Mức lãi danh nghĩa ghi trong hợp đồng. Công cụ giữ NGUYÊN mức này suốt kỳ hạn — nếu báo giá của bạn có lãi ưu đãi rồi thả nổi, hãy nhập mức sau ưu đãi ở đây, hoặc dùng công cụ so sánh khoản vay để tính cả hai giai đoạn.",
+      // 2026-09-26 (independent review findings 9, 12, 16): the plain
+      // contract-rate instruction with no gloss on "danh nghĩa", and the
+      // one-rate run named as the scenario it is — not the later-period
+      // payment. The two-phase destination is the comparison tool.
+      "Mức lãi ghi trong hợp đồng, tính theo năm, ví dụ 8,5. Công cụ giữ NGUYÊN mức này cho cả khoản vay suốt kỳ hạn, nên kết quả là một kịch bản lãi cố định — không phải khoản trả thật của giai đoạn sau ưu đãi. Nếu báo giá của bạn có lãi ưu đãi rồi thả nổi, hãy dùng công cụ so sánh khoản vay để tính cả hai giai đoạn; ở đây bạn có thể nhập một mức bất kỳ để thử một kịch bản.",
     rateInvalid: "Vui lòng nhập lãi suất từ 0 trở lên.",
     defaultRate: "8,5",
 
@@ -197,6 +201,10 @@ export const APR = {
   formula: {
     title: "Cách tính",
     body: [
+      // Reader-first opening, 2026-09-26: what the figure MEANS before the
+      // equation that produces the instalment. The two figures are the
+      // page's own defaults, already quoted (and pinned) further down.
+      "Hiểu ngay: APR trả lời câu hỏi “nếu tính cả phí, khoản vay này thực ra lãi bao nhiêu phần trăm một năm?”. Cách làm: lấy đúng số tiền bạn thực nhận sau phí và đúng các khoản bạn phải trả, rồi tìm mức lãi làm hai bên khớp nhau. Với ví dụ mặc định, hợp đồng ghi 8,5% nhưng vì 30 triệu phí, mức lãi bạn thực chịu là 8,7081%.",
       // CORRECTED. "Phí không làm thay đổi con số này" is true only of fees
       // paid in cash. A financed fee enlarges P and therefore the payment —
       // which the last paragraph already explains, so the two were in
@@ -239,7 +247,8 @@ export const APR = {
       },
       {
         q: "APR có tính lãi suất thả nổi không?",
-        a: "Không. Cả phép tính giả định lãi suất không đổi suốt kỳ hạn. Với khoản vay mua nhà tại Việt Nam, phần lớn kỳ hạn chạy theo lãi thả nổi, nên hãy nhập mức lãi SAU ưu đãi. Nhập mức ưu đãi năm đầu sẽ cho một APR đẹp nhưng vô nghĩa.",
+        // 2026-09-26 (finding 16): no assumed direction of the later rate.
+        a: "Không. Cả phép tính giữ một mức lãi cho cả khoản vay suốt kỳ hạn, nên kết quả là một kịch bản lãi cố định. Với khoản vay có lãi ưu đãi rồi thả nổi, mỗi mức bạn nhập chỉ cho một kịch bản: nhập mức ưu đãi thì APR phản ánh mức đó, nhập mức sau ưu đãi thì phản ánh mức kia — không kịch bản nào là chi phí thật của cả kỳ, và APR của hai lần chạy cao hay thấp hơn nhau tùy mức sau ưu đãi cao hay thấp hơn mức ưu đãi. Muốn tính đúng cả hai giai đoạn trên dư nợ còn lại, hãy dùng công cụ So sánh khoản vay.",
       },
     ],
   },

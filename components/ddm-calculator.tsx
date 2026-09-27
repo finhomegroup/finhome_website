@@ -33,13 +33,18 @@ const FORM_ID = "co-phieu-deu-nhap";
 const RESULT_ID = "co-phieu-deu-ket-qua";
 
 export function DdmCalculator() {
-  const fields = useCalcFields({
-    dividend: C.form.defaultDividend,
-    mode: C.form.defaultMode,
-    growth: C.form.defaultGrowth,
-    required: C.form.defaultRequired,
-    price: C.form.defaultPrice,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Mode is a list.
+  const fields = useCalcFields(
+    {
+      dividend: C.form.defaultDividend,
+      mode: C.form.defaultMode,
+      growth: C.form.defaultGrowth,
+      required: C.form.defaultRequired,
+      price: C.form.defaultPrice,
+    },
+    { dividend: "money", growth: "rate", required: "rate", price: "money" },
+  );
 
   const dividend = parseMoney(fields.values.dividend);
   const growth = parseDecimal(fields.values.growth);

@@ -23,14 +23,26 @@ const FORM_ID = "capm-nhap";
 const RESULT_ID = "capm-ket-qua";
 
 export function CapmCalculator() {
-  const fields = useCalcFields({
-    riskFree: C.form.defaultRiskFree,
-    beta: C.form.defaultBeta,
-    marketMode: C.form.defaultMarketMode,
-    marketReturn: C.form.defaultMarketReturn,
-    marketPremium: C.form.defaultMarketPremium,
-    actual: C.form.defaultActual,
-  });
+  // The second object formats while typing, by the grammar each key is PARSED
+  // with below — see `FieldFormats`. Every figure here is a decimal; the
+  // market mode is a list.
+  const fields = useCalcFields(
+    {
+      riskFree: C.form.defaultRiskFree,
+      beta: C.form.defaultBeta,
+      marketMode: C.form.defaultMarketMode,
+      marketReturn: C.form.defaultMarketReturn,
+      marketPremium: C.form.defaultMarketPremium,
+      actual: C.form.defaultActual,
+    },
+    {
+      riskFree: "rate",
+      beta: "rate",
+      marketReturn: "rate",
+      marketPremium: "rate",
+      actual: "rate",
+    },
+  );
 
   const byReturn = fields.values.marketMode === "return";
 

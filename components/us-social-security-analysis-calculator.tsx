@@ -75,7 +75,9 @@ function absenceValue(absence: BreakEvenAbsence): string {
 }
 
 export function UsSocialSecurityAnalysisCalculator() {
-  const fields = useCalcFields(F.defaults);
+  // Formats while typing, by the grammar each key is PARSED with below — see
+  // `FieldFormats`. Birth year and end age are counts and format nothing.
+  const fields = useCalcFields(F.defaults, { pia: "money", discount: "rate" });
   const v = fields.values;
 
   const pia = parseMoney(v.pia);
