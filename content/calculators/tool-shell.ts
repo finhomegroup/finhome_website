@@ -63,6 +63,29 @@ export const TOOL_SHELL = {
       "Còn ô chưa hợp lệ. Nút này đưa bạn tới ô đó và giữ nguyên những gì bạn đã nhập.",
   },
 
+  /**
+   * The semantic result card's WORDS, one per tone — 2026-09-27.
+   *
+   * The word is the channel and the colour only agrees with it, so each label
+   * has to be true on every tool that uses it. None of them is an approval:
+   * "Đạt theo giả định" names the reader's own assumptions as the condition,
+   * and "Chưa kết luận" is what a missing or invalid essential figure gets —
+   * never a green left over from the last valid keystroke. A tool may pass
+   * its own label where it has a better name for the same state.
+   */
+  status: {
+    labels: {
+      shortfall: "Chưa đủ",
+      met: "Đạt theo giả định",
+      caution: "Cần lưu ý",
+      unknown: "Chưa kết luận",
+    },
+    /** Before the field-jump buttons. They move focus; they change nothing. */
+    actionsLabel: "Thử điều chỉnh trên trang này:",
+    /** Joins the label and the title in the one announced sentence. */
+    announcementJoin: ". ",
+  },
+
   /** The progressive-disclosure panel for advanced inputs. */
   advanced: {
     summaryNone: "Không có thiết lập nâng cao nào đang ảnh hưởng kết quả.",

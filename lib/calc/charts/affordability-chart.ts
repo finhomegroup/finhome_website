@@ -30,6 +30,7 @@
  */
 
 import type { AffordabilityResult } from "@/lib/calc/affordability";
+import type { AffordabilityStatus } from "@/lib/calc/affordability-status";
 import {
   barOf,
   emptyBars,
@@ -37,8 +38,14 @@ import {
   LEDGER_RESIDUE_DONG,
   segment,
 } from "@/lib/calc/charts/bars";
-import { compactMoney, fill, type MoneyWords } from "@/lib/calc/charts/labels";
-import type { BarChartModel } from "@/lib/calc/charts/types";
+import {
+  compactMoney,
+  fill,
+  fullMoney,
+  type MoneyWords,
+} from "@/lib/calc/charts/labels";
+import type { BarChartModel, BarMark } from "@/lib/calc/charts/types";
+import { moneyCell } from "@/lib/calc/table-cell";
 
 export type PriceCompositionLabels = MoneyWords & {
   title: string;
@@ -239,6 +246,154 @@ export function priceCompositionModel(
       amountColumn: labels.amountColumn,
     },
   );
+}
+
+export type TargetPriceLabels = MoneyWords & {
+  title: string;
+  /** `{unit}` substituted. */
+  axis: string;
+  rangeBar: string;
+  targetBar: string;
+  withinSegment: string;
+  overSegment: string;
+  /** The word on the part of the price above the range. */
+  overMark: string;
+  /** The word on the part of the range the price does not reach. */
+  headroomMark: string;
+  /** `{target}`, `{range}`, `{gap}` substituted — exact amounts. */
+  summaryAbove: string;
+  /** `{target}`, `{range}`, `{headroom}` substituted — exact amounts. */
+  summaryWithin: string;
+  /** `{target}`, `{range}` substituted. */
+  summaryAt: string;
+  assumptions: readonly string[];
+  tableCaption: string;
+  itemColumn: string;
+  amountColumn: string;
+  unavailableReason: string;
+  unavailableRecovery: string;
+};
+
+/**
+ * The home the reader is looking at, against the range — 2026-09-27.
+ *
+ * Null — no figure at all — unless there IS a target and a positive range:
+ * a range on its own is not a comparison, and the page does not draw chrome
+ * for nothing.
+ *
+ * Two bars on one axis: the range, and the target price split into the part
+ * inside the range and the part above it. The ANNOTATION follows the
+ * status, never the sign: above the range the excess is marked "Cao hơn tầm
+ * giá"; below it the headroom is marked only when the comparison is MET, so
+ * an amber state (costs or reserve left out) shows no green it has not
+ * earned. The summary states EXACT terms, because its content is a
+ * difference (docs §3: such a sentence must not round its own terms). The
+ * gap is a PRICE difference; `assumptions` say it is not cash to add.
+ *
+ * No financial model: every figure is the engine's `maxPrice` or the
+ * entered price, and their difference.
+ */
+export function targetPriceModel(
+  status: AffordabilityStatus,
+  labels: TargetPriceLabels,
+): BarChartModel | null {
+  const { targetPrice, maxPrice } = status;
+  if (targetPrice === null || maxPrice === null || !(maxPrice > 0)) return null;
+
+  const exact = status.kind === "atRange";
+  const over = exact ? 0 : Math.max(0, targetPrice - maxPrice);
+  const within = exact ? targetPrice : Math.min(targetPrice, maxPrice);
+
+  const overMark: BarMark[] =
+    status.kind === "aboveRange" && status.priceGap !== null
+      ? [
+          {
+            key: "overRange",
+            tone: "shortfall",
+            label: labels.overMark,
+            start: maxPrice,
+            value: status.priceGap,
+            valueLabel: fullMoney(status.priceGap, labels),
+          },
+        ]
+      : [];
+  const headroomMark: BarMark[] =
+    status.tone === "met" && status.headroom !== null
+      ? [
+          {
+            key: "headroom",
+            tone: "met",
+            label: labels.headroomMark,
+            start: targetPrice,
+            value: status.headroom,
+            valueLabel: fullMoney(status.headroom, labels),
+          },
+        ]
+      : [];
+
+  const rangePlain = barOf(
+    "range",
+    labels.rangeBar,
+    [segment("range", labels.rangeBar, maxPrice, labels)],
+    labels,
+  );
+  const targetPlain = barOf(
+    "target",
+    labels.targetBar,
+    [
+      segment("withinRange", labels.withinSegment, within, labels),
+      segment("overRange", labels.overSegment, over, labels),
+    ],
+    labels,
+    true,
+  );
+  const rangeBar =
+    headroomMark.length > 0 ? { ...rangePlain, marks: headroomMark } : rangePlain;
+  const targetBar =
+    overMark.length > 0 ? { ...targetPlain, marks: overMark } : targetPlain;
+
+  const words = {
+    target: fullMoney(targetPrice, labels),
+    range: fullMoney(maxPrice, labels),
+  };
+  const summary =
+    status.kind === "aboveRange" && status.priceGap !== null
+      ? fill(labels.summaryAbove, {
+          ...words,
+          gap: fullMoney(status.priceGap, labels),
+        })
+      : exact || status.headroom === null
+        ? fill(labels.summaryAt, words)
+        : fill(labels.summaryWithin, {
+            ...words,
+            headroom: fullMoney(status.headroom, labels),
+          });
+
+  const model = finishBars(
+    [rangeBar, targetBar],
+    [
+      { key: "range", label: labels.rangeBar },
+      { key: "withinRange", label: labels.withinSegment },
+      ...(over > 0 ? [{ key: "overRange", label: labels.overSegment }] : []),
+    ],
+    labels.axis,
+    labels,
+    {
+      title: labels.title,
+      summary,
+      assumptions: labels.assumptions,
+      tableCaption: labels.tableCaption,
+      itemColumn: labels.itemColumn,
+      amountColumn: labels.amountColumn,
+    },
+  );
+  // The annotated span as its own row, so the table says what the texture
+  // says. Raw đồng, like every other cell.
+  const markRows = [...overMark, ...headroomMark].map((mark) => [
+    mark.label,
+    moneyCell(mark.value),
+  ]);
+  return { ...model, table: { ...model.table, rows: [...model.table.rows, ...markRows] } };
 }
 
 /** Where the month's money goes — or, in ceiling mode, what the ratios allow. */

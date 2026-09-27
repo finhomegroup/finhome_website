@@ -74,7 +74,7 @@ import {
   fullMoney,
 } from "@/lib/calc/charts/labels";
 import { formatDecimal } from "@/lib/calc/number";
-import type { LineChartModel } from "@/lib/calc/charts/types";
+import type { ChartMarkTone, LineChartModel } from "@/lib/calc/charts/types";
 import {
   valuePathsModel,
   type ValuePath,
@@ -126,6 +126,19 @@ export type LongTermTrajectoryLabels = ValuePathsLabels & {
   yearColumn: string;
   realColumn: string;
   nominalColumn: string;
+  /**
+   * The unmet span, named — 2026-09-27 result-status plan.
+   * `{depletionAge}`, `{endAge}`, `{yearsShort}` substituted. Drawn as a band
+   * from the depletion date to the horizon and listed in words beside the
+   * figure; only when the plan falls short.
+   */
+  unmetBand: string;
+  /** The table's fifth column on a short plan, and its four cell words. */
+  statusColumn: string;
+  statusSaving: string;
+  statusCovered: string;
+  statusDepletes: string;
+  statusUnmet: string;
 };
 
 export type LongTermWithdrawalLabels = ValuePathsLabels & {
@@ -269,7 +282,7 @@ export function longTermTrajectoryModel(
   ];
 
   const retirementDate = Math.max(0, plan.input.retirementAge - startAge);
-  const markers = [
+  const markers: { period: number; label: string; tone?: ChartMarkTone }[] = [
     {
       // The retirement DATE, where `balanceAtRetirement` sits — the end of
       // the last accumulation year is the same instant.
@@ -290,15 +303,17 @@ export function longTermTrajectoryModel(
   // 410.128.666 ₫, chỉ trả được 410.128.666 ₫, thiếu 0 ₫". A policy the model
   // owns is not a policy the product keeps until every presenter reads it.
   const funded = fundedAtBoundary(result, plan.input.endAge).funded;
-  if (!funded && result.depletionAge !== null) {
+  const depletionAge = funded ? null : result.depletionAge;
+  if (depletionAge !== null) {
     // The START of the year the plan could not pay in full, which is what
-    // "cạn ở tuổi X" means.
+    // "cạn ở tuổi X" means. Toned: this rule IS the answer's shortfall.
     markers.push({
-      period: result.depletionAge - startAge,
+      period: depletionAge - startAge,
       label: fill(labels.depletionMarker, {
-        age: String(result.depletionAge),
-        year: String(result.depletionAge - startAge),
+        age: String(depletionAge),
+        year: String(depletionAge - startAge),
       }),
+      tone: "shortfall",
     });
   } else {
     markers.push({
@@ -392,25 +407,40 @@ export function longTermTrajectoryModel(
       { label: labels.yearColumn, numeric: true, nowrap: true },
       { label: labels.realColumn, numeric: true },
       { label: labels.nominalColumn, numeric: true },
+      // The figure's band, as a column: a short plan's table says which rows
+      // are covered and which are not, so the picture and its text agree.
+      ...(depletionAge === null ? [] : [{ label: labels.statusColumn }]),
     ],
     rows: checkpoints(span, mandatory).flatMap((date) => {
       const balances = balancesAt(date);
       if (balances === null) return [];
+      const age = startAge + date;
       return [
         [
           // The age AT that date, which is what makes the row readable: at
           // date 0 it is today's age, and at the retirement date it is the
           // retirement age.
-          countCell(startAge + date),
+          countCell(age),
           countCell(date),
           moneyCell(balances.real),
           moneyCell(balances.nominal),
+          ...(depletionAge === null
+            ? []
+            : [
+                age < plan.input.retirementAge
+                  ? labels.statusSaving
+                  : age < depletionAge
+                    ? labels.statusCovered
+                    : age === depletionAge
+                      ? labels.statusDepletes
+                      : labels.statusUnmet,
+              ]),
         ],
       ];
     }),
   };
 
-  return valuePathsModel(paths, labels, {
+  const model = valuePathsModel(paths, labels, {
     summary,
     detail,
     markers,
@@ -421,6 +451,28 @@ export function longTermTrajectoryModel(
     xTickLabel: (period) =>
       formatDecimal(startAge + period, Number.isInteger(period) ? 0 : 1),
   });
+
+  /**
+   * The years the plan does not pay for, from the START of the depletion year
+   * to the horizon. A span, not a negative balance: the engine stops the fund
+   * at zero, and drawing a debt below the axis would invent one.
+   */
+  const bands =
+    depletionAge === null || model.unavailable !== null
+      ? []
+      : [
+          {
+            from: depletionAge - startAge,
+            to: span,
+            tone: "shortfall" as const,
+            label: fill(labels.unmetBand, {
+              depletionAge: String(depletionAge),
+              endAge: String(plan.input.endAge),
+              yearsShort: String(result.yearsShort),
+            }),
+          },
+        ];
+  return { ...model, bands };
 }
 
 /**

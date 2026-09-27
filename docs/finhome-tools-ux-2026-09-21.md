@@ -111,6 +111,142 @@ Provenance for the above lives in the audit artifact
 **references only**: nothing in this repository, its tests or its CI may depend on them
 existing. The factual coverage is embedded here and in `docs/visual-evidence.json`.
 
+## 1b. Semantic result status — 2026-09-27 (implemented; NOT browser-verified)
+
+**Corrections after Codex's independent review (same day, same Claude session).** Three
+repairs; they SUPERSEDE the matching statements in the tables below.
+
+1. **One live region, sentence only.** `ResultGroup`'s `announcement` is now an opt-in
+   MODE: the single `data-results-live` region is a visually hidden `div` holding only
+   the settled sentence, and the rows (plus the card) render in a plain visible block
+   (`data-calc-rows`) OUTSIDE it. A keystroke no longer announces each changed row and
+   then the sentence. Without `announcement` (every non-pilot route) the rows are the
+   live region exactly as before. The anchor `id` / `tabIndex` / `aria-labelledby`
+   are unchanged, so the CTA lands where it did. The sentence starts empty at page load.
+2. **Essentials and a malformed target come before any verdict.** Blank essential living
+   costs are `unknown` on the car page even when the partial month is negative, and on
+   the housing page even above or at the range; a malformed target price is `unknown`
+   before anything else. The "an omission can only make it worse" argument now applies
+   ONLY to optional costs (running costs, purchase cost, reserve) — a known shortfall
+   with those at 0 stays red. The engine's `infeasible` also fires at a residual of
+   EXACTLY zero; that is now `noMonthlyHeadroom` (caution: nothing is short, there is
+   no room for an instalment, the range is the cash-only price), also for a target
+   within that price. Only a truly negative residual is `cashflowShort` (red). No
+   engine formula changed.
+3. **Chart annotations on a separate rail.** The red hatch over category segments
+   measured 1,37:1 over grey `ink-3` and 2,18:1 over `brand-green`. Bar marks and the
+   retirement band are now solid status fills on their own rail — directly under the
+   bar track / under the plot baseline, same axis, white ground — so the adjacent pair
+   is status ink vs white (shortfall 6,6:1, met 5,1:1 as computed by the contrast
+   test). Segments keep their colour and texture untouched; the text label, legend and
+   table rows are unchanged. `StatusHatchDefs` was removed. The plot's faint tint over
+   the unmet years remains decoration only.
+
+Focused checks after the repairs are listed at the end of this section.
+
+**Two further repairs from Codex's browser review (same session).** (4) The card's
+actions caption used `ink-3`, which Codex measured at 4,425:1 on the red tint and
+4,423:1 on the green tint (14 px, below 4,5:1); it is now `ink-2`, and
+`result-status-contrast.test.ts` reads every `text-*` ink in `result-status.tsx` and
+checks it against all three tints. (5) On `kha-nang-mua-nha`, with a target price
+entered, the loan and monthly-payment rows are relabelled "…ở mức giá tối đa tham khảo"
+and a visible note before the figures says they are not the loan or payment for the home
+being looked at (no loan is computed at the target). Without a target, and on
+`nha-o-xa-hoi`, the original labels render unchanged. Stale chart comments that still
+described a texture overlay were corrected to the rail. Checks for these two: targeted
+vitest files and `tsc` only; the rendered result is Codex's to verify in a browser.
+
+**Copy repair from the real UI (same session).** (6) The zero-headroom housing state no
+longer says there is no monthly buffer at all: it says the savings the reader entered are
+kept and only the ADDITIONAL surplus is zero; the engine's `infeasibleNotice` (which
+repeats it and advises borrowing less) is no longer shown in that state, in the card or
+below. (7) The car's "try" sentence now conditions the longer-term trade-off on still
+using an interest-bearing loan, because a cash-only purchase has no term to extend. No
+formula, tone or feature changed; targeted render tests and `tsc` only.
+
+Source of the decision: the approved plan at
+`../artifacts/finhome-result-status-2026-09-27/plan.md` (all four steps approved by the
+owner). Implemented by Claude session `9af4faa6-44fd-4ae3-bbbd-c8fe59557bf6`; independent
+verification is Codex's. **No commit, push, merge or deploy.** Scope: three pilot routes —
+`ke-hoach-huu-tri`, `vay-mua-xe`, `kha-nang-mua-nha` — plus the shared, neutral-by-default
+presentation. The other 73 live routes render no status card. `nha-o-xa-hoi` shares the
+affordability component and is **deliberately excluded** (`programme === "commercial"`
+gates the pilot; a render test pins that NOXH emits no card, no target field and no
+announcer).
+
+**What changed, as mechanisms.**
+
+| File | What it owns |
+|---|---|
+| `lib/calc/result-status.ts` | `RESULT_TONES` = `shortfall` / `met` / `caution` / `unknown` — meanings, not colours — and `atLedgerZero`, which reuses `LEDGER_RESIDUE_DONG` (0,5 ₫). No other tolerance exists. |
+| `lib/calc/retirement-status.ts` | Tone from `fundedAtBoundary` only. `caution` = funded with nothing to spare (a forgiven residue, or the portfolio ends at 0 ₫ with a positive spend). `fundedByOtherIncome` is its own kind. No "gần thiếu" ratio. |
+| `lib/calc/vehicle-budget-status.ts` | Order: unknown / payment unknown → short before the car → short → blank essentials (unknown) → exact zero (caution) → running costs 0 (caution) → surplus (met). |
+| `lib/calc/affordability-status.ts` | A positive range alone is `unknown` ("tham khảo") or `caution` (0% purchase cost or 0 reserve). With a target: above → `shortfall`; exact (±0,5 ₫) → `caution`; within → `met` only when household mode, essentials known, costs and reserve modelled. Ceiling mode is never `met`. `financingBlocked` / `infeasible` / `noRoom` keep separate kinds (cash vs month vs room). |
+| `components/calc/result-status.tsx` | `ResultStatusCard` (word + icon → title → one fact → reasons → next → field-jump buttons), `announcementOf`, `useSettledText` (400 ms, empty at page load, withdrawn while a newer text settles). |
+| `components/calc/status-tone.tsx` | The ONE tone → colour/icon map, and the shortfall hatch paint server. |
+| `app/globals.css` | `--color-status-{shortfall,met,caution}` + `-bg`. Ratios recomputed by `components/calc/result-status-contrast.test.ts` (≥ 4,5:1 on own tint, white and `bg-soft`). |
+| `ResultGroup` | `status` (card under the `h2`, OUTSIDE the live div) and `announcement` (one `sr-only`, `aria-atomic` sentence INSIDE it). Still exactly one live region. |
+| `ResultCta` | `answer.status` — the same tone and word inside the existing `aria-hidden` pinned summary. The button stays `bg-brand-green-ink`. |
+| `NumberField` | `fieldKey` → `data-calc-field`, the target of the card's jumps. Absent unless passed. |
+| Charts | `StackedBar.marks` (a textured/outlined span OVER segments — never a segment, never recolouring an expense), `LineChartModel.bands` and a toned marker; `ChartFigure` names each in text. |
+
+**Per route.**
+
+- **Retirement.** The old conclusion sentences became the card: "Kế hoạch chưa đủ đến tuổi
+  {endAge}" + "Tiền bắt đầu thiếu ở tuổi {depletionAge}, sớm hơn mục tiêu {yearsShort} năm."
+  The verdict row, shortfall row and their exact figures are unchanged; the annual gap is still
+  labelled as a spending gap, never a contribution. Jumps: để dành / tuổi nghỉ / mức chi. The
+  trajectory figure gains a shortfall marker, a hatched band from the depletion date to the
+  horizon, a text note naming it, and — on a short plan only — a fifth table column
+  "Tình trạng". No negative balance is drawn.
+- **Car.** Card worded from `vehicleBudgetStatus`; the five cause notices (unknown instalment,
+  blank essentials, short before/after, running costs excluded) are now its reasons, rendered
+  once. Plan fixtures reproduced in tests: running 5 triệu → shortfall "thiếu khoảng 1,5 triệu
+  mỗi tháng", exact row 1.498.818 ₫; running 2 triệu → met "còn khoảng 1,5 triệu mỗi tháng";
+  shipped default (running 0) → caution. A longer term is not offered as a lever; the "try"
+  sentence names the total-interest trade-off. The chart marks only the span beyond the income
+  ("Thiếu") or exactly the leftover ("Phần dư", met only). No home framing in any status copy
+  (asserted).
+- **Housing.** New optional field "Giá căn nhà bạn đang xem" (blank default; `parseMoney`; a
+  non-blank non-positive value is a FIELD error and the range still renders). The comparison is
+  `target − maxPrice` and nothing else — **the canonical engine repository is not in this
+  workspace, so no loan, deposit or fee is re-priced at the target price.** The reason given
+  above the range is the engine's own `priceBinding`, which is by construction the ceiling the
+  target breaks; the other ceiling is not claimed. The gap is called a price gap, not cash to
+  add. Exact gap/headroom is a conditional live row; a new first figure compares the target
+  with the range. Notices the card states are not repeated below it.
+
+**Behaviour kept.** No formula, parser or existing default changed (`git diff` on `lib/calc`
+touches only `lib/calc/charts/*` presentation adapters; the one content default added is
+`defaultTargetPrice: ""`). Inputs are never turned red for a deficit (asserted). No
+`role="alert"`, no toast, no focus movement. The CTA contract of §3 is unchanged.
+
+**Run on this tree, 2026-09-27T03:30:15Z–03:31:35Z, Node 24.21.0, each step separately
+with its exit captured unpiped:** `vitest run` 316 files / 7.062 tests (exit 0);
+`tsc --noEmit` exit 0; `check:lint` 3 problems, 3 at baseline, 0 new (exit 0); `next build`
+288 static pages (exit 0); `check:markup` 76 live / 0 planned + 202 other pages, all contracts
+hold (exit 0). `pnpm gate` itself was not invoked as one command.
+
+**Explicitly NOT verified — do not upgrade without new evidence:**
+
+- **Nothing was observed in a browser.** Card layout, wrapping at 390 px, the pinned chip at
+  ≥1024×900, chart hatch/outline legibility, focus landing and scroll of the field-jump
+  buttons (including into the advanced disclosure), and zoom/reflow are all unobserved.
+- **No screen reader was run.** Whether VoiceOver announces the settled sentence once, after
+  ~400 ms, without double-reading next to the row announcements, is unverified. Known
+  trade-off: after an edit the hidden sentence persists, so a reader moving linearly through
+  the panel may hear the conclusion twice (card, then hidden sentence). Blur is not handled
+  separately; the timer fires ≤ 400 ms after the last change either way.
+- **Contrast is arithmetic on tokens**, not a measurement of rendered pixels; the 30%-opacity
+  card border and the chart hatch over segment colours are not contrast-checked.
+- **No reader comprehension test** (the plan's 5-person 4/5 check) has been run.
+- The 400 ms settle time is the plan's proposal, not a measured preference.
+
+**After the Codex repairs (focused runs only; Codex runs the full native check and the
+browser review next):** the pilot, shared-component, status-adapter and chart test files
+plus `tsc --noEmit` and `check:lint` — results in the handoff message of that turn. The
+full-gate and build line above predates the repairs and is not re-claimed for them.
+
 ## 2. The audit this implements
 
 `../artifacts/finhome-all-tools-audit-2026-09-21/` — `README.md` (findings and

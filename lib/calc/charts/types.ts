@@ -139,6 +139,38 @@ export type BarSegment = {
   valueLabel: string;
 };
 
+/**
+ * The tone of a chart ANNOTATION — the result-status plan's red and green,
+ * applied to a part of a figure rather than to the whole of it.
+ *
+ * Only two: an annotation marks a shortfall that EXISTS or a surplus that
+ * exists. "Caution" and "unknown" are states of the answer, not of a span of
+ * a chart, and are said in the result card instead.
+ */
+export type ChartMarkTone = "shortfall" | "met";
+
+/**
+ * A span of a bar's axis that the page needs to point at — the part of the
+ * outgoings that exceeds the income, or the part of the month left over.
+ *
+ * NOT A SEGMENT. A deficit is not money anyone holds, so it must not be a
+ * stacked segment that lengthens the bar. `BarChart` draws it as a solid
+ * status fill on a separate white RAIL under the track, aligned to the same
+ * axis, so every expense keeps its own category colour and texture and the
+ * annotation's adjacent colour is white. `start` and `value` are in the
+ * bar's own units, exactly like a segment's `value`.
+ */
+export type BarMark = {
+  key: string;
+  tone: ChartMarkTone;
+  /** The word that names the span, e.g. "Thiếu". Rendered as text. */
+  label: string;
+  start: number;
+  value: number;
+  /** Pre-formatted, with its unit. */
+  valueLabel: string;
+};
+
 export type StackedBar = {
   key: string;
   label: string;
@@ -148,6 +180,8 @@ export type StackedBar = {
   segments: BarSegment[];
   /** Marks the bar the page is recommending attention to, if any. */
   emphasis?: boolean;
+  /** Annotated spans of this bar. Absent on every bar that has none. */
+  marks?: BarMark[];
 };
 
 /**
@@ -189,8 +223,19 @@ export type ChartSeries = {
 export type LineChartModel = ChartBase & {
   kind: "lines";
   series: ChartSeries[];
-  /** Vertical rules — a rate reset, the month a goal is reached. */
-  markers: { period: number; label: string }[];
+  /**
+   * Vertical rules — a rate reset, the month a goal is reached. `tone` marks
+   * the one that IS the answer's shortfall (the age the money runs out), so it
+   * is drawn and listed as such rather than as one more grey rule.
+   */
+  markers: { period: number; label: string; tone?: ChartMarkTone }[];
+  /**
+   * Spans of the x axis — the years a plan does not pay for. Drawn as a
+   * solid status rail under the baseline (a faint tint behind the lines is
+   * decoration only) and always named in text beside the figure. Optional:
+   * every existing adapter emits none.
+   */
+  bands?: { from: number; to: number; label: string; tone: ChartMarkTone }[];
   /** Horizontal rules — a target balance, a budget the user supplied. */
   references: { value: number; label: string }[];
   xAxis: ChartAxis;

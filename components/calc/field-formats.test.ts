@@ -228,6 +228,8 @@ const TABLE: Entry[] = [
         L(F.downLabel, F.downUnit),
         L(F.reserveLabel, F.reserveUnit),
         L(F.housingCostsLabel, F.housingCostsUnit),
+        // 2026-09-27: the optional home being looked at, parsed with parseMoney.
+        L(F.targetLabel, F.targetUnit),
       ],
       rate: [
         L(F.rateLabel, F.rateUnit),

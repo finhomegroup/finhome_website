@@ -204,6 +204,9 @@ export function RetirementFields({
         error={error}
         invalid={invalid[key]}
         format={formatOf(key)}
+        // The hook a result card's "thử điều chỉnh" action focuses. An
+        // attribute only: nothing about the field's value or behaviour moves.
+        fieldKey={key}
       />
     );
 
