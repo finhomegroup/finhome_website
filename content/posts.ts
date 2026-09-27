@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "von-quoc-te-bat-dong-san-viet-nam-nang-hang-chung-khoan",
+    title: "Nâng hạng chứng khoán mở cơ hội dòng vốn quốc tế cho bất động sản Việt Nam",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nâng hạng thị trường chứng khoán kỳ vọng kết nối doanh nghiệp bất động sản với nguồn vốn quốc tế, trong bối cảnh tín dụng ngân hàng thắt chặt và chi phí vốn tăng cao.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/von-quoc-te-bat-dong-san-viet-nam-nang-hang-chung-khoan.webp",
+    date: "2026-09-27",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/co-hoi-don-dong-von-quoc-te-lon-cho-bat-dong-san-viet-nam-188260926190825117.chn",
+        "accessed": "2026-09-27"
+      },
+  },
+  {
     slug: "de-xuat-dua-dat-nen-ngoai-du-an-vao-luat-chan-dau-nau-phan-lo-ban-nen",
     title: "Đề xuất đưa đất nền ngoài dự án vào luật: Người mua được bảo vệ tốt hơn khi nào?",
     category: "Chính sách",
