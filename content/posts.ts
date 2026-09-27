@@ -359,6 +359,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-dua-dat-nen-ngoai-du-an-vao-luat-chan-dau-nau-phan-lo-ban-nen",
+    title: "Đề xuất đưa đất nền ngoài dự án vào luật: Người mua được bảo vệ tốt hơn khi nào?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "HoREA đề xuất đưa giao dịch đất nền ngoài dự án vào phạm vi điều chỉnh của Luật Kinh doanh bất động sản để chặn phân lô bán nền tự phát và bảo vệ người mua trước rủi ro pháp lý.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-dua-dat-nen-ngoai-du-an-vao-luat-chan-dau-nau-phan-lo-ban-nen.webp",
+    date: "2026-09-27",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/de-xuat-dua-dat-nen-ngoai-du-an-vao-luat-chan-dau-nau-phan-lo-ban-nen-18826092618591963.chn",
+        "accessed": "2026-09-27"
+      },
+  },
+  {
     slug: "de-xuat-cho-phep-chuyen-nhuong-hop-dong-mua-ban-nha-chua-co-so-do",
     title: "Bộ Xây dựng đề xuất cho phép chuyển nhượng hợp đồng mua bán nhà chưa có sổ đỏ",
     category: "Chính sách",
