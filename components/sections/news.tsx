@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NEWS_SECTION } from "@/content/home";
-import { newsPosts, postCover, type Post } from "@/content/posts";
+import { postCover } from "@/content/post-cover";
+import { newsPosts, type Post } from "@/content/posts";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import {

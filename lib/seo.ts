@@ -2,7 +2,8 @@
 import type { Metadata } from "next";
 import { SITE } from "@/content/site";
 import { img } from "@/lib/images";
-import { postCover, type Post } from "@/content/posts";
+import { postCover } from "@/content/post-cover";
+import type { Post } from "@/content/posts";
 
 /** Absolute URL from a site-relative path, e.g. "/blog/" -> "https://finhome.group/blog/". */
 export function absUrl(path: string): string {
