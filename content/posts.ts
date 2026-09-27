@@ -359,6 +359,96 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-cho-phep-chuyen-nhuong-hop-dong-mua-ban-nha-chua-co-so-do",
+    title: "Bộ Xây dựng đề xuất cho phép chuyển nhượng hợp đồng mua bán nhà chưa có sổ đỏ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Đề xuất mở rộng nhóm hợp đồng BĐS được chuyển nhượng sang nhà ở và công trình xây sẵn chưa có sổ đỏ, nhưng chưa phải đã được phê duyệt.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-cho-phep-chuyen-nhuong-hop-dong-mua-ban-nha-chua-co-so-do.webp",
+    date: "2026-09-26",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-nha-chua-co-so-do-duoc-chuyen-nhuong-hop-dong-mua-ban-5125049.html",
+        "accessed": "2026-09-26"
+      },
+  },
+  {
+    slug: "ngan-hang-tang-tuyen-dung-quan-ly-gia-san",
+    title: "Ngân hàng tăng tuyển dụng nhân sự quản lý gia sản: Cuộc đua dịch vụ ngân hàng bước vào giai đoạn mới",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Làn sóng tuyển dụng nhân sự quản lý gia sản tại các ngân hàng lớn cho thấy cuộc cạnh tranh trong lĩnh vực ngân hàng bán lẻ đang chuyển sang một giai đoạn mới.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ngan-hang-tang-tuyen-dung-quan-ly-gia-san.jpg",
+    date: "2026-09-25",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/ngan-hang-tang-tuyen-dung-nhan-su-quan-ly-gia-san-mo-dau-mot-cuoc-dua-moi-d150966.html?fbclid=IwZnRzaAUjPchleHRuA2FlbQIxMQBwZG9mBWZkaWQWUPG0LxfHF_3DzhM61FpChfzVy9_CpHNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR7FjFgwxDJz_BbxE1Z-CFX5XfXmLa5uZYcwC-_Fc5AaWKOhMcl6PtWV2_sURg_aem_6UP6KiiRKx_xw3OcYLdBGg#google_vignette",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
+    slug: "co-600-trieu-tinh-tong-gia-nha",
+    title: "Có 600 triệu tích lũy có thể mua nhà giá bao nhiêu? Công cụ tự tính tầm tài chính",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Từ số tiền tích lũy 600 triệu và thu nhập hàng tháng, hướng dẫn cách ước tính tầm giá nhà khả thi để lập kế hoạch mua nhà phù hợp.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/co-600-trieu-tinh-tong-gia-nha.png",
+    date: "2026-09-25",
+    source: {
+        "name": "finhome.group",
+        "url": "https://www.finhome.group/blog/co-600-trieu-nen-tim-nha-tam-gia-nao/",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
+    slug: "thue-chong-dau-co-dat-can-lam-ro-bo-hoang",
+    title: "Thuế chống đầu cơ đất: Cần làm rõ thế nào là bỏ hoang, găm giữ?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chuyên gia nhận định việc đánh thuế chống đầu cơ đất cần tiêu chí rõ ràng xác định đất bỏ hoang, mức thuế tính trên cơ sở nào và dữ liệu hiện có đủ áp dụng hay không.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/thue-chong-dau-co-dat-can-lam-ro-bo-hoang.webp",
+    date: "2026-09-25",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/thue-chong-dau-co-dat-can-lam-ro-the-nao-la-bo-hoang-gam-giu-188260925061507159.chn",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
+    slug: "dong-nai-thu-hoi-dat-du-an-treo-10-nam-amata-long-thanh",
+    title: "Đồng Nai thu hồi đất dự án treo 10 năm: Quyền lợi người dân được bảo vệ thế nào?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","khu-vuc-ha-tang"],
+    excerpt: "Dự án Thành phố Amata Long Thành rộng hơn 721 ha sau 10 năm treo sắp bước vào giai đoạn thu hồi đất, bồi thường. Người dân cần nắm rõ quy trình và quyền lợi trước khi nhận đền bù.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/dong-nai-thu-hoi-dat-du-an-treo-10-nam-amata-long-thanh.png",
+    date: "2026-09-25",
+    source: {
+        "name": "cafeland.vn",
+        "url": "https://cafeland.vn/tin-tuc/dong-nai-sap-thu-hoi-dat-du-an-treo-10-nam-2650-thua-dat-bi-anh-huong-155296.html?fbclid=IwRlRTSAUixcdleHRuA2FlbQIxMQBwZG9mBWZkaWQWUPGQUWNMdXYGg8Y-491Ip9qdWnLBTXNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR6zhmAZ_M-DtkhsLvF5FsfP5HQ5KD8Bk9OL3r_LseXArU2dxh_e3p9FzuS6JA_aem_x6wdI4WAqRb1cwug29QjiQ",
+        "accessed": "2026-09-25"
+      },
+  },
+  {
+    slug: "hung-yen-quy-hoach-1700-ha-pho-hien",
+    title: "Hưng Yên quy hoạch hơn 1.700 ha tái hiện thương cảng Phố Hiến xưa",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "Hưng Yên lập quy hoạch hơn 1.700 ha xây dựng thương cảng Phố Hiến với 4 phân khu chức năng, tái hiện không gian giao thương lịch sử.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/hung-yen-quy-hoach-1700-ha-pho-hien.jpg",
+    date: "2026-09-24",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/hung-yen-quy-hoach-hon-1-700-ha-tai-hien-thuong-cang-pho-hien-xua-5123909.html",
+        "accessed": "2026-09-24"
+      },
+  },
+  {
     slug: "de-xuat-thu-dat-coc-mua-nha-tu-luc-khoi-cong",
     title: "Đề xuất cho phép thu đặt cọc mua nhà từ lúc khởi công: Cơ hội và rủi ro cần cân nhắc",
     category: "Chính sách",
