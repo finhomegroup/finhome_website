@@ -134,6 +134,46 @@
   --foreground: #000000;
 }
 
+/* Native-app calculator presentation. The app passes its current Dynamic Type scale;
+   the website remains the owner of web chrome and responsive typography. */
+html[data-finhome-app="true"] {
+  font-size: var(--fh-app-root-font-size, 100%);
+  -webkit-text-size-adjust: 100%;
+}
+
+html[data-finhome-app="true"] [data-finhome-site-chrome] {
+  display: none !important;
+}
+
+/* The native shell already owns Back + current-screen title. CalculatorHeading exposes
+   a stable data marker on its catalogue link, so app mode can remove only that nav row. */
+html[data-finhome-app="true"] nav:has([data-calculator-back="true"]) {
+  display: none !important;
+}
+
+html[data-finhome-app="true"] main {
+  padding-top: 1rem !important;
+}
+
+/* Dynamic Type reaches AX5 in app mode, and results scale the whole way. Only display
+   headings are bounded — in px, which the scaled root font size does not multiply — so a
+   calculator title cannot fill the screen before the first input. */
+html[data-finhome-app="true"] main h1 {
+  font-size: min(1.5rem, 44px) !important;
+}
+html[data-finhome-app="true"] main h2.font-display {
+  font-size: min(1.25rem, 34px) !important;
+}
+
+/* The app hosts calculators only: in-content links to other site pages (blog, home) would be
+   refused by the app, so in app mode they read as plain text instead of dead links.
+   Links to other sites stay tappable — the app opens them in the system browser. */
+html[data-finhome-app="true"] main a[href^="/"]:not([href^="/cong-cu"]) {
+  pointer-events: none;
+  color: inherit;
+  text-decoration: none;
+}
+
 /* ---- Reveal: hidden only once JavaScript has proved it is running ----
    `components/reveal.tsx` used to pass `initial={{ opacity: 0 }}` to
    framer-motion, which server-renders `style="opacity:0"`. That made the

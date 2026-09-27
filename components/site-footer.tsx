@@ -62,7 +62,7 @@ function ContactIcon({ name }: { name: "pin" | "mail" | "phone" }) {
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#1a1a1a] text-ink-4">
+    <footer className="bg-[#1a1a1a] text-ink-4" data-finhome-site-chrome="footer">
       <Container className="py-14 md:py-16">
         <Link
           href="/"

@@ -9,6 +9,8 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    /** Set by the app-presentation bootstrap: the page is hosted inside the FinHome app. */
+    __FINHOME_APP__?: boolean;
   }
 }
 
@@ -18,7 +20,7 @@ function PageViews() {
   const isFirst = useRef(true);
 
   useEffect(() => {
-    if (!GA_ID || !window.gtag) return;
+    if (!GA_ID || !window.gtag || window.__FINHOME_APP__) return;
     if (isFirst.current) {
       isFirst.current = false;
       return;
@@ -43,6 +45,9 @@ export function GoogleAnalytics() {
       />
       <Script id="finhome-ga4" strategy="afterInteractive">
         {`
+          // No analytics inside the FinHome app (lib/app-presentation): the app discloses its
+          // own measurement, and the WebView must not start a second, undisclosed one.
+          if (window.__FINHOME_APP__) { window['ga-disable-${GA_ID}'] = true; }
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
