@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-thu-gia-tri-dat-gan-ga-metro-chinh-sach",
+    title: "TP.HCM tính cơ chế thu lại giá trị đất tăng gần ga metro: Người mua nhà cần biết gì?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","khu-vuc-ha-tang"],
+    excerpt: "TP.HCM đề xuất cơ chế thu hồi một phần giá trị đất tăng thêm từ hạ tầng metro để tái đầu tư giao thông công cộng, hướng tới mô hình phát triển bền vững.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-thu-gia-tri-dat-gan-ga-metro-chinh-sach.jpg",
+    date: "2026-09-28",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/nha-dat-tang-gia-do-gan-ga-metro-tphcm-thu-lai-phan-chenh-lech-the-nao-188260926191748767.chn",
+        "accessed": "2026-09-28"
+      },
+  },
+  {
     slug: "luu-y-khi-xuong-tien-theo-quang-cao-bat-dong-san",
     title: "Xuống tiền theo quảng cáo bất động sản: Cần tính kỹ nghĩa vụ tài chính còn lại sau chuyển nhượng",
     category: "Tài chính",
