@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-thu-hoi-can-ho-cong-tai-cu-xa-thanh-da",
+    title: "TP.HCM thu hồi căn hộ tài sản công tại Cư xá Thanh Đa: Bước tiến trong cải tạo chung cư cũ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "UBND TP.HCM quyết định thu hồi căn hộ thuộc tài sản công tại 6 lô Cư xá Thanh Đa để thực hiện dự án cải tạo, xây dựng lại chung cư cũ, mở đường cho việc nâng cấp hạ tầng khu vực.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-thu-hoi-can-ho-cong-tai-cu-xa-thanh-da.jpg",
+    date: "2026-09-28",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/tphcm-thu-hoi-can-ho-thuoc-tai-san-cong-tai-6-lo-cu-xa-thanh-da-188260927130854547.chn?utm_source=chatgpt.com",
+        "accessed": "2026-09-28"
+      },
+  },
+  {
     slug: "tp-hcm-thu-gia-tri-dat-gan-ga-metro-chinh-sach",
     title: "TP.HCM tính cơ chế thu lại giá trị đất tăng gần ga metro: Người mua nhà cần biết gì?",
     category: "Chính sách",
