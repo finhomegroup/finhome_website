@@ -1,14 +1,25 @@
-import { FAQ_SECTION } from "@/content/home";
+import { FAQ_SECTION, SUPPORT_CONTACT } from "@/content/home";
+import { CONTACT } from "@/content/site";
 import { Accordion } from "@/components/ui/accordion";
 import { Container } from "@/components/ui/container";
 import { SectionFrame } from "@/components/ui/section-frame";
 import { Reveal } from "@/components/reveal";
-import { Signup } from "@/components/sections/signup";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
 
 const SUBTITLE_LINE1 = "Những thông tin cần thiết";
 const SUBTITLE_LINE2 = "giúp bạn hiểu rõ FinHome trước khi trải nghiệm";
 
-/** FAQ + signup share one homepage viewport (`#hotro`; signup keeps `#dangky`). */
+const CONTACT_LINK = cn(
+  "inline-flex min-h-11 items-center font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green-ink",
+  FH_POINTER,
+);
+
+/**
+ * The homepage support section (`#hotro`): the FAQ, then the real contact
+ * routes. The early-access signup that used to sit here was a no-op form and
+ * is gone — see `SUPPORT_CONTACT`.
+ */
 export function Faq() {
   return (
     <SectionFrame id="hotro">
@@ -27,8 +38,17 @@ export function Faq() {
           </div>
         </Reveal>
 
-        <div className="mt-6 md:mt-7">
-          <Signup />
+        <div className="mx-auto mt-6 max-w-[800px] text-center md:mt-7">
+          <h3 className="font-display text-lg font-medium text-ink">{SUPPORT_CONTACT.title}</h3>
+          <p className="fh-body mt-1">{SUPPORT_CONTACT.body}</p>
+          <p className="mt-1 flex flex-wrap items-center justify-center gap-x-6 text-sm">
+            <a href={`mailto:${CONTACT.email}`} className={CONTACT_LINK}>
+              {CONTACT.email}
+            </a>
+            <a href={`tel:${CONTACT.phoneTel}`} className={CONTACT_LINK}>
+              {CONTACT.phoneLabel}
+            </a>
+          </p>
         </div>
       </Container>
     </SectionFrame>

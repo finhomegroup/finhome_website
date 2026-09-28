@@ -55,7 +55,7 @@ export default function EducationCollectionPage() {
         <div className={WIDE}>
           <div id="muc-luc" className="scroll-mt-28">
             <Link
-              href="/blog"
+              href="/blog/#tin-thi-truong"
               className={cn(
                 "inline-flex min-h-8 items-center gap-2 text-sm text-ink-2 transition-colors hover:text-ink",
                 FH_POINTER,
@@ -110,7 +110,7 @@ export default function EducationCollectionPage() {
                 </span>
               </Link>
               <Link
-                href="/blog"
+                href="/blog/#tin-thi-truong"
                 className={cn("flex flex-col rounded-2xl bg-bg-soft p-5 transition-colors hover:bg-bg-soft/70", FH_POINTER, FOCUS)}
               >
                 <span className="text-base font-bold text-ink">{C.toNewsTitle}</span>

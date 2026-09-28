@@ -48,6 +48,10 @@ export default function BlogPage() {
   const news = newsPosts();
   const pageCount = Math.max(1, Math.ceil(news.length / BLOG_PAGE_SIZE));
   const initialPosts = news.slice(0, BLOG_PAGE_SIZE);
+  const pathCard = cn(
+    "flex h-full flex-col rounded-2xl border border-ink-4/15 bg-white p-5 text-left transition-colors hover:border-brand-green/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+    FH_POINTER,
+  );
 
   return (
     <>
@@ -78,37 +82,61 @@ export default function BlogPage() {
                 </svg>
                 Quay lại trang chủ
               </Link>
+              {/* "Bài viết" is what the header calls this page (map N03);
+                  the metadata keeps its existing title and description. */}
               <h1 className="font-display text-4xl leading-tight text-ink md:text-5xl">
-                Tin tức bất động sản
+                Bài viết
               </h1>
               <p className="mt-4 text-lg text-ink-2">
-                Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở
+                Hướng dẫn dễ hiểu về mua nhà và tin thị trường bất động sản
               </p>
             </div>
 
-            {/* Two-way discovery: the feed points at the collection. Not a
-                fifth topic filter — a separate kind of reading. */}
-            <div className="mx-auto mt-10 max-w-3xl rounded-2xl bg-bg-soft p-5 md:flex md:items-center md:justify-between md:gap-6">
-              <div>
-                <h2 className="font-display text-base font-medium text-ink">
-                  {EDUCATION_COLLECTION.fromNewsTitle}
-                </h2>
-                <p className="mt-1 text-sm leading-relaxed text-ink-2">
-                  {EDUCATION_COLLECTION.fromNewsBody}
-                </p>
-              </div>
-              <Link
-                href={`${EDUCATION_COLLECTION.slug}/`}
-                className={cn(
-                  "mt-3 inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink-4/35 bg-white px-5 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green md:mt-0",
-                  FH_POINTER,
-                )}
-              >
-                {EDUCATION_COLLECTION.fromNewsCta}
-              </Link>
-            </div>
+            {/* THE TWO READING PATHS (map B01/B02): the existing collection,
+                and the existing feed below on this same page. No new hub, no
+                new URL — the second card is an in-page anchor. */}
+            <nav aria-label="Chọn cách đọc" data-blog-paths="true" className="mx-auto mt-10 max-w-3xl">
+              <ul className="grid gap-4 sm:grid-cols-2">
+                <li>
+                  <Link href={`${EDUCATION_COLLECTION.slug}/`} className={pathCard}>
+                    <span className="font-display text-lg font-medium text-ink">Hướng dẫn dễ hiểu</span>
+                    <span className="mt-2 text-sm leading-relaxed text-ink-2">
+                      {EDUCATION_COLLECTION.fromNewsBody}
+                    </span>
+                    <span className="mt-3 text-sm font-medium text-brand-green-ink">
+                      {EDUCATION_COLLECTION.fromNewsCta}
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <a href="#tin-thi-truong" className={pathCard}>
+                    <span className="font-display text-lg font-medium text-ink">
+                      {EDUCATION_COLLECTION.toNewsTitle}
+                    </span>
+                    <span className="mt-2 text-sm leading-relaxed text-ink-2">
+                      {EDUCATION_COLLECTION.toNewsBody}
+                    </span>
+                    <span className="mt-3 text-sm font-medium text-brand-green-ink">
+                      {EDUCATION_COLLECTION.toNewsCta}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
 
-            <BlogPostGrid initialPosts={initialPosts} pageCount={pageCount} />
+            <section
+              id="tin-thi-truong"
+              aria-labelledby="tin-thi-truong-title"
+              className="mt-16 scroll-mt-28 md:mt-20"
+            >
+              <h2
+                id="tin-thi-truong-title"
+                className="text-center font-display text-2xl leading-tight text-ink md:text-3xl"
+              >
+                {EDUCATION_COLLECTION.toNewsTitle}
+              </h2>
+              <BlogPostGrid initialPosts={initialPosts} pageCount={pageCount} />
+            </section>
           </Container>
         </section>
       </main>

@@ -1,17 +1,95 @@
 // Home page section content. Verbatim Vietnamese copy from the Framer mirror.
 // Image values are Framer base filenames; resolve with img() from "@/lib/images".
 
+/**
+ * The hero — HOMEPAGE PHOTO PREVIEW (docs/homepage-photo-preview-brief.md),
+ * proposed and not approved for release.
+ *
+ * The copy is the brief's, verbatim. It says what the reader can DO (start a
+ * tool, enter their numbers, read an explained result) and promises no price,
+ * payment or bank approval. The QR / store-badge panel (a non-interactive
+ * image) and the green marquee band are gone from the hero, and the phone
+ * artwork moved to the app-download preview section (`APP_DOWNLOAD_PREVIEW`).
+ *
+ * `photo` is the REAL Pexels photo 7593053 by Miriam Alonso — the original
+ * 3805×2352 JPEG, downloaded unmodified (no resampling, no generative
+ * editing). Decorative (`alt=""`): not a customer and not an endorsement.
+ * `photoSource` records where it came from; the licence note is in
+ * `docs/homepage-photo-preview.md`. It replaced an AI-generated preview image
+ * (`buyer-couple-preview.png`), which is retained on disk but unreferenced.
+ */
 export const HERO = {
-  headline: "FinHome giúp bạn chọn đúng nhà, mua đúng sức",
+  /**
+   * 2026-09-27: a shorter, plain-language hook (user request). The supporting
+   * line offers a CHOICE of tools rather than implying one tool does it all.
+   */
+  headline: "Nhà bao nhiêu tiền thì vừa sức bạn?",
   subhead:
-    "Công cụ lập kế hoạch mua nhà với các phép tính minh bạch và dữ liệu do bạn kiểm soát",
-  cta: "Thử ngay",
-  images: {
-    marquee: "hInhX9UgJBuGaSywFBNNbocS2t0.png",
-    badge: "x8UhU3ZT5q88N36ilFB6B0Tu7kE.svg",
-    panel: "o8jJXgRiX6LN7LOGgMXmaxsupVs.png",
-    phone: "Z8KIqP7hqZvzaK06QSJARSULQQw.png",
+    "Bắt đầu với điều bạn muốn biết: nhà tầm giá nào, mỗi tháng trả góp bao nhiêu hay cần để dành thêm bao nhiêu. Chọn một công cụ và thử với số của bạn.",
+  primaryCta: { label: "Khám phá công cụ", href: "/cong-cu/" },
+  secondaryCta: { label: "Xem ví dụ dễ hiểu", href: "/blog/mua-nha-bang-con-so/" },
+  reassurance: "Miễn phí trên web · Không cần đăng nhập",
+  photo: "/images/home/pexels-7593053-original.jpg",
+  photoSource: {
+    author: "Miriam Alonso",
+    page: "https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/",
+    width: 3805,
+    height: 2352,
   },
+};
+
+/**
+ * The app-download PREVIEW section (2026-09-28), proposed. It owns the phone
+ * artwork (moved from `HERO.images.phone`) and the OLD QR / store-badge panel.
+ *
+ * THE PANEL IS ILLUSTRATIVE. The user allowed it for this preview only: the
+ * repository has no real app download URL, so the image is shown without any
+ * link, its alt text says it is illustrative, and `caption` sits directly
+ * under it. Before publishing, a real download URL (and a QR generated from
+ * it) must replace it — see docs/homepage-photo-preview.md.
+ *
+ * The copy says what a buyer can DO in the app, in plain terms; it does not
+ * claim synced data, saved plans or availability in any store.
+ */
+export const APP_DOWNLOAD_PREVIEW = {
+  eyebrow: "Ứng dụng FinHome",
+  title: "Chuẩn bị mua nhà từng bước cùng FinHome",
+  body: "Trong ứng dụng FinHome, bạn xem lại tình hình tài chính của mình, thử các phương án trả góp với số của bạn và chuẩn bị từng bước cho việc mua nhà.",
+  /** Base filenames, resolved with `img()` from "@/lib/images". */
+  phone: "Z8KIqP7hqZvzaK06QSJARSULQQw.png",
+  panel: "o8jJXgRiX6LN7LOGgMXmaxsupVs.png",
+  phoneAlt: "Giao diện ứng dụng FinHome trên điện thoại",
+  panelAlt:
+    "Hình minh họa mã QR và biểu tượng cửa hàng ứng dụng — bản xem trước, không dùng để tải ứng dụng",
+  caption: "QR minh họa — bản xem trước",
+};
+
+/**
+ * Three parallel questions under the hero, each opening the tool that
+ * answers it. Not steps: a reader starts from whichever they have.
+ */
+export const BUYER_QUESTIONS = {
+  title: "Bắt đầu từ câu hỏi bạn đang có",
+  items: [
+    {
+      question: "Tôi nên tìm nhà tầm giá nào?",
+      explanation:
+        "Nhập thu nhập, chi tiêu và số tiền bạn đang có để thấy tầm giá nhà tham khảo.",
+      href: "/cong-cu/kha-nang-mua-nha/",
+    },
+    {
+      question: "Mỗi tháng tôi phải trả bao nhiêu?",
+      explanation:
+        "Nhập số tiền vay, lãi suất và thời hạn để xem khoản trả mỗi tháng và tổng lãi.",
+      href: "/cong-cu/vay-mua-nha/",
+    },
+    {
+      question: "Tôi cần để dành thêm bao nhiêu?",
+      explanation:
+        "Đặt số tiền muốn có, xem cần để dành bao nhiêu mỗi tháng hoặc trong bao lâu.",
+      href: "/cong-cu/muc-tieu-tiet-kiem/",
+    },
+  ],
 };
 
 export const STEPS_SECTION = {
@@ -36,7 +114,6 @@ export const STEPS_SECTION = {
     "vùng mua nhà an toàn, mô phỏng khả năng chi trả",
     "và mở khóa la bàn định hướng tài chính cho bạn",
   ],
-  cta: "Thử ngay",
   steps: [
     {
       title: "Xác định vùng mua nhà an toàn",
@@ -153,20 +230,17 @@ export const FAQ_SECTION = {
   ],
 };
 
-export const SIGNUP_SECTION = {
-  title: "Đăng ký trải nghiệm sớm",
-  subtitleLines: [
-    "FinHome đã có trên iOS. Nhập email",
-    "để sớm trải nghiệm bản Android",
-  ],
-  placeholder: "Nhập email của bạn",
-  cta: "Đăng ký",
-  socialProof: "Đã có 1,000+ người đăng ký",
-  avatars: [
-    "6hJrSISXOuw6XHbmBRCGFMIE78.png",
-    "Ym3IuKDBwg0U6P3YdFiwaa2xKE.png",
-    "zU4hhLtCQQrRV7D1ZZ3IKzyve2g.png",
-  ],
+/**
+ * Under the FAQ (`#hotro`), in place of the early-access signup (map H08,
+ * 2026-09-28). The signup form only called `preventDefault()` — nothing was
+ * received anywhere — and its copy claimed an iOS release and "1,000+" sign-ups
+ * that nothing in scope verifies. Removed rather than hidden, so the claims
+ * cannot be re-mounted by accident. What remains is true: the support email
+ * and phone already shown in the footer.
+ */
+export const SUPPORT_CONTACT = {
+  title: "Cần hỏi thêm?",
+  body: "Gửi câu hỏi cho FinHome qua email hoặc gọi số hỗ trợ người dùng.",
 };
 
 export const NEWS_SECTION = {

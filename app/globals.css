@@ -92,9 +92,37 @@
    * dark, so darkening it made that case worse (3.89 -> 3.78). A single
    * neutral token cannot satisfy AA on both a light and a dark surface. The
    * footer's copyright line now uses `ink-4` instead, which is 9.16:1 there.
+   *
+   * DARKENED A THIRD TIME, #727272 -> #6d6d6d, on 2026-09-28, when the page
+   * ground became the gray `--color-page-bg` #f2f2f7 site-wide: #727272 is
+   * only ≈4.32:1 there. Same rule as before — the token moves, not its call
+   * sites, set from the worst ground with an 8-bit step of margin (≈4.63 on
+   * #f2f2f7, ≈5.17 on white). `brand-contrast.test.ts` recomputes both.
    */
-  --color-ink-3: #727272;
+  --color-ink-3: #6d6d6d;
   --color-ink-4: #bcbcbc;
+
+  /*
+   * PAGE + HEADER tokens — the FinHome app's own semantic light colours, read
+   * (not edited) from finhome_reactnative/features/shared/constants/theme.ts.
+   * `page-bg` (the app's `bg`) is the CANONICAL page background of every
+   * public route since 2026-09-28: the body paints it through `--background`,
+   * and `header-shell`, the band behind the header pill, is an ALIAS of it so
+   * the two cannot drift. `surface` → the white pill, `border` → its edge.
+   * White content surfaces (cards, fields, panels) stay `bg-white`.
+   */
+  --color-page-bg: #f2f2f7;
+  --color-header-shell: var(--color-page-bg);
+  --color-header-surface: #ffffff;
+  --color-header-border: #e5e5ea;
+
+  /*
+   * HOMEPAGE HERO phone base, 2026-09-28 preview, hero-local: the pale wall
+   * the photo's top melts into below `md`. A VISUAL estimate of the Pexels
+   * 7593053 wall (pixel sampling was unavailable); the phone copy contrast is
+   * computed on this CSS value, not on the photo. See HERO_PHONE in hero.tsx.
+   */
+  --color-hero-wall: #e8eee9;
 
   /*
    * RESULT-STATUS TONES, 2026-09-27 — shortfall / met / caution, each an INK
@@ -148,7 +176,8 @@
 }
 
 :root {
-  --background: #ffffff;
+  /* The shared page gray; the fallback keeps it if the theme variable is pruned. */
+  --background: var(--color-page-bg, #f2f2f7);
   --foreground: #000000;
 }
 

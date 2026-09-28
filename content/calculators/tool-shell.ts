@@ -128,5 +128,15 @@ export const TOOL_SHELL = {
     saveTitle: "Giữ lại kết quả này",
     saveBody:
       "Trang này không lưu kết quả và không gửi số của bạn đi đâu. Hãy chụp màn hình hoặc ghi lại các con số quan trọng trước khi rời trang. Mở lại công cụ và nhập lại là cách duy nhất để xem lại kết quả.",
+    /** Inside the education link's text (map T03): where it will open. */
+    newTabNote: "(mở trong tab mới)",
+    /**
+     * The app introduction on the home-buying tools only (map T06). It links
+     * to the homepage section that DESCRIBES the app — no download, store or
+     * deep link exists — and says plainly that nothing typed here travels.
+     */
+    appTitle: "Chuẩn bị mua nhà cùng ứng dụng FinHome",
+    appBody:
+      "Ứng dụng FinHome giúp bạn chuẩn bị mua nhà từng bước. Số bạn nhập trên trang này không được chuyển sang ứng dụng.",
   },
 } as const;

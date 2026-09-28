@@ -7,7 +7,7 @@ import {
   CTA_HOVER_LABEL,
   CTA_HREF,
   CTA_LABEL,
-  NAV_ITEMS,
+  NAV_LINKS,
 } from "@/content/site";
 import { PARTNER_CTA } from "@/content/partners-team";
 
@@ -70,7 +70,7 @@ describe("the primary CTA", () => {
     // `#hotro` is the FAQ/support section; the nav already links to it.
     const faq = path.join(repoRoot, "components", "sections", "faq.tsx");
     expect(existsSync(faq)).toBe(true);
-    expect(NAV_ITEMS.some((item) => item.href === CONTACT_HREF)).toBe(true);
+    expect(NAV_LINKS.some((item) => item.href === CONTACT_HREF)).toBe(true);
   });
 
   it("exposes no store or deep-link constant yet", async () => {
