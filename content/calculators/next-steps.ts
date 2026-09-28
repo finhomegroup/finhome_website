@@ -918,3 +918,22 @@ export function nearAnswerSteps(slug: string): readonly NextStepTool[] {
 export function furtherSteps(slug: string): readonly NextStepTool[] {
   return nextStepsFor(slug)?.tools.slice(NEAR_ANSWER_ACTIONS) ?? [];
 }
+
+/**
+ * The tools that may show the APP introduction (navigation map T06): the
+ * home-buying journeys only — the P1 tools whose question is a home purchase.
+ * NOT `so-sanh-khoan-vay` (a loan comparison is not necessarily a home), and
+ * never a car, retirement, library or utility tool: those keep their own
+ * journey. `navigation-map.test.ts` renders every live tool against this list.
+ */
+export const APP_JOURNEY_TOOLS = [
+  "kha-nang-mua-nha",
+  "vay-mua-nha",
+  "muc-tieu-tiet-kiem",
+  "nha-o-xa-hoi",
+  "lai-suat-tha-noi",
+] as const;
+
+export function isAppJourneyTool(slug: string): boolean {
+  return (APP_JOURNEY_TOOLS as readonly string[]).includes(slug);
+}

@@ -247,6 +247,209 @@ browser review next):** the pilot, shared-component, status-adapter and chart te
 plus `tsc --noEmit` and `check:lint` — results in the handoff message of that turn. The
 full-gate and build line above predates the repairs and is not re-claimed for them.
 
+## 1c. Tool-first hero for `ke-hoach-huu-tri` — 2026-09-27 (merged to `main` in #202, 2026-09-28)
+
+ONE route opts in: `/cong-cu/ke-hoach-huu-tri/`. Every other route's markup is unchanged —
+the two shell props (`CalculatorPage.hero`, `CalculatorHeading.afterTitle`) are opt-in and
+`calculator-heading-render.test.ts` pins that an absent slot renders nothing. Plan of record:
+the owner's vault plan `260927-1335-retirement-tool-first-hero`; the 3D-house + 2D direction
+and the interactions were the owner's live direction on 2026-09-27. **The owner approved and
+merged these amendments in #202 on 2026-09-28**; they describe `main`.
+
+**What the route renders now.** DOM order: nav → `h1` → HERO (verdict card → granary figure
+→ three levers → target → reading) → lede → lede detail → notice → tool box (form region, collapsed;
+result region; detail region) → the other long-term views, compact. Components: `RetirementPlanState` (the one field state for
+both islands), `retirement-granary-hero.tsx`, `components/calc/{compact-status-card,
+granary-figure,granary-bowl,lever-stepper,form-disclosure,render-boundary}.tsx`; models in
+`lib/calc/charts/{granary-geometry,retirement-granary-chart,retirement-granary-words}.ts`
+and `lib/calc/{retirement-levers,retirement-lever-facts}.ts`; the route's form and reader in
+`components/retirement-plan-{fields,read}.ts(x)`. No `lib/calc` engine file changed.
+
+**Amendments, each with the rule it narrows and the test that pins it:**
+
+- **§4 regions.** A fourth region, the hero, sits between the `h1` and the lede. The three
+  tool regions keep their order and nothing is reordered by CSS; from `md` the hero is a grid
+  (card | house, levers across) whose DOM order is still card → figure → levers → reading.
+  Pinned: `retirement-plan-render.test.ts` "renders form, then result, then detail";
+  `retirement-granary-hero-render.test.ts` "sits once…".
+- **Notices above the tool.** The hero precedes `realNotice`, so the card carries the
+  notice's point in one line ("Ước tính theo giả định, không phải dự báo.") and every
+  amount in the hero names its basis (`depletedPartial` names its year and "theo giá năm …";
+  the step total is in today's money and says so).
+- **§5 first input / never collapse an active assumption.** The levers are the first input.
+  The form asks THREE things, always visible — current age, the age to retire at, the pension
+  wanted per month ("Ba thông tin chính"). The other eight are optional and sit in a native
+  `<details>` "Giả định khác (không bắt buộc)", collapsed in the server HTML, whose summary
+  names every value they hold (the three rates and the contribution growth; balance,
+  contribution, other income per month, end age). It is forced open while the plan cannot be
+  computed. Pinned: hero test "asks for three fields, and collapses the eight optional ones
+  naming every value". The conditions stay VISIBLE beside the
+  conclusion (`estimateNote`, and the rates-in-use sentence with "Chưa trừ thuế và phí");
+  with no plan, `invalidNotice` is the card's visible closing line. Only the sentences whose
+  length follows the answer (the picture in words, the depletion-year detail, what to try)
+  sit behind "Giải thích hình bát và kết luận". Pinned: hero test "collapses the form…",
+  "keeps the conditions visible…", "draws no bowls and a neutral card…".
+- **§6 one answer, one place.** The card MOVED from `ResultGroup` into the hero and renders
+  once (`<section data-result-status` = 1); its field-jump chips became the levers. The
+  pinned CTA restatement is still the only duplicate (`verdictNo` = 2).
+- **§1b one live region.** Still exactly one `data-results-live`. A lever press leads the ONE
+  settled sentence with the lever, its new value and what the press did, so a press that
+  leaves the verdict unchanged is still announced (WCAG 4.1.3). Nothing in the hero is live
+  (no `<output>`, `aria-live`, `role=status|alert`). Pinned: echo test "makes two presses…".
+- **§6a figure contract.** The route draws TWO figures (granary + trajectory), one table (the
+  trajectory's). The granary is a decorative soft-3D house image (`alt=""`, generated, no text
+  or numbers) with code-drawn bowls laid on its measured wall; SVGs are `aria-hidden` +
+  `focusable="false"`, no `<text>`; states are shape and fill, never red. Since 2026-09-27 a
+  bowl is the year's WHOLE spend in two layers, by area: the lower `bowl-soft` layer is what
+  other income pays (`otherAnnualIncome / desiredAnnualSpending`, constant — both indexed by
+  the same inflation), the upper `grain` layer what the savings paid of their part. States:
+  full · partial · otherOnly (savings gone, the lower layer stays — never drawn empty while
+  BHXH pays) · empty (dashed, no source at all) · covered (all lower layer; hatch when nothing
+  is spent). Text alternative: the run-length sentences, lossless because the ledger is
+  monotone. Inks clear 3:1 on white AND on the wall's darkest pixel (hero test "the
+  granary's inks").
+- **Motion.** ONE motion, only under `prefers-reduced-motion: no-preference`: the bowls a
+  press changed settle once and the "vừa thay đổi" echo fades in (`app/globals.css`).
+- **The route's own scenario — amends "four routes, one set of defaults".** Owner decision
+  2026-09-27: this route opens on `RETIREMENT_PLAN.defaults`, the latest Vietnamese figures,
+  conservative — inflation 4,5% (NQ 244/2025/QH15 target; CPI 8 tháng 2026 4,45%), returns
+  6,5% before / 4,5% after retirement (under the 12-month deposit rate of 6,8% at the four
+  state banks, 12/9/2026), contribution growth 6% (under 2025 income growth 8,9% and the 2026
+  minimum-wage rise 7,2%). The personal amounts are EXAMPLES scaled to the 2025 average income
+  of 8,4 triệu/tháng (100 triệu đang có, 15 triệu/năm, 8 triệu/tháng wanted, 4 triệu/tháng
+  other income) and the card says they are samples. Each macro figure is linked with its date
+  in the page's `sources` section. The three sibling routes keep `LONG_TERM_PLAN.defaults`,
+  unchanged. Pinned: render test "reads THIS ROUTE's own đồng scenario, dated and sourced";
+  `long-term-plan.test.ts` pins every figure the route's prose quotes to this scenario.
+- **Monthly incomes.** The pension wanted and the other income are asked per month
+  (`desiredMonthlySpending`, `otherMonthlyIncome`); `retirement-plan-read.ts` is the one place
+  the unit changes (×12, exact) before the unchanged engine. The pension lever steps
+  1 triệu/tháng with the year beside it ("= 96 triệu/năm"); the card's funded sentence speaks
+  per month. The exact rows, the table and the FAQ stay per year — the engine's unit — and say
+  so in their labels.
+- **The target — "nên có bao nhiêu để đủ mục tiêu" (owner request, 2026-09-27).** After the
+  levers, `retirement-granary-target.tsx`. Every figure is in today's money, said once at the
+  panel's top ("theo giá hôm nay"). It opens with what the capital pays for ("Để mỗi tháng có
+  8 triệu đến tuổi 85 (4 triệu từ thu nhập khác, 4 triệu rút từ khoản dành dụm):"), then THREE
+  ROWS in every state, label and figure on one line down to 320 px — Cần có lúc {age} tuổi ·
+  Dự kiến có · Còn thiếu (Dư ra when funded; 0 ₫ on the engine's exact boundary; placeholders
+  with no plan). The rows share ONE unit and precision, set by the largest (`sharedMoney`: from
+  1 tỷ whole triệu, from 1 triệu triệu to 0,1, from 100 tỷ tỷ to 0,1) — the GOV.UK/ONS rule for
+  figures read together, in the unit the reader earns in and the lead-in speaks — and the last
+  row IS the difference of the two figures shown, so the subtraction holds as read: "1.200
+  triệu · khoảng 730 triệu · khoảng 470 triệu". It stays within one step of the engine's own
+  gap (hence "khoảng"); rounded on its own it read 1 triệu off in 20% of states at non-default
+  rates, and "1,2 tỷ" rounded to 50 triệu beside "766,1 triệu". A gap rounding would hide keeps
+  its own finer reading. The month's split adds up the same way. Then the share reached
+  (floored, never 100% while short; "hơn 10 lần" past 999%; no rice when nothing is required —
+  the engine's null coverage), and ONE suggestion — the first available of the
+  engine's remedies (save more → retire later → spend less), rounded to 100.000 ₫ toward the
+  funded side, so applying it lands on "Đủ", never on the boundary. A saving suggestion is said
+  yearly first, the month as a budget equivalence ("để dành 27,6 triệu năm đầu (≈ 2,3
+  triệu/tháng)"), with the timing note always beside it: the engine credits the year's saving
+  at its start, so saving month by month lands a little lower. "Thử mức này" writes the field
+  through the lever's press — the echo, the bowls and the ONE live sentence follow — and the
+  same button then reads "Hoàn tác lần thử", restoring the previous value while the field still
+  holds the tried one; once the reader moves the field off it the try is spent (`heldTrial`),
+  so returning to the same figure later brings no undo that would skip what they typed; the
+  second click of a double-click is ignored. Once funded the button stays, `aria-disabled`
+  "Đủ theo giả định", so focus is kept. Beside it, "Nhập số của bạn" focuses the form's first
+  field. From `lg` the panel is two columns — lead-in, rows and basket on the left; phở,
+  suggestion, buttons and timing note on the right — 295 px instead of 435 px; a phone reads the
+  same order in one column. No new arithmetic (`retirement-plan-target-view.ts` only picks,
+  rounds and words; the phở price is the engine's own deflator, (1 + lạm phát)^năm, and the
+  month split is its own need, max(0, chi tiêu − thu nhập khác) — `retirement.ts` l.311, l.354,
+  l.398, pinned by tests). Exact counterparts, and the required capital in that
+  year's prices: the detail region's "Mức cần có khi nghỉ hưu" rows. The route's two pointers
+  to "Cần dành bao nhiêu" point here, and the route passes its own disclaimer (the shared one
+  says the four pages share one set of assumptions). Pinned: `retirement-plan-target-view.test.ts`
+  (the rows on the defaults; the rows adding up across a 294-state lever grid; no "e+", "NaN" or
+  "— ₫" at the fields' edges; the try's rule); hero test "the hero's target…".
+
+**Measured 2026-09-27 on the built export, after the three-field form and the route's own
+scenario (loopback, the app browser, after `fonts.ready`):** 390×844 — load CLS 0; card slot
+200 px; the saving lever ends at 840 px; lever buttons move 0 px across five presses on all
+three levers, including two verdict flips; the form moves 0 px on a press, on clearing a field
+(verdict → "Chưa kết luận") and on retyping it, and the three visible inputs do not move;
+one live sentence per press ("Khoản để dành mỗi năm: 27.000.000 ₫. Bớt 9 năm thiếu. …");
+one live region; every hero button ≥ 44 px; no horizontal overflow. 1280×800 — all three levers
+inside the first screen (bottom 791 px); load CLS 0,003. Applying the suggestion moves the form
+0 px, keeps focus on the button and is announced.
+
+**The hero's fixed height, measured across states (built export, 2026-09-27).** Twenty
+states typed into the form one after another — the defaults, funded, other income covering the
+spend, spending 0, a cleared field, retiring today, inflation 0, −1% and −30%, the exact
+boundary, the spend-less and no-suggestion fallbacks, two extreme-figure plans (125,5
+triệu/tháng, growth 10,5%, ages 25–100), all four rates at 10,5%, other income a hair under the
+spend, a 9e15 balance, 60 triệu/tháng wanted, and "Thử mức này" then "Hoàn tác lần thử" — at
+320, 360, 375, 390, 414, 640, 768, 1024 and 1280 px: every hero block keeps its height and the
+form moves 0 px at every width. Target panel: 612 px at 320, 523 px from 360 to 414, 435 px
+at 640 and 768, 295 px from 1024. How it holds: each sentence whose figures change is reserved
+at its longest state (three lines on a phone, four below 360 px, two from `sm`, three again
+from `lg`, in 355 px columns); the three rows never wrap; the share
+sentence never outgrows the basket beside it; below `sm` the two buttons halve one row and a
+label may take two lines inside its 44 px ("Hoàn tác lần thử" beside "Nhập số của bạn" is wider
+than a 360 px panel); the lever hint keeps two lines from `lg`, where three levers share a row,
+and a lever's label and value stack below 360 px; the rates-in-use sentence is reserved for
+four rates like −10,25% (five lines below 390 px, four to `sm`, three, then two from `md`).
+Page length at load: 9 405 px at 390, 5 910 px at 1280 — the method's two worked years and
+its verdict-reading paragraph open behind "Xem ví dụ và cách tính chi tiết" (examples first;
+the method's visible part is what the tool does, "theo giá hôm nay" and the limits; every pinned
+figure still in the markup), the only cut the attention data supported without touching the
+shared shell (NN/g: 57% of viewing time on the first screen, 74% on the first two).
+
+**Site-wide, one line (2026-09-28): the header's reveal slides in.** `site-header.tsx` shows the
+header fixed while the reader scrolls back up; it now enters with `fh-header-in` (translateY,
+180 ms, `motion-safe:` only) instead of popping over the content, as NN/g recommends for
+partially persistent headers. Measured first: under 6× CPU throttling a reader-style scroll
+kept p95 at 16,8 ms and flipped the header exactly once per direction change, so no rAF or
+tolerance rewrite was warranted — and the handler's lines stay where the lint baseline keys
+them (52, 83).
+
+- **Teaching pictures in the target panel (owner request, 2026-09-27).** A rice basket
+  (`components/calc/rice-basket.tsx`): the capital reached at retirement against the need, rice
+  to the share (capped at the dashed rim, heaped when there is more), one rect scaled from the
+  bottom so a new level eases in motion-safe; `aria-hidden`, the sentence beside it says it.
+  And "theo giá hôm nay" by one bowl of phở: 50.000 ₫ today, the same bowl at retirement at the
+  engine's own deflator (a required or reached balance in its two readings — no second
+  inflation factor), so it follows the inflation field — up, the same, or down, since the field
+  takes zero and below. First screen unchanged.
+- **Copy for young salaried couples (owner request, 2026-09-27; reviewed with Codex and a
+  fresh-context reader).** Target reader: a young couple, both office workers in TP.HCM or
+  Hà Nội, thinking in monthly salary. Decisions, "theo thị hiếu người Việt": the pension field
+  is "Chi tiêu mỗi tháng khi nghỉ hưu" — in Vietnamese "lương hưu" is the BHXH pension, entered
+  separately as other income; the promoted gap row is per MONTH ("Chi tiêu cần giảm mỗi
+  tháng"); the saving suggestion rounds to a whole monthly figure (2,3 triệu/tháng) and is said
+  yearly first (27,6 triệu/năm, the unit the engine counts), and its button reads "Thử mức
+  này"; the target says where the money goes ("4 triệu từ thu nhập khác, 4 triệu rút từ khoản
+  dành dụm"); the legend names the look ("Bát đầy / vơi / Còn lớp xanh / rỗng / xanh đầy / kẻ
+  sọc"); a couple note precedes the three fields
+  (add both up against one person's ages, or plan each person); the retirement-age help
+  gives the legal ages (62 nam, 60 nữ; source added). Jargon out of the reader's path:
+  "danh nghĩa", "lợi suất", "dự phóng", "số gộp". The house image stays A (tiled roof): the
+  thatched B reads as rural hardship to this reader. No A/B test (owner).
+- **Design review with Codex (owner request, 2026-09-27) — what it changed.** The suggestion's
+  timing note, the undoable try and the target's three rows (all above; the rows are the hero
+  half of the review's shared "cần có / dự kiến có / còn thiếu" order — the result region keeps
+  its order for now). The reading's disclosure summary is a 44 px row. The four-view links sit
+  AFTER the tool, compact, the current view omitted (`LongTermViews compact`, through the
+  opt-in `CalculatorPage.afterCalculator` slot). The notice above the tool is neutral
+  (`noticeTone="info"`, grey border): it explains, it does not warn. The form's disclosure
+  summary lists the reader's money before the rates. A source label is Vietnamese. The
+  review's "house missing after applying" did not reproduce in the app browser (a headless
+  capture artefact). Dispositions, and what was not taken and why: the owner's vault report
+  `plans/reports/design-review-260927-2322-retirement-codex-dispositions.md`.
+
+**Open for the owner (code review, 2026-09-27):** the SHARED copy still says the four routes
+share one set of assumptions — the four-view nav (`long-term-plan.ts` `views.intro`) and the
+three siblings' FAQs — while route 44 now opens on its own defaults and asks both incomes per
+month. Route 44's own copy says so; the shared and sibling strings are outside this change.
+
+**NOT verified:** a real iPhone Safari viewport (≈ 660–750 px visible, where the saving lever
+may be cut); VoiceOver / TalkBack; true zoom and the app's Dynamic Type scale; Safari scroll
+anchoring; a real reader comprehension test (only a fresh-context model reader so far); the
+brand/licence review of the generated house image.
+
 ## 2. The audit this implements
 
 `../artifacts/finhome-all-tools-audit-2026-09-21/` — `README.md` (findings and
@@ -1838,6 +2041,8 @@ labels and their position are identical either way.
 
 ### `ke-hoach-huu-tri` (row 46, "Hai cột")
 
+- **2026-09-27, merged in #202 on 2026-09-28:** the tool-first hero — see §1c, which amends the
+  regions, the collapsed form, the moved card and the second figure for this route only.
 - **Changed:** `CalculatorLayout columns="split"` plus `CalculatorPage wide`; the CTA
   after the eleven fields; the verdict emphasised as the one main answer;
   `shortfallLabel` moved UP into the live group as the action's "khoản cần điều chỉnh"

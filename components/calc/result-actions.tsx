@@ -68,8 +68,15 @@ export function ResultActions({
         <p className="mt-2 text-sm leading-relaxed text-ink-2">{intro}</p>
       ) : null}
       <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-        {steps.map((step) => (
-          <NextStepCard key={step.slug} step={step} from={slug} />
+        {/* One PRIMARY step and at most one secondary (map T05): the order is
+            the entry's own, and the first carries the stronger edge. */}
+        {steps.map((step, index) => (
+          <NextStepCard
+            key={step.slug}
+            step={step}
+            from={slug}
+            rank={index === 0 ? "primary" : "secondary"}
+          />
         ))}
       </ul>
       <p className="mt-3 text-xs leading-relaxed text-ink-3">

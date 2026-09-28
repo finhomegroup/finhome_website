@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { TOOL_SHELL as C } from "@/content/calculators/tool-shell";
-import { furtherSteps, nextStepsFor } from "@/content/calculators/next-steps";
+import { furtherSteps, isAppJourneyTool, nextStepsFor } from "@/content/calculators/next-steps";
+import { APP_INTRO } from "@/content/site";
+import { EducationLink } from "./education-link";
 import { NextStepCard } from "./next-step-card";
 import { cn } from "@/lib/cn";
 
@@ -74,20 +75,34 @@ export function ToolNextSteps({
             </>
           ) : null}
 
-          {/* The education seam. Undefined for every tool today: the articles
-              do not exist yet, and `next-steps.test.ts` fails on an href with
-              no route behind it. */}
+          {/* The education seam, in a new tab so the form survives (map T03).
+              `next-steps.test.ts` fails on an href with no article behind it. */}
           {steps.education ? (
-            <p className="mt-4 text-sm leading-relaxed text-ink-2">
-              <Link
-                href={steps.education.href}
-                className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
-              >
-                {steps.education.label}
-              </Link>{" "}
-              — {steps.education.why}
-            </p>
+            <EducationLink
+              href={steps.education.href}
+              label={steps.education.label}
+              why={steps.education.why}
+            />
           ) : null}
+        </div>
+      ) : null}
+
+      {/* The app introduction, home-buying journeys ONLY (map T06), after the
+          answer and never in place of "Xem kết quả". The site-chrome marker
+          hides it inside the app's own web view. */}
+      {isAppJourneyTool(slug) ? (
+        <div
+          data-finhome-site-chrome="app-intro"
+          className="rounded-2xl border border-ink-4/15 bg-white p-5"
+        >
+          <h3 className="font-display text-base font-medium text-ink">{C.nextSteps.appTitle}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-2">{C.nextSteps.appBody}</p>
+          <a
+            href={APP_INTRO.href}
+            className="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+          >
+            {APP_INTRO.label}
+          </a>
         </div>
       ) : null}
 

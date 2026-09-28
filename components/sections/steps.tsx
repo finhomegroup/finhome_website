@@ -1,5 +1,5 @@
 import { STEPS_SECTION } from "@/content/home";
-import { CTA_HREF, CTA_HOVER_LABEL } from "@/content/site";
+import { APP_INTRO } from "@/content/site";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { FH_CARD_IMAGE_ZOOM, FH_CARD_SHADOW } from "@/lib/interaction-styles";
@@ -116,12 +116,11 @@ export function Steps() {
                 </div>
                 <div className="mt-6 flex justify-center">
                   <Button
-                    href={CTA_HREF}
+                    href={`#${APP_INTRO.anchor}`}
                     size="lg"
-                    hoverLabel={CTA_HOVER_LABEL}
                     className="rounded-[21px] px-5 py-2.5 shadow-none"
                   >
-                    {STEPS_SECTION.cta}
+                    {APP_INTRO.label}
                   </Button>
                 </div>
               </div>
@@ -160,12 +159,11 @@ export function Steps() {
 
               <div className="absolute inset-x-0 bottom-[6.5%] z-10 flex justify-center">
                 <Button
-                  href={CTA_HREF}
+                  href={`#${APP_INTRO.anchor}`}
                   size="lg"
-                  hoverLabel={CTA_HOVER_LABEL}
                   className="rounded-[21px] px-5 py-2.5 shadow-none"
                 >
-                  {STEPS_SECTION.cta}
+                  {APP_INTRO.label}
                 </Button>
               </div>
             </div>

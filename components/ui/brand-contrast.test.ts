@@ -44,6 +44,9 @@ const AA_NORMAL = 4.5;
 const AA_NON_TEXT = 3;
 const WHITE = "#ffffff";
 
+/** The shared page ground, read from the live stylesheet (`--color-page-bg`). */
+const PAGE_BG = token("page-bg");
+
 function luminance(hex: string): number {
   const h = hex.replace("#", "");
   const [r, g, b] = [0, 2, 4].map((i) => {
@@ -81,7 +84,10 @@ function ruleStops(selector: string): string[] {
  * where the role lines sit (80-88% along it) and #f3faf0 is its dark end.
  */
 const INK_GROUNDS = [
-  { hex: WHITE, what: "page background" },
+  // The page is GRAY since 2026-09-28 (`--color-page-bg`, read live below);
+  // white stays as the card / field surface small copy also lands on.
+  { hex: PAGE_BG, what: "page background" },
+  { hex: WHITE, what: "white card surface" },
   { hex: "#f7fcf7", what: "bg-soft tint" },
   { hex: "#f4fbf2", what: "testimonial gradient at the role lines" },
   { hex: "#f3faf0", what: "testimonial gradient, dark end" },
@@ -102,7 +108,8 @@ const NOT_UNDER_WHITE_TEXT = [
 const WHITE_TEXT_FILES = [
   "../ui/button.tsx",
   "../vision-compass.tsx",
-  "../sections/signup.tsx",
+  // `../sections/signup.tsx` was DELETED on 2026-09-28 (a no-op form with
+  // unverified claims, navigation map H08) — removed from scope, not exempted.
   "../delete-account-form.tsx",
   // The calculator suite's primary CTA — the newest white-on-green surface in
   // the repo, and the one that will be rendered on all 76 tool routes.
@@ -199,10 +206,26 @@ describe("ink tokens clear AA on every measured ground", () => {
 
   it("the accessible brand variants clear 4.5:1 as TEXT on light grounds", () => {
     // The other direction for the same two tokens: small green/blue text.
-    for (const ground of [WHITE, "#f7fcf7", "#e7f6e2"]) {
+    for (const ground of [WHITE, PAGE_BG, "#f7fcf7", "#e7f6e2"]) {
       expect(contrast(token("brand-green-ink"), ground)).toBeGreaterThanOrEqual(AA_NORMAL);
     }
     expect(contrast(token("primary-ink"), WHITE)).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
+  it("the translucent .fh-body / .fh-lead ink clears 4.5:1 on the gray page", () => {
+    // rgb(87 87 87 / 0.85) has no single colour: composite it over the ground.
+    for (const selector of [".fh-body", ".fh-lead"]) {
+      const m = new RegExp(`\\${selector}\\s*\\{[^}]*color:\\s*rgb\\((\\d+) (\\d+) (\\d+) \\/ ([\\d.]+)\\)`).exec(globalsCss);
+      expect(m, selector).not.toBeNull();
+      const [r, g, b, a] = m!.slice(1).map(Number);
+      for (const ground of [PAGE_BG, WHITE]) {
+        const base = [0, 2, 4].map((i) => parseInt(ground.slice(1 + i, 3 + i), 16));
+        const painted =
+          "#" + [r, g, b].map((c, i) => Math.round(c * a + base[i] * (1 - a)).toString(16).padStart(2, "0")).join("");
+        const ratio = contrast(painted, ground);
+        expect(ratio, `${selector} on ${ground} paints ${painted}: ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
+      }
+    }
   });
 
   it("would reject the ink values that were actually shipping", () => {

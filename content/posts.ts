@@ -1,7 +1,10 @@
 // Blog post metadata. News bodies live in content/posts/<slug>.md and are read
 // at build time; education bodies are structured data in content/education/.
-
-import { SITE } from "./site";
+//
+// No runtime imports, on purpose. api/blog-posts.ts loads this file as native
+// ESM on Vercel, which needs "./x.js"; the Next build (Turbopack) bundles it
+// too and cannot resolve "./x.js" to x.ts. No specifier satisfies both, so
+// anything that needs another module (e.g. postCover → SITE) lives outside.
 
 export type Topic = "gia-cung" | "cau-thanh-khoan" | "khu-vuc-ha-tang" | "chinh-sach-su-kien";
 
@@ -66,7 +69,7 @@ export type Post = {
  *
  * No `cover`: their visual is a rendered SVG from the calculator's own engine,
  * and a stock photograph would be the only invented thing on the page. Share
- * cards fall back to the site card via `postCover()`.
+ * cards fall back to the site card via `postCover()` (content/post-cover.ts).
  *
  * No `source`: there is no third-party report behind them. The narrow
  * reference list lives inside each article, where each item says which single
@@ -358,6 +361,36 @@ const EDUCATION_ENTRIES: Post[] = [
 ];
 
 export const POSTS: Post[] = [
+  {
+    slug: "tp-hcm-thu-gia-tri-dat-gan-ga-metro-chinh-sach",
+    title: "TP.HCM tính cơ chế thu lại giá trị đất tăng gần ga metro: Người mua nhà cần biết gì?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","khu-vuc-ha-tang"],
+    excerpt: "TP.HCM đề xuất cơ chế thu hồi một phần giá trị đất tăng thêm từ hạ tầng metro để tái đầu tư giao thông công cộng, hướng tới mô hình phát triển bền vững.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-thu-gia-tri-dat-gan-ga-metro-chinh-sach.jpg",
+    date: "2026-09-28",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/nha-dat-tang-gia-do-gan-ga-metro-tphcm-thu-lai-phan-chenh-lech-the-nao-188260926191748767.chn",
+        "accessed": "2026-09-28"
+      },
+  },
+  {
+    slug: "luu-y-khi-xuong-tien-theo-quang-cao-bat-dong-san",
+    title: "Xuống tiền theo quảng cáo bất động sản: Cần tính kỹ nghĩa vụ tài chính còn lại sau chuyển nhượng",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Chuyên gia cảnh báo người mua nhà cần tính toán kỹ nghĩa vụ tài chính còn lại sau chuyển nhượng đến khi sở hữu nhà, tránh rủi ro từ chủ cũ.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/luu-y-khi-xuong-tien-theo-quang-cao-bat-dong-san.jpg",
+    date: "2026-09-27",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/luu-y-khi-xuong-tien-theo-quang-cao-tang-nha-0-dong-5125215.html",
+        "accessed": "2026-09-27"
+      },
+  },
   {
     slug: "von-quoc-te-bat-dong-san-viet-nam-nang-hang-chung-khoan",
     title: "Nâng hạng chứng khoán mở cơ hội dòng vốn quốc tế cho bất động sản Việt Nam",
@@ -3012,17 +3045,6 @@ export const POSTS: Post[] = [
 
 export function getPost(slug: string): Post | undefined {
   return POSTS.find((p) => p.slug === slug);
-}
-
-/**
- * The image to use for a post's share card and Article schema.
- *
- * Education articles have no photograph — their visual is a rendered SVG built
- * from the calculator's own engine — so they fall back to the site card rather
- * than to an invented stock cover. Pass the result through `img()`.
- */
-export function postCover(post: Post): string {
-  return post.cover ?? SITE.ogImage;
 }
 
 /** What kind an entry is, with `"news"` as the default for untagged entries. */

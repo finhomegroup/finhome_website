@@ -11,7 +11,20 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  * fuller block below the figure (`ToolNextSteps`), so the dead-link check below
  * cannot exist in one of them and not the other.
  */
-export function NextStepCard({ step, from }: { step: NextStepTool; from: string }) {
+export function NextStepCard({
+  step,
+  from,
+  rank,
+}: {
+  step: NextStepTool;
+  from: string;
+  /**
+   * Beside the answer only (`ResultActions`): the first step is the primary
+   * one and gets a stronger resting edge; the second is secondary. The lists
+   * below the figure pass nothing — they are further reading, not a choice.
+   */
+  rank?: "primary" | "secondary";
+}) {
   const entry = getCalculator(step.slug);
   if (!entry) {
     // A dead next step is worse than none: the reader got there because we
@@ -25,8 +38,10 @@ export function NextStepCard({ step, from }: { step: NextStepTool; from: string 
     <li>
       <Link
         href={`${calculatorPath(step.slug)}/`}
+        data-rank={rank}
         className={cn(
-          "flex h-full flex-col rounded-2xl border border-ink-4/15 bg-white p-4 transition-colors hover:border-brand-green/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+          "flex h-full flex-col rounded-2xl border bg-white p-4 transition-colors hover:border-brand-green/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+          rank === "primary" ? "border-brand-green-ink/40" : "border-ink-4/15",
           FH_POINTER,
         )}
       >

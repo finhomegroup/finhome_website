@@ -27,6 +27,13 @@ const SOCIALS = [
   },
 ];
 
+/**
+ * Only socials with a REAL profile URL render (navigation map N08). All four
+ * are `href="#"` today — no verified FinHome profile is in scope — so the row
+ * renders nothing instead of four clickable dead icons. Add the URL to show one.
+ */
+const LIVE_SOCIALS = SOCIALS.filter((s) => s.href !== "#");
+
 function ContactIcon({ name }: { name: "pin" | "mail" | "phone" }) {
   const common = {
     width: 16,
@@ -107,8 +114,9 @@ export function SiteFooter() {
               </li>
             </ul>
 
+            {LIVE_SOCIALS.length > 0 ? (
             <div className="mt-7 flex items-center gap-5">
-              {SOCIALS.map((s) => (
+              {LIVE_SOCIALS.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
@@ -121,6 +129,7 @@ export function SiteFooter() {
                 </a>
               ))}
             </div>
+            ) : null}
           </div>
 
           {/* Link columns */}

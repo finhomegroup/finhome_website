@@ -40,11 +40,52 @@ import type { LongTermView } from "@/lib/calc/long-term-plan";
 export function LongTermViews({
   current,
   className,
+  compact,
 }: {
   /** The view the reader's own page leads with. */
   current: LongTermView;
   className?: string;
+  /**
+   * Opt-in, for a route that does NOT share the other three's defaults: the
+   * other views as three plain links under the route's own words — which say
+   * the numbers are not carried over — instead of four cards and the shared
+   * "same numbers, same result" intro.
+   */
+  compact?: { title: string; intro: string };
 }) {
+  if (compact) {
+    return (
+      <nav aria-label={compact.title} className={cn("space-y-2", className)}>
+        <h2 className="font-display text-lg font-medium text-ink">{compact.title}</h2>
+        <p className="text-sm leading-relaxed text-ink-2">{compact.intro}</p>
+        <ul className="flex flex-wrap gap-x-2 gap-y-1">
+          {C.views.items
+            .filter((item) => item.view !== current)
+            .map((item) => {
+              if (!getCalculator(item.slug)) {
+                throw new Error(
+                  `components/calc/long-term-views.tsx: view "${item.view}" points ` +
+                    `at "${item.slug}", which is not in content/calculators/registry.ts.`,
+                );
+              }
+              return (
+                <li key={item.slug}>
+                  <Link
+                    href={`${calculatorPath(item.slug)}/`}
+                    className={cn(
+                      "inline-flex min-h-11 items-center rounded-full px-3 text-sm font-medium text-brand-green-ink hover:bg-bg-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                      FH_POINTER,
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+        </ul>
+      </nav>
+    );
+  }
   return (
     <nav aria-label={C.views.title} className={cn("space-y-4", className)}>
       <div>
