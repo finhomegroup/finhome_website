@@ -549,3 +549,10 @@ body {
   0% { opacity: 0; translate: -50% 6px; }
   100% { opacity: 1; translate: -50% 0; }
 }
+/* The site header, revealed on scrolling back up, slides in from above at
+   about a scroll's pace instead of popping over the content (NN/g, sticky
+   headers). Applied under `motion-safe:` only; reduced motion shows it at once. */
+@keyframes fh-header-in {
+  0% { transform: translateY(-100%); }
+  100% { transform: none; }
+}

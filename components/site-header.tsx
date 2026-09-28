@@ -111,7 +111,7 @@ export function SiteHeader() {
       <header
         className={cn(
           "inset-x-0 top-0 z-50 bg-transparent",
-          fixed ? "fixed" : "absolute",
+          fixed ? "fixed motion-safe:animate-[fh-header-in_180ms_ease-out]" : "absolute",
         )}
       >
         <Container className="pt-[37px] pb-0">

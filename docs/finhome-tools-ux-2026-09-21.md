@@ -398,6 +398,14 @@ the method's visible part is what the tool does, "theo giá hôm nay" and the li
 figure still in the markup), the only cut the attention data supported without touching the
 shared shell (NN/g: 57% of viewing time on the first screen, 74% on the first two).
 
+**Site-wide, one line (2026-09-28): the header's reveal slides in.** `site-header.tsx` shows the
+header fixed while the reader scrolls back up; it now enters with `fh-header-in` (translateY,
+180 ms, `motion-safe:` only) instead of popping over the content, as NN/g recommends for
+partially persistent headers. Measured first: under 6× CPU throttling a reader-style scroll
+kept p95 at 16,8 ms and flipped the header exactly once per direction change, so no rAF or
+tolerance rewrite was warranted — and the handler's lines stay where the lint baseline keys
+them (52, 83).
+
 - **Teaching pictures in the target panel (owner request, 2026-09-27).** A rice basket
   (`components/calc/rice-basket.tsx`): the capital reached at retirement against the need, rice
   to the share (capped at the dashed rim, heaped when there is more), one rect scaled from the
