@@ -5,36 +5,31 @@ import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
 import { LineChart } from "@/components/calc/chart/line-chart";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
+import { FormDisclosure } from "@/components/calc/form-disclosure";
 import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
+import { labelOf, toneOf, useSettledText } from "@/components/calc/result-status";
+import { pressAnnouncement } from "@/components/retirement-granary-echo";
+import { longTermMoney } from "@/components/calc/retirement-fields";
 import {
-  announcementOf,
-  labelOf,
-  ResultStatusCard,
-  toneOf,
-  useSettledText,
-  type StatusView,
-} from "@/components/calc/result-status";
+  RetirementEssentialFields,
+  RetirementOptionalFields,
+} from "@/components/retirement-plan-fields";
 import {
-  longTermMoney,
-  readRetirement,
-  RetirementFields,
-} from "@/components/calc/retirement-fields";
-import { useCalcFields } from "@/components/calc/use-calc-fields";
+  RETIREMENT_FORM_ID as FORM_ID,
+  RETIREMENT_RESULT_ID as RESULT_ID,
+  useRetirementPlan,
+} from "@/components/retirement-plan-state";
+import { disclosureLines } from "@/components/retirement-plan-input-lines";
 import { formatMoney, formatPercent, formatQuantity } from "@/lib/calc/number";
+import { monthlyEquivalent } from "@/lib/calc/retirement-lever-facts";
 import { compactMoney, compactMoneyPair, fill } from "@/lib/calc/charts/labels";
 import { longTermTrajectoryModel } from "@/lib/calc/charts/long-term-chart";
-import { fundedAtBoundary, resolveLongTermPlan } from "@/lib/calc/long-term-plan";
-import { retirementStatus } from "@/lib/calc/retirement-status";
 import { LONG_TERM_PLAN as L } from "@/content/calculators/long-term-plan";
 import { RETIREMENT_PLAN as C } from "@/content/calculators/retirement-plan";
 
 const F = C.form;
-
-/** See `percent-calculator.tsx` for why these are literals, not `useId`. */
-const FORM_ID = "ke-hoach-huu-tri-nhap";
-const RESULT_ID = "ke-hoach-huu-tri-ket-qua";
 
 /**
  * The TRAJECTORY view of the merged long-term plan (original plan row 44).
@@ -43,6 +38,14 @@ const RESULT_ID = "ke-hoach-huu-tri-ket-qua";
  * `RetirementInput` into all four views at once so this route and its three
  * siblings cannot disagree, and the figure is `longTermTrajectoryModel`. The
  * page reads fields, picks its view, and formats.
+ *
+ * TWO ISLANDS, ONE PLAN — 2026-09-27, tool-first hero. The field state, the
+ * plan and the card's view moved to `RetirementPlanState`, because the
+ * route's hero (`retirement-granary-hero.tsx`, under the `h1`) reads the same
+ * plan from another subtree. The verdict CARD moved into that hero and
+ * renders once there; this component keeps the rows, the ONE live sentence,
+ * the pinned CTA, the figure and the detail. The eleven fields sit behind a
+ * native disclosure whose summary names every value it hides.
  *
  * THE FUNDED VERDICT COMES FROM `fundedAtBoundary`, NOT FROM `depletionAge`.
  * That distinction is the defect this component shipped: a sustainable spend
@@ -76,16 +79,12 @@ export function RetirementPlanCalculator({
    */
   actions?: React.ReactNode;
 }) {
-  const fields = useCalcFields(L.defaults);
-  const read = readRetirement(fields.values);
-  const plan = read.input === null ? null : resolveLongTermPlan(read.input);
+  // The boundary policy is applied once, in the provider. `plan.gap.funded`
+  // is the same call on the same projection, so the verdict here and the gap
+  // view's cannot diverge; it is named because the page also needs the residue.
+  const { fields, read, plan, boundary, statusView, computable, lastPress } =
+    useRetirementPlan();
   const result = plan?.asEntered ?? null;
-
-  // The boundary policy, once. `plan.gap.funded` is the same call on the same
-  // projection, so the verdict here and the gap view's cannot diverge; this
-  // one is named because the page also needs the residue.
-  const boundary =
-    plan === null ? null : fundedAtBoundary(plan.asEntered, plan.input.endAge);
   const funded = boundary?.funded ?? false;
 
   /**
@@ -110,22 +109,10 @@ export function RetirementPlanCalculator({
 
   const chart = longTermTrajectoryModel(plan, C.chart);
 
-  /**
-   * The conclusion in the reader's own context — 2026-09-26.
-   *
-   * The review read "Không đủ / 82 / 3 năm / 20.942.597 ₫" as four figures
-   * with no sentence joining them. These sentences are assembled HERE, from
-   * the engine's result and the content templates, never from the default
-   * scenario: the ages are the ones the reader typed and the ones the
-   * projection found, and every amount is rounded through `compactMoney`
-   * because a sentence beside a verdict is not the place for an eleven-digit
-   * figure. The exact values are the rows above and the detail below.
-   *
-   * Three states, each read off the plan rather than inferred: SHORT (with
-   * the depletion year's partial payment when it paid anything), FUNDED (with
-   * the level spend the capital supports beside the spend that was asked
-   * for), and funded BY OTHER INCOME, which is not a funded portfolio and
-   * must not be described as one.
+  /*
+   * The conclusion's sentences — the card's title, fact and reasons — are
+   * `retirementStatusView`'s, built once in the provider and rendered by the
+   * hero. What stays here reads the ROWS: the gap, purchasing power, method.
    */
   const input = plan?.input ?? null;
   const rounded = (value: number) => compactMoney(value, L.money);
@@ -133,98 +120,12 @@ export function RetirementPlanCalculator({
   const sentences = (parts: readonly (string | null)[]) =>
     parts.filter((part): part is string => part !== null).join(" ");
 
-  /**
-   * The SEMANTIC state — 2026-09-27 result-status plan, first pilot.
-   *
-   * `retirementStatus` decides the tone from `fundedAtBoundary`, the same
-   * policy the verdict row above reads, so the card, the row, the pinned
-   * summary and the figure cannot disagree. Everything below only words it.
-   */
-  const status = retirementStatus(plan);
-
-  /** The funded body, when the capital (not other income) is what funds it. */
-  const fundedBody =
-    result === null || input === null || result.sustainableSpending === null
-      ? null
-      : fill(F.fundedBody, {
-          sustainable: rounded(result.sustainableSpending),
-          desired: rounded(input.desiredAnnualSpending),
-          endAge: input.endAge,
-          // The engine's last year is `endAge − 1`: a horizon of 85 counts
-          // spending until the reader turns 85.
-          lastAge: input.endAge - 1,
-        });
-
-  const lever = (field: keyof typeof F.statusActions) => ({
-    field,
-    label: F.statusActions[field],
-  });
-
-  const statusView: StatusView =
-    result === null || input === null || status.kind === "unknown"
-      ? {
-          tone: "unknown",
-          title: F.invalidHeadline,
-          reasons: [F.invalidNotice],
-        }
-      : status.kind === "depleted" && status.depletionAge !== null
-        ? {
-            tone: "shortfall",
-            title: fill(F.depletedHeadline, { endAge: input.endAge }),
-            fact: fill(F.depletedBody, {
-              endAge: input.endAge,
-              depletionAge: status.depletionAge,
-              yearsShort: status.yearsShort,
-            }),
-            reasons: [
-              result.lastWithdrawalPlanned === null ||
-              result.lastWithdrawalPaid === null
-                ? null
-                : result.lastWithdrawalPaid > 0
-                  ? fill(F.depletedPartial, {
-                      planned: rounded(result.lastWithdrawalPlanned),
-                      paid: rounded(result.lastWithdrawalPaid),
-                    })
-                  : F.depletedNothingLeft,
-            ],
-            next: F.depletedTry,
-            actions: [
-              lever("annualContribution"),
-              lever("retirementAge"),
-              lever("desiredAnnualSpending"),
-            ],
-          }
-        : status.kind === "exactBoundary"
-          ? {
-              tone: "caution",
-              title: fill(F.boundaryHeadline, { endAge: input.endAge }),
-              reasons: [fill(F.boundaryBody, { endAge: input.endAge }), fundedBody],
-              next: F.fundedTry,
-              actions: [
-                lever("annualContribution"),
-                lever("desiredAnnualSpending"),
-                lever("returnAfterPercent"),
-              ],
-            }
-          : status.kind === "fundedByOtherIncome"
-            ? {
-                tone: "met",
-                title: fill(F.otherIncomeHeadline, { endAge: input.endAge }),
-                reasons: [F.otherIncomeNote],
-                next: F.fundedTry,
-                actions: [lever("endAge"), lever("returnAfterPercent")],
-              }
-            : {
-                tone: "met",
-                title: fill(F.fundedHeadline, { endAge: input.endAge }),
-                reasons: [fundedBody],
-                next: F.fundedTry,
-                actions: [lever("endAge"), lever("returnAfterPercent")],
-              };
-  const statusLabel = F.statusLabels[toneOf(statusView)];
-  const statusWithLabel: StatusView = { ...statusView, label: statusLabel };
-  // Announced once typing pauses, and withdrawn the moment it is stale.
-  const announcement = useSettledText(announcementOf(statusWithLabel));
+  // Announced once typing — or a lever press — pauses, and withdrawn the
+  // moment it is stale. The card it words renders in the hero; the ONE live
+  // region stays here, in the result group. A press leads the sentence with
+  // the lever, its new value and what it did, so a press that leaves the
+  // verdict unchanged is still heard (WCAG 4.1.3).
+  const announcement = useSettledText(pressAnnouncement(lastPress, statusView));
 
   /**
    * What the promoted shortfall row means. It is the ANNUAL spending gap in
@@ -240,19 +141,10 @@ export function RetirementPlanCalculator({
         : result.spendingShortfall > 0
           ? fill(F.shortfallMeaning, {
               shortfall: rounded(result.spendingShortfall),
+              // The same gap per month, as the pension is asked on this route.
+              monthly: rounded(monthlyEquivalent(result.spendingShortfall)),
             })
           : null;
-
-  /** The reader's own rates, stated beside the conclusion they produced. */
-  const assumptions =
-    input === null
-      ? null
-      : fill(F.assumptionsUsed, {
-          before: rate(input.returnBeforePercent),
-          after: rate(input.returnAfterPercent),
-          inflation: rate(input.inflationPercent),
-          growth: rate(input.contributionGrowthPercent),
-        });
 
   /**
    * Purchasing power, after the result, with the reader's figures. The pair
@@ -329,11 +221,22 @@ export function RetirementPlanCalculator({
         formId={FORM_ID}
         columns="split"
         form={
-          <RetirementFields
-            copy={L.fields}
-            invalid={read.invalid}
-            bind={fields.bind}
-          />
+          // Two tiers, 2026-09-27: the three fields every reader answers —
+          // age, the age to retire at, the pension wanted — then the other
+          // eight, optional, collapsed in the server HTML. Their summary names
+          // every value they hold, and they are forced open while the plan
+          // cannot be computed — docs §5, amended by §1c.
+          <>
+            <RetirementEssentialFields invalid={read.invalid} bind={fields.bind} />
+            <FormDisclosure
+              title={C.hero.disclosure.title}
+              lines={disclosureLines(fields.values)}
+              forcedOpen={!computable}
+              className="mt-6"
+            >
+              <RetirementOptionalFields invalid={read.invalid} bind={fields.bind} />
+            </FormDisclosure>
+          </>
         }
         cta={
           <ResultCta
@@ -350,7 +253,7 @@ export function RetirementPlanCalculator({
             answer={{
               label: F.verdictLabel,
               value: verdict,
-              status: { tone: toneOf(statusView), label: labelOf(statusWithLabel) },
+              status: { tone: toneOf(statusView), label: labelOf(statusView) },
             }}
           />
         }
@@ -364,9 +267,8 @@ export function RetirementPlanCalculator({
             <ResultGroup
               title={F.resultTitle}
               anchorId={RESULT_ID}
-              // The conclusion first, above the rows, outside the live region;
-              // the one settled sentence inside it.
-              status={<ResultStatusCard status={statusWithLabel} formId={FORM_ID} />}
+              // The card moved to the hero (docs §1c) and renders once there;
+              // the one settled sentence stays here, in the ONE live region.
               announcement={announcement}
             >
               <ResultRow
@@ -390,16 +292,17 @@ export function RetirementPlanCalculator({
                   value={`${result.yearsShort} ${F.yearsUnit}`}
                 />
               ) : null}
-              {/* "Khoản cần điều chỉnh": the annual spending gap in today's
-                  money — the figure the three sibling views price remedies
-                  against. Its label carries the period and the price basis;
-                  see the content file. */}
+              {/* "Khoản cần điều chỉnh": the spending gap in today's money,
+                  said PER MONTH on this route — the unit the reader budgets
+                  and asks the pension in (the engine's yearly gap ÷ 12). Its
+                  label carries the period and the price basis; the FAQ keeps
+                  the yearly figure. */}
               <ResultRow
                 label={F.shortfallLabel}
                 value={
                   result === null
                     ? null
-                    : longTermMoney(result.spendingShortfall)
+                    : longTermMoney(monthlyEquivalent(result.spendingShortfall))
                 }
               />
               <ResultRow
@@ -414,17 +317,11 @@ export function RetirementPlanCalculator({
 
             {result !== null ? (
               <div className="mt-4 space-y-2 text-sm leading-relaxed text-ink-2">
-                {/* The verdict sentences MOVED into the status card above the
-                    rows (2026-09-27). What stays here is the reading of the
-                    rows: what the gap means, the conditions, the method. */}
+                {/* The verdict sentences, the estimate note and the rates in
+                    use moved with the card into the hero (2026-09-27). What
+                    stays is the reading of the rows: the gap, the method. */}
                 {shortfallNote !== null ? (
                   <p className="text-ink-3">{shortfallNote}</p>
-                ) : null}
-                {/* The conditions that can change the conclusion stay beside
-                    it — the approved contract's never-collapse rule. */}
-                <p className="text-ink-3">{F.estimateNote}</p>
-                {assumptions !== null ? (
-                  <p className="text-ink-3">{assumptions}</p>
                 ) : null}
                 {/* Purchasing power, explained AFTER the result with the
                     reader's own figures, behind a summary that names it. The
@@ -462,8 +359,8 @@ export function RetirementPlanCalculator({
               </p>
             ) : null}
 
-            {/* The invalid state's recovery is the NEUTRAL card's reason now,
-                above the rows that show a dash — one place, not two. */}
+            {/* The invalid state's recovery is the hero card's visible closing
+                line now (`invalidNotice`), above the form — one place, not two. */}
           </>
         }
         chart={
@@ -498,6 +395,44 @@ export function RetirementPlanCalculator({
                   result === null
                     ? null
                     : longTermMoney(result.realFinalBalance)
+                }
+              />
+            </ResultGroup>
+
+            {/* The hero's "Mục tiêu hưu trí", exact: the engine's required
+                capital in both readings, what is still missing, and the
+                smallest first-year contribution that funds the plan. */}
+            <ResultGroup title={F.targetTitle} className="mt-4" live={false}>
+              <ResultRow
+                label={F.requiredRealLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.requiredRealBalanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.requiredNominalLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.requiredBalanceAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.requiredShortLabel}
+                value={
+                  result === null
+                    ? null
+                    : longTermMoney(result.realBalanceShortfallAtRetirement)
+                }
+              />
+              <ResultRow
+                label={F.requiredContributionLabel}
+                value={
+                  plan === null || plan.contribution.annualContribution === null
+                    ? null
+                    : longTermMoney(plan.contribution.annualContribution)
                 }
               />
             </ResultGroup>
@@ -565,12 +500,12 @@ export function RetirementPlanCalculator({
                   same quantity twice with different rounding. */}
             </ResultGroup>
 
-            {/* "Cạn ở tuổi 82" counts the year the plan could not pay IN FULL,
-                and that year is normally a PARTIAL payment — 181.159.463 ₫ of
-                a 1.288.834.386 ₫ need on the defaults. Reporting the age alone
-                loses how much was actually received. Withheld entirely when
-                the verdict is funded, so a forgiven residue cannot render as a
-                real shortfall. */}
+            {/* The depletion age counts the year the plan could not pay IN
+                FULL, and that year is normally a PARTIAL payment — the savings
+                pay part of its need. Reporting the age alone loses how much
+                was actually received. Withheld entirely when the verdict is
+                funded, so a forgiven residue cannot render as a real
+                shortfall. */}
             {result !== null &&
             !funded &&
             result.lastWithdrawalPlanned !== null &&

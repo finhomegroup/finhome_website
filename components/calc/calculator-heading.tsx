@@ -15,6 +15,7 @@ export function CalculatorHeading({
   lede,
   ledeDetail,
   ledeDetailTitle,
+  afterTitle,
 }: {
   title: string;
   /**
@@ -28,6 +29,14 @@ export function CalculatorHeading({
   /** The rest of the explanation, collapsed. */
   ledeDetail?: string;
   ledeDetailTitle?: string;
+  /**
+   * OPT-IN: a node rendered directly after the `</h1>`, before the lede —
+   * the slot for a route whose tool IS its first screen (the retirement
+   * plan's hero, docs §1c). Rendered UNWRAPPED, so the node owns its own
+   * spacing and alignment, and nothing else sits between the heading and it.
+   * Absent on every other route, whose markup is byte-identical to before.
+   */
+  afterTitle?: React.ReactNode;
 }) {
   return (
     <div className="mx-auto max-w-3xl">
@@ -78,6 +87,7 @@ export function CalculatorHeading({
         <h1 className="font-display text-2xl leading-tight text-ink md:text-4xl lg:text-5xl">
           {title}
         </h1>
+        {afterTitle}
         <p className="mx-auto mt-2 max-w-2xl text-base leading-relaxed text-ink-2 md:mt-5">
           {lede}
         </p>
