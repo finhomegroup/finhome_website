@@ -326,3 +326,59 @@ Giữ ảnh để duyệt; không đưa chúng vào production. Các patch trung
 link/app activation và chuyển dữ liệu web→app. Phần tải app vẫn HOLD. Hình nhà hưu trí
 có nền trắng trong ảnh trên page xám; giữ nguyên asset upstream trong đợt tích hợp,
 chưa retouch ảnh hoặc coi đó là bản duyệt thị giác cuối cùng.
+
+## Mục lục bài giáo dục — sửa khả năng đọc (28/09/2026)
+
+Phản hồi người dùng: mục lục khó đọc trên mobile, desktop chỉ tạm hiểu. Claude
+implementation `3a242ee1-c6e7-4bb2-9ce3-d79a96459626`; chỉ sửa
+`ArticleContents` dùng chung trong `components/education/education-article.tsx`
+và hai chuỗi mới trong `content/education/collection.ts`.
+
+- Một landmark `<nav id="trong-bai-nay" aria-label="Trong bài này">`, nền trắng,
+  viền. Bên trong là hai cách hiển thị cùng danh sách link, chuyển ở `md` bằng
+  `display`, nên mỗi breakpoint chỉ lộ một bản.
+- Dưới `md`: `<details>` native, **đóng trong HTML server**. Summary cao tối
+  thiểu 48 px, ghi "Trong bài này", "Xem N mục" (khi mở: "Thu gọn") và chevron
+  `aria-hidden`. Không cần JS, không set `open`, nên không có hydration mismatch.
+- Từ `md`: luôn mở, có heading `h2`. Không dùng CSS để ép `<details>` đóng hiện ra.
+- Một cột, có số thứ tự `aria-hidden` (list vẫn là `<ol role="list">`), đủ nguyên
+  tiêu đề, không ellipsis. Mỗi link là hàng full-width `min-h-11` (44 px), chữ
+  `text-ink`, divider, hover/focus rõ. Bỏ grid hai cột đọc ngang.
+- Anchor giữ nguyên id; offset header vẫn do `scroll-padding-top: 6.5rem` global.
+  Nội dung bài, hình minh họa B, biểu đồ/tính toán, thứ tự mục và CTA không đổi.
+- Test mới `components/education/education-contents-render.test.ts`: mọi bài có
+  đúng một nav, link đủ và đúng thứ tự với nhãn đầy đủ ở cả hai bản, mỗi đích tồn
+  tại đúng một lần, không id trùng toàn trang, mobile `<details>` không `open` +
+  `md:hidden` + đúng số mục, desktop `hidden md:block` + h2, một cột, hàng
+  `min-h-11 w-full`, không script. **162 pass.**
+- Đã chạy Node 24.21.0: `vitest run components/education content/education
+  app/blog lib components/calc` + learning/header tests: **177 files / 4.609 pass**.
+  `tsc --noEmit` exit 0; `eslint` file đã sửa exit 0; `git diff --check` pass.
+- **Chưa kiểm chứng**: chưa mở browser. Chiều cao hàng thực tế, contrast, chạm
+  trên mobile, vị trí sau khi nhảy anchor dưới header cố định, VoiceOver/Safari
+  với `details` và `role="list"` đều cần đo ở viewport cụ thể. Chưa chạy full gate.
+
+### Codex — kiểm chứng mục lục sau tích hợp
+
+- Native full gate tại đúng worktree, Node 24.21.0, 07:32:43–07:33:51 UTC:
+  **335 files / 7.497 tests pass**, TypeScript pass, lint **3 baseline / 0 new**,
+  build 293 pages; markup 76 live / 0 planned + 207 trang khác pass. Receipt:
+  `.runtime/article-toc-native-check.json`.
+- Kiểm tra trực tiếp C01 bằng browser và screenshot tại **390×844**, **320×812**
+  và **1440×1000**. 390 px: mục lục cũ cao 480,5 px, chữ 14 px, nhiều target
+  36 px; bản mới đóng cao **50 px**, summary 48 px. Mở bằng Enter và bằng click
+  đều hoạt động; chữ link **16 px**, hàng **44–64 px** ở 390. Nhãn dài xuống dòng,
+  không bị cắt. 320 px: khung rộng 288 px, hàng tối thiểu 44 px, không tràn nội
+  dung hàng hay tràn ngang trang. Desktop: chỉ bản luôn mở hiện ra, 10 hàng một
+  cột, target tối thiểu 44 px; bản mobile `display:none`.
+- Cả 10 đích anchor tồn tại duy nhất trong DOM. Thử click thực tế mục thực hành
+  ở mobile: URL `#bai-tap`, heading dừng ở y=104 px; mục hộ giả lập trên desktop:
+  `#vi-du-gia-lap`, y≈104 px. Hai heading không bị che; offset trùng
+  `scroll-padding-top:104px`. Không tuyên bố đã click thử mọi anchor trên mọi bài.
+- Thay đổi dùng chung cho bài giáo dục; không sửa nội dung bài, số liệu hoặc ảnh.
+  Kiểm tra này không phải kiểm chứng khả năng đọc hiểu toàn bài, audit tương phản
+  đầy đủ hay thử VoiceOver/Safari/iPhone thật. No-JS fallback được kiểm tra qua
+  HTML/native details, chưa chạy browser với JavaScript bị vô hiệu hóa.
+- Đã reset viewport, giữ tab người dùng và preview 3240. Log `.runtime/` giữ
+  cục bộ để truy vết, không phải asset production. Chưa commit/push/deploy;
+  các thay đổi có sẵn trong worktree được giữ nguyên.

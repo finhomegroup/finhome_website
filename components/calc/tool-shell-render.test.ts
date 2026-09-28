@@ -17,6 +17,21 @@
 import { describe, expect, it, vi } from "vitest";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { markupRegion } from "@/lib/markup-region";
+
+/**
+ * The affordability pilot's labelled 3D illustration sits in the learning
+ * panel above the form. It is a `<figure>` but not a chart, so the order
+ * checks below strip exactly that element, by its own marker, before looking
+ * for the first chart. Throws if the marker survives the strip.
+ */
+const ILLUSTRATION = 'data-learning-illustration="true"';
+function chartsOnly(html: string): string {
+  const region = markupRegion(html, ILLUSTRATION, "figure");
+  const stripped = region === null ? html : html.replace(`${region}</figure>`, "");
+  if (stripped.includes(ILLUSTRATION)) throw new Error("more than one illustration figure");
+  return stripped;
+}
 
 async function render<T extends Record<string, unknown>>(
   componentPath: string,
@@ -85,7 +100,7 @@ const TOOLS = [
 
 describe.each(TOOLS)(
   "$name — W02 shell, consistently",
-  ({ componentPath, componentName, contentPath, contentExport }) => {
+  ({ name, componentPath, componentName, contentPath, contentExport }) => {
     const html = () =>
       render(componentPath, componentName, contentPath, contentExport);
 
@@ -103,7 +118,9 @@ describe.each(TOOLS)(
     });
 
     it("puts the inputs before the answer, and the answer before the chart", async () => {
-      const markup = await html();
+      const rendered = await html();
+      expect(rendered.split(ILLUSTRATION).length - 1).toBe(name === "kha-nang-mua-nha" ? 1 : 0);
+      const markup = chartsOnly(rendered);
       const firstInput = markup.indexOf("<input");
       const firstResult = markup.indexOf('data-results-live="true"');
       const firstChart = markup.indexOf("<figure");
@@ -116,7 +133,7 @@ describe.each(TOOLS)(
     it("puts the chart before any year table or detail ledger", async () => {
       // The browser finding: "Chart should not be buried under full detail
       // ledger and repeated paragraphs."
-      const markup = await html();
+      const markup = chartsOnly(await html());
       const firstChart = markup.indexOf("<figure");
       const detailLedger = markup.indexOf("Xem chi tiết");
       const firstTable = markup.indexOf("<table");

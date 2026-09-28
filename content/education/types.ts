@@ -102,6 +102,26 @@ export type EducationArticle = {
    * skip.
    */
   visualReading: string;
+  /**
+   * An optional illustration that introduces the question: shown after the
+   * short answer and its early tool link, before the in-page contents. It
+   * supplements the computed visual, never replaces it. Not a tool capture
+   * (that is a section's `media`) and not a result: it holds no figure, and
+   * `badge` labels it on the page. The caption explains the metaphor in
+   * plain words and qualifies it briefly.
+   */
+  illustration?: {
+    /** Smallest width, used as the `src` fallback. */
+    src: string;
+    /** Responsive local WebP files, `"<path> <w>w, …"`. */
+    srcSet: string;
+    /** The source's natural size, for the aspect ratio. */
+    width: number;
+    height: number;
+    alt: string;
+    badge: string;
+    caption: string;
+  };
 
   /** Do it with your own numbers, on the real tool. */
   exercise: {

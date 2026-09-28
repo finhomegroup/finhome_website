@@ -119,28 +119,36 @@ export function EducationArticleBody({
         </div>
       </section>
 
+      {/* An illustration that opens the article's question, after the answer
+          and the tool, before the contents. Labelled on the page; it holds no
+          figure, and the computed visual further down is unchanged. A plain
+          <img>: the static export has no image loader. Not lazy: it is near
+          the top of the page. */}
+      {article.illustration ? (
+        <figure data-education-illustration="true" className="mx-auto w-full max-w-xl">
+          <div className="relative">
+            <img
+              src={article.illustration.src}
+              srcSet={article.illustration.srcSet}
+              sizes="(min-width: 640px) 36rem, 100vw"
+              width={article.illustration.width}
+              height={article.illustration.height}
+              alt={article.illustration.alt}
+              decoding="async"
+              className="block h-auto w-full rounded-xl border border-ink-4/15"
+            />
+            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-ink-2">
+              {article.illustration.badge}
+            </span>
+          </div>
+          <figcaption className="mt-3 text-sm leading-relaxed text-ink-3">
+            {article.illustration.caption}
+          </figcaption>
+        </figure>
+      ) : null}
+
       {/* In-page contents: ordinary anchors to the headings below. */}
-      <nav aria-labelledby={ids.contents} className="border-y border-ink-4/20 py-5">
-        <h2 id={ids.contents} className="font-display text-sm font-medium uppercase tracking-wide text-ink-3">
-          {C.article.contentsTitle}
-        </h2>
-        <ol className="mt-3 grid gap-x-8 gap-y-1 md:grid-cols-2">
-          {contents.map((item) => (
-            <li key={item.id}>
-              <a
-                href={`#${item.id}`}
-                className={cn(
-                  "inline-flex min-h-9 items-center py-1 text-sm leading-snug text-ink-2 transition-colors hover:text-brand-green-ink",
-                  FH_POINTER,
-                  ANCHOR_FOCUS,
-                )}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <ArticleContents id={ids.contents} items={contents} />
 
       {/* The hypothetical, declared as such BEFORE any figure is used. */}
       <section aria-labelledby={ids.household} className="rounded-2xl bg-bg-soft p-5">
@@ -415,6 +423,94 @@ function anchorSlug(text: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, 60)
     .replace(/-+$/g, "");
+}
+
+/**
+ * The in-page contents, one `<nav>` landmark with two presentations of the
+ * SAME ordered links, switched at `md` by `display`, so only one is ever
+ * exposed to a reader or to assistive technology:
+ *
+ * - below `md`, a native `<details>`, CLOSED in the server markup: a phone
+ *   sees one clear row — the title and "Xem N mục" — and opens it with no
+ *   JavaScript. Nothing sets `open`, so there is no hydration to mismatch;
+ * - from `md`, the same list, always shown under a heading. Nothing forces a
+ *   closed `<details>` open with CSS.
+ *
+ * ONE COLUMN, numbered, full heading text: the old two-column grid read
+ * left-to-right across unrelated rows. Each link is a full-width row at least
+ * 44 px tall, divided from the next. The fixed header's offset is the global
+ * `scroll-padding-top` on `html`, so the anchors need nothing of their own.
+ * A server component: it ships no JavaScript.
+ */
+function ArticleContents({
+  id,
+  items,
+}: {
+  id: string;
+  items: readonly { id: string; label: string }[];
+}) {
+  const title = C.article.contentsTitle;
+  const list = (
+    // `role="list"`: Safari drops list semantics from an unstyled list.
+    <ol role="list" className="list-none divide-y divide-ink-4/25">
+      {items.map((item, index) => (
+        <li key={item.id}>
+          <a
+            href={`#${item.id}`}
+            className={cn(
+              "flex min-h-11 w-full items-start gap-3 px-4 py-2.5 text-base leading-snug text-ink transition-colors hover:bg-bg-soft hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-green md:px-5",
+              FH_POINTER,
+            )}
+          >
+            <span aria-hidden="true" className="w-5 shrink-0 pt-px text-right text-sm font-medium tabular-nums text-ink-3">
+              {index + 1}
+            </span>
+            <span className="min-w-0">{item.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+  return (
+    <nav
+      id={id}
+      aria-label={title}
+      data-education-contents="true"
+      className="overflow-hidden rounded-2xl border border-ink-4/30 bg-white"
+    >
+      <details data-contents="mobile" className="group md:hidden">
+        <summary
+          className={cn(
+            "flex min-h-12 list-none items-center justify-between gap-3 px-4 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-green [&::-webkit-details-marker]:hidden",
+            FH_POINTER,
+          )}
+        >
+          <span className="font-display text-base font-medium text-ink">{title}</span>
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-brand-green-ink">
+            <span className="group-open:hidden">
+              {C.article.contentsShow.replace("{count}", String(items.length))}
+            </span>
+            <span className="hidden group-open:inline">{C.article.contentsHide}</span>
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              viewBox="0 0 16 16"
+              className="size-4 transition-transform group-open:rotate-180"
+            >
+              <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </summary>
+        <div className="border-t border-ink-4/25">{list}</div>
+      </details>
+      <div data-contents="desktop" className="hidden md:block">
+        <h2 className="border-b border-ink-4/25 px-5 py-3 font-display text-base font-medium text-ink">
+          {title}
+        </h2>
+        {list}
+      </div>
+    </nav>
+  );
 }
 
 /**

@@ -165,7 +165,10 @@ describe("with the home the reader is looking at", () => {
     const html = await render({ defaultTargetPrice: "3.000.000.000" });
     expect(html).toContain(AFFORDABILITY.targetChart.title);
     expect(html).toContain('data-chart-mark="shortfall"');
-    const pinned = html.slice(html.indexOf('data-calc-answer="true"'), html.indexOf("<button"));
+    // Up to the CTA's own button: the learning panel above the form has
+    // buttons of its own, so the first `<button>` on the page is not the bound.
+    const pinnedAt = html.indexOf('data-calc-answer="true"');
+    const pinned = html.slice(pinnedAt, html.indexOf("<button", pinnedAt));
     expect(pinned).toContain('data-result-status="shortfall"');
     expect(html.split('data-results-live="true"').length - 1).toBe(1);
     expect(markupRegion(html, 'data-results-live="true"')!).toContain(

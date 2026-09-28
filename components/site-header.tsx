@@ -206,7 +206,7 @@ export function SiteHeader() {
         )}
       >
         <Container className="py-4 xl:py-6">
-          <div className="relative mx-auto flex h-14 max-w-[1076px] items-center justify-between rounded-full border border-header-border bg-header-surface pl-5 pr-[7px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] md:max-xl:justify-center">
+          <div className={`relative mx-auto flex h-14 max-w-[1076px] items-center justify-between rounded-full border border-header-border bg-header-surface pl-5 pr-[7px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] md:max-xl:justify-center${onHome ? "" : " xl:pr-5"}`}>
             <Link
               href={onHome ? "#trangchu" : "/"}
               className={cn("flex items-center", FH_POINTER)}
