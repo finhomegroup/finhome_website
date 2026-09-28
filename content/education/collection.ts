@@ -115,6 +115,9 @@ export const EDUCATION_COLLECTION = {
     groupNote: "Bài thuộc nhóm",
     nextTitle: "Đọc tiếp",
     contentsTitle: "Trong bài này",
+    /** The collapsed contents' hint on a phone; `{count}` is the number of links. */
+    contentsShow: "Xem {count} mục",
+    contentsHide: "Thu gọn",
     earlyToolLead: "Muốn thử ngay với số của bạn?",
     exerciseLink: "Xem các bước",
     chapterLink: "Xem cả chương",

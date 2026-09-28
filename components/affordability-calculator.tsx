@@ -21,12 +21,25 @@ import { ResultRow } from "@/components/calc/result-row";
 import {
   announcementOf,
   labelOf,
-  ResultStatusCard,
   toneOf,
   useSettledText,
   type StatusView,
 } from "@/components/calc/result-status";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import {
+  illustrationParts,
+  makeTrial,
+  onlyTried,
+  sharedBlock,
+  trialAvailability,
+  trialImpactView,
+  type TrialFacts,
+  type TrialKey,
+} from "@/components/affordability-learning";
+import {
+  AffordabilityLearningPanel,
+  useAffordabilityLearning,
+} from "@/components/affordability-learning-panel";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 // The NOXH route's three overridden help strings, and the statutory figures
@@ -571,6 +584,30 @@ export function AffordabilityCalculator({
     (key) => fields.values[key] === initial[key],
   );
 
+  /*
+   * THE 2026-09-28 "THỬ MỘT THAY ĐỔI" PILOT, commercial route only. A try
+   * writes one field through the raw binding; everything the READER does —
+   * every keystroke, the mode switch, "Về ví dụ mẫu" — goes through `bind`
+   * and `reset` below, which retire every try first. So a try can never
+   * outlive the form it was made on, even when the reader types the same
+   * figure back. See `affordability-learning.ts`.
+   */
+  const learning = useAffordabilityLearning(fields.values);
+  const bind = (key: keyof typeof initial) => {
+    const binding = fields.bind(key);
+    return {
+      ...binding,
+      onValueChange: (next: string) => {
+        learning.dispatch({ type: "edit" });
+        binding.onValueChange(next);
+      },
+    };
+  };
+  const reset = () => {
+    learning.dispatch({ type: "reset" });
+    fields.reset();
+  };
+
   const mode = fields.values.mode as AffordabilityMode;
   const household = mode === "household";
 
@@ -678,7 +715,51 @@ export function AffordabilityCalculator({
     ? affordabilityStatus({ input, result, targetPrice, targetInvalid })
     : null;
   const statusView = status === null ? null : affordabilityStatusView(status);
-  const settled = useSettledText(statusView === null ? "" : announcementOf(statusView));
+
+  /** What a try may assume about the form on screen. */
+  const trialFacts: TrialFacts = {
+    usable: input !== null && result !== null,
+    targetInvalid,
+    limited: household && (result?.conclusionLimited ?? false),
+    down,
+    reserve,
+    raw: { reserve: fields.values.reserve, rate: fields.values.rate },
+  };
+  const latestTrial = learning.trials.at(-1) ?? null;
+  // The latest try against the result on screen: because it holds, this IS
+  // the result for its `after` values.
+  const trialImpact =
+    pilot && latestTrial !== null && result !== null
+      ? trialImpactView(latestTrial, result, labelOf(statusView))
+      : null;
+  const tryKey = (key: TrialKey) => {
+    const trial = makeTrial({
+      key,
+      values: fields.values,
+      facts: trialFacts,
+      revision: learning.state.revision,
+      result,
+      label: labelOf(statusView),
+    });
+    if (trial === null) return;
+    learning.dispatch({ type: "apply", trial });
+    fields.bind(key).onValueChange(trial.after[key]);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    learning.dispatch({ type: "undo" });
+    fields.bind(latestTrial.key).onValueChange(latestTrial.before[latestTrial.key]);
+  };
+
+  // The ONE live sentence: what the latest try did, then the conclusion —
+  // so a try that leaves the verdict alone is still heard.
+  const settled = useSettledText(
+    statusView === null
+      ? ""
+      : trialImpact === null
+        ? announcementOf(statusView)
+        : `${trialImpact.said} ${announcementOf(statusView)}`,
+  );
   /** A notice the card already states is not rendered a second time below. */
   const inCard = new Set(statusView?.reasons ?? []);
   const below = (notice: string) => !inCard.has(notice);
@@ -774,11 +855,34 @@ export function AffordabilityCalculator({
 
   return (
     <CalculatorCard>
+      {/* A try is not the reader's input: the example stays labelled as one
+          until they type. */}
       <ExampleNotice
-        pristine={pristine}
-        onReset={fields.reset}
+        pristine={pristine || onlyTried(learning.trials, initial)}
+        onReset={reset}
         className="mb-6"
       />
+
+      {/* Before the form, so a phone reaches the verdict and the tries
+          without scrolling past fourteen fields. The card renders here and
+          nowhere else on this route. */}
+      {statusView !== null ? (
+        <AffordabilityLearningPanel
+          status={statusView}
+          formId={ids.form}
+          sample={pristine || onlyTried(learning.trials, initial)}
+          availability={{
+            reserve: trialAvailability("reserve", trialFacts),
+            rate: trialAvailability("rate", trialFacts),
+          }}
+          sharedReason={sharedBlock(trialFacts)}
+          impact={trialImpact}
+          illustration={illustrationParts(result, input?.cashReserve ?? null)}
+          canUndo={latestTrial !== null}
+          onTry={tryKey}
+          onUndo={undoTrial}
+        />
+      ) : null}
 
       <CalculatorLayout
         formId={ids.form}
@@ -790,7 +894,7 @@ export function AffordabilityCalculator({
                 field below. */}
             <FieldGroup>
               <RadioGroupField
-                {...fields.bind("mode")}
+                {...bind("mode")}
                 legend={C.form.modeLegend}
                 help={C.form.modeHelp}
                 options={[
@@ -802,7 +906,7 @@ export function AffordabilityCalculator({
 
             <FieldGroup title={C.form.incomeGroup} className="mt-8">
               <NumberField
-                {...fields.bind("income")}
+                {...bind("income")}
                 label={C.form.incomeLabel}
                 unit={C.form.incomeUnit}
                 help={C.form.incomeHelp}
@@ -810,7 +914,7 @@ export function AffordabilityCalculator({
                 invalid={incomeInvalid}
               />
               <NumberField
-                {...fields.bind("debts")}
+                {...bind("debts")}
                 label={C.form.debtsLabel}
                 unit={C.form.debtsUnit}
                 help={C.form.debtsHelp}
@@ -826,7 +930,7 @@ export function AffordabilityCalculator({
             {household ? (
               <FieldGroup title={C.form.householdGroup} className="mt-8">
                 <NumberField
-                  {...fields.bind("netIncome")}
+                  {...bind("netIncome")}
                   label={C.form.netIncomeLabel}
                   unit={C.form.netIncomeUnit}
                   help={C.form.netIncomeHelp}
@@ -834,7 +938,7 @@ export function AffordabilityCalculator({
                   invalid={netIncomeInvalid}
                 />
                 <NumberField
-                  {...fields.bind("essentials")}
+                  {...bind("essentials")}
                   label={C.form.essentialsLabel}
                   unit={C.form.essentialsUnit}
                   help={C.form.essentialsHelp}
@@ -843,7 +947,7 @@ export function AffordabilityCalculator({
                   fieldKey={pilot ? "essentials" : undefined}
                 />
                 <NumberField
-                  {...fields.bind("buffer")}
+                  {...bind("buffer")}
                   label={C.form.bufferLabel}
                   unit={C.form.bufferUnit}
                   help={C.form.bufferHelp}
@@ -856,7 +960,7 @@ export function AffordabilityCalculator({
 
             <FieldGroup title={C.form.purchaseGroup} className="mt-8">
               <NumberField
-                {...fields.bind("down")}
+                {...bind("down")}
                 label={C.form.downLabel}
                 unit={C.form.downUnit}
                 help={C.form.downHelp}
@@ -865,7 +969,7 @@ export function AffordabilityCalculator({
                 fieldKey={pilot ? "down" : undefined}
               />
               <NumberField
-                {...fields.bind("reserve")}
+                {...bind("reserve")}
                 label={C.form.reserveLabel}
                 unit={C.form.reserveUnit}
                 help={C.form.reserveHelp}
@@ -874,7 +978,7 @@ export function AffordabilityCalculator({
                 fieldKey={pilot ? "reserve" : undefined}
               />
               <NumberField
-                {...fields.bind("rate")}
+                {...bind("rate")}
                 label={C.form.rateLabel}
                 unit={C.form.rateUnit}
                 // Still overridable on the NOXH route, and the help says why:
@@ -885,7 +989,7 @@ export function AffordabilityCalculator({
                 invalid={rateInvalid}
               />
               <NumberField
-                {...fields.bind("term")}
+                {...bind("term")}
                 label={C.form.termLabel}
                 help={noxh ? N.termHelp : C.form.termHelp}
                 error={C.form.termInvalid}
@@ -899,7 +1003,7 @@ export function AffordabilityCalculator({
             {pilot ? (
               <FieldGroup title={C.form.targetGroup} className="mt-8">
                 <NumberField
-                  {...fields.bind("targetPrice")}
+                  {...bind("targetPrice")}
                   label={C.form.targetLabel}
                   unit={C.form.targetUnit}
                   help={C.form.targetHelp}
@@ -916,7 +1020,7 @@ export function AffordabilityCalculator({
               className="mt-8"
             >
               <NumberField
-                {...fields.bind("purchaseCost")}
+                {...bind("purchaseCost")}
                 label={C.form.purchaseCostLabel}
                 unit={C.form.purchaseCostUnit}
                 help={C.form.purchaseCostHelp}
@@ -925,7 +1029,7 @@ export function AffordabilityCalculator({
                 fieldKey={pilot ? "purchaseCost" : undefined}
               />
               <NumberField
-                {...fields.bind("housingCosts")}
+                {...bind("housingCosts")}
                 label={C.form.housingCostsLabel}
                 unit={C.form.housingCostsUnit}
                 help={C.form.housingCostsHelp}
@@ -933,7 +1037,7 @@ export function AffordabilityCalculator({
                 invalid={housingCostsInvalid}
               />
               <NumberField
-                {...fields.bind("housingRatio")}
+                {...bind("housingRatio")}
                 label={C.form.housingRatioLabel}
                 unit={C.form.housingRatioUnit}
                 help={C.form.housingRatioHelp}
@@ -941,7 +1045,7 @@ export function AffordabilityCalculator({
                 invalid={housingRatioInvalid}
               />
               <NumberField
-                {...fields.bind("totalRatio")}
+                {...bind("totalRatio")}
                 label={C.form.totalRatioLabel}
                 unit={C.form.totalRatioUnit}
                 help={C.form.totalRatioHelp}
@@ -949,7 +1053,7 @@ export function AffordabilityCalculator({
                 invalid={totalRatioInvalid}
               />
               <NumberField
-                {...fields.bind("ltv")}
+                {...bind("ltv")}
                 label={C.form.ltvLabel}
                 unit={C.form.ltvUnit}
                 // THE ONE THAT MATTERS. On the commercial route this is the
@@ -987,11 +1091,9 @@ export function AffordabilityCalculator({
             <ResultGroup
               title={C.form.resultTitle}
               anchorId={ids.result}
-              status={
-                statusView === null ? undefined : (
-                  <ResultStatusCard status={statusView} formId={ids.form} />
-                )
-              }
+              // No `status` card here on the commercial route: it renders
+              // once, in the "Thử một thay đổi" panel above the form. The
+              // settled sentence stays the ONE live region.
               announcement={statusView === null ? undefined : settled}
             >
               {/* With a target entered, say BEFORE the figures that they belong

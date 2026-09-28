@@ -239,6 +239,23 @@ describe("the shared white-pill header (every public route, 2026-09-28)", () => 
     expect(24 + 56 + 24).toBe(104);
   });
 
+  it("insets Hỗ trợ from the pill's right edge like the logo's left, but keeps the homepage CTA and mobile hamburger at 7px", () => {
+    const pill = (path: string) => /<div class="([^"]*rounded-full[^"]*bg-header-surface[^"]*)"/.exec(render(path))![1].split(" ");
+    for (const path of ROUTES) {
+      const classes = pill(path);
+      // Logo inset on the left, and the unchanged base (mobile / md) right inset.
+      expect(classes, path).toContain("pl-5");
+      expect(classes, path).toContain("pr-[7px]");
+      if (path === "/") {
+        // The homepage ends with the CTA pill, which needs the tight 7px inset.
+        expect(classes, path).not.toContain("xl:pr-5");
+      } else {
+        // Off the homepage desktop ends with the Hỗ trợ text link.
+        expect(classes, path).toContain("xl:pr-5");
+      }
+    }
+  });
+
   it("does not bring back the old floating capsule anywhere", () => {
     for (const path of ROUTES) {
       const html = render(path);

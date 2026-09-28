@@ -36,6 +36,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { markupRegion } from "@/lib/markup-region";
 
 /**
  * Render one calculator, optionally with a patched content module.
@@ -80,6 +81,20 @@ const count = (html: string, needle: string | RegExp): number =>
   typeof needle === "string"
     ? html.split(needle).length - 1
     : (html.match(needle) ?? []).length;
+
+/**
+ * The affordability pilot's labelled 3D illustration is a `<figure>` with a
+ * `<figcaption>` too, but it is not a chart. Removed by its own marker —
+ * exactly that one element — so every chart assertion below still counts
+ * charts and nothing else. Throws if the marker survives the strip.
+ */
+const ILLUSTRATION = 'data-learning-illustration="true"';
+function chartsOnly(html: string): string {
+  const region = markupRegion(html, ILLUSTRATION, "figure");
+  const stripped = region === null ? html : html.replace(`${region}</figure>`, "");
+  if (stripped.includes(ILLUSTRATION)) throw new Error("more than one illustration figure");
+  return stripped;
+}
 
 /** The chart experiences, and how to render each. */
 const TOOLS = [
@@ -231,12 +246,15 @@ const TOOLS = [
 
 describe.each(TOOLS)(
   "$name — the chart experience as rendered",
-  ({ componentPath, componentName, contentPath, contentExport, charts, change }) => {
+  ({ name, componentPath, componentName, contentPath, contentExport, charts, change }) => {
     const html = () =>
       render(componentPath, componentName, contentPath, contentExport);
 
     it("renders one labelled figure per chart", async () => {
-      const markup = await html();
+      const rendered = await html();
+      // Exactly one labelled illustration, and only on the affordability pilot.
+      expect(count(rendered, ILLUSTRATION)).toBe(name === "kha-nang-mua-nha" ? 1 : 0);
+      const markup = chartsOnly(rendered);
       expect(count(markup, "<figure")).toBe(charts);
       expect(count(markup, "<figcaption")).toBe(charts);
     });
