@@ -55,6 +55,7 @@ export function CalculatorPage({
   ledeDetail,
   ledeDetailTitle,
   notice,
+  noticeTone = "caution",
   noticeDetail,
   noticeDetailTitle,
   intro,
@@ -64,6 +65,7 @@ export function CalculatorPage({
   afterCalculator,
   disclaimer,
   wide = false,
+  hero,
   children,
 }: {
   /** Registry slug, without the `/cong-cu/` prefix. */
@@ -84,6 +86,12 @@ export function CalculatorPage({
    * the first screens on a phone; the full version goes in `noticeDetail`.
    */
   notice?: string;
+  /**
+   * `caution` (the default, every route but one) borders the notice in red to
+   * be noticed; `info` is for a notice that teaches rather than warns — a red
+   * edge beside a red verdict card would read as a second error. Opt-in.
+   */
+  noticeTone?: "caution" | "info";
   /** The longer version of `notice`, behind a disclosure. */
   noticeDetail?: string;
   noticeDetailTitle?: string;
@@ -168,6 +176,13 @@ export function CalculatorPage({
    * per-route opt-in for the tool's own box rather than a page width.
    */
   wide?: boolean;
+  /**
+   * OPT-IN: a tool-first hero, rendered straight after the `h1` through
+   * `CalculatorHeading`'s `afterTitle` — above the lede and ABOVE the notice,
+   * so it must carry its own one-line limitation (docs §1c). One route uses
+   * it; absent, the page's markup is unchanged.
+   */
+  hero?: React.ReactNode;
   /** The client island: the calculator itself. */
   children: React.ReactNode;
 }) {
@@ -203,6 +218,7 @@ export function CalculatorPage({
             lede={lede}
             ledeDetail={ledeDetail}
             ledeDetailTitle={ledeDetailTitle}
+            afterTitle={hero}
           />
 
           {/* Both notices sit ABOVE the calculator. A user should learn that a
@@ -222,7 +238,13 @@ export function CalculatorPage({
                   : "mx-auto mt-8 max-w-3xl"
               }
             >
-              <div className="rounded-xl border border-red-400/40 bg-bg-soft p-4">
+              <div
+                className={
+                  noticeTone === "info"
+                    ? "rounded-xl border border-ink-4/40 bg-bg-soft p-4"
+                    : "rounded-xl border border-red-400/40 bg-bg-soft p-4"
+                }
+              >
                 <p className="text-sm leading-relaxed text-ink-2">{notice}</p>
                 {noticeDetail && noticeDetailTitle ? (
                   <details className="mt-2">

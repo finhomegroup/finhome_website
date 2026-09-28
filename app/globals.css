@@ -118,6 +118,24 @@
   --color-status-caution: #92400e;
   --color-status-caution-bg: #fff7e6;
 
+  /*
+   * THE RETIREMENT GRANARY, 2026-09-27 — rice in a celadon bowl
+   * (`components/calc/granary-bowl.tsx`). Grain and ceramic colours,
+   * deliberately not tones: a full bowl is a paid year, not a verdict, and
+   * must not read as `status-met`. The two INKS clear 3:1 on white AND on the
+   * house's mint wall they are drawn on (its shaded edge included), so a rice
+   * level and an empty bowl's outline stay visible as graphical objects (WCAG
+   * 1.4.11); `grain` and `grain-soft` are fills behind an ink edge.
+   * `retirement-granary-hero-render.test.ts` recomputes both ratios.
+   */
+  --color-grain: #e8bd5c;
+  --color-grain-ink: #8a5d10;
+  --color-grain-soft: #f6ead0;
+  --color-bowl: #3c6e58;
+  /* The other-income layer of a bowl (BHXH, rent…): a pale celadon fill
+     behind a `bowl` ink edge, so the layer boundary is the visible object. */
+  --color-bowl-soft: #b8dbcb;
+
   /* Fonts — the Framer site uses Maison Neue Extended for headings AND body. */
   --font-sans: "Maison Neue Extended Book", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Maison Neue Extended Medium", "Maison Neue Extended Book", "Inter", sans-serif;
@@ -494,4 +512,40 @@ body {
 }
 .fh-rt:has(.fh-rt-switch:checked) .fh-rt-exact {
   display: revert;
+}
+
+/* THE RETIREMENT GRANARY'S ONE MOTION, 2026-09-27 — after a lever press the
+   bowls it changed settle once and the "vừa thay đổi" echo fades in, so cause
+   and effect are seen together. Only for readers who have not asked for less
+   motion: without this block nothing moves, and nothing is lost — the echo
+   and the bowls' states are there either way. Transform and opacity only. */
+@media (prefers-reduced-motion: no-preference) {
+  .fh-bowl-changed {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: fh-bowl-settle 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  .fh-granary-echo {
+    animation: fh-echo-in 260ms ease-out;
+  }
+}
+/* The target panel's rice basket: its rice is one rect scaled from the bottom
+   to the share the plan reaches. The origin is layout, not motion; only the
+   easing into a new level is motion-safe. */
+.fh-basket-rice {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fh-basket-rice {
+    transition: transform 450ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+}
+@keyframes fh-bowl-settle {
+  0% { transform: translateY(-18%) scale(1.14); }
+  100% { transform: none; }
+}
+@keyframes fh-echo-in {
+  0% { opacity: 0; translate: -50% 6px; }
+  100% { opacity: 1; translate: -50% 0; }
 }

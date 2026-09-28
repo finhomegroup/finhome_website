@@ -1,5 +1,7 @@
-// The shared ₫ scenario behind the four long-term plan routes (44/45/48/50),
-// and the guard that route 44's prose agrees with it.
+// The shared ₫ scenario behind the long-term plan's sibling routes (45/48/50),
+// and the guard that route 44's prose agrees with ITS OWN scenario — since
+// 2026-09-27, `RETIREMENT_PLAN.defaults`, the latest Vietnamese assumptions
+// with the pension per month (the owner's decision; siblings unchanged).
 //
 // WHY THIS FILE EXISTS. docs §6 records that three of this suite's five worst
 // defects were invisible to a green test run because they lived in a DEFAULT
@@ -18,6 +20,7 @@
 // default and the failure names the sentence that has to move with it.
 import { describe, it, expect } from "vitest";
 import { readRetirement } from "@/components/calc/retirement-fields";
+import { readRoutePlan } from "@/components/retirement-plan-read";
 import { compactMoney } from "@/lib/calc/charts/labels";
 import {
   formatDecimal,
@@ -78,8 +81,9 @@ describe("the shared long-term ₫ scenario", () => {
     // The defect this first caught: the superseded USD default `"100.000"`
     // parses to 100.000 ₫ — one hundred thousand đồng of long-term savings —
     // because the grammar was already right and only the MAGNITUDE was in
-    // dollars. That object is gone now that all four routes read
-    // `LONG_TERM_PLAN.defaults`, so the floors below are what stands guard.
+    // dollars. That object is gone now that the sibling routes read
+    // `LONG_TERM_PLAN.defaults` (route 44 reads its own, pinned below), so
+    // the floors below are what stands guard.
     expect(input.currentBalance).toBeGreaterThanOrEqual(100_000_000);
     expect(input.annualContribution).toBeGreaterThanOrEqual(12_000_000);
     expect(input.desiredAnnualSpending).toBeGreaterThanOrEqual(60_000_000);
@@ -198,9 +202,21 @@ describe("the shared long-term ₫ scenario", () => {
   });
 });
 
+/**
+ * The plan route 44 opens on: ITS scenario, read the way the page reads it —
+ * `readRoutePlan`, which turns the two monthly incomes into the engine's year.
+ */
+function routePlan() {
+  const read = readRoutePlan(C.defaults);
+  if (read.input === null) throw new Error("the route's defaults do not parse");
+  const plan = resolveLongTermPlan(read.input);
+  if (plan === null) throw new Error("resolveLongTermPlan refused the route's defaults");
+  return plan;
+}
+
 // The guard this content has never had: the sentences and the model agree.
 describe("route 44's prose quotes the model, not a memory of it", () => {
-  const plan = shippedPlan();
+  const plan = routePlan();
   const r = plan.asEntered;
   const firstWithdrawal = r.years.find((row) => !row.accumulating)!;
 
@@ -217,7 +233,15 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
    * live plan. Same coverage as before; different homes.
    */
   const compact = (value: number) => compactMoney(value, L.money);
-  const prose = C.formula.body.join(" ");
+  // The method prose is both layers: the worked years open behind its
+  // disclosure, and every figure in them is still pinned here.
+  const prose = [...C.formula.body, ...C.formula.detail.body].join(" ");
+  /** A detail paragraph by its opening words, not its position. */
+  const detailParagraph = (opening: string) => {
+    const found = C.formula.detail.body.find((paragraph) => paragraph.startsWith(opening));
+    if (found === undefined) throw new Error(`no detail paragraph opens "${opening}"`);
+    return found;
+  };
 
   it("keeps the eleven-digit pair OUT of the opening notice, and the limitation IN it", () => {
     expect(C.realNotice).not.toContain(dong(r.balanceAtRetirement));
@@ -254,7 +278,7 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
   });
 
   it("quotes the first accumulation year's arithmetic from the engine", () => {
-    // 500 + 60 = 560 triệu, 8% of it, the end-of-year balance, and the
+    // 100 + 15 = 115 triệu, 6,5% of it, the end-of-year balance, and the
     // grown second-year contribution — the worked year a beginner is shown
     // first. Each figure is the engine's own row, not the paragraph's memory.
     const firstYear = r.years[0];
@@ -263,39 +287,54 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
     expect(prose).toContain(
       `${formatDecimal(firstYear.investmentReturn / 1e6, 1)} triệu`,
     );
+    // One decimal: 15 triệu grown 6% is 15,9 triệu, which "16 triệu" would round away.
     expect(prose).toContain(
-      `${formatDecimal(r.years[1].contribution / 1e6, 0)} triệu`,
+      `${formatDecimal(r.years[1].contribution / 1e6, 1)} triệu`,
     );
   });
 
   it("quotes the annual shortfall in the FAQ that says what it is not", () => {
     const answer = C.faq.items[4].a;
     expect(answer).toContain(dong(r.spendingShortfall));
+    // …and the same gap per month, rounded, as the row now shows it.
+    expect(answer).toContain(`khoảng ${formatDecimal(r.spendingShortfall / 12 / 1e6, 1)} triệu mỗi tháng`);
     expect(answer).toContain("không phải số tiền phải nộp thêm");
     expect(answer).toContain("không phải tổng số vốn còn thiếu");
   });
 
   it("pins the default scenario's figures the copy rounds from", () => {
-    // The repair pass changed wording only. These are the engine's outputs
-    // on the shipped defaults, as quoted in the content file's header; a
-    // moved figure here means an engine or default changed, which no copy
-    // round is allowed to do.
-    expect(Math.round(r.balanceAtRetirement)).toBe(10_902_417_350);
-    expect(Math.round(r.realBalanceAtRetirement)).toBe(4_089_679_933);
-    expect(r.depletionAge).toBe(82);
-    expect(r.yearsShort).toBe(3);
-    expect(Math.round(r.spendingShortfall)).toBe(20_942_597);
-    expect(Math.round(r.lastWithdrawalPlanned!)).toBe(1_288_834_386);
-    expect(Math.round(r.lastWithdrawalPaid!)).toBe(181_159_463);
-    expect(Math.round(firstWithdrawal.withdrawal)).toBe(543_830_612);
-    expect(Math.round(r.years[0].balance)).toBe(604_800_000);
+    // These are the engine's outputs on the route's defaults, as quoted in
+    // the content file's header; a moved figure here means an engine or
+    // default changed, which no copy round is allowed to do. (2026-09-27:
+    // re-pinned when the route took its own scenario — the ENGINE did not
+    // move; `lib/calc/retirement.ts` is byte-identical.)
+    expect(plan.input.desiredAnnualSpending).toBe(96_000_000);
+    expect(plan.input.otherAnnualIncome).toBe(48_000_000);
+    expect(Math.round(r.balanceAtRetirement)).toBe(2_194_741_612);
+    expect(Math.round(r.realBalanceAtRetirement)).toBe(730_257_686);
+    expect(r.depletionAge).toBe(75);
+    expect(r.yearsShort).toBe(10);
+    expect(Math.round(r.spendingShortfall)).toBe(18_789_693);
+    expect(Math.round(r.lastWithdrawalPlanned!)).toBe(279_185_498);
+    expect(Math.round(r.lastWithdrawalPaid!)).toBe(59_662_441);
+    expect(Math.round(firstWithdrawal.withdrawal)).toBe(144_260_854);
+    expect(Math.round(r.years[0].balance)).toBe(122_475_000);
+    // The three ways the header says close the gap — the hero's suggestion
+    // and its fallbacks read these.
+    const [contribute, retireLater, spendLess] = plan.gap.remedies;
+    expect(contribute.key === "contribute" && Math.round(contribute.annualContribution!)).toBe(27_369_770);
+    expect(contribute.key === "contribute" && Math.round(contribute.extraPerYear!)).toBe(12_369_770);
+    expect(retireLater.key === "retireLater" && retireLater.retirementAge).toBe(66);
+    expect(spendLess.key === "spendLess" && Math.round(spendLess.annualSpending!)).toBe(77_210_307);
+    expect(spendLess.key === "spendLess" && formatDecimal(spendLess.percentOfDesired!, 1)).toBe("80,4");
+    expect(Math.round(r.requiredRealBalanceAtRetirement)).toBe(1_200_000_000);
   });
 
   it("qualifies the monthly-versus-yearly timing by the sign of the return", () => {
     // One January deposit beats twelve month-end deposits only when the
     // return is positive; they tie at 0% and reverse below it. The detailed
     // method used to state the comparison as absolute.
-    const timing = C.formula.detail.body[0];
+    const timing = detailParagraph("Giai đoạn để dành");
     expect(timing).toContain("sinh lời dương");
     expect(timing).toContain("0% hai cách bằng nhau");
     expect(timing).toContain("âm thì ngược lại");
@@ -335,7 +374,9 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
     // not use. What remains is what the model does: withdraw first, credit
     // the return on what remains, index the spend, solve an annuity-due at
     // the real return, add other income.
-    const [, withdrawal, , indexing, , annuity] = C.formula.detail.body;
+    const withdrawal = detailParagraph("Giai đoạn rút tiền");
+    const indexing = detailParagraph("Mức chi tiêu mong muốn");
+    const annuity = detailParagraph("Mức chi giữ được đến hết kỳ");
     expect(withdrawal).toContain("trừ khoản rút trước");
     expect(withdrawal).toContain("phần còn lại");
     expect(withdrawal).not.toContain("thận trọng");
@@ -353,7 +394,9 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
     const factor = (1 + plan.input.inflationPercent / 100) ** years;
     const share = (r.realBalanceAtRetirement / r.balanceAtRetirement) * 100;
     const answer = C.faq.items[0].a;
-    expect(answer).toContain(`1,04^${years}`);
+    // "1,045^25": the base in the page's own decimal grammar, trailing zeros off.
+    const base = formatDecimal(1 + plan.input.inflationPercent / 100, 4).replace(/0+$/, "");
+    expect(answer).toContain(`${base}^${years}`);
     expect(answer).toContain(formatDecimal(factor, 2));
     expect(answer).toContain(formatDecimal(share, 1));
     expect(answer).toContain(dong(r.balanceAtRetirement));
@@ -378,9 +421,9 @@ describe("route 44's prose quotes the model, not a memory of it", () => {
   });
 
   it("quotes the depletion year's PARTIAL payment in the component's copy", () => {
-    // "Cạn ở tuổi 82" counts the year that could not be paid in full, and that
-    // year normally pays something. The component comment naming those figures
-    // is bound here so it cannot rot into a different scenario's numbers.
+    // "Cạn ở tuổi 75" counts the year that could not be paid in full, and that
+    // year normally pays something — which is why the page reports both. (The
+    // component comment that used to quote these figures now names none.)
     expect(r.lastWithdrawalPlanned).not.toBe(null);
     expect(r.lastWithdrawalPaid).not.toBe(null);
     expect(r.yearsShort).toBeGreaterThan(0);

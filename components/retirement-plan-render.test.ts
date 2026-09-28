@@ -30,21 +30,35 @@ import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { RETIREMENT_PLAN as C } from "@/content/calculators/retirement-plan";
 import { LONG_TERM_PLAN } from "@/content/calculators/long-term-plan";
-import {
-  longTermMoney,
-  readRetirement,
-} from "@/components/calc/retirement-fields";
+import { longTermMoney } from "@/components/calc/retirement-fields";
+import { readRoutePlan } from "@/components/retirement-plan-read";
 import {
   compactMoney,
   compactMoneyPair,
   fill,
 } from "@/lib/calc/charts/labels";
-import { resolveLongTermPlan } from "@/lib/calc/long-term-plan";
-import { formatQuantity } from "@/lib/calc/number";
+import { fundedAtBoundary, resolveLongTermPlan } from "@/lib/calc/long-term-plan";
+import { formatMoney, formatQuantity } from "@/lib/calc/number";
+import { monthlyEquivalent } from "@/lib/calc/retirement-lever-facts";
 
-const CONTENT_PATH = "@/content/calculators/long-term-plan";
+/**
+ * The route's OWN content module: since 2026-09-27 this page reads its own
+ * scenario, `RETIREMENT_PLAN.defaults` — the latest Vietnamese assumptions,
+ * the pension and other income per month — while the three sibling routes
+ * keep `LONG_TERM_PLAN.defaults`. A patched default is patched there.
+ */
+const CONTENT_PATH = "@/content/calculators/retirement-plan";
 
-/** Render the calculator, optionally on a patched default scenario. */
+/**
+ * Render the route's two islands, optionally on a patched default scenario.
+ *
+ * 2026-09-27, tool-first hero: the field state moved into
+ * `RetirementPlanState`, and the verdict card moved into the hero under the
+ * `h1`. So this renders what the page composes — the provider around the hero
+ * and then the calculator, in DOM order — and every assertion below is about
+ * that combined markup. The page shell between them (lede, notice) is
+ * server-rendered prose and is covered by `calculator-heading-render.test.ts`.
+ */
 async function render(
   defaults?: Partial<Record<string, string>>,
 ): Promise<string> {
@@ -52,21 +66,29 @@ async function render(
   if (defaults) {
     vi.doMock(CONTENT_PATH, async () => {
       const actual = (await vi.importActual(CONTENT_PATH)) as {
-        LONG_TERM_PLAN: typeof LONG_TERM_PLAN;
+        RETIREMENT_PLAN: typeof C;
       };
       return {
-        LONG_TERM_PLAN: {
-          ...actual.LONG_TERM_PLAN,
-          defaults: { ...actual.LONG_TERM_PLAN.defaults, ...defaults },
+        ...actual,
+        RETIREMENT_PLAN: {
+          ...actual.RETIREMENT_PLAN,
+          defaults: { ...actual.RETIREMENT_PLAN.defaults, ...defaults },
         },
       };
     });
   }
   try {
-    const loaded = (await import("@/components/retirement-plan-calculator")) as
+    const { RetirementPlanState } = await import("@/components/retirement-plan-state");
+    const { RetirementGranaryHero } = await import("@/components/retirement-granary-hero");
+    const calculator = (await import("@/components/retirement-plan-calculator")) as
       Record<string, ComponentType>;
     return renderToStaticMarkup(
-      createElement(loaded.RetirementPlanCalculator),
+      createElement(
+        RetirementPlanState,
+        null,
+        createElement(RetirementGranaryHero),
+        createElement(calculator.RetirementPlanCalculator),
+      ),
     );
   } finally {
     vi.doUnmock(CONTENT_PATH);
@@ -84,16 +106,31 @@ const liveRegion = (html: string) =>
   markupRegion(html, 'data-results-live="true"');
 /** The primary rows: visible, and OUTSIDE the live region since the repair. */
 const rowsRegion = (html: string) => markupRegion(html, 'data-calc-rows="true"');
+/** The tool-first hero under the `h1` (2026-09-27), bounded by its own nesting. */
+const heroRegion = (html: string) => markupRegion(html, 'data-granary-hero="true"');
+
+/**
+ * The TRAJECTORY figure — the one whose caption carries the chart title.
+ *
+ * Since 2026-09-27 the page draws two figures (docs §6a, amended by §1c): the
+ * hero's granary comes first in DOM order, so "the first `<figure`" is no
+ * longer this one. Located by its own title instead of by position.
+ */
+function trajectoryFigure(html: string): string {
+  const start = html.lastIndexOf("<figure", html.indexOf(C.chart.title));
+  expect(start).toBeGreaterThanOrEqual(0);
+  return html.slice(start, html.indexOf("</figure>", start));
+}
 
 /**
  * The plan the page opens on, resolved the way the component resolves it.
  *
  * The reader-first sentences are FILLED from this at render time, so the
  * tests below compare the markup with the engine rather than with a memory
- * of "82", "3 năm" or "20.942.597 ₫".
+ * of "75", "10 năm" or "18.789.693 ₫".
  */
 function shipped() {
-  const read = readRetirement(LONG_TERM_PLAN.defaults);
+  const read = readRoutePlan(C.defaults);
   if (read.input === null) throw new Error("the shipped defaults do not parse");
   const plan = resolveLongTermPlan(read.input);
   if (plan === null) throw new Error("resolveLongTermPlan refused the defaults");
@@ -102,7 +139,7 @@ function shipped() {
 
 /** The same resolution on a patched scenario — what `render(defaults)` shows. */
 function resolved(defaults: Partial<Record<string, string>>) {
-  const read = readRetirement({ ...LONG_TERM_PLAN.defaults, ...defaults });
+  const read = readRoutePlan({ ...C.defaults, ...defaults });
   if (read.input === null) throw new Error("the fixture does not parse");
   const plan = resolveLongTermPlan(read.input);
   if (plan === null) throw new Error("resolveLongTermPlan refused the fixture");
@@ -119,12 +156,15 @@ const pct = (value: number) => formatQuantity(value, 4);
  * Constructed rather than found, so it is reproducible: at a zero REAL return
  * (`returnAfterPercent === inflationPercent`) the annuity-due factor is
  * exactly the retirement span, so a round balance over a round span is a round
- * sustainable spend that a form field can actually hold. 4 tỷ over 25 years is
- * 160.000.000 ₫ a year from the portfolio, plus the 36.000.000 ₫ of other
- * income, so a desired spend of exactly 196.000.000 ₫ is the boundary.
+ * sustainable spend that a form field can actually hold. 4,8 tỷ over 25 years
+ * is 192.000.000 ₫ a year from the portfolio — 16.000.000 ₫ a month — plus
+ * 4.000.000 ₫ a month of other income, so a desired pension of exactly
+ * 20.000.000 ₫ a month is the boundary. Per month because this route asks for
+ * both incomes per month; the ×12 to the engine's year is exact, so the
+ * boundary survives it.
  *
  * `projectRetirement` then reports `depletionAge` 84 against a horizon of 85,
- * with an unpaid 0,0000040531 ₫ — the artefact `fundedAtBoundary`'s docstring
+ * with an unpaid 0,0000057817 ₫ — the artefact `fundedAtBoundary`'s docstring
  * describes, at đồng magnitudes. Retiring today (`retirementAge` equal to
  * `currentAge`) keeps the accumulation phase out of it, so the only thing under
  * test is the drawdown verdict.
@@ -133,24 +173,39 @@ const FUNDED_BOUNDARY = {
   currentAge: "60",
   retirementAge: "60",
   endAge: "85",
-  currentBalance: "4.000.000.000",
+  currentBalance: "4.800.000.000",
   annualContribution: "0",
   contributionGrowthPercent: "0",
   returnBeforePercent: "4",
   returnAfterPercent: "4",
   inflationPercent: "4",
-  desiredAnnualSpending: "196.000.000",
-  otherAnnualIncome: "36.000.000",
+  desiredMonthlySpending: "20.000.000",
+  otherMonthlyIncome: "4.000.000",
 } as const;
 
 describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
-  it("reads the SHARED đồng scenario, not a scenario of its own", async () => {
-    // The merge's whole point: four routes, one set of assumptions. A route
-    // holding its own copy of the eleven defaults is how the four came to
-    // disagree in the first place.
+  it("reads THIS ROUTE's own đồng scenario, dated and sourced", async () => {
+    // CHANGED 2026-09-27, the owner's decision: this page opens on its own
+    // scenario — the latest Vietnamese assumptions, the pension and other
+    // income per month — while the three sibling routes keep the shared
+    // `LONG_TERM_PLAN.defaults`. The difference is declared in one place,
+    // `RETIREMENT_PLAN.defaults`, and every macro figure in it is sourced
+    // with its date, so it cannot drift silently the way four private copies
+    // once did.
     const html = await render();
-    expect(html).toContain(LONG_TERM_PLAN.defaults.currentBalance);
-    expect(html).toContain(LONG_TERM_PLAN.defaults.desiredAnnualSpending);
+    expect(html).toContain(C.defaults.currentBalance);
+    expect(html).toContain(C.defaults.desiredMonthlySpending);
+    // The two incomes are the MONTHLY fields; the yearly ones are not asked.
+    for (const key of ["desiredMonthlySpending", "otherMonthlyIncome"]) {
+      expect(html).toMatch(new RegExp(`<input[^>]*data-calc-field="${key}"`));
+    }
+    expect(html).not.toContain('data-calc-field="desiredAnnualSpending"');
+    expect(html).not.toContain('data-calc-field="otherAnnualIncome"');
+    expect(C.sources.intro).toContain("27/9/2026");
+    expect(C.sources.items.length).toBeGreaterThanOrEqual(4);
+    for (const item of C.sources.items) {
+      expect(item.url, item.label).toMatch(/^https:\/\//);
+    }
     // The ₫ unit on a money field, which is the visible half of the currency
     // change. "USD" must appear nowhere on the page.
     expect(html).not.toContain("USD");
@@ -174,9 +229,12 @@ describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
     // And the page's one table is where it belongs: inside the figure, which
     // is outside the live region. Asserted positively so the check cannot be
     // satisfied by a page that simply has no table at all.
+    //
+    // CHANGED 2026-09-27: located as the TRAJECTORY figure, not the first
+    // `<figure` — the hero's granary now precedes it, and carries no table
+    // (its text alternative is the run-length sentence; see the hero test).
     expect(count(html, "<table")).toBe(1);
-    const figure = html.slice(html.indexOf("<figure"), html.indexOf("</figure>"));
-    expect(figure).toContain("<table");
+    expect(trajectoryFigure(html)).toContain("<table");
   });
 
   it("draws the trajectory figure the chart module was built for", async () => {
@@ -184,7 +242,13 @@ describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
     // slice. The frame's contracts belong to `ChartFigure`; what is asserted
     // here is that the figure exists at all and carries its text equivalent.
     const html = await render();
-    expect(count(html, "<figure")).toBe(1);
+    // CHANGED 2026-09-27, from 1: the route draws TWO figures now — the
+    // granary in the hero (how many retirement years the savings pay) and
+    // this trajectory (the balance through every age). Two questions, two
+    // figures, one table — docs §6a as amended by §1c. Every other figure
+    // contract below still holds for both.
+    expect(count(html, "<figure")).toBe(2);
+    expect(count(html, "data-granary-figure")).toBe(1);
     expect(html).toContain("<figcaption");
     expect(html).toContain(C.chart.title);
     // The summary is VISIBLE prose, and the drawing is not announced twice.
@@ -226,8 +290,12 @@ describe("ke-hoach-huu-tri, rendered at its shipped defaults", () => {
     expect(html).toContain(C.form.partialPlannedLabel);
     expect(html).toContain(C.form.partialShortLabel);
     expect(result.lastWithdrawalPaid!).toBeGreaterThan(0);
+    // CHANGED 2026-09-27: the sentence names its own year and price basis
+    // (`{depletionAge}`), because the card now sits in the hero, above the
+    // page's price-basis notice.
     expect(html).toContain(
       fill(C.form.depletedPartial, {
+        depletionAge: result.depletionAge!,
         planned: rounded(result.lastWithdrawalPlanned!),
         paid: rounded(result.lastWithdrawalPaid!),
       }),
@@ -313,7 +381,7 @@ describe("row 46's layout and CTA", () => {
     const emphasisAt = html.indexOf("md:text-3xl");
     expect(html.indexOf(C.form.verdictLabel)).toBeLessThan(emphasisAt);
     // The next ROW's label, as a label span: since 2026-09-27 the status
-    // card above the rows says "Tiền bắt đầu thiếu ở tuổi 82…" in a
+    // card above the rows says "Tiền bắt đầu thiếu ở tuổi 75…" in a
     // sentence, so a bare search would find the card instead.
     expect(emphasisAt).toBeLessThan(
       html.indexOf(`>${C.form.depletionLabel}</span>`),
@@ -335,13 +403,14 @@ describe("row 46's layout and CTA", () => {
     expect(form).toContain('data-calc-cta="true"');
   });
 
-  it("names the promoted shortfall as an annual spend in today's money", async () => {
+  it("names the promoted shortfall as a MONTHLY spend in today's money", async () => {
     // A browser pass read `20.942.597 ₫` beside a capital figure as the whole
     // plan's shortfall. Same value, same formula — the label now carries the
     // period and the price basis. The unit words are what is asserted, not the
     // sentence, so the copy can be reworded without this going stale.
     const html = await render();
-    expect(C.form.shortfallLabel).toContain("mỗi năm");
+    // Per month since 2026-09-27: the unit this route's reader budgets in.
+    expect(C.form.shortfallLabel).toContain("mỗi tháng");
     expect(C.form.shortfallLabel).toContain("theo giá hôm nay");
     expect(html).toContain(C.form.shortfallLabel);
   });
@@ -352,8 +421,8 @@ describe("row 46's layout and CTA", () => {
     expect(live).not.toBeNull();
     expect(live).toContain(C.form.depletionLabel);
     expect(live).toContain(C.form.yearsShortLabel);
-    // `yearsShort` is 3 on the shipped defaults, in years.
-    expect(live).toContain(`3 ${C.form.yearsUnit}`);
+    // `yearsShort` in years — 10 on this route's defaults, read from the engine.
+    expect(live).toContain(`${shipped().result.yearsShort} ${C.form.yearsUnit}`);
     // One place only.
     expect(count(html, C.form.yearsShortLabel)).toBe(1);
   });
@@ -391,12 +460,14 @@ describe("row 46's layout and CTA", () => {
     const html = await render();
     const { input } = shipped();
     expect(html).toContain(C.form.estimateNote);
+    // CHANGED 2026-09-27: the growth is said the way it moves ("tăng 5%/năm",
+    // "giảm 3%/năm"), so a negative growth never reads "tăng -3%/năm".
     expect(html).toContain(
       fill(C.form.assumptionsUsed, {
         before: pct(input.returnBeforePercent),
         after: pct(input.returnAfterPercent),
         inflation: pct(input.inflationPercent),
-        growth: pct(input.contributionGrowthPercent),
+        growthPhrase: fill(C.hero.levers.growthUp, { growth: pct(input.contributionGrowthPercent) }),
       }),
     );
     expect(html).toContain(C.form.verdictDetailTitle);
@@ -444,9 +515,9 @@ describe("row 46's layout and CTA", () => {
 describe("the funded boundary, on the rendered page", () => {
   it("calls a float-residue depletion FUNDED, as fundedAtBoundary decides", async () => {
     // THE DEFECT THIS FILE EXISTS FOR. `depletionAge` is 84 here and the plan
-    // is funded: the unpaid part is 0,0000040531 ₫ of a 1,5e9 ₫ need in the
+    // is funded: the unpaid part is 0,0000057817 ₫ of a 0,5e9 ₫ need in the
     // final year of the horizon. A verdict read straight off `depletionAge`
-    // tells the reader their plan fails by four millionths of one đồng.
+    // tells the reader their plan fails by six millionths of one đồng.
     //
     // Since the 2026-09-27 status pass it is funded AT THE BOUNDARY: the
     // verdict row still says "Đủ", and the card says it is funded with
@@ -471,7 +542,11 @@ describe("the funded boundary, on the rendered page", () => {
     // cannot check — and the same policy must never forgive a real shortfall,
     // which the default scenario above proves it does not.
     const html = await render(FUNDED_BOUNDARY);
-    expect(html).toContain("0,000004");
+    const { result, input } = resolved(FUNDED_BOUNDARY);
+    const { residue } = fundedAtBoundary(result, input.endAge);
+    expect(residue).toBeGreaterThan(0);
+    expect(residue).toBeLessThan(0.001);
+    expect(html).toContain(`(${formatMoney(residue!, 6)} ₫)`);
   });
 });
 
@@ -491,12 +566,19 @@ describe("the semantic result status", () => {
     );
 
   it("opens on a SHORTFALL card naming the horizon, then the age and the gap", async () => {
+    // CHANGED 2026-09-27: the card MOVED from the result region into the
+    // hero under the `h1` (docs §1c) and renders once there. It still comes
+    // before the rows it summarises — in the previous region now, not above
+    // them in the same one — and the rows and the ONE live sentence stayed.
     const html = await render();
     const { result, input } = shipped();
-    const region = resultRegion(html);
+    const region = heroRegion(html);
+    expect(region).not.toBeNull();
+    expect(count(html, "<section data-result-status")).toBe(1);
+    expect(resultRegion(html)).not.toContain("<section data-result-status");
     expect(region).toContain('data-result-status="shortfall"');
     // The plan's own sentences, filled from the engine: "Kế hoạch chưa đủ
-    // đến tuổi 85" and "Tiền bắt đầu thiếu ở tuổi 82, sớm hơn mục tiêu 3 năm."
+    // đến tuổi 85" and "Tiền bắt đầu thiếu từ tuổi 75, tức thiếu 10 năm."
     const title = fill(C.form.depletedHeadline, {
       endAge: input.endAge,
       depletionAge: result.depletionAge!,
@@ -511,14 +593,14 @@ describe("the semantic result status", () => {
       }),
     );
     // The card comes BEFORE the live rows it summarises.
-    expect(region.indexOf('data-result-status="shortfall"')).toBeLessThan(
-      region.indexOf(C.form.verdictLabel),
+    expect(html.indexOf('data-result-status="shortfall"')).toBeLessThan(
+      html.indexOf(`>${C.form.verdictLabel}<`),
     );
   });
 
   it("keeps the annual gap distinct from a contribution, beside the red card", async () => {
-    // "20,9 triệu/năm" is a spending gap in today's money, never silently
-    // turned into "góp thêm 20,9 triệu".
+    // "18,8 triệu/năm" is a spending gap in today's money, never silently
+    // turned into "góp thêm 18,8 triệu".
     const html = await render();
     expect(html).toContain(C.form.shortfallLabel);
     expect(C.form.shortfallMeaning).toContain(
@@ -561,17 +643,21 @@ describe("the semantic result status", () => {
     expect(html).not.toContain('role="alert"');
   });
 
-  it("offers the three levers as jumps to fields on THIS page", async () => {
+  it("offers the three levers as controls over fields on THIS page", async () => {
+    // CHANGED 2026-09-27: the card's "thử điều chỉnh" jumps became the hero's
+    // −/+ levers, which write the same fields through the same binding as
+    // typing. No jump chip remains; each lever's field is still on the page.
     const html = await render();
-    for (const key of ["annualContribution", "retirementAge", "desiredAnnualSpending"]) {
-      expect(html).toContain(`data-calc-jump="${key}"`);
+    expect(html).not.toContain("data-calc-jump");
+    for (const key of ["annualContribution", "retirementAge", "desiredMonthlySpending"]) {
+      expect(heroRegion(html)).toContain(`data-lever="${key}"`);
       expect(html).toMatch(new RegExp(`<input[^>]*data-calc-field="${key}"`));
     }
   });
 
   it("is MET on a funded plan, with its scope stated and the assumptions still visible", async () => {
-    const html = await render({ desiredAnnualSpending: "60.000.000" });
-    const { input } = resolved({ desiredAnnualSpending: "60.000.000" });
+    const html = await render({ desiredMonthlySpending: "5.000.000" });
+    const { input } = resolved({ desiredMonthlySpending: "5.000.000" });
     expect(html).toContain('data-result-status="met"');
     expect(html).toContain(fill(C.form.fundedHeadline, { endAge: input.endAge }));
     expect(html).toContain(C.form.estimateNote);
@@ -579,11 +665,21 @@ describe("the semantic result status", () => {
   });
 
   it("says a pension-funded plan is funded by OTHER income", async () => {
-    // Other income at the whole desired spend, as the reader-first test below.
-    const html = await render({ otherAnnualIncome: "240.000.000" });
+    // Other income above the whole desired spend, as the reader-first test below.
+    const html = await render({ otherMonthlyIncome: "20.000.000" });
     expect(html).toContain('data-result-status="met"');
     expect(html).toContain(C.form.otherIncomeNote);
     expect(html).toContain(fill(C.form.otherIncomeHeadline, { endAge: 85 }));
+  });
+
+  it("flags a bad MONTHLY field on its own input, and opens the optional ones", async () => {
+    // The route's own validation path: `readRoutePlan`, not the shared parser.
+    const html = await render({ otherMonthlyIncome: "-1" });
+    expect(html).toContain('data-result-status="unknown"');
+    expect(count(html, 'aria-invalid="true"')).toBe(1);
+    const input = /<input[^>]*data-calc-field="otherMonthlyIncome"[^>]*>/.exec(html)?.[0] ?? "";
+    expect(input).toContain('aria-invalid="true"');
+    expect(html).toMatch(/<details[^>]*data-form-disclosure="true"[^>]*open=""/);
   });
 
   it("drops every conclusion to NEUTRAL on an invalid field, keeping no stale tone", async () => {
@@ -607,7 +703,8 @@ describe("the semantic result status", () => {
   it("annotates the figure's unmet years in the drawing, the caption list and the table", async () => {
     const html = await render();
     const { result, input } = shipped();
-    const figure = html.slice(html.indexOf("<figure"), html.indexOf("</figure>"));
+    // CHANGED 2026-09-27: the trajectory figure by title, not the first one.
+    const figure = trajectoryFigure(html);
     expect(figure).toContain('data-chart-band="shortfall"');
     expect(figure).toContain(
       fill(C.chart.unmetBand, {
@@ -636,14 +733,17 @@ describe("the reader-first reading of the result", () => {
     expect(result.spendingShortfall).toBeGreaterThan(0);
     const sentence = fill(C.form.shortfallMeaning, {
       shortfall: rounded(result.spendingShortfall),
+      monthly: rounded(monthlyEquivalent(result.spendingShortfall)),
     });
+    // Per month first, as the pension is asked: 18,8 triệu a year is 1,6 a month.
+    expect(sentence).toContain("chi ít hơn khoảng 1,6 triệu");
     expect(html).toContain(sentence);
     // The two readings the sentence must rule out — a browser pass read the
     // figure as the whole plan's shortfall, and the review as a contribution.
     expect(sentence).toContain("không phải số tiền cần để dành thêm");
     expect(sentence).toContain("không phải tổng số vốn còn thiếu");
-    // The exact figure is still the row, and still once.
-    expect(html).toContain(longTermMoney(result.spendingShortfall));
+    // The exact figure is still the row — per month — and still once.
+    expect(html).toContain(longTermMoney(monthlyEquivalent(result.spendingShortfall)));
     expect(count(html, C.form.shortfallLabel)).toBe(1);
   });
 
@@ -685,16 +785,16 @@ describe("the reader-first reading of the result", () => {
     // Other income at the whole desired spend: the savings are never drawn,
     // `fundedByOtherIncome` is true, and the sentence has to say THAT rather
     // than crediting the savings for what the pension did.
-    const html = await render({ otherAnnualIncome: "240.000.000" });
+    const html = await render({ otherMonthlyIncome: "20.000.000" });
     // 2026-09-27: the title itself now names the source — other income, not
     // the savings — which is the plan's "nói rõ nguồn đó".
     expect(html).toContain(
       fill(C.form.otherIncomeHeadline, {
-        endAge: Number(LONG_TERM_PLAN.defaults.endAge),
+        endAge: Number(C.defaults.endAge),
       }),
     );
     expect(html).toContain(C.form.otherIncomeNote);
-    expect(html).not.toContain("có thể duy trì mức chi khoảng");
+    expect(html).not.toContain("Mỗi tháng có thể chi khoảng");
   });
 
   it("labels the figure in ages, and names the moment of retirement by age", async () => {
@@ -717,7 +817,7 @@ describe("the reader-first reading of the result", () => {
     for (const html of [
       await render(),
       await render(FUNDED_BOUNDARY),
-      await render({ otherAnnualIncome: "240.000.000" }),
+      await render({ otherMonthlyIncome: "20.000.000" }),
     ]) {
       expect(html).not.toMatch(/\{[a-zA-Z]+\}/);
       expect(html).not.toContain("undefined");
@@ -745,14 +845,34 @@ describe("the repair pass: boundaries, the portfolio, and neutral teaching", () 
     const html = await render(FUNDED_BOUNDARY);
     const { result, input } = resolved(FUNDED_BOUNDARY);
     expect(result.years.at(-1)!.age).toBe(input.endAge - 1);
+    // Per month, the unit the pension is asked in on this route — a literal,
+    // so a unit error cannot hide behind the same helper on both sides.
     expect(html).toContain(
       fill(C.form.fundedBody, {
-        sustainable: rounded(result.sustainableSpending!),
-        desired: rounded(input.desiredAnnualSpending),
+        sustainable: rounded(monthlyEquivalent(result.sustainableSpending!)),
+        desired: rounded(monthlyEquivalent(input.desiredAnnualSpending)),
         endAge: input.endAge,
         lastAge: input.endAge - 1,
       }),
     );
+    expect(html).toContain("bạn muốn chi 20,0 triệu mỗi tháng");
+  });
+
+  it("never rounds a thin margin away in the funded sentence", async () => {
+    // Per month, 0,1 triệu is 100.000 ₫ — coarse enough to make "what the
+    // plan supports" and "what you want" one label. The pair says both exactly.
+    const patch = { annualContribution: "40.000.000", desiredMonthlySpending: "9.558.777" };
+    const html = await render(patch);
+    const { result, input } = resolved(patch);
+    expect(html).toContain('data-result-status="met"');
+    const [sustainable, desired] = compactMoneyPair(
+      monthlyEquivalent(result.sustainableSpending!),
+      monthlyEquivalent(input.desiredAnnualSpending),
+      LONG_TERM_PLAN.money,
+    );
+    expect(sustainable).not.toBe(desired);
+    expect(desired).toBe("9.558.777 ₫");
+    expect(html).toContain(`bạn muốn chi ${desired} mỗi tháng`);
   });
 
   it("names the PORTFOLIO's draw in the depletion year, never total spending", async () => {
