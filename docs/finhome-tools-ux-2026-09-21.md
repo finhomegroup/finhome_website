@@ -247,14 +247,14 @@ browser review next):** the pilot, shared-component, status-adapter and chart te
 plus `tsc --noEmit` and `check:lint` — results in the handoff message of that turn. The
 full-gate and build line above predates the repairs and is not re-claimed for them.
 
-## 1c. Tool-first hero for `ke-hoach-huu-tri` — 2026-09-27 (on branch `feat/retirement-tool-first-hero-20260927`; NOT signed off)
+## 1c. Tool-first hero for `ke-hoach-huu-tri` — 2026-09-27 (merged to `main` in #202, 2026-09-28)
 
 ONE route opts in: `/cong-cu/ke-hoach-huu-tri/`. Every other route's markup is unchanged —
 the two shell props (`CalculatorPage.hero`, `CalculatorHeading.afterTitle`) are opt-in and
 `calculator-heading-render.test.ts` pins that an absent slot renders nothing. Plan of record:
 the owner's vault plan `260927-1335-retirement-tool-first-hero`; the 3D-house + 2D direction
-and the interactions were the owner's live direction on 2026-09-27. **Owner sign-off of these
-amendments is pending**; until then they describe the feature branch, not production.
+and the interactions were the owner's live direction on 2026-09-27. **The owner approved and
+merged these amendments in #202 on 2026-09-28**; they describe `main`.
 
 **What the route renders now.** DOM order: nav → `h1` → HERO (verdict card → granary figure
 → three levers → target → reading) → lede → lede detail → notice → tool box (form region, collapsed;
@@ -2041,7 +2041,7 @@ labels and their position are identical either way.
 
 ### `ke-hoach-huu-tri` (row 46, "Hai cột")
 
-- **2026-09-27, on the feature branch, not signed off:** the tool-first hero — see §1c, which amends the
+- **2026-09-27, merged in #202 on 2026-09-28:** the tool-first hero — see §1c, which amends the
   regions, the collapsed form, the moved card and the second figure for this route only.
 - **Changed:** `CalculatorLayout columns="split"` plus `CalculatorPage wide`; the CTA
   after the eleven fields; the verdict emphasised as the one main answer;
