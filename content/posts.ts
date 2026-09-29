@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-hcm-dung-tinh-thue-can-ho-nha-o-xa-hoi",
+    title: "TP.HCM dừng tính thuế loạt căn hộ nhà ở xã hội: Chủ đầu tư chậm hoàn thiện hồ sơ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Văn phòng Đăng ký đất đai TP.HCM đề nghị hủy thông tin tính thuế với loạt căn hộ nhà ở xã hội do chủ đầu tư chậm hoàn thiện hồ sơ pháp lý.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-hcm-dung-tinh-thue-can-ho-nha-o-xa-hoi.jpg",
+    date: "2026-09-29",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/tp-hcm-dung-tinh-thue-loat-can-ho-nha-o-xa-hoi-5125739.html",
+        "accessed": "2026-09-29"
+      },
+  },
+  {
     slug: "nien-han-cong-trinh-thay-doi-cach-dinh-gia-can-ho",
     title: "Niên hạn công trình: Yếu tố tuổi tòa nhà sẽ ảnh hưởng thế nào đến giá căn hộ?",
     category: "Thị trường",
