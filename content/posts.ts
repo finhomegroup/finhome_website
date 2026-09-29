@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "bat-dong-san-rao-cat-lo-kiem-tra-truoc-khi-xuong-tien",
+    title: "Bất động sản rao 'cắt lỗ' 10-20%: 4 điểm cần kiểm tra trước khi xuống tiền",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nhiều bất động sản được quảng cáo 'cắt lỗ' nhưng chuyên gia khuyên người mua cần đối chiếu giá mua ban đầu, giá giao dịch thực tế và lý do bán trước khi quyết định.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bat-dong-san-rao-cat-lo-kiem-tra-truoc-khi-xuong-tien.jpg",
+    date: "2026-09-29",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/bat-dong-san-rao-cat-lo-10-20-co-thuc-su-chinh-xac-chuyen-gia-chi-4-diem-phai-kiem-tra-188260929062015547.chn",
+        "accessed": "2026-09-29"
+      },
+  },
+  {
     slug: "horea-kien-nghi-hoan-doi-dien-tich-dat-lien-ke-khi-thu-hoi",
     title: "HoREA kiến nghị cho phép người dân hoán đổi đất liền kề khi bị thu hồi: Giảm chi phí, bảo vệ quyền lợi",
     category: "Chính sách",
