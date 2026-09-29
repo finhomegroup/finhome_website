@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "nien-han-cong-trinh-thay-doi-cach-dinh-gia-can-ho",
+    title: "Niên hạn công trình: Yếu tố tuổi tòa nhà sẽ ảnh hưởng thế nào đến giá căn hộ?",
+    category: "Thị trường",
+    topics: ["gia-cung"],
+    excerpt: "Quy định thời hạn sử dụng công trình có thể khiến tuổi tòa nhà trở thành yếu tố quan trọng hơn trong định giá căn hộ, bên cạnh giá trị đất và chất lượng tài sản.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nien-han-cong-trinh-thay-doi-cach-dinh-gia-can-ho.jpg",
+    date: "2026-09-29",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nien-han-cong-trinh-co-the-lam-thay-doi-cach-dinh-gia-can-ho-5123594.html",
+        "accessed": "2026-09-29"
+      },
+  },
+  {
     slug: "tp-hcm-thu-hoi-can-ho-cong-tai-cu-xa-thanh-da",
     title: "TP.HCM thu hồi căn hộ tài sản công tại Cư xá Thanh Đa: Bước tiến trong cải tạo chung cư cũ",
     category: "Chính sách",
