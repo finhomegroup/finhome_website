@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-cai-tao-song-day-yen-so-230000-ty-dong",
+    title: "Hà Nội lấy ý kiến dự án cải tạo sông đầy gần 230.000 tỷ đồng, hơn 6.000 hộ dân dự kiến di dời",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "Hà Nội đang lấy ý kiến về dự án cải tạo kênh Yên Sở với vốn đầu tư gần 230.000 tỷ đồng do MIK Group đề xuất, ảnh hưởng hơn 6.000 hộ dân. Đây là một trong những dự án hạ tầng lớn nhất khu vực phía Nam thủ đô.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-cai-tao-song-day-yen-so-230000-ty-dong.webp",
+    date: "2026-09-29",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/ha-noi-lay-y-kien-du-an-cai-tao-song-day-gan-230000-ty-dong-do-mik-group-de-xuat-hon-6000-ho-dan-du-kien-di-doi-18826092906191407.chn",
+        "accessed": "2026-09-29"
+      },
+  },
+  {
     slug: "tp-hcm-dung-tinh-thue-can-ho-nha-o-xa-hoi",
     title: "TP.HCM dừng tính thuế loạt căn hộ nhà ở xã hội: Chủ đầu tư chậm hoàn thiện hồ sơ",
     category: "Chính sách",
