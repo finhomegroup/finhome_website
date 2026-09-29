@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "horea-kien-nghi-hoan-doi-dien-tich-dat-lien-ke-khi-thu-hoi",
+    title: "HoREA kiến nghị cho phép người dân hoán đổi đất liền kề khi bị thu hồi: Giảm chi phí, bảo vệ quyền lợi",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "HoREA đề xuất cho phép người dân hoán đổi diện tích đất liền kề khi Nhà nước thu hồi một phần đất làm dự án, miễn nộp tiền chuyển mục đích sử dụng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/horea-kien-nghi-hoan-doi-dien-tich-dat-lien-ke-khi-thu-hoi.jpg",
+    date: "2026-09-29",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/kien-nghi-cho-phep-nguoi-dan-hoan-doi-dien-tich-dat-lien-ke-khi-bi-thu-hoi-5126072.html",
+        "accessed": "2026-09-29"
+      },
+  },
+  {
     slug: "ha-noi-cai-tao-song-day-yen-so-230000-ty-dong",
     title: "Hà Nội lấy ý kiến dự án cải tạo sông đầy gần 230.000 tỷ đồng, hơn 6.000 hộ dân dự kiến di dời",
     category: "Thị trường",
