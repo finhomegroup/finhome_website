@@ -322,16 +322,75 @@ export const AUTO_LOAN = {
     title: "Tiếp theo cho chiếc xe này",
     intro:
       "Không có con số nào được mang sang trang khác — ở đó bạn nhập lại chiếc xe và điều kiện của mình.",
+    // `newTab` only where the reader comes BACK with a figure: the fuel
+    // estimate feeds the running-costs field, and a same-tab trip there and
+    // Back was observed to return this form to its example (journey review
+    // 2026-09-30, step 5). A new tab keeps the original form in memory.
     items: [
       {
         slug: "thue-mua-xe",
         why: "Thuê tài chính cùng chiếc xe này thì mỗi tháng trả bao nhiêu, và hết hạn bạn có sở hữu xe không?",
+        newTab: false,
       },
       {
         slug: "chi-phi-nhien-lieu",
         why: "Tiền nhiên liệu cho quãng đường bạn đi là bao nhiêu mỗi chuyến và mỗi tháng — để điền vào ô chi phí vận hành ở trên?",
+        newTab: true,
       },
     ],
+  },
+
+  /**
+   * The visible name of the header link to `/cong-cu/`, on this page only.
+   * The shared "Quay lại" read as "back to the article I came from" for a
+   * reader arriving from the guide; the destination is the catalogue.
+   */
+  hubLinkLabel: "Tất cả công cụ",
+
+  /** Tool → explanation (journey review step 6), through `EducationLink`. */
+  explainer: {
+    href: "/blog/vay-mua-xe-con-du-bao-nhieu/",
+    label: "Xem cách đọc kết quả qua một ví dụ",
+    why: "bài viết đi qua một gia đình giả định: tiền trả góp, tiền nuôi xe và phần còn lại mỗi tháng.",
+  },
+
+  /**
+   * PUBLIC NAMED EXAMPLES, opened by an exact URL fragment such as
+   * `/cong-cu/vay-mua-xe/#vi-du-bai-vay-mua-xe`. The fragment is an ID, never
+   * a figure: no income or amount travels in a link, and an unknown fragment
+   * is ignored. Loaded only into an untouched form; otherwise the reader is
+   * asked. Fictional household — the guide's own fixture, whose results
+   * `content/auto-education.test.ts` checks against the engines
+   * (8.498.818 ₫ a month, 501.182 ₫ left).
+   */
+  namedExamples: {
+    "vi-du-bai-vay-mua-xe": {
+      articleHref: "/blog/vay-mua-xe-con-du-bao-nhieu/",
+      articleTitle: "Vay mua xe: trả góp xong, mỗi tháng còn bao nhiêu?",
+      values: {
+        price: "700.000.000",
+        down: "300.000.000",
+        tradeIn: "0",
+        rate: "10",
+        term: "5",
+        termUnit: "years",
+        netIncome: "40.000.000",
+        essentials: "22.000.000",
+        otherDebts: "3.000.000",
+        reserve: "3.000.000",
+        running: "3.000.000",
+      },
+    },
+  },
+  namedExample: {
+    badge: "Ví dụ trong bài",
+    /** `{title}` is the article's title. */
+    note: "Gia đình giả định của bài “{title}”, không phải số của bạn.",
+    readLabel: "Đọc bài",
+    offer:
+      "Liên kết bạn mở có ví dụ trong bài viết. Các ô đang giữ số bạn đã nhập, nên công cụ chưa thay số nào.",
+    offerApply: "Thay bằng ví dụ trong bài",
+    offerKeep: "Giữ số đang nhập",
   },
 
   formula: {

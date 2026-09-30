@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Markdown } from "@/components/markdown";
 import { PostCardLink } from "@/components/post-card-link";
@@ -92,7 +93,7 @@ export default async function Page({
     );
   }
 
-  // Only news posts have a markdown body on disk; an education article's body
+  // News and standalone guides have a markdown body; a collection article's body
   // is structured data, so nothing is read from the filesystem for it.
   const body = education
     ? null
@@ -139,7 +140,7 @@ export default async function Page({
                 >
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                {education ? "Quay lại Mua nhà bằng con số" : "Quay lại Tin tức"}
+                {education ? "Quay lại Mua nhà bằng con số" : kind === "guide" ? "Quay lại Bài viết" : "Quay lại Tin tức"}
               </Link>
 
               <h1 className="mt-8 font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl">
@@ -180,9 +181,18 @@ export default async function Page({
                   url={post.source.url}
                 />
               ) : null}
+
+              {/* Opt-in per post: the first laptop screen offers an action. */}
+              {post.headerCta ? (
+                <div className="mt-6" data-article-header-cta="true">
+                  <Button href={post.headerCta.href} size="lg">
+                    {post.headerCta.label}
+                  </Button>
+                </div>
+              ) : null}
             </div>
 
-            {/* A photograph only where one exists. Education articles have no
+            {/* A cover only where one exists. Collection articles have no
                 cover: their visual is a rendered SVG from the calculator's own
                 engine, and a stock image would be the only invented thing on
                 the page. */}
@@ -191,12 +201,12 @@ export default async function Page({
                 <img
                   src={img(post.cover)}
                   alt={post.title}
-                  className="aspect-[16/9] w-full object-cover"
+                  className={kind === "guide" ? "h-auto w-full" : "aspect-[16/9] w-full object-cover"}
                 />
               </div>
             ) : null}
 
-            <div className="mx-auto mt-10 max-w-3xl">
+            <div className={cn("mx-auto mt-10 max-w-3xl", kind === "guide" && "[&_td:not(:first-child)]:whitespace-nowrap")}>
               {education ? (
                 <EducationArticleBody article={education} />
               ) : (

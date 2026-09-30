@@ -35,7 +35,7 @@ import {
   type GlossaryTerm,
 } from "@/content/glossary";
 import { EDUCATION_ARTICLES } from "@/content/education/articles";
-import { newsPosts } from "@/content/posts";
+import { POSTS, postKind } from "@/content/posts";
 
 /**
  * One sweepable body: an ordered list of prose blocks.
@@ -218,10 +218,10 @@ const DUTIES = duties();
 // this file red; an empty sweep must.
 
 describe("the sweep is not vacuous", () => {
-  it("found the whole news corpus on disk, and nothing else", () => {
+  it("found every Markdown news or guide body on disk, and nothing else", () => {
     // Derived from the directory and from POSTS, never quoted from prose.
     const onDisk = NEWS.map((body) => body.id.replace("news:", "")).sort();
-    const registered = newsPosts()
+    const registered = POSTS.filter((post) => postKind(post) !== "education")
       .map((post) => post.slug)
       .sort();
     expect(onDisk.length).toBeGreaterThan(100);

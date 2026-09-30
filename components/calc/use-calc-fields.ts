@@ -97,5 +97,14 @@ export function useCalcFields<T extends Record<string, string>>(
     setValues(initial);
   }
 
-  return { values, bind, reset };
+  /**
+   * Replace every field at once — for a page that opens a named example the
+   * reader asked for. The caller decides whether that is allowed; this never
+   * runs on its own.
+   */
+  function load(next: Record<keyof T, string>) {
+    setValues(next);
+  }
+
+  return { values, bind, reset, load };
 }

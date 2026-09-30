@@ -1,5 +1,12 @@
 "use client";
 
+import { useState, useSyncExternalStore } from "react";
+import {
+  exampleArrival,
+  namedExampleId,
+  namedExampleValues,
+  type AutoExampleId,
+} from "@/components/auto-example";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
@@ -64,6 +71,9 @@ import {
   type VehicleBudgetStatus,
 } from "@/lib/calc/vehicle-budget-status";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
+import { TOOL_SHELL } from "@/content/calculators/tool-shell";
+import { cn } from "@/lib/cn";
+import { FH_POINTER } from "@/lib/interaction-styles";
 
 /** The form's raw values, exactly as `useCalcFields` keeps them: strings. */
 export type AutoLoanFormValues = {
@@ -301,6 +311,14 @@ export function autoLoanFormState(
   };
 }
 
+/** The URL fragment as a store, for `useSyncExternalStore`: ID only. */
+function subscribeFragment(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+const readFragment = () => namedExampleId(window.location.hash);
+const serverFragment = () => null;
+
 const FORM_ID = "vay-mua-xe-nhap";
 const RESULT_ID = "vay-mua-xe-ket-qua";
 
@@ -472,6 +490,19 @@ export function AutoLoanCalculator({
    * overwrites a typed value. See `components/calc/learning-trials.ts`.
    */
   const learning = useTrialStack<AutoTrialKey, AutoLoanFormState>(raw.values);
+
+  /*
+   * THE NAMED EXAMPLE (journey review 2026-09-30). `exampleId` is the public
+   * example the form was opened on, or null for the page's own default —
+   * which is still what the static HTML and every hash-less visit show.
+   * `baseline` is whichever of the two the form started from: "Về ví dụ mẫu"
+   * returns to it and `pristine` is measured against it.
+   */
+  const [exampleId, setExampleId] = useState<AutoExampleId | null>(null);
+  const [offerId, setOfferId] = useState<AutoExampleId | null>(null);
+  const baseline: AutoLoanFormValues =
+    exampleId === null ? initial : namedExampleValues(exampleId);
+
   const fields = {
     values: raw.values,
     bind: (key: keyof typeof initial) => {
@@ -486,7 +517,7 @@ export function AutoLoanCalculator({
     },
     reset: () => {
       learning.dispatch({ type: "reset" });
-      raw.reset();
+      raw.load(baseline);
     },
   };
 
@@ -495,10 +526,39 @@ export function AutoLoanCalculator({
   // page that prefilled 40/22/3/3 triệu and then told the reader those figures
   // were theirs.
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
-    (key) => fields.values[key] === initial[key],
+    (key) => fields.values[key] === baseline[key],
   );
   // A press on the example is still the example until the reader types.
-  const sample = pristine || onlyTried(learning.trials, initial);
+  const sample = pristine || onlyTried(learning.trials, baseline);
+
+  const loadExample = (id: AutoExampleId) => {
+    learning.dispatch({ type: "reset" });
+    raw.load(namedExampleValues(id));
+    setExampleId(id);
+    setOfferId(null);
+  };
+  // The fragment is an external store: null on the server and during
+  // hydration (so the static HTML is the default example and hydrates
+  // byte-identically), the recognised ID afterwards. When it CHANGES, it is
+  // weighed once against the form as it is then — React's "adjust state when
+  // a value changes" pattern, not an effect. A form the reader has touched is
+  // never overwritten: `exampleArrival` offers instead.
+  const fragmentId = useSyncExternalStore(
+    subscribeFragment,
+    readFragment,
+    serverFragment,
+  );
+  const [seenFragment, setSeenFragment] = useState<AutoExampleId | null>(null);
+  if (fragmentId !== seenFragment) {
+    setSeenFragment(fragmentId);
+    const arrival = exampleArrival(fragmentId, {
+      untouched: pristine && learning.trials.length === 0,
+      values: raw.values,
+    });
+    if (fragmentId !== null && arrival === "load") loadExample(fragmentId);
+    else if (fragmentId !== null && arrival === "offer") setOfferId(fragmentId);
+  }
+  const example = exampleId === null ? null : C.namedExamples[exampleId];
 
   const form = autoLoanFormState(fields.values);
   const {
@@ -607,8 +667,60 @@ export function AutoLoanCalculator({
             <ExampleNotice
               pristine={sample}
               onReset={fields.reset}
-              className="mb-6"
+              className={example !== null && sample ? "mb-2" : "mb-6"}
             />
+            {/* Which example, named — only while the form still shows it. */}
+            {example !== null && sample ? (
+              <p
+                data-auto-named-example={exampleId ?? undefined}
+                className="mb-6 text-sm leading-snug text-ink-2"
+              >
+                <span className="font-medium text-ink">{C.namedExample.badge}:</span>{" "}
+                {fill(C.namedExample.note, { title: example.articleTitle })}{" "}
+                <a
+                  href={example.articleHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
+                >
+                  {C.namedExample.readLabel}
+                  <span className="ml-1 whitespace-nowrap font-normal">
+                    {TOOL_SHELL.nextSteps.newTabNote}
+                  </span>
+                </a>
+              </p>
+            ) : null}
+            {/* A named link arrived after the reader typed: ask, never replace. */}
+            {offerId !== null ? (
+              <div
+                data-auto-example-offer="true"
+                className="mb-6 rounded-xl border border-ink-4/35 bg-white p-4 text-sm leading-relaxed text-ink-2"
+              >
+                <p>{C.namedExample.offer}</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                  <button
+                    type="button"
+                    onClick={() => loadExample(offerId)}
+                    className={cn(
+                      "min-h-11 font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                      FH_POINTER,
+                    )}
+                  >
+                    {C.namedExample.offerApply}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOfferId(null)}
+                    className={cn(
+                      "min-h-11 font-medium text-ink-2 underline decoration-ink-4 underline-offset-2 hover:text-brand-green-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                      FH_POINTER,
+                    )}
+                  >
+                    {C.namedExample.offerKeep}
+                  </button>
+                </div>
+              </div>
+            ) : null}
             <h2 data-auto-form-heading="true" className="mb-4 font-display text-lg font-medium text-ink">
               {AL.formHeading}
             </h2>

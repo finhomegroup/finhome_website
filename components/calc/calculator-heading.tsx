@@ -16,8 +16,16 @@ export function CalculatorHeading({
   ledeDetail,
   ledeDetailTitle,
   afterTitle,
+  backLabel = CALCULATOR_HUB.backLabel,
 }: {
   title: string;
+  /**
+   * OPT-IN: the visible name of the link to `/cong-cu/`. The destination and
+   * its accessible name are unchanged; a route whose readers often arrive
+   * from an article names the catalogue ("Tất cả công cụ") so "Quay lại" is
+   * not read as "back to what I was reading". Absent elsewhere.
+   */
+  backLabel?: string;
   /**
    * ONE short line saying what the tool answers.
    *
@@ -66,7 +74,7 @@ export function CalculatorHeading({
           >
             <path d="m15 18-6-6 6-6" />
           </svg>
-          {CALCULATOR_HUB.backLabel}
+          {backLabel}
         </Link>
 
         <span aria-hidden="true" className="h-5 w-px shrink-0 bg-ink-4/40" />

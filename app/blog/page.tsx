@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { BlogPostGrid } from "@/components/blog-post-grid";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
-import { newsPosts } from "@/content/posts";
+import { newsPosts, POSTS, postKind } from "@/content/posts";
 import { EDUCATION_COLLECTION } from "@/content/education/collection";
 import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
 import { canonicalPath, pageMetadata } from "@/lib/seo";
@@ -13,8 +13,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = pageMetadata({
   path: canonicalPath("/blog"),
-  title: "Tin tức bất động sản",
-  description: "Thông tin mới nhất về thị trường, giá cả và chính sách nhà ở.",
+  title: "Bài viết về tài chính gia đình và bất động sản",
+  description: "Hướng dẫn tài chính dễ hiểu qua ví dụ và công cụ, cùng tin thị trường, giá cả và chính sách nhà ở.",
 });
 
 /**
@@ -82,13 +82,11 @@ export default function BlogPage() {
                 </svg>
                 Quay lại trang chủ
               </Link>
-              {/* "Bài viết" is what the header calls this page (map N03);
-                  the metadata keeps its existing title and description. */}
               <h1 className="font-display text-4xl leading-tight text-ink md:text-5xl">
                 Bài viết
               </h1>
               <p className="mt-4 text-lg text-ink-2">
-                Hướng dẫn dễ hiểu về mua nhà và tin thị trường bất động sản
+                Hướng dẫn dễ hiểu về tài chính gia đình và tin thị trường bất động sản
               </p>
             </div>
 
@@ -99,7 +97,10 @@ export default function BlogPage() {
               <ul className="grid gap-4 sm:grid-cols-2">
                 <li>
                   <Link href={`${EDUCATION_COLLECTION.slug}/`} className={pathCard}>
-                    <span className="font-display text-lg font-medium text-ink">Hướng dẫn dễ hiểu</span>
+                    {/* Named for what it holds: the home-buying collection.
+                        "Hướng dẫn dễ hiểu" also described the car guide below
+                        and sent readers of it to the wrong set. */}
+                    <span className="font-display text-lg font-medium text-ink">{EDUCATION_COLLECTION.name}</span>
                     <span className="mt-2 text-sm leading-relaxed text-ink-2">
                       {EDUCATION_COLLECTION.fromNewsBody}
                     </span>
@@ -123,6 +124,20 @@ export default function BlogPage() {
                 </li>
               </ul>
             </nav>
+
+            <section aria-labelledby="tool-guides-title" className="mx-auto mt-12 max-w-3xl">
+              <h2 id="tool-guides-title" className="font-display text-2xl text-ink">Tính thử trước khi quyết định</h2>
+              {POSTS.filter((post) => postKind(post) === "guide").map((post) => (
+                <Link key={post.slug} href={`/blog/${post.slug}/`} className={cn(pathCard, "mt-4 sm:flex-row sm:items-center sm:gap-6")}>
+                  <img src={post.cover} alt="" width={1200} height={630} className="mb-4 aspect-[1200/630] w-full rounded-xl object-cover sm:mb-0 sm:w-56" />
+                  <span>
+                    <span className="block font-display text-xl text-ink">{post.title}</span>
+                    <span className="mt-2 block text-sm leading-relaxed text-ink-2">{post.excerpt}</span>
+                    <span className="mt-3 block text-sm font-medium text-brand-green-ink">Đọc và thử với số của bạn →</span>
+                  </span>
+                </Link>
+              ))}
+            </section>
 
             <section
               id="tin-thi-truong"

@@ -66,8 +66,11 @@ export function CalculatorPage({
   disclaimer,
   wide = false,
   hero,
+  backLabel,
   children,
 }: {
+  /** OPT-IN: `CalculatorHeading`'s visible catalogue-link name. */
+  backLabel?: string;
   /** Registry slug, without the `/cong-cu/` prefix. */
   slug: string;
   /** Used for the WebApplication schema's name. */
@@ -219,6 +222,7 @@ export function CalculatorPage({
             ledeDetail={ledeDetail}
             ledeDetailTitle={ledeDetailTitle}
             afterTitle={hero}
+            backLabel={backLabel}
           />
 
           {/* Both notices sit ABOVE the calculator. A user should learn that a
