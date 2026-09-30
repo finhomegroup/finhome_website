@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-nong-nghiep-de-nghi-thao-go-vuong-mac-novaland-tphcm",
+    title: "Bộ Nông nghiệp đề nghị tháo gỡ vướng mắc cho hai dự án Novaland 166 ha tại TP.HCM",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien","gia-cung"],
+    excerpt: "Bộ Nông nghiệp đề nghị tháo gỡ pháp lý cho Khu dân cư Thạnh Mỹ Lợi B và Khu tái định cư Bình Khánh – The Water Bay của Novaland với hơn 166 ha, dự kiến 14.500 căn nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-nong-nghiep-de-nghi-thao-go-vuong-mac-novaland-tphcm.jpg",
+    date: "2026-09-30",
+    source: {
+        "name": "baochinhphu.vn",
+        "url": "https://baochinhphu.vn/bo-nong-nghiep-va-moi-truong-de-nghi-thao-go-vuong-mac-cho-hai-du-an-quy-mo-lon-cua-novaland-tai-tphcm-102260929104102361.htm",
+        "accessed": "2026-09-30"
+      },
+  },
+  {
     slug: "lai-suat-huy-dong-28-9-phan-hoa-mb-vpbank-bidv",
     title: "Lãi suất huy động ngân hàng ngày 28/9: Biên độ dao động từ 7-7,8%/năm kỳ hạn 12 tháng",
     category: "Tài chính",
