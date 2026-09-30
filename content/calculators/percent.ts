@@ -89,7 +89,9 @@ export const PERCENT = {
         // after the behaviour was fixed.
         aHelp:
           "Mức lãi cũ, ví dụ 7. Nhập 0 vẫn được — khi đó công cụ vẫn tính chênh lệch theo điểm phần trăm, chỉ riêng mức thay đổi tương đối là không xác định được vì không thể chia cho 0.",
-        aInvalid: "Vui lòng nhập một số từ 0 trở lên.",
+        // The parser accepts any number, negative included (a rate can be
+        // negative), so the message says only what the field requires.
+        aInvalid: "Vui lòng nhập một số.",
         defaultA: "7",
         bLabel: "Lãi suất sau đó",
         bUnit: "%/năm",

@@ -4,6 +4,7 @@ import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { DetailDisclosure } from "@/components/calc/detail-disclosure";
 import { FieldGroup } from "@/components/calc/field-group";
+import { useTrialStack } from "@/components/calc/learning-trials";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultCta } from "@/components/calc/result-cta";
@@ -11,15 +12,18 @@ import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { moneyText, percentText } from "@/components/arith-learning-display";
 import {
-  PLACEHOLDER,
-  formatMoney,
-  formatPercent,
-  parseDecimal,
-  parseMoney,
-} from "@/lib/calc/number";
-import { adjustPrice } from "@/lib/calc/price-adjust";
-import { moneyCell } from "@/lib/calc/table-cell";
+  makePriceTrial,
+  ledgerTableRows,
+  priceAdjustFormState,
+  priceAvailability,
+  priceImpact,
+  priceSnapshot,
+  type PriceSnapshot,
+  type PriceTrialKey,
+} from "@/components/price-adjust-learning";
+import { PriceAdjustLearningPanel } from "@/components/price-adjust-learning-panel";
 import { PRICE_ADJUST as C } from "@/content/calculators/price-adjust";
 
 const FORM_ID = "giam-gia-va-thue-nhap";
@@ -55,19 +59,27 @@ const RESULT_ID = "giam-gia-va-thue-ket-qua";
  * `wide`, the tax passage moves into a `DetailDisclosure` behind
  * `taxHelpShort`, and the CTA pins the final payable figure. No default,
  * bound, tax basis, signed input or engine refusal changed.
+ *
+ * THE LIVING PRICE-TAG PATH (2026-09-30) sits in the `learning` slot: the
+ * engine's own ledger, one row per line, on a fixed bill scale, with the
+ * tax-inside line drawn as the final price's composition. Parse and guards
+ * moved unchanged into `priceAdjustFormState`; every figure is formatted
+ * safely. The tax RATE remains the reader's own invoice figure — this pass
+ * verifies arithmetic and UI only and leaves the legal/market copy alone.
  */
 export function PriceAdjustCalculator() {
   // The second object formats while typing, by the grammar each key is PARSED
   // with below — see `FieldFormats`. The tax-included switch is a list.
-  const fields = useCalcFields(
-    {
-      price: C.form.defaultPrice,
-      tax: C.form.defaultTax,
-      taxIncluded: C.form.defaultTaxIncluded,
-      discountPercent: C.form.defaultDiscountPercent,
-      secondDiscountPercent: C.form.defaultSecondDiscountPercent,
-      discountAmount: C.form.defaultDiscountAmount,
-    },
+  const initial = {
+    price: C.form.defaultPrice,
+    tax: C.form.defaultTax,
+    taxIncluded: C.form.defaultTaxIncluded,
+    discountPercent: C.form.defaultDiscountPercent,
+    secondDiscountPercent: C.form.defaultSecondDiscountPercent,
+    discountAmount: C.form.defaultDiscountAmount,
+  };
+  const raw = useCalcFields(
+    initial,
     {
       price: "money",
       tax: "rate",
@@ -77,49 +89,64 @@ export function PriceAdjustCalculator() {
     },
   );
 
-  const price = parseMoney(fields.values.price);
-  const tax = parseDecimal(fields.values.tax);
-  const discountPercent = parseDecimal(fields.values.discountPercent);
-  const secondDiscountPercent = parseDecimal(
-    fields.values.secondDiscountPercent,
-  );
-  const discountAmount = parseMoney(fields.values.discountAmount);
+  // Every reader edit retires the trial stack; a press writes through RAW.
+  const trials = useTrialStack<PriceTrialKey, PriceSnapshot>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initial) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          trials.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+  };
 
-  const priceInvalid = price === null || price <= 0;
+  // The same parse and guards as before, moved into `priceAdjustFormState`.
+  //
   // BOUNDED AT 100, like the two discount percentages below. This field used
   // to accept 500 while `discountPercent` in the same component rejected 101 —
   // an inconsistency inside one file, not a deliberate asymmetry. A VAT rate
   // or a surcharge above 100% is not a figure anyone can be invoiced.
-  const taxInvalid = tax === null || tax < 0 || tax > 100;
-  // Written inline rather than through a shared predicate: TypeScript narrows
-  // `number | null` from a visible `=== null` comparison and cannot see
-  // through a helper, so a tidier `badPercent(...)` would leave both values
-  // nullable at the `adjustPrice` call.
-  const discountPercentInvalid =
-    discountPercent === null || discountPercent < 0 || discountPercent > 100;
-  const secondDiscountPercentInvalid =
-    secondDiscountPercent === null ||
-    secondDiscountPercent < 0 ||
-    secondDiscountPercent > 100;
-  const discountAmountInvalid = discountAmount === null || discountAmount < 0;
+  const state = priceAdjustFormState(fields.values);
+  const {
+    discountPercent,
+    secondDiscountPercent,
+    priceInvalid,
+    taxInvalid,
+    discountPercentInvalid,
+    secondDiscountPercentInvalid,
+    discountAmountInvalid,
+    fieldsUsable,
+    result,
+  } = state;
 
-  const fieldsUsable =
-    !priceInvalid &&
-    !taxInvalid &&
-    !discountPercentInvalid &&
-    !secondDiscountPercentInvalid &&
-    !discountAmountInvalid;
-
-  const result = fieldsUsable
-    ? adjustPrice({
-        listPrice: price,
-        discountPercent,
-        secondDiscountPercent,
-        discountAmount,
-        taxPercent: tax,
-        taxIncluded: fields.values.taxIncluded === "yes",
-      })
-    : null;
+  const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
+    (key) => fields.values[key] === initial[key],
+  );
+  const sample =
+    pristine ||
+    (trials.trials[0] !== undefined &&
+      (Object.keys(initial) as (keyof typeof initial)[]).every(
+        (key) => trials.trials[0].before[key] === initial[key],
+      ));
+  const latest = trials.trials.at(-1) ?? null;
+  const now = priceSnapshot(state);
+  const impact = latest !== null && now !== null ? priceImpact(latest, now) : null;
+  const tryKey = (key: PriceTrialKey) => {
+    const t = makePriceTrial(key, raw.values, trials.state.revision, state);
+    if (t === null) return;
+    trials.dispatch({ type: "apply", trial: t });
+    raw.bind(key).onValueChange(t.after[key]);
+  };
+  const undo = () => {
+    if (latest === null) return;
+    trials.dispatch({ type: "undo" });
+    raw.bind(latest.key).onValueChange(latest.before[latest.key]);
+  };
 
   // Both percentages are doing something, so the non-additivity is live and
   // worth naming. With one or none there is no gap to teach.
@@ -131,20 +158,17 @@ export function PriceAdjustCalculator() {
   // The ledger, straight from the model: keys mapped to labels, signs kept.
   // Nothing is recomputed here, so the running balance on screen is the
   // model's own and cannot drift from `finalPrice`.
-  const ledgerRows = (result?.ledger ?? []).map((step) => [
-    C.form.ledgerSteps[step.key],
-    step.delta === 0
-      ? PLACEHOLDER
-      : `${step.delta < 0 ? "−" : "+"}${formatMoney(Math.abs(step.delta))}`,
-    moneyCell(step.balance),
-  ]);
+  // BOTH money columns are typed cells, so compact triệu and exact đồng apply
+  // to the change and the balance alike — see `ledgerTableRows`.
+  const ledgerRows = ledgerTableRows(result);
 
   // Every field is valid on its own, but the discounts together exceed the
   // price. That is a note about the combination, not a fault in one box.
-  const tooMuch = fieldsUsable && result === null;
+  const tooMuch = state.tooMuch;
 
+  // Named past the print limit, never "— ₫".
   const money = (figure: number | undefined) =>
-    figure === undefined ? null : `${formatMoney(figure)} ₫`;
+    figure === undefined ? null : moneyText(figure);
 
   return (
     <CalculatorCard>
@@ -161,6 +185,7 @@ export function PriceAdjustCalculator() {
                 help={C.form.priceHelp}
                 error={C.form.priceInvalid}
                 invalid={priceInvalid}
+                fieldKey="price"
               />
             </FieldGroup>
 
@@ -172,6 +197,7 @@ export function PriceAdjustCalculator() {
                 help={C.form.discountPercentHelp}
                 error={C.form.discountPercentInvalid}
                 invalid={discountPercentInvalid}
+                fieldKey="discountPercent"
               />
               {/* The second percentage is the page's whole lesson, so it is a
                   field and not an instruction to run the tool twice. */}
@@ -182,6 +208,7 @@ export function PriceAdjustCalculator() {
                 help={C.form.secondDiscountPercentHelp}
                 error={C.form.discountPercentInvalid}
                 invalid={secondDiscountPercentInvalid}
+                fieldKey="secondDiscountPercent"
               />
               <NumberField
                 {...fields.bind("discountAmount")}
@@ -190,6 +217,7 @@ export function PriceAdjustCalculator() {
                 help={C.form.discountAmountHelp}
                 error={C.form.discountAmountInvalid}
                 invalid={discountAmountInvalid}
+                fieldKey="discountAmount"
               />
             </FieldGroup>
 
@@ -209,6 +237,7 @@ export function PriceAdjustCalculator() {
                 help={C.form.taxHelpShort}
                 error={C.form.taxInvalid}
                 invalid={taxInvalid}
+                fieldKey="tax"
               />
               {/* A radio, not a checkbox: the two readings of a label price
                   are different calculations, not an option added to one. */}
@@ -260,7 +289,7 @@ export function PriceAdjustCalculator() {
               />
               <ResultRow
                 label={C.form.savingPercentLabel}
-                value={result ? formatPercent(result.savingPercent) : null}
+                value={result ? percentText(result.savingPercent) : null}
               />
             </ResultGroup>
 
@@ -273,6 +302,25 @@ export function PriceAdjustCalculator() {
               </p>
             ) : null}
           </>
+        }
+        learning={
+          <PriceAdjustLearningPanel
+            sample={sample}
+            tried={sample && trials.trials.length > 0}
+            state={state}
+            formId={FORM_ID}
+            trial={{
+              availability: {
+                secondDiscountPercent: priceAvailability("secondDiscountPercent", raw.values, state),
+                discountAmount: priceAvailability("discountAmount", raw.values, state),
+                taxIncluded: priceAvailability("taxIncluded", raw.values, state),
+              },
+              canUndo: latest !== null,
+              onTry: tryKey,
+              onUndo: undo,
+            }}
+            impact={impact}
+          />
         }
         detail={
           <>
@@ -310,14 +358,14 @@ export function PriceAdjustCalculator() {
                     label={C.form.combinedLabel}
                     value={
                       result
-                        ? formatPercent(result.combinedDiscountPercent)
+                        ? percentText(result.combinedDiscountPercent)
                         : null
                     }
                   />
                   <ResultRow
                     label={C.form.naiveLabel}
                     value={
-                      result ? formatPercent(result.naiveSumPercent) : null
+                      result ? percentText(result.naiveSumPercent) : null
                     }
                   />
                 </ResultGroup>
