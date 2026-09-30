@@ -89,6 +89,8 @@ const count = (html: string, needle: string | RegExp): number =>
  * charts and nothing else. Throws if the marker survives the strip.
  */
 const ILLUSTRATION = 'data-learning-illustration="true"';
+/** The routes whose learning panel carries ONE labelled illustration. */
+const ILLUSTRATED = new Set(["kha-nang-mua-nha", "vay-mua-nha", "vay-mua-xe"]);
 function chartsOnly(html: string): string {
   const region = markupRegion(html, ILLUSTRATION, "figure");
   const stripped = region === null ? html : html.replace(`${region}</figure>`, "");
@@ -252,8 +254,8 @@ describe.each(TOOLS)(
 
     it("renders one labelled figure per chart", async () => {
       const rendered = await html();
-      // Exactly one labelled illustration, and only on the affordability pilot.
-      expect(count(rendered, ILLUSTRATION)).toBe(name === "kha-nang-mua-nha" ? 1 : 0);
+      // Exactly one labelled illustration, and only on the learning pilots.
+      expect(count(rendered, ILLUSTRATION)).toBe(ILLUSTRATED.has(name) ? 1 : 0);
       const markup = chartsOnly(rendered);
       expect(count(markup, "<figure")).toBe(charts);
       expect(count(markup, "<figcaption")).toBe(charts);
@@ -355,12 +357,29 @@ describe.each(TOOLS)(
     });
 
     it("animates nothing at all", async () => {
-      const markup = await html();
+      const rendered = await html();
       // How `prefers-reduced-motion` is honoured here: there is no transition
       // to suppress. A chart that tweened would need a media query and a
       // fallback; one that does not, does not.
+      //
+      // The learning scene is NOT a chart (see `chartsOnly`): the interactive
+      // brief asks its data marks to move briefly, and ONLY under
+      // `prefers-reduced-motion: no-preference`. So the charts are checked
+      // without it, exactly as strictly as before, and the scene is checked
+      // on its own: every transition gated by `motion-safe:`, no `<animate>`.
+      const markup = chartsOnly(rendered);
       expect(markup).not.toContain("<animate");
-      expect(markup).not.toMatch(/<svg[\s\S]*?transition-/);
+      // INSIDE each svg. The old `<svg[\s\S]*?transition-` also matched a
+      // button's hover transition anywhere AFTER the first icon — a false
+      // failure once a learning panel sits after the answer.
+      const svgs = markup.match(/<svg[\s\S]*?<\/svg>/g) ?? [];
+      expect(svgs.length).toBeGreaterThan(0);
+      for (const svg of svgs) expect(svg).not.toContain("transition-");
+      const scene = markupRegion(rendered, ILLUSTRATION, "figure");
+      if (scene !== null) {
+        expect(scene).not.toContain("<animate");
+        expect(scene).not.toMatch(/(?<!motion-safe:)transition-/);
+      }
     });
 
     it("leaves no content placeholder unsubstituted", async () => {

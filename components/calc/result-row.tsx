@@ -22,9 +22,33 @@ import { PLACEHOLDER } from "@/lib/calc/number";
  * column. `shrink-0` now applies only from `md`, where there is room for both,
  * so desktop rendering is unchanged and the phone gets the full panel width
  * for each of the two lines.
+ *
+ * A FIGURE LONGER THAN ITS ROW WRAPS; IT IS NEVER CLIPPED (2026-09-29). An
+ * accepted but huge input — a 1e17 price on /cong-cu/thue-hay-mua/ — gave
+ * `16.129.831.713.745.744 ₫`, one unbreakable run of digits and dots, which
+ * ran past a 320 px card and lost its last digits to the card's edge while the
+ * page itself did not scroll. The text is untouched (no inserted breaks, no
+ * abbreviation, same size); only the box changed:
+ *
+ * - the value is `max-w-full` with `overflow-wrap: anywhere`, so a run that
+ *   cannot fit breaks inside itself as a LAST resort — it only applies when
+ *   the figure would otherwise overflow, which a normal figure never does;
+ * - from `md`, the row may wrap (`md:flex-wrap`) and the label takes the
+ *   remaining width from a zero basis (`md:flex-1`). A normal figure still sits
+ *   beside its label exactly as before; one wider than the row minus the
+ *   label's longest word moves to its own line instead of pushing out.
+ *   `md:shrink-0` stays: below the row's width the value is still held whole.
+ * - A PROSE row keeps its previous desktop box: a sentence already shrinks and
+ *   wraps by words, so it takes neither the wrap nor the zero-basis label.
  */
 /** One place, so the noted and un-noted label render identically. */
 const LABEL = "block text-sm leading-snug text-ink-2 md:text-base";
+
+/** A figure row's label from `md`: whatever the value leaves, never below one word. */
+const FIGURE_LABEL_BOX = "md:flex-1";
+
+/** A figure longer than its row breaks inside itself rather than being clipped. */
+const CONTAIN = "max-w-full [overflow-wrap:anywhere]";
 
 export function ResultRow({
   label,
@@ -70,26 +94,31 @@ export function ResultRow({
    */
   emphasis?: boolean;
 }) {
+  const labelBox = prose ? undefined : FIGURE_LABEL_BOX;
   return (
     <div
       aria-atomic="true"
-      className="border-t border-ink-4/20 py-3 first:border-t-0 md:flex md:items-baseline md:justify-between md:gap-6"
+      className={cn(
+        "border-t border-ink-4/20 py-3 first:border-t-0 md:flex md:items-baseline md:justify-between md:gap-x-6",
+        !prose && "md:flex-wrap md:gap-y-1",
+      )}
     >
       {note ? (
         // Only when there IS a note: an unconditional wrapper would change the
         // markup of every row in the suite for the rows that have none.
-        <span className="block md:mr-auto">
+        <span className={cn("block md:mr-auto", labelBox)}>
           <span className={LABEL}>{label}</span>
           <span className="mt-1 block text-sm leading-snug text-ink-3">
             {note}
           </span>
         </span>
       ) : (
-        <span className={LABEL}>{label}</span>
+        <span className={cn(LABEL, labelBox)}>{label}</span>
       )}
       <span
         className={cn(
           "mt-1 block md:mt-0 md:text-right",
+          CONTAIN,
           prose
             ? "text-base leading-relaxed text-ink md:max-w-sm"
             : emphasis

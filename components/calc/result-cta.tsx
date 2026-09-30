@@ -55,6 +55,16 @@ import { FH_POINTER } from "@/lib/interaction-styles";
  * with `preventScroll` so its own instant jump does not cancel the smooth
  * scroll that was just requested.
  *
+ * `align="start"` (OPT-IN, `vay-mua-nha` / `vay-mua-xe`): a VALID press scrolls
+ * the result card's TOP to the top of the viewport instead of centring it. The
+ * card opens with a tall infographic, and centring a target taller than the
+ * screen shows its middle — the reader landed past the start of the picture.
+ * The page's `scroll-padding-top` (app/globals.css) keeps that top clear of
+ * the fixed header. The INVALID branch is unchanged: the first bad field is
+ * still centred, and the default stays `"center"` on every other route.
+ * Reduced motion asks for `"instant"` explicitly (it was `"auto"`, which
+ * inherits the global smooth `scroll-behavior`); see `focusAndScroll`.
+ *
  * IN FLOW ON MOBILE. The audit allows a bottom bar on a long mobile form; the
  * approved contract makes it optional and forbids covering content or the
  * keyboard. An in-flow button cannot do either, so the phone layout stays in
@@ -85,6 +95,7 @@ export function ResultCta({
   label,
   answer,
   sticky = false,
+  align = "center",
   className,
 }: {
   /**
@@ -123,6 +134,8 @@ export function ResultCta({
   };
   /** Pin the block to the viewport bottom from `lg` up. Long forms only. */
   sticky?: boolean;
+  /** Where a VALID press lands the result: centred (default) or its top. */
+  align?: "center" | "start";
   className?: string;
 }) {
   const noteId = useId();
@@ -139,6 +152,7 @@ export function ResultCta({
         className,
       )}
       data-calc-cta="true"
+      data-calc-cta-align={align === "start" ? "start" : undefined}
     >
       {/*
         A VISUAL restatement, hidden from assistive technology on purpose.
@@ -169,7 +183,9 @@ export function ResultCta({
           <span className="text-sm leading-snug text-ink-2">
             {answer.label}
           </span>
-          <span className="font-display text-lg font-medium tabular-nums text-ink">
+          {/* Same containment as `ResultRow`'s value: a figure wider than the
+              pinned block breaks inside itself instead of running past it. */}
+          <span className="max-w-full font-display text-lg font-medium tabular-nums text-ink [overflow-wrap:anywhere]">
             {answer.value ?? PLACEHOLDER}
           </span>
         </p>
@@ -181,7 +197,7 @@ export function ResultCta({
         // function of the control.
         aria-controls={targetId}
         aria-describedby={noteId}
-        onClick={() => jumpToAnswer(formId, targetId)}
+        onClick={() => jumpToAnswer(formId, targetId, align)}
         className={cn(
           // `brand-green-ink`, not `brand-green`: white on the raw brand green
           // measures 3.02:1 and this label needs 4.5:1. Same hue, darkened
@@ -233,12 +249,21 @@ function revealAncestors(el: Element): void {
 /**
  * Reveal, scroll to and focus one element — the CTA's recovery, shared with
  * the result card's field-jump actions so both land the same way.
+ * `block` defaults to centring; only the CTA's opt-in `align="start"` passes
+ * `"start"`, for a result target taller than the screen.
  */
-export function focusAndScroll(el: HTMLElement): void {
+export function focusAndScroll(
+  el: HTMLElement,
+  block: "center" | "start" = "center",
+): void {
   revealAncestors(el);
   el.scrollIntoView({
-    behavior: prefersReducedMotion() ? "auto" : "smooth",
-    block: "center",
+    // "instant", not "auto": `auto` inherits the page's computed
+    // `scroll-behavior`, and app/globals.css sets `html { scroll-behavior:
+    // smooth }` on calculator routes — so `auto` would still animate for a
+    // reader who asked for less motion (CSSOM View, "perform a scroll").
+    behavior: prefersReducedMotion() ? "instant" : "smooth",
+    block,
   });
   el.focus({ preventScroll: true });
 }
@@ -246,8 +271,13 @@ export function focusAndScroll(el: HTMLElement): void {
 /**
  * The whole contract, in one place: first invalid field if there is one,
  * otherwise the answer. Never both, and never nothing.
+ * Exported for the tests only; the button is its one caller.
  */
-function jumpToAnswer(formId: string, targetId: string): void {
+export function jumpToAnswer(
+  formId: string,
+  targetId: string,
+  align: "center" | "start" = "center",
+): void {
   const form = document.getElementById(formId);
   // Document order inside the form region, which is reading order — the layout
   // never reorders the form's own children.
@@ -255,10 +285,11 @@ function jumpToAnswer(formId: string, targetId: string): void {
     form?.querySelector<HTMLElement>('[aria-invalid="true"]') ?? null;
 
   if (firstInvalid) {
+    // Always centred: a field is short, and this is the recovery path.
     focusAndScroll(firstInvalid);
     return;
   }
 
   const target = document.getElementById(targetId);
-  if (target) focusAndScroll(target);
+  if (target) focusAndScroll(target, align);
 }
