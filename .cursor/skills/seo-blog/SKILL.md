@@ -85,6 +85,42 @@ the connected journey, not a reason to withhold the article's answer. Offer the
 relevant next tool in context. Mention an app action only when implemented and its
 destination is verified; do not invent store links, account saving or data transfer.
 
+### Social imagery (FinHome publishing rule)
+
+**Invariant.** Every social post (poster, share card, or article cover exported
+from a social package) has **real people** as its hero image, and each post in
+a set uses a **different source photograph** — a different crop of the same file
+is not a different photo, and a new set should not reuse a photo already shipped
+in a released package. Exact figures and diagrams are supporting content, never a
+number-only or 3D-only hero.
+
+- People are used only when the **source's own metadata** (title, tags or
+  description) identifies them as Asian; nationality or ethnicity is never
+  inferred from appearance or invented in copy or alt text.
+- Rights are clear and recorded: source licence (e.g. Pexels), photographer,
+  source page, licence URL, check date, project filename and intended use. The
+  post shows a visible credit ("Ảnh minh họa: Tên / Pexels") and says the people
+  are illustrative, not a customer, case study or endorsement.
+- The source file stays unmodified in `public/images/...`; crop per photo so
+  faces stay visible and clear of the headline in every exported size; exclude
+  brand marks or printed words that could imply endorsement, and do not mirror a
+  photo that shows readable text. Alt text describes only what is in frame.
+- An identifiable person is never tied to real debt, distress or business
+  results; the fictional example must read as fictional beside the photo.
+- AI-generated imagery may supplement only when approved, is disclosed as
+  synthetic, and is never presented as a real person; images a source labels as
+  AI-generated are not "real people".
+
+**What checking guarantees.** The editorial checklist and project tests can
+confirm presence and provenance: a people photo in each hero, distinct source
+IDs, credit, licence and illustrative wording, and no excluded file.
+
+**What it does not guarantee.** It cannot establish anyone's identity or
+ethnicity, an actual customer endorsement, legal clearance beyond the recorded
+licence, or visual acceptance of a crop — those need a human look at the
+rendered output. Publishing, and any exception to this rule, remain a human
+editorial decision. Dated asset lists belong in the delivery recap, not here.
+
 ## Review and verification
 
 1. Resolve the actual article data, registry and shared copy before reviewing. For

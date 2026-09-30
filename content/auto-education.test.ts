@@ -101,8 +101,16 @@ describe("article header action and poster wording (repair 2026-09-30)", () => {
     expect(html.split('data-article-header-cta="true"').length - 1).toBe(1);
   }, 120_000); // first import of the route and site chrome is slow
 
-  it("adds no header action to any other article", async () => {
-    expect(POSTS.filter((p) => p.headerCta).map((p) => p.slug)).toEqual([slug]);
+  it("limits the header action to standalone tool guides — none on news or collection articles", async () => {
+    // Since the 2026-09-30 series every standalone tool guide has one, and
+    // nothing else does: news and collection articles stay untouched.
+    const withCta = POSTS.filter((p) => p.headerCta);
+    expect(withCta.map((p) => p.slug)).toContain(slug);
+    expect(withCta.map((p) => p.slug).sort()).toEqual(POSTS.filter((p) => postKind(p) === "guide").map((p) => p.slug).sort());
+    for (const p of withCta) {
+      expect(p.headerCta!.label, p.slug).toBe("Tính với số của tôi");
+      expect(p.headerCta!.href, p.slug).toMatch(/^\/cong-cu\/[a-z-]+\/$/);
+    }
     const news = newsPosts()[0];
     const education = POSTS.find((p) => postKind(p) === "education")!;
     for (const other of [news.slug, education.slug]) {

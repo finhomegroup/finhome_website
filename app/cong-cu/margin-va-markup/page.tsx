@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { EducationLink } from "@/components/calc/education-link";
 import { MarginCalculator } from "@/components/margin-calculator";
 import { MARGIN as C } from "@/content/calculators/margin";
 
@@ -30,6 +31,10 @@ export default function MarginPage() {
       noticeDetailTitle={C.trapNoticeDetailTitle}
       prose={C.formula}
       faq={C.faq}
+      // Tool → explanation (2026-09-30 series), in a new tab.
+      afterCalculator={
+        <EducationLink href={C.guideLink.href} label={C.guideLink.label} why={C.guideLink.why} />
+      }
     >
       <MarginCalculator />
     </CalculatorPage>
