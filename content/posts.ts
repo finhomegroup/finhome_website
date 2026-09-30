@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-huy-dong-28-9-phan-hoa-mb-vpbank-bidv",
+    title: "Lãi suất huy động ngân hàng ngày 28/9: Biên độ dao động từ 7-7,8%/năm kỳ hạn 12 tháng",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Khảo sát lãi suất huy động tại 35 ngân hàng cho thấy mặt bằng lãi suất tiếp tục phân hóa, kỳ hạn 12 tháng có ngân hàng niêm yết 7,8%/năm trong khi nhiều nhà băng ở mức 7%/năm.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-huy-dong-28-9-phan-hoa-mb-vpbank-bidv.jpg",
+    date: "2026-09-30",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/lai-suat-ngan-hang-28-9-tai-mb-vpbanktechcombank-sacombank-hdbank-agribank-vietcombank-bidv-vietinbank-188260928201305879.chn",
+        "accessed": "2026-09-30"
+      },
+  },
+  {
     slug: "bat-dong-san-rao-cat-lo-kiem-tra-truoc-khi-xuong-tien",
     title: "Bất động sản rao 'cắt lỗ' 10-20%: 4 điểm cần kiểm tra trước khi xuống tiền",
     category: "Thị trường",
