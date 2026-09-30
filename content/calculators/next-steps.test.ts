@@ -17,7 +17,7 @@ import {
 } from "@/content/calculators/plan-disposition";
 import { TOOL_SHELL } from "@/content/calculators/tool-shell";
 import { getEducationArticle } from "@/content/education/articles";
-import { educationPosts } from "@/content/posts";
+import { educationPosts, POSTS, postKind } from "@/content/posts";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -243,6 +243,16 @@ describe("the education seam", () => {
       const education = steps.education;
       if (education === undefined) continue;
       const slug = education.href.replace(/^\/blog\//, "").replace(/\/$/, "");
+      // A standalone tool guide (2026-09-30 series) is the other valid
+      // target, held to the same two-way rule: it is in POSTS as a guide, its
+      // Markdown body is on disk, and that body links back to THIS tool.
+      const guide = POSTS.find((post) => post.slug === slug && postKind(post) === "guide");
+      if (guide !== undefined) {
+        const body = readFileSync(path.join(repoRoot, "content", "posts", `${slug}.md`), "utf8");
+        expect(body, `${slug} does not link back to /cong-cu/${from}/`).toContain(`(/cong-cu/${from}/)`);
+        expect(education.href.endsWith("/"), education.href).toBe(true);
+        continue;
+      }
       expect(
         getEducationArticle(slug),
         `${from} links to ${education.href}, which is not an article`,

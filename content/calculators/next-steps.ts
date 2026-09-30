@@ -349,10 +349,11 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
         why: "Gửi tiền chờ mua nhà thì chọn kỳ hạn nào để không phải rút trước hạn?",
       },
     ],
+    // 2026-09-30 series: this tool's own guide, on its shipped example.
     education: {
-      href: "/blog/du-tien-tra-truoc-sau-3-nam/",
-      label: "Muốn đủ tiền trả trước sau 3 năm, mỗi tháng cần để dành bao nhiêu?",
-      why: "Bài tập cho thấy với mục tiêu vài năm, phần quyết định gần như toàn bộ là mức góp chứ không phải lãi suất.",
+      href: "/blog/lai-kep-bao-nhieu-la-tien-ban-tu-gop/",
+      label: "Lãi kép sau 10 năm: bao nhiêu là tiền bạn tự góp?",
+      why: "Bài đọc cùng ví dụ điền sẵn: tách tiền bạn góp khỏi phần lãi giả định và thử góp thêm 1 triệu mỗi tháng.",
     },
   },
 
@@ -372,6 +373,12 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
         why: "Nếu tái tục nhiều kỳ và nhập lãi vào gốc, số tiền lớn lên thế nào theo thời gian?",
       },
     ],
+    // 2026-09-30 series: this tool's own guide, on its shipped example.
+    education: {
+      href: "/blog/can-tien-truoc-dao-han-mat-bao-nhieu-lai/",
+      label: "Cần tiền trước ngày đáo hạn: mất bao nhiêu tiền lãi?",
+      why: "Bài đọc cùng ví dụ điền sẵn: giữ đủ kỳ, rút ở tháng 9 và rút đúng ngày đáo hạn khác nhau thế nào.",
+    },
   },
 
   // Original row 71. A land-area conversion is a step inside looking at a
@@ -629,10 +636,12 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
         why: "Nếu lãi sau ưu đãi tăng thêm 1, 2 hay 3 điểm phần trăm thì khoản trả thành bao nhiêu?",
       },
     ],
+    // 2026-09-30 series: this tool's own guide, on its "So hai mức lãi suất"
+    // example. The guide itself links on to the floating-rate article.
     education: {
-      href: "/blog/het-uu-dai-khoan-tra-tang-bao-nhieu/",
-      label: "Hết ưu đãi, khoản trả có thể tăng bao nhiêu?",
-      why: "Bài tập giải thích vì sao “lãi tăng 3,5 điểm phần trăm” và “khoản trả tăng 27%” là hai con số khác nhau.",
+      href: "/blog/lai-tu-7-len-9-tang-2-hay-28-phan-tram/",
+      label: "Lãi từ 7% lên 9%: tăng 2 hay tăng 28,57%?",
+      why: "Bài đọc cùng ví dụ 7% và 9%: điểm phần trăm là phép trừ, phần trăm so với mức cũ là phép chia.",
     },
   },
 

@@ -185,6 +185,13 @@ export const PRICE_ADJUST = {
   taxIncludedNotice:
     "Điểm khác biệt của công cụ này: mặc định giá niêm yết đã gồm thuế. Với lựa chọn đó, mức giảm được trừ trên giá đã gồm thuế và dòng “tiền thuế” cho biết phần thuế đang nằm sẵn trong số bạn trả, chứ không cộng thêm gì. Nhiều công cụ nước ngoài luôn cộng thuế lên trên, và trên một giá niêm yết Việt Nam thì kết quả bị đội lên đúng bằng thuế suất — với mức 8% đang điền sẵn ở ô thuế, 800.000 ₫ thành 864.000 ₫.",
 
+  /** Tool → explanation (2026-09-30 series), through `EducationLink`. */
+  guideLink: {
+    href: "/blog/giam-20-roi-giam-10-co-phai-giam-30/",
+    label: "Đọc ví dụ: giảm 20% rồi 10% có phải giảm 30%?",
+    why: "bài viết đi qua đúng ví dụ 1.000.000 ₫ đang điền sẵn, cách đọc thuế trên giá niêm yết và các nút thử trên trang này.",
+  },
+
   formula: {
     title: "Cách tính",
     body: [

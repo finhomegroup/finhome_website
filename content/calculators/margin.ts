@@ -86,6 +86,13 @@ export const MARGIN = {
   trapNoticeDetail:
     "Với giá vốn 600.000 ₫, margin 40% cần giá bán 1.000.000 ₫; cộng 40% lên giá vốn chỉ ra 840.000 ₫, tức margin 28,57% — thiếu 11,43 điểm phần trăm. Một cửa hàng có thể bán suốt một năm theo cách đó rồi không hiểu tiền lãi đã đi đâu.",
 
+  /** Tool → explanation (2026-09-30 series), through `EducationLink`. */
+  guideLink: {
+    href: "/blog/cong-40-vao-gia-von-co-phai-lai-40/",
+    label: "Đọc ví dụ: cộng 40% vào giá vốn có phải lãi 40%?",
+    why: "bài viết đi qua đúng ví dụ 600.000 ₫ và 1.000.000 ₫ đang điền sẵn, và các nút thử trên trang này.",
+  },
+
   formula: {
     title: "Cách tính",
     body: [

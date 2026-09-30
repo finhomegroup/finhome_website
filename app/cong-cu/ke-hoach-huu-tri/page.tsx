@@ -3,6 +3,7 @@ import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
+import { EducationLink } from "@/components/calc/education-link";
 import { LongTermViews } from "@/components/calc/long-term-views";
 import { RenderBoundary } from "@/components/calc/render-boundary";
 import { RetirementGranaryHero } from "@/components/retirement-granary-hero";
@@ -54,7 +55,11 @@ export default function RetirementPlanPage() {
         // and its chart they invited the reader away before any choice was
         // made — and those pages open on other defaults, some fields per year.
         afterCalculator={
-          <LongTermViews current="trajectory" compact={C.otherTools} className="mt-10" />
+          <>
+            <LongTermViews current="trajectory" compact={C.otherTools} className="mt-10" />
+            {/* Tool → explanation, in a new tab so the plan here survives. */}
+            <EducationLink href={C.guideLink.href} label={C.guideLink.label} why={C.guideLink.why} />
+          </>
         }
         prose={C.formula}
         faq={C.faq}

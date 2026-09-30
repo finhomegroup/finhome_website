@@ -1,0 +1,114 @@
+/*
+ * Shared poster styles for the 2026-09-30 tool education series.
+ * Derived from the approved /social/vay-mua-xe/ poster (left unchanged).
+ * Original FinHome logo and Maison Neue font files from app/fonts.css;
+ * brand-green-ink #117f36, bg-soft #f7fcf7. Three modes, chosen by
+ * poster.js from the query string:
+ *   (none)  1080 x 1350 poster      -> <package>/poster.png
+ *   ?cover  1200 x 630 article cover -> images/blog/<slug>-cover.png
+ *   ?flow   960 x 510 article diagram -> images/blog/<slug>-flow.png
+ */
+@font-face{font-family:MaisonBook;src:url('../fonts/diaVJ9Gu2AtlbsQszEnmsxwlIY.woff2')}
+@font-face{font-family:MaisonMedium;src:url('../fonts/u4FXY2bqWyT9VTGHSZbId85fOAk.woff2');font-weight:500}
+@font-face{font-family:Inter;src:url('../fonts/GrgcKwrN6d3Uz8EwcLHZxwEfC4.woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2248,U+2260}
+@font-face{font-family:Inter;src:url('../fonts/b6Y37FthZeALduNqHicBT6FutY.woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}
+
+*{box-sizing:border-box}
+body{margin:0;background:#e8ede8;color:#000;font-family:MaisonBook,Inter,sans-serif}
+main{width:1080px;height:1350px;overflow:hidden;background:#f7fcf7;position:relative;margin:auto}
+b,strong,h1,h2{font-family:MaisonMedium,Inter,sans-serif;font-weight:500}
+
+header{height:126px;padding:0 64px;display:flex;justify-content:space-between;align-items:center;background:#fff}
+.brand{width:280px;height:auto;display:block}
+.series{font-size:19px;color:#575757}
+
+/*
+ * Hero: green block with the question, beside a REAL PHOTO of people.
+ * FinHome rule (2026-09-30): every social post features real people whose
+ * source metadata identifies them as Asian; no 3D or number-only hero. The
+ * figures stay in the body and the in-article diagram. See the seo-blog skill.
+ */
+.hero{height:445px;background:#117f36;position:relative;overflow:hidden}
+.lead{position:relative;z-index:1;padding:48px 64px;width:605px;color:#fff}
+h1{font-size:51px;line-height:1.21;letter-spacing:-1.8px;margin:0 0 24px}
+.dek{font-size:22px;line-height:1.6;margin:0;max-width:430px}
+.photo-note{position:absolute;bottom:12px;right:20px;z-index:2;color:#fff;background:rgba(0,0,0,.68);padding:5px 9px;font:13px Inter,sans-serif}
+/* The approved car-poster treatment for Pexels 7593053: CSS crop and gradient only. */
+.portrait{position:absolute;inset:0 0 0 auto;width:680px;height:100%;object-fit:cover;object-position:45% 30%;transform:scaleX(-1)}
+.wash{position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,#117f36 0%,#117f36 38%,rgba(17,127,54,.90) 45%,transparent 62%)}
+/*
+ * Any other photo: the UNMODIFIED original placed at exact offsets inside a
+ * clipped box, per photo — no universal blind crop, no flip, no retouching.
+ * --w/--x/--y are the poster geometry (680 x 445 box), --cw/--cx/--cy the
+ * cover's (790 x 520). Each package states which region of the source shows.
+ */
+.photo-box{position:absolute;top:0;right:0;bottom:0;width:680px;overflow:hidden}
+.photo-box img{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:auto;max-width:none;display:block}
+/* Mirror only where a photo has no readable text and both faces would
+   otherwise sit under the headline wash; offsets are in mirrored coordinates. */
+.photo-box img.flip{transform:scaleX(-1)}
+
+.body{padding:34px 64px}
+.hook{font-size:25px;line-height:1.6;margin:0 0 18px}
+.hook b{color:#117f36}
+.math{background:#fff;border:1px solid #d5e5d4;border-radius:20px;padding:8px 30px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:17px 0;font-size:26px;gap:20px}
+.row b{font-size:33px;white-space:nowrap}
+.row + .row{border-top:1px solid #eef3ee}
+.result{border-top:1px solid #d5e5d4;color:#117f36}
+.result b{font-size:43px}
+.note{font-size:21px;line-height:1.55;margin:19px 0 15px}
+.assumptions{font-size:17px;line-height:1.6;color:#575757;margin:0}
+.footer{position:absolute;bottom:32px;left:64px;right:64px;border-top:1px solid #c9d8c5;padding-top:19px;display:flex;justify-content:space-between;align-items:center;gap:25px}
+.footer a{color:#117f36;text-decoration:none;font:500 22px MaisonMedium,Inter,sans-serif}
+.footer small{font-size:14px;line-height:1.6;text-align:right}
+
+/* Small engine-figure strips inside the poster body. */
+.strip{display:flex;gap:6px;height:56px;margin:6px 0 10px}
+.strip span{display:flex;align-items:center;justify-content:center;border-radius:5px;font:500 20px MaisonMedium,Inter,sans-serif;color:#fff;background:#117f36;min-width:0;white-space:nowrap;overflow:hidden}
+.strip .s2{background:#a2db46;color:#000}
+.strip .s3{background:#d9e4d1;color:#000}
+
+/* ---- ?cover: 1200 x 630, header + hero only ---- */
+.cover main{width:1200px;height:630px}
+.cover header{height:110px}
+.cover .hero{height:520px}
+.cover .portrait{width:790px}
+.cover .photo-box{width:790px}
+.cover .photo-box img{left:var(--cx);top:var(--cy);width:var(--cw)}
+.cover .lead{padding-top:65px;width:650px}
+.cover h1{font-size:58px}
+.cover .dek{font-size:24px}
+.cover .body,.cover .footer,.cover .flow-chart{display:none}
+
+/* ---- ?flow: 960 x 510 article diagram only ---- */
+.flow-chart{display:none}
+.flow main{width:960px;height:510px}
+.flow main>:not(.flow-chart){display:none}
+.flow .flow-chart{display:block;padding:44px}
+.flow h2{font-size:31px;margin:0 0 12px}
+.flow p{font-size:19px;margin:0;line-height:1.6}
+.flow .bar{display:flex;gap:6px;height:96px;margin:28px 0 12px}
+.flow .bar span{display:flex;align-items:center;min-width:0;text-indent:18px;background:#117f36;color:#fff;font:500 28px MaisonMedium,Inter,sans-serif;border-radius:5px;white-space:nowrap;overflow:hidden}
+.flow .bar .s2{background:#a2db46;color:#000}
+.flow .bar .s3{background:#d9e4d1;color:#000}
+.flow .labels{display:flex;font-size:18px;margin-bottom:20px}
+.flow .pair{margin:22px 0 8px}
+.flow .pair .line{display:flex;align-items:center;gap:16px;margin:12px 0;font-size:19px}
+.flow .pair .line .name{width:280px;flex:none}
+.flow .pair .track{flex:1;height:44px;background:#eef3ee;border-radius:5px;position:relative}
+.flow .pair .fill{position:absolute;inset:0 auto 0 0;background:#117f36;border-radius:5px}
+.flow .pair .fill.alt{background:#a2db46}
+.flow .pair .val{width:170px;flex:none;text-align:right;font:500 22px MaisonMedium,Inter,sans-serif}
+.flow .summary{font:500 26px MaisonMedium,Inter,sans-serif;color:#117f36;margin:10px 0 8px}
+.flow .source{font-size:15px;color:#575757;margin-top:12px}
+.flow .bowls{display:grid;grid-template-columns:repeat(13,1fr);gap:8px;margin:24px 0 14px}
+.flow .bowl{height:46px;border-radius:0 0 23px 23px;border:2px solid #117f36;position:relative;overflow:hidden;background:#fff}
+.flow .bowl i{position:absolute;left:0;right:0;bottom:0}
+.flow .bowl .other{background:#8fc79a}
+.flow .bowl .draw{background:#e8c25b}
+.flow .bowl-age{font-size:13px;text-align:center;color:#575757;margin-top:2px}
+.flow .legend{display:flex;gap:22px;font-size:16px;color:#333;margin-top:8px}
+.flow .legend i{display:inline-block;width:16px;height:16px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.flow .flow-key{font-size:18px;margin:4px 0 20px;flex-wrap:wrap;gap:8px 26px}
+@media print{body{background:white}main{margin:0}@page{size:1080px 1350px;margin:0}}

@@ -202,6 +202,13 @@ export const RETIREMENT_PLAN = {
       "Mỗi trang trả lời một câu hỏi khác về cùng cách tính. Số bạn nhập ở đây không được mang sang; các trang đó dùng số mẫu khác và hỏi chi tiêu, thu nhập khác theo năm — lấy số tháng nhân 12.",
   },
 
+  /** Tool → explanation (2026-09-30 series), through `EducationLink`. */
+  guideLink: {
+    href: "/blog/de-danh-huu-tri-tien-du-den-bao-nhieu-tuoi/",
+    label: "Đọc ví dụ: tiền dành dụm đủ chi đến năm bao nhiêu tuổi?",
+    why: "bài viết đi qua đúng số mẫu đang điền sẵn, cách đọc hình bát và các nút thử trên trang này.",
+  },
+
   pageTitle: "Tiền dành dụm có đủ sống khi nghỉ hưu không?",
   metaTitle: "Kế hoạch hưu trí — Tiền dành dụm có đủ sống khi nghỉ hưu không?",
   metaDescription:
