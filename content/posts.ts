@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "da-nang-lay-y-kien-dieu-chinh-quy-hoach-du-an-da-phuoc-54700-ty",
+    title: "Đà Nẵng lấy ý kiến điều chỉnh quy hoạch dự án Đa Phước hơn 54.700 tỷ đồng",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang","chinh-sach-su-kien"],
+    excerpt: "UBND phường Hải Châu (Đà Nẵng) tổ chức lấy ý kiến cộng đồng về điều chỉnh quy hoạch chi tiết tỷ lệ 1/500 dự án Khu đô thị quốc tế Đa Phước với quy mô hơn 54.700 tỷ đồng.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/da-nang-lay-y-kien-dieu-chinh-quy-hoach-du-an-da-phuoc-54700-ty.webp",
+    date: "2026-09-30",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/sieu-du-an-da-phuoc-hon-54700-ty-dong-se-duoc-dieu-chinh-quy-hoach-nhu-the-nao-188260930075741076.chn",
+        "accessed": "2026-09-30"
+      },
+  },
+  {
     slug: "nguoi-mua-can-ho-doi-chien-thuat",
     title: "Người mua căn hộ thay đổi chiến thuật: Từ kỳ vọng tăng giá sang tính toán dòng tiền",
     category: "Thị trường",
