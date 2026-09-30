@@ -1,9 +1,10 @@
+import { displayable } from "@/components/calc/accumulation";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
 import { AFFORDABILITY_LEARNING as L } from "@/content/calculators/affordability-learning";
-import type { AffordabilityResult } from "@/lib/calc/affordability";
+import type { AffordabilityInput, AffordabilityResult } from "@/lib/calc/affordability";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { compactMoney, compactMoneyPair, fill } from "@/lib/calc/charts/labels";
-import { formatMoney, parseDecimal, parseMoney } from "@/lib/calc/number";
+import { formatMoney, formatPercent, parseDecimal, parseMoney } from "@/lib/calc/number";
 import { atLedgerZero } from "@/lib/calc/result-status";
 
 /*
@@ -94,6 +95,12 @@ export type TrialFacts = {
   reserve: number | null;
   /** The raw strings a press would add to, so an unrepresentable one says why. */
   raw?: Partial<Record<TrialKey, string>>;
+  /**
+   * The whole-tool limit's reason (`affordabilityLimit`): every field is
+   * valid but the figures cannot be shown or computed, so no press can be
+   * read. Null or absent otherwise — and always on `nha-o-xa-hoi`.
+   */
+  unsupported?: string | null;
 };
 
 /** Whether a press may run, and the plain reason when it may not. */
@@ -101,6 +108,8 @@ export type TrialAvailability = { enabled: true } | { enabled: false; reason: st
 
 /** The reason EVERY press is off, if there is one — said once for both. */
 export function sharedBlock(facts: TrialFacts): string | null {
+  // First: a limit is not an input error, so "có ô lỗi" would blame nothing.
+  if (facts.unsupported) return facts.unsupported;
   if (!facts.usable) return L.blocked.invalid;
   if (facts.targetInvalid) return L.blocked.targetInvalid;
   if (facts.limited) return L.blocked.limited;
@@ -123,8 +132,14 @@ export function trialAvailability(key: TrialKey, facts: TrialFacts): TrialAvaila
     }
   }
   const raw = facts.raw?.[key];
-  if (raw !== undefined && nextTrialValue(key, raw) === null) {
-    return { enabled: false, reason: L.blocked.unrepresentable };
+  if (raw !== undefined) {
+    // A press may never write a value the page could not print: the rate
+    // has no money formatter of its own to refuse it, so check it here.
+    const next = nextTrialValue(key, raw);
+    const written = next === null ? null : key === "reserve" ? parseMoney(next) : parseDecimal(next);
+    if (written === null || !displayable([written])) {
+      return { enabled: false, reason: L.blocked.unrepresentable };
+    }
   }
   return { enabled: true };
 }
@@ -432,35 +447,166 @@ export function trialBars(beforePrice: number, afterPrice: number): TrialBar[] {
   ];
 }
 
-/** One line of the illustration's legend. */
-export type IllustrationPart = {
-  key: "own" | "loan" | "reserve";
-  label: string;
-  meaning: string;
-  /** Rounded engine figure, or null when there is no readable price. */
-  value: string | null;
+/**
+ * What the scene draws (living infographic F1, 2026-09-29): the 3D trays as
+ * unlabelled CONTEXT, then two code-drawn readings, each a bar whose 100% is
+ * NAMED —
+ *
+ *   1. the reference price = own money into the price + the loan;
+ *   2. the savings = into the price + fees outside it + unused + the reserve
+ *      kept apart. The reserve is never summed into the price.
+ *
+ * Five truthful non-numeric states: no result or no parsed reserve
+ * ("unknown"), essentials blank so the price is only an upper bound
+ * ("limited"), no feasible price ("none"), and a figure too large to print
+ * exactly ("display"). "model" and "display" are also what the calculator
+ * passes for a whole-tool `affordabilityLimit`. None is drawn as zeros or as
+ * "— ₫".
+ */
+export type AffordabilitySceneView =
+  | { kind: "unknown" | "limited" | "none" | "display" | "model" }
+  | {
+      kind: "ready";
+      price: PriceReading;
+      /** Null when there are no savings at all: nothing to divide. */
+      savings: SavingsReading | null;
+      /**
+       * A real price with no loan in it, and why: the typed maximum is 0%
+       * ("ltv"), or the month leaves nothing to repay with ("capacity").
+       * Null when there is a loan.
+       */
+      noLoan: "ltv" | "capacity" | null;
+      /** Every figure in full đồng, for the collapsed disclosure. */
+      exact: readonly { key: string; label: string; value: string }[];
+    };
+
+/** Reading 1. 100% = `maxPrice`. */
+export type PriceReading = {
+  wholeText: string;
+  ownText: string;
+  loanText: string;
+  ownPercent: number;
+  loanPercent: number;
+  ownShareText: string;
+  loanShareText: string;
 };
 
+/** Reading 2. 100% = the savings: usable cash + the reserve kept from them. */
+export type SavingsReading = {
+  wholeText: string;
+  toPriceText: string;
+  feesText: string;
+  /** Usable own money the price and its costs did not need; null at ~0. */
+  unusedText: string | null;
+  /** The reserve KEPT from the savings — at most the savings themselves. */
+  reserveText: string;
+  /** The reserve as typed; differs from `reserveText` only when over. */
+  reserveTypedText: string;
+  toPricePercent: number;
+  feesPercent: number;
+  unusedPercent: number;
+  reservePercent: number;
+  /** The typed reserve is larger than the savings: all of them are kept. */
+  reserveOverSavings: boolean;
+};
+
+const shareText = (percent: number) => formatPercent(percent, 1);
+
 /**
- * The illustration's legend: which tray is which, and — when the result is
- * readable — the engine's own figure for each. Own money is `cashToPrice`,
- * the loan is `maxLoan`, the reserve is the `cashReserve` the engine was
- * given. No figure while the result is missing, limited (an upper bound, not
- * a budget) or has no price, so the picture never carries a number the card
- * would not stand behind.
+ * The scene from the result on screen. Own money into the price is
+ * `cashToPrice`, the loan `maxLoan`, the fees `purchaseCosts` (own money,
+ * outside the price), the unused part what `usableCash` did not need, the
+ * reserve the `cashReserve` the engine was given. The engine's `usableCash`
+ * is `downPayment − cashReserve` floored at 0, so usable + the reserve kept
+ * (`min(reserve, savings)`) IS the savings typed. Nothing is recomputed.
+ *
+ * NO GHOST MARK. Each bar is 100% of its own named whole, so a mark "where it
+ * stood before" would sit on a different whole. What a press did is the
+ * impact block's before/after bars, on one axis from 0.
  */
-export function illustrationParts(
+export function affordabilityScene(
   result: AffordabilityResult | null,
   cashReserve: number | null,
-): IllustrationPart[] {
-  const readable =
-    result !== null && !result.conclusionLimited && result.maxPrice > 0 && cashReserve !== null;
-  const P = L.illustration.parts;
-  return [
-    { key: "own", ...P.own, value: readable ? rounded(result.cashToPrice) : null },
-    { key: "loan", ...P.loan, value: readable ? rounded(result.maxLoan) : null },
-    { key: "reserve", ...P.reserve, value: readable ? rounded(cashReserve) : null },
-  ];
+  downPayment: number | null,
+): AffordabilitySceneView {
+  if (result === null || cashReserve === null) return { kind: "unknown" };
+  if (result.conclusionLimited) return { kind: "limited" };
+  if (!(result.maxPrice > 0)) return { kind: "none" };
+  const savingsTyped = Math.max(0, downPayment ?? 0);
+  const reserveKept = Math.min(Math.max(0, cashReserve), savingsTyped);
+  const whole = result.usableCash + reserveKept;
+  // Every figure the readings or the disclosure print, in full đồng.
+  if (
+    !displayable([
+      result.maxPrice,
+      result.cashToPrice,
+      result.maxLoan,
+      result.purchaseCosts,
+      result.usableCash,
+      cashReserve,
+      whole,
+    ])
+  ) {
+    return { kind: "display" };
+  }
+
+  const S = L.scene;
+  const of = (value: number, whole: number) => (whole > 0 ? (Math.max(0, value) / whole) * 100 : 0);
+  const ownPercent = of(result.cashToPrice, result.maxPrice);
+  const loanPercent = of(result.maxLoan, result.maxPrice);
+  const price: PriceReading = {
+    wholeText: rounded(result.maxPrice),
+    ownText: rounded(result.cashToPrice),
+    loanText: rounded(result.maxLoan),
+    ownPercent,
+    loanPercent,
+    ownShareText: shareText(ownPercent),
+    loanShareText: shareText(loanPercent),
+  };
+
+  const unused = Math.max(0, result.usableCash - result.cashToPrice - result.purchaseCosts);
+  const hasUnused = unused >= 0.5;
+  const savings: SavingsReading | null =
+    whole > 0
+      ? {
+          wholeText: rounded(whole),
+          toPriceText: rounded(result.cashToPrice),
+          feesText: rounded(result.purchaseCosts),
+          unusedText: hasUnused ? rounded(unused) : null,
+          // The component is what is actually held back, so the parts
+          // reconcile to the whole; the typed figure is disclosed apart.
+          reserveText: rounded(reserveKept),
+          reserveTypedText: rounded(cashReserve),
+          toPricePercent: of(result.cashToPrice, whole),
+          feesPercent: of(result.purchaseCosts, whole),
+          unusedPercent: hasUnused ? of(unused, whole) : 0,
+          reservePercent: of(reserveKept, whole),
+          reserveOverSavings: cashReserve > savingsTyped,
+        }
+      : null;
+
+  return {
+    kind: "ready",
+    price,
+    savings,
+    noLoan:
+      result.maxLoan >= 0.5
+        ? null
+        : result.assumedMaxLtvPercent === 0
+          ? "ltv"
+          : "capacity",
+    exact: [
+      { key: "price", label: S.exactPrice, value: money(result.maxPrice) },
+      { key: "own", label: S.priceOwn, value: money(result.cashToPrice) },
+      { key: "loan", label: S.priceLoan, value: money(result.maxLoan) },
+      { key: "fees", label: S.savingsFees, value: money(result.purchaseCosts) },
+      ...(hasUnused ? [{ key: "unused", label: S.savingsUnused, value: money(unused) }] : []),
+      { key: "reserve", label: S.savingsReserve, value: money(reserveKept) },
+      ...(cashReserve > savingsTyped
+        ? [{ key: "reserveTyped", label: S.reserveTyped, value: money(cashReserve) }]
+        : []),
+    ],
+  };
 }
 
 /**
@@ -473,4 +619,98 @@ export function onlyTried(
 ): boolean {
   const first = trials[0];
   return first !== undefined && valuesKey(first.before) === valuesKey(initial);
+}
+
+/** The editable fields a whole-tool limit can name, by their `fieldKey`. */
+export type LimitField =
+  | "income"
+  | "netIncome"
+  | "essentials"
+  | "buffer"
+  | "debts"
+  | "down"
+  | "reserve"
+  | "housingCosts"
+  | "targetPrice"
+  | "rate"
+  | "term";
+
+/**
+ * Every field is valid, and still the page cannot answer: the engine
+ * returned no result ("model"), or a figure it would print — or a value it
+ * echoes back — is past what the formatters show ("display", 10^18).
+ */
+export type AffordabilityLimit = {
+  kind: "model" | "display";
+  /** The fields to go and change, in form order; never empty. */
+  fields: readonly LimitField[];
+};
+
+/**
+ * ONE LIMIT FOR THE WHOLE COMMERCIAL TOOL (release repair, 2026-09-30).
+ *
+ * Null when the input is syntactically invalid (the fields say so
+ * themselves) or when every printed figure is showable — including the
+ * ordinary "limited" and "no feasible price" states, which stay the status
+ * adapter's. No ceiling is imposed on the engine and nothing is recomputed:
+ * this only reads the engine's own output and the values the page echoes.
+ *
+ * THE FIELDS NAMED: every value in use that is itself too large to print.
+ * When none is, the figure grew from ordinary-looking inputs, so the fields
+ * the price is built from are named instead — the monthly income the budget
+ * comes from, the savings, and the term.
+ */
+export function affordabilityLimit({
+  input,
+  result,
+  targetPrice,
+}: {
+  input: AffordabilityInput | null;
+  result: AffordabilityResult | null;
+  /** The parsed target, null when blank or invalid. */
+  targetPrice: number | null;
+}): AffordabilityLimit | null {
+  if (input === null) return null;
+  const household = input.mode === "household";
+  // Only the values the engine reads in this mode: the household fields are
+  // not rendered, and not used, in the credit-ceiling mode.
+  const inUse: [LimitField, number | null | undefined][] = [
+    ["income", input.monthlyIncome],
+    ["debts", input.monthlyDebts],
+    ["netIncome", household ? input.monthlyNetIncome : undefined],
+    ["essentials", household ? input.essentialExpenses : undefined],
+    ["buffer", household ? input.monthlyBuffer : undefined],
+    ["down", input.downPayment],
+    ["reserve", input.cashReserve],
+    ["rate", input.annualRatePercent],
+    ["term", input.termMonths],
+    ["targetPrice", targetPrice],
+    ["housingCosts", input.monthlyHousingCosts],
+  ];
+  const oversized = inUse
+    .filter(([, value]) => value !== null && value !== undefined && !displayable([value]))
+    .map(([field]) => field);
+  const drivers: LimitField[] = [household ? "netIncome" : "income", "down", "term"];
+  const fields = oversized.length > 0 ? oversized : drivers;
+
+  if (result === null) return { kind: "model", fields };
+  const printed = [
+    result.maxPrice,
+    result.maxLoan,
+    result.affordablePrincipalInterest,
+    result.expectedPrincipalInterest,
+    result.paymentSupportedLoan,
+    result.usableCash,
+    result.purchaseCosts,
+    result.cashToPrice,
+    result.assumedRatioCeiling,
+    result.housingLimit,
+    result.totalDebtLimit,
+    result.affordableHousingPayment,
+    ...(result.householdResidual === null ? [] : [result.householdResidual]),
+    // The gap the status card and the target row print.
+    ...(targetPrice === null ? [] : [targetPrice - result.maxPrice]),
+  ];
+  if (oversized.length > 0 || !displayable(printed)) return { kind: "display", fields };
+  return null;
 }

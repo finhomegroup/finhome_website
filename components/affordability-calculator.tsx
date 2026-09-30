@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { displayable } from "@/components/calc/accumulation";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
@@ -27,12 +28,15 @@ import {
 } from "@/components/calc/result-status";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import {
-  illustrationParts,
+  affordabilityLimit,
+  affordabilityScene,
   makeTrial,
   onlyTried,
   sharedBlock,
   trialAvailability,
   trialImpactView,
+  type AffordabilityLimit,
+  type LimitField,
   type TrialFacts,
   type TrialKey,
 } from "@/components/affordability-learning";
@@ -41,6 +45,7 @@ import {
   useAffordabilityLearning,
 } from "@/components/affordability-learning-panel";
 import { AFFORDABILITY as C } from "@/content/calculators/affordability";
+import { AFFORDABILITY_LEARNING } from "@/content/calculators/affordability-learning";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 // The NOXH route's three overridden help strings, and the statutory figures
 // they describe. Only reached when `programme === "social-housing"`.
@@ -78,6 +83,9 @@ import {
   parseDecimal,
   parseMoney,
 } from "@/lib/calc/number";
+
+/** The commercial route's whole-tool limit copy. */
+const LIMITS = AFFORDABILITY_LEARNING.limits;
 
 /** Full đồng with the currency mark, shared by the two components here. */
 function money(figure: number | null | undefined) {
@@ -243,6 +251,41 @@ export function affordabilityStatusView(status: AffordabilityStatus): StatusView
     }
   })();
   return { ...view, label: view.label ?? F.statusLabels[toneOf(view)] };
+}
+
+/** Each field a limit can name, by the label its control carries. */
+const LIMIT_FIELD_LABEL: Record<LimitField, string> = {
+  income: C.form.incomeLabel,
+  netIncome: C.form.netIncomeLabel,
+  essentials: C.form.essentialsLabel,
+  buffer: C.form.bufferLabel,
+  debts: C.form.debtsLabel,
+  down: C.form.downLabel,
+  reserve: C.form.reserveLabel,
+  housingCosts: C.form.housingCostsLabel,
+  targetPrice: C.form.targetLabel,
+  rate: C.form.rateLabel,
+  term: C.form.termLabel,
+};
+
+/**
+ * The card for a whole-tool limit (`affordabilityLimit`): neutral, no figure,
+ * the reason once, and one jump per field it names — each a pilot-gated
+ * `fieldKey` below, so every jump lands (disclosures open themselves).
+ */
+export function affordabilityLimitView(limit: AffordabilityLimit): StatusView {
+  const copy = LIMITS[limit.kind];
+  return {
+    tone: "unknown",
+    label: LIMITS.label,
+    title: copy.title,
+    reasons: [
+      fill(copy.reason, {
+        fields: limit.fields.map((field) => `“${LIMIT_FIELD_LABEL[field]}”`).join(LIMITS.join),
+      }),
+    ],
+    actions: limit.fields.map((field) => ({ field, label: LIMIT_FIELD_LABEL[field] })),
+  };
 }
 
 /**
@@ -703,18 +746,39 @@ export function AffordabilityCalculator({
       }
     : null;
 
-  const result: AffordabilityResult | null =
+  const computed: AffordabilityResult | null =
     input === null ? null : computeAffordability(input);
+
+  /*
+   * ONE LIMIT FOR THE WHOLE TOOL, commercial route only (release repair,
+   * 2026-09-30). Every field valid, and still no answer the page can print:
+   * the engine returned none, or a figure it would show is ≥ 10^18. Then the
+   * engine's output is withheld from EVERY presentation below — rows, pinned
+   * answer, charts, details, the scene, the tries, the live sentence and the
+   * comparison — exactly as on invalid input, and the card says why with a
+   * jump to each field. No ceiling is added to the engine; an ordinary valid
+   * result passes through unchanged. `nha-o-xa-hoi` never computes a limit,
+   * so `result` there is the engine's, as before.
+   */
+  const limit = pilot
+    ? affordabilityLimit({ input, result: computed, targetPrice })
+    : null;
+  const result = limit === null ? computed : null;
 
   /*
    * THE SEMANTIC STATE, once: the card, the pinned summary, the settled
    * announcement and the target figure all read `status`. The hook runs on
    * both routes (a hook cannot be conditional); only the pilot uses it.
    */
-  const status = pilot
+  const status = pilot && limit === null
     ? affordabilityStatus({ input, result, targetPrice, targetInvalid })
     : null;
-  const statusView = status === null ? null : affordabilityStatusView(status);
+  const statusView =
+    limit !== null
+      ? affordabilityLimitView(limit)
+      : status === null
+        ? null
+        : affordabilityStatusView(status);
 
   /** What a try may assume about the form on screen. */
   const trialFacts: TrialFacts = {
@@ -724,6 +788,8 @@ export function AffordabilityCalculator({
     down,
     reserve,
     raw: { reserve: fields.values.reserve, rate: fields.values.rate },
+    // Said instead of "có ô lỗi": the fields are all valid.
+    unsupported: limit === null ? null : LIMITS.blocked,
   };
   const latestTrial = learning.trials.at(-1) ?? null;
   // The latest try against the result on screen: because it holds, this IS
@@ -798,7 +864,11 @@ export function AffordabilityCalculator({
     {
       key: "housingCosts",
       label: C.form.housingCostsLabel,
-      value: money(housingCosts ?? 0) ?? "",
+      // Commercial only: `nha-o-xa-hoi` keeps its base summary unchanged.
+      value:
+        !pilot || displayable([housingCosts ?? 0])
+          ? (money(housingCosts ?? 0) ?? "")
+          : LIMITS.settingTooLarge,
       active: (housingCosts ?? 0) > 0,
     },
     {
@@ -854,7 +924,9 @@ export function AffordabilityCalculator({
           : C.form.bindingHousing;
 
   return (
-    <CalculatorCard>
+    // Compact phone padding on the pilot route only (as `vay-mua-nha` and
+    // `vay-mua-xe`); `nha-o-xa-hoi` keeps the shared default.
+    <CalculatorCard compact={pilot}>
       {/* A try is not the reader's input: the example stays labelled as one
           until they type. */}
       <ExampleNotice
@@ -862,27 +934,6 @@ export function AffordabilityCalculator({
         onReset={reset}
         className="mb-6"
       />
-
-      {/* Before the form, so a phone reaches the verdict and the tries
-          without scrolling past fourteen fields. The card renders here and
-          nowhere else on this route. */}
-      {statusView !== null ? (
-        <AffordabilityLearningPanel
-          status={statusView}
-          formId={ids.form}
-          sample={pristine || onlyTried(learning.trials, initial)}
-          availability={{
-            reserve: trialAvailability("reserve", trialFacts),
-            rate: trialAvailability("rate", trialFacts),
-          }}
-          sharedReason={sharedBlock(trialFacts)}
-          impact={trialImpact}
-          illustration={illustrationParts(result, input?.cashReserve ?? null)}
-          canUndo={latestTrial !== null}
-          onTry={tryKey}
-          onUndo={undoTrial}
-        />
-      ) : null}
 
       <CalculatorLayout
         formId={ids.form}
@@ -912,6 +963,7 @@ export function AffordabilityCalculator({
                 help={C.form.incomeHelp}
                 error={C.form.incomeInvalid}
                 invalid={incomeInvalid}
+                fieldKey={pilot ? "income" : undefined}
               />
               <NumberField
                 {...bind("debts")}
@@ -936,6 +988,7 @@ export function AffordabilityCalculator({
                   help={C.form.netIncomeHelp}
                   error={C.form.netIncomeInvalid}
                   invalid={netIncomeInvalid}
+                  fieldKey={pilot ? "netIncome" : undefined}
                 />
                 <NumberField
                   {...bind("essentials")}
@@ -987,6 +1040,7 @@ export function AffordabilityCalculator({
                 help={noxh ? N.rateHelp : C.form.rateHelp}
                 error={C.form.rateInvalid}
                 invalid={rateInvalid}
+                fieldKey={pilot ? "rate" : undefined}
               />
               <NumberField
                 {...bind("term")}
@@ -994,6 +1048,7 @@ export function AffordabilityCalculator({
                 help={noxh ? N.termHelp : C.form.termHelp}
                 error={C.form.termInvalid}
                 invalid={termInvalid}
+                fieldKey={pilot ? "term" : undefined}
               />
             </FieldGroup>
 
@@ -1035,6 +1090,7 @@ export function AffordabilityCalculator({
                 help={C.form.housingCostsHelp}
                 error={C.form.housingCostsInvalid}
                 invalid={housingCostsInvalid}
+                fieldKey={pilot ? "housingCosts" : undefined}
               />
               <NumberField
                 {...bind("housingRatio")}
@@ -1076,7 +1132,7 @@ export function AffordabilityCalculator({
             invalid={!usable || targetInvalid}
             answer={{
               label: C.form.maxPriceLabel,
-              value: money(result?.maxPrice),
+              value: limit !== null ? LIMITS.cta : money(result?.maxPrice),
               ...(statusView === null
                 ? {}
                 : {
@@ -1092,10 +1148,18 @@ export function AffordabilityCalculator({
               title={C.form.resultTitle}
               anchorId={ids.result}
               // No `status` card here on the commercial route: it renders
-              // once, in the "Thử một thay đổi" panel above the form. The
-              // settled sentence stays the ONE live region.
+              // once, in the "Thử một thay đổi" panel in the `learning` slot
+              // below. The settled sentence stays the ONE live region.
               announcement={statusView === null ? undefined : settled}
             >
+              {limit !== null ? (
+                // No rows at a limit: four "—" beside a named reason would
+                // still read as figures. The reason is the card's, below.
+                <p data-affordability-limit={limit.kind} className="text-sm leading-relaxed text-ink">
+                  {LIMITS.rows}
+                </p>
+              ) : (
+              <>
               {/* With a target entered, say BEFORE the figures that they belong
                   to the maximum reference price, not to that home. */}
               {targetPrice !== null ? (
@@ -1144,6 +1208,8 @@ export function AffordabilityCalculator({
                   value={money(status.headroom)}
                 />
               ) : null}
+              </>
+              )}
             </ResultGroup>
 
             {/* The notices that qualify the figure sit immediately under it,
@@ -1234,6 +1300,7 @@ export function AffordabilityCalculator({
                 answer, then the ratio ceiling, the household residual and the
                 budget it was bound by — the figures the row asks to be made
                 clear, read without opening anything. */}
+            {limit === null ? (
             <DetailFigures
               className="mt-6"
               title={C.form.monthlyDetailTitle}
@@ -1272,9 +1339,15 @@ export function AffordabilityCalculator({
                 },
               ]}
             />
+            ) : null}
           </>
         }
         chart={
+          limit !== null ? (
+            <p data-affordability-limit-chart={limit.kind} className="text-sm leading-relaxed text-ink-2">
+              {LIMITS.chart}
+            </p>
+          ) : (
           <>
             {/* The comparison the reader asked for, first — only when there
                 is a home to compare with. */}
@@ -1292,6 +1365,38 @@ export function AffordabilityCalculator({
               <BarChart model={priceChart} />
             </ChartFigure>
           </>
+          )
+        }
+        // The learning panel, in the opt-in slot: AFTER the answer rows and
+        // their notices, before the actions and the charts, in one DOM order
+        // at every width. It holds the ONE status card on this route; the
+        // result group keeps the one live sentence. Commercial route only:
+        // `nha-o-xa-hoi` has no status view and renders no panel.
+        learning={
+          statusView !== null ? (
+            <AffordabilityLearningPanel
+              status={statusView}
+              formId={ids.form}
+              sample={pristine || onlyTried(learning.trials, initial)}
+              availability={{
+                reserve: trialAvailability("reserve", trialFacts),
+                rate: trialAvailability("rate", trialFacts),
+              }}
+              sharedReason={sharedBlock(trialFacts)}
+              impact={trialImpact}
+              // Each reading is 100% of its own named whole — the price, the
+              // savings — from the result on screen; what a press did is the
+              // impact block's before/after bars.
+              scene={
+                limit !== null
+                  ? { kind: limit.kind }
+                  : affordabilityScene(result, input?.cashReserve ?? null, input?.downPayment ?? null)
+              }
+              canUndo={latestTrial !== null}
+              onTry={tryKey}
+              onUndo={undoTrial}
+            />
+          ) : undefined
         }
         actions={actions}
         nextSteps={nextSteps}
@@ -1329,6 +1434,21 @@ export function AffordabilityCalculator({
                     {C.form.compareCaptureHint}
                   </p>
                 </>
+              ) : limit !== null ? (
+                // The mốc stays; the current side is a limit, not a broken
+                // field, and prints nothing to compare with.
+                <>
+                  <p data-affordability-limit-compare="true" className="text-sm leading-relaxed text-ink-2">
+                    {LIMITS.compare}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSnapshot(null)}
+                    className={`mt-2 text-sm font-medium text-brand-green-ink underline-offset-4 hover:underline ${FH_POINTER}`}
+                  >
+                    {C.form.compareClearAction}
+                  </button>
+                </>
               ) : (
                 <>
                   <AffordabilityScenarioComparison
@@ -1353,6 +1473,7 @@ export function AffordabilityCalculator({
                 payment could service, what is actually used, and what caps it.
                 The monthly block moved up; this one answers a different
                 question and stays optional. */}
+            {limit === null ? (
             <DetailDisclosure
               title={C.form.detailTitle}
               hint={C.form.detailHint}
@@ -1404,6 +1525,7 @@ export function AffordabilityCalculator({
                 ]}
               />
             </DetailDisclosure>
+            ) : null}
           </>
         }
       />

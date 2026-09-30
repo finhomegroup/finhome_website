@@ -10,7 +10,8 @@
 import { describe, expect, it } from "vitest";
 import {
   heldTrials,
-  illustrationParts,
+  affordabilityLimit,
+  affordabilityScene,
   INITIAL_LEARNING,
   learningReducer,
   makeTrial,
@@ -525,37 +526,264 @@ describe("overflow-safe increments", () => {
   });
 });
 
-describe("the tray illustration's legend", () => {
-  it("is the engine's own money to price, loan and reserve — rounded, never recomputed", () => {
-    const input = read({ ...SHIPPED_VALUES, reserve: "50.000.000" });
-    const result = computeAffordability(input)!;
-    const parts = illustrationParts(result, input.cashReserve!);
-    expect(parts.map((part) => [part.key, part.value])).toEqual([
-      ["own", rounded(result.cashToPrice)],
-      ["loan", rounded(result.maxLoan)],
-      ["reserve", rounded(50_000_000)],
-    ]);
-    // Own money to the price plus the loan is the price: the trays add up.
-    expect(result.cashToPrice + result.maxLoan).toBeCloseTo(result.maxPrice, 0);
-    expect(parts.map((part) => part.label)).toEqual([
-      L.illustration.parts.own.label,
-      L.illustration.parts.loan.label,
-      L.illustration.parts.reserve.label,
-    ]);
+describe("the scene's two readings, each on a named whole (F1)", () => {
+  const sceneOf = (values: FormValues) => {
+    const input = read(values);
+    const scene = affordabilityScene(computeAffordability(input), input.cashReserve ?? null, input.downPayment ?? null);
+    if (scene.kind !== "ready") throw new Error(scene.kind);
+    return scene;
+  };
+  const sum = (...parts: number[]) => parts.reduce((a, b) => a + b, 0);
+
+  it("reading 1: 100% is the price = own money into it + the loan, and nothing else", () => {
+    const values = { ...SHIPPED_VALUES, reserve: "50.000.000", purchaseCost: "3" };
+    const result = engine(values);
+    const { price, exact } = sceneOf(values);
+    expect(price.wholeText).toBe(rounded(result.maxPrice));
+    expect(price.ownText).toBe(rounded(result.cashToPrice));
+    expect(price.loanText).toBe(rounded(result.maxLoan));
+    expect(price.ownPercent).toBeCloseTo((result.cashToPrice / result.maxPrice) * 100, 9);
+    expect(price.loanPercent).toBeCloseTo((result.maxLoan / result.maxPrice) * 100, 9);
+    expect(price.ownPercent + price.loanPercent).toBeCloseTo(100, 6);
+    // The reserve and the fees are not in the price reading at all.
+    expect(Object.keys(price).join()).not.toMatch(/reserve|fee/i);
+    expect(exact.find((e) => e.key === "price")!.value).toBe(money(result.maxPrice));
   });
 
-  it("carries no figure without a readable price", () => {
-    const limited = computeAffordability(read({ ...SHIPPED_VALUES, essentials: "" }))!;
+  it("reading 2: 100% is the savings = into the price + fees + unused + the reserve kept", () => {
+    const values = { ...SHIPPED_VALUES, reserve: "50.000.000", purchaseCost: "3" };
+    const result = engine(values);
+    const { savings } = sceneOf(values);
+    expect(savings).not.toBeNull();
+    const s = savings!;
+    expect(result.purchaseCosts).toBeGreaterThan(0);
+    // The whole is the savings TYPED: usable (600 − 50) + the 50 kept back.
+    expect(s.wholeText).toBe(rounded(600_000_000));
+    expect(s.toPricePercent).toBeCloseTo((result.cashToPrice / 600_000_000) * 100, 9);
+    expect(s.feesPercent).toBeCloseTo((result.purchaseCosts / 600_000_000) * 100, 9);
+    expect(s.reservePercent).toBeCloseTo((50_000_000 / 600_000_000) * 100, 9);
+    expect(sum(s.toPricePercent, s.feesPercent, s.unusedPercent, s.reservePercent)).toBeCloseTo(100, 6);
+    expect(s.reserveText).toBe(rounded(50_000_000));
+    expect(s.reserveOverSavings).toBe(false);
+  });
+
+  it("+50 triệu reserve: the savings whole holds, the kept part grows, the price whole shrinks", () => {
+    const after = { ...SHIPPED_VALUES, reserve: "50.000.000" };
+    const before = sceneOf(SHIPPED_VALUES);
+    const now = sceneOf(after);
+    expect(engine(after).maxPrice).toBeLessThan(engine(SHIPPED_VALUES).maxPrice);
+    expect(now.savings!.wholeText).toBe(before.savings!.wholeText);
+    expect(before.savings!.reservePercent).toBe(0);
+    expect(now.savings!.reservePercent).toBeCloseTo((50 / 600) * 100, 9);
+    expect(now.savings!.toPricePercent).toBeLessThan(before.savings!.toPricePercent);
+    expect(now.price.wholeText).not.toBe(before.price.wholeText);
+  });
+
+  it("a higher rate while cash binds leaves both readings where they were", () => {
+    const cashBound = { ...SHIPPED_VALUES, down: "100.000.000", reserve: "0", ltv: "80", rate: "9,5" };
+    const higher = { ...cashBound, rate: "10,5" };
+    expect(engine(higher).priceBinding).toBe("financing");
+    const a = sceneOf(cashBound);
+    const b = sceneOf(higher);
+    expect(b.price.ownPercent).toBeCloseTo(a.price.ownPercent, 9);
+    expect(b.price.wholeText).toBe(a.price.wholeText);
+    expect(b.savings!.toPricePercent).toBeCloseTo(a.savings!.toPricePercent, 9);
+  });
+
+  it("the reserve all kept: the whole savings bar is the reserve; the price is the loan", () => {
+    const values = { ...SHIPPED_VALUES, reserve: "600.000.000" };
+    const result = engine(values);
+    expect(result.usableCash).toBe(0);
+    const scene = sceneOf(values);
+    expect(scene.price.loanPercent).toBeCloseTo(100, 9);
+    expect(scene.savings!.reservePercent).toBeCloseTo(100, 9);
+    expect(scene.savings!.toPricePercent).toBe(0);
+    expect(scene.savings!.reserveOverSavings).toBe(false);
+    // A reserve typed ABOVE the savings keeps all of them, and says so.
+    const over = sceneOf({ ...SHIPPED_VALUES, reserve: "700.000.000" });
+    expect(over.savings!.reserveOverSavings).toBe(true);
+    expect(over.savings!.reservePercent).toBeCloseTo(100, 9);
+    expect(over.savings!.wholeText).toBe(rounded(600_000_000));
+  });
+
+  it("a reserve above the savings: the component is what is kept, the typed figure apart", () => {
+    // Cash 600M, reserve 700M, fees 0, LTV 100: the loan still sets a price.
+    const values = { ...SHIPPED_VALUES, reserve: "700.000.000", purchaseCost: "0", ltv: "100" };
+    const result = engine(values);
+    expect(result.maxPrice).toBeGreaterThan(0);
+    const { savings, exact } = sceneOf(values);
+    const s = savings!;
+    expect(s.reserveText).toBe(rounded(600_000_000));
+    expect(s.reserveTypedText).toBe(rounded(700_000_000));
+    expect(s.wholeText).toBe(rounded(600_000_000));
+    // The parts reconcile to the whole in đồng: nothing usable, all kept.
+    const row = (key: string) => exact.find((e) => e.key === key)?.value;
+    expect(row("reserve")).toBe(money(600_000_000));
+    expect(row("reserveTyped")).toBe(money(700_000_000));
+    expect(result.usableCash).toBe(0);
+    expect(result.cashToPrice + result.purchaseCosts).toBeCloseTo(0, 6);
+    expect(s.toPricePercent + s.feesPercent + s.unusedPercent + s.reservePercent).toBeCloseTo(100, 9);
+    // No typed-reserve row when the reserve fits inside the savings.
+    expect(sceneOf({ ...SHIPPED_VALUES, reserve: "50.000.000" }).exact.some((e) => e.key === "reserveTyped")).toBe(false);
+  });
+
+  it("no savings at all: no second bar to divide", () => {
+    expect(sceneOf({ ...SHIPPED_VALUES, down: "0" }).savings).toBeNull();
+  });
+
+  it("the credit-ceiling mode reads the same two wholes", () => {
+    const values = { ...SHIPPED_VALUES, mode: "ceiling", essentials: "" };
+    const result = engine(values);
+    expect(result.conclusionLimited).toBe(false);
+    const scene = sceneOf(values);
+    expect(scene.price.wholeText).toBe(rounded(result.maxPrice));
+    expect(scene.price.ownPercent + scene.price.loanPercent).toBeCloseTo(100, 6);
+  });
+
+  it("draws no figure without a readable price: unknown, limited or none", () => {
+    const limited = engine({ ...SHIPPED_VALUES, essentials: "" });
     expect(limited.conclusionLimited).toBe(true);
-    const cases = [
-      illustrationParts(null, 0),
-      illustrationParts(limited, 0),
-      illustrationParts({ ...limited, conclusionLimited: false, maxPrice: 0 }, 0),
-      illustrationParts(computeAffordability(read(SHIPPED_VALUES)), null),
-    ];
-    for (const parts of cases) {
-      expect(parts).toHaveLength(3);
-      expect(parts.every((part) => part.value === null)).toBe(true);
+    expect(affordabilityScene(null, 0, 0)).toEqual({ kind: "unknown" });
+    expect(affordabilityScene(engine(SHIPPED_VALUES), null, 600_000_000)).toEqual({ kind: "unknown" });
+    expect(affordabilityScene(limited, 0, 600_000_000)).toEqual({ kind: "limited" });
+    expect(affordabilityScene({ ...limited, conclusionLimited: false, maxPrice: 0 }, 0, 600_000_000)).toEqual({
+      kind: "none",
+    });
+  });
+
+  it("draws nothing past the display limit: a price, a typed reserve or the savings ≥ 10^18 ₫", () => {
+    const shipped = engine(SHIPPED_VALUES);
+    expect(affordabilityScene({ ...shipped, maxPrice: 1e19 }, 0, 600_000_000)).toEqual({ kind: "display" });
+    expect(affordabilityScene(shipped, 1e19, 600_000_000)).toEqual({ kind: "display" });
+    expect(affordabilityScene({ ...shipped, usableCash: 1e19 }, 0, 1e19)).toEqual({ kind: "display" });
+    // Through the real engine and parsers: a typed reserve of 10^19 ₫ is a
+    // valid field, a real loan-only price, and no drawable figure.
+    const values = { ...SHIPPED_VALUES, reserve: "10.000.000.000.000.000.000" };
+    const huge = engine(values);
+    expect(huge.maxPrice).toBeGreaterThan(0);
+    expect(affordabilityScene(huge, read(values).cashReserve ?? null, read(values).downPayment ?? null)).toEqual({
+      kind: "display",
+    });
+    // Just under the limit still draws.
+    expect(affordabilityScene(shipped, 9e17, 1e18).kind).toBe("ready");
+  });
+
+  it("cash only: a real price with no loan is named — a 0% maximum, or no month left to repay", () => {
+    const ltv = sceneOf({ ...SHIPPED_VALUES, ltv: "0" });
+    expect(ltv.noLoan).toBe("ltv");
+    expect(ltv.price.ownPercent).toBeCloseTo(100, 9);
+    expect(ltv.price.loanPercent).toBe(0);
+    // Net 44 − essentials 36 − debts 5 − buffer 3 = 0 triệu a month.
+    const noMonth = { ...SHIPPED_VALUES, essentials: "36.000.000" };
+    expect(engine(noMonth).maxLoan).toBeLessThan(0.5);
+    expect(engine(noMonth).maxPrice).toBeGreaterThan(0);
+    expect(sceneOf(noMonth).noLoan).toBe("capacity");
+    // With a loan, nothing is said.
+    expect(sceneOf(SHIPPED_VALUES).noLoan).toBeNull();
+  });
+});
+
+describe("the commercial-only impact (release extraction)", () => {
+  it("carries no instalment line and no instalment exact row", () => {
+    const trial = press("rate", SHIPPED_VALUES);
+    const after = engine({ ...SHIPPED_VALUES, ...trial.after });
+    const impact = trialImpactView(trial, after, "Cần lưu ý");
+    expect(Object.keys(impact)).not.toContain("paymentLine");
+    expect(impact.trialLabel).toBe(L.trials.rate.label);
+    expect(impact.exact.rows.map((row) => row.label)).not.toContain("Trả gốc và lãi mỗi tháng");
+  });
+
+  it("blocks on the commercial reasons only", () => {
+    expect(sharedBlock(factsOf(SHIPPED_VALUES, { usable: false }))).toBe(L.blocked.invalid);
+    expect(sharedBlock(factsOf(SHIPPED_VALUES, { targetInvalid: true }))).toBe(L.blocked.targetInvalid);
+    expect(sharedBlock(factsOf(SHIPPED_VALUES, { limited: true }))).toBe(L.blocked.limited);
+    expect(sharedBlock(factsOf(SHIPPED_VALUES))).toBeNull();
+  });
+});
+
+describe("the whole-tool limit (commercial, 2026-09-30)", () => {
+  const HUGE = "10.000.000.000.000.000.000"; // 10^19 ₫
+  const limitOf = (values: FormValues, targetPrice: number | null = null) => {
+    const input = read(values);
+    return affordabilityLimit({ input, result: computeAffordability(input), targetPrice });
+  };
+
+  it("is null for the example and for every ordinary state the status adapter owns", () => {
+    expect(limitOf(SHIPPED_VALUES)).toBeNull();
+    // Missing essentials: an upper bound, said by the status card.
+    expect(limitOf({ ...SHIPPED_VALUES, essentials: "" })).toBeNull();
+    // No feasible price: 0 is a real, printable answer.
+    const none = { ...SHIPPED_VALUES, down: "0", debts: "25.000.000" };
+    expect(engine(none).maxPrice).toBe(0);
+    expect(limitOf(none)).toBeNull();
+    // Syntactically invalid input never reaches it.
+    expect(affordabilityLimit({ input: null, result: null, targetPrice: null })).toBeNull();
+  });
+
+  it("names the typed value that cannot be printed: savings, reserve, target, housing costs", () => {
+    expect(limitOf({ ...SHIPPED_VALUES, down: HUGE })).toEqual({ kind: "display", fields: ["down"] });
+    expect(limitOf({ ...SHIPPED_VALUES, reserve: HUGE })).toEqual({ kind: "display", fields: ["reserve"] });
+    expect(limitOf({ ...SHIPPED_VALUES, housingCosts: HUGE })).toEqual({
+      kind: "display",
+      fields: ["housingCosts"],
+    });
+    expect(limitOf(SHIPPED_VALUES, 1e19)).toEqual({ kind: "display", fields: ["targetPrice"] });
+  });
+
+  it("a price derived past 10^18 from printable inputs names the fields the price is built from", () => {
+    const values = { ...SHIPPED_VALUES, down: "999.999.999.000.000.000" };
+    const result = engine(values);
+    expect(result.maxPrice).toBeGreaterThanOrEqual(1e18);
+    expect(limitOf(values)).toEqual({ kind: "display", fields: ["netIncome", "down", "term"] });
+    // The credit-ceiling mode builds its budget from the gross income.
+    expect(limitOf({ ...values, mode: "ceiling" })).toEqual({
+      kind: "display",
+      fields: ["income", "down", "term"],
+    });
+  });
+
+  it("a finite input the engine returns no result for is a model limit, not an input error", () => {
+    const values = { ...SHIPPED_VALUES, mode: "ceiling", income: `1${"0".repeat(308)}` };
+    const input = read(values);
+    expect(Number.isFinite(input.monthlyIncome)).toBe(true);
+    expect(computeAffordability(input)).toBeNull();
+    expect(limitOf(values)).toEqual({ kind: "model", fields: ["income"] });
+  });
+
+  it("does not name a household field the credit-ceiling mode neither shows nor uses", () => {
+    const values = { ...SHIPPED_VALUES, mode: "ceiling", essentials: HUGE, buffer: HUGE };
+    expect(limitOf(values)).toBeNull();
+    expect(limitOf({ ...values, mode: "household" })?.fields).toEqual(["essentials", "buffer"]);
+  });
+
+  it("blocks both tries with its own reason, before the input-error reason", () => {
+    const facts = factsOf(SHIPPED_VALUES, { usable: false, unsupported: L.limits.blocked });
+    expect(sharedBlock(facts)).toBe(L.limits.blocked);
+    for (const key of ["reserve", "rate"] as const) {
+      expect(trialAvailability(key, facts)).toEqual({ enabled: false, reason: L.limits.blocked });
+      expect(
+        makeTrial({ key, values: SHIPPED_VALUES, facts, revision: 0, result: engine(SHIPPED_VALUES), label: "x" }),
+      ).toBeNull();
+    }
+  });
+
+  it("a press never writes a value the page could not print", () => {
+    // 999.999.999.950.000.000 + 50 triệu = 10^18: past the money formatter.
+    const values: FormValues = { ...SHIPPED_VALUES, down: HUGE, reserve: "999.999.999.950.000.000" };
+    const facts = factsOf(values, { raw: { reserve: values.reserve, rate: values.rate } });
+    expect(trialAvailability("reserve", facts)).toEqual({ enabled: false, reason: L.blocked.unrepresentable });
+    // The ordinary example stays pressable.
+    const open = factsOf(SHIPPED_VALUES, { raw: { reserve: SHIPPED_VALUES.reserve, rate: SHIPPED_VALUES.rate } });
+    expect(trialAvailability("reserve", open)).toEqual({ enabled: true });
+    expect(trialAvailability("rate", open)).toEqual({ enabled: true });
+  });
+
+  it("a valid press from a printable state stays printable (price and payment only fall)", () => {
+    const values = { ...SHIPPED_VALUES, down: "900.000.000.000.000.000" };
+    expect(limitOf(values)).toBeNull();
+    for (const key of ["reserve", "rate"] as const) {
+      const trial = press(key, values);
+      expect(limitOf({ ...values, ...trial.after })).toBeNull();
     }
   });
 });
