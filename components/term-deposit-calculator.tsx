@@ -13,6 +13,27 @@ import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { onlyTried, useTrialStack } from "@/components/calc/learning-trials";
+import { DepositLearningPanel } from "@/components/deposit-learning-panel";
+import {
+  DATE_TRIAL_KEYS,
+  TERM_TRIAL_KEYS,
+  dateText,
+  datesDepositView,
+  datesTargetBlocked,
+  depositImpactView,
+  depositTrialAvailability,
+  makeDepositTrial,
+  planDisplayable,
+  termDepositView,
+  termDisplayable,
+  trialLabel,
+  visibleTrialKeys,
+  type DepositSnapshot,
+  type DepositTrialKey,
+} from "@/components/deposit-learning";
+import { DEPOSIT_LEARNING } from "@/content/calculators/deposit-learning";
+import { fill } from "@/lib/calc/charts/labels";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import {
@@ -27,6 +48,7 @@ import type { CalendarDate } from "@/lib/calc/dates";
 import {
   computeTermDeposit,
   MAX_DEPOSIT_CYCLES,
+  MAX_DEPOSIT_TOTAL_MONTHS,
   type DepositPayout,
 } from "@/lib/calc/term-deposit";
 import { planDeposit } from "@/lib/calc/deposit-plan";
@@ -92,25 +114,26 @@ export function TermDepositCalculator({
   // The second object formats while typing, by the grammar each key is PARSED
   // with below — see `FieldFormats`. The selects and the date parts format
   // nothing.
-  const fields = useCalcFields(
-    {
-      mode: C.form.defaultMode,
-      principal: C.form.defaultPrincipal,
-      rate: C.form.defaultRate,
-      term: C.form.defaultTerm,
-      payout: C.form.defaultPayout,
-      cycles: C.form.defaultCycles,
-      compound: C.form.defaultCompound,
-      demandRate: C.form.defaultDemandRate,
-      breakAfter: C.form.defaultBreak,
-      startDay: C.form.defaultStartDay,
-      startMonth: C.form.defaultStartMonth,
-      startYear: C.form.defaultStartYear,
-      needDay: C.form.defaultNeedDay,
-      needMonth: C.form.defaultNeedMonth,
-      needYear: C.form.defaultNeedYear,
-      renew: C.form.defaultRenew,
-    },
+  const initialValues = {
+    mode: C.form.defaultMode,
+    principal: C.form.defaultPrincipal,
+    rate: C.form.defaultRate,
+    term: C.form.defaultTerm,
+    payout: C.form.defaultPayout,
+    cycles: C.form.defaultCycles,
+    compound: C.form.defaultCompound,
+    demandRate: C.form.defaultDemandRate,
+    breakAfter: C.form.defaultBreak,
+    startDay: C.form.defaultStartDay,
+    startMonth: C.form.defaultStartMonth,
+    startYear: C.form.defaultStartYear,
+    needDay: C.form.defaultNeedDay,
+    needMonth: C.form.defaultNeedMonth,
+    needYear: C.form.defaultNeedYear,
+    renew: C.form.defaultRenew,
+  };
+  const raw = useCalcFields(
+    initialValues,
     {
       principal: "money",
       rate: "rate",
@@ -119,6 +142,30 @@ export function TermDepositCalculator({
       demandRate: "rate",
       breakAfter: "rate",
     },
+  );
+
+  /*
+   * THE CASH-EVENT TRIAL STACK (2026-09-29). A trial writes the page's own
+   * break month or need date through the RAW binding; every reader action —
+   * a keystroke, the mode switch, "Hôm nay" — goes through `fields` and
+   * retires every trial first, so no stale comparison survives.
+   */
+  const learning = useTrialStack<DepositTrialKey, DepositSnapshot>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initialValues) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          learning.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+  };
+  const pristine = (Object.keys(initialValues) as (keyof typeof initialValues)[]).every(
+    (key) => raw.values[key] === initialValues[key],
   );
 
   const byDates = fields.values.mode === "dates";
@@ -173,9 +220,22 @@ export function TermDepositCalculator({
         })
       : null;
 
-  // Every field is valid, but the term does not divide into whole payout
-  // periods — a product that does not exist rather than a bad entry.
-  const payoutMismatch = !byDates && fieldsUsable && result === null;
+  /*
+   * WHY a valid form has no result, named by cause (2026-09-29). This used to
+   * call every null a payout mismatch, but `computeTermDeposit` also returns
+   * null past its horizon and when a figure overflows. Presentation only:
+   * the divisibility and horizon tests restate the engine's own guards.
+   */
+  const payoutMonths = payout === "monthly" ? 1 : payout === "quarterly" ? 3 : (term ?? 1);
+  const nullCause =
+    !byDates && fieldsUsable && result === null && term !== null && cycles !== null
+      ? term % payoutMonths !== 0
+        ? ("payout" as const)
+        : term * cycles > MAX_DEPOSIT_TOTAL_MONTHS
+          ? ("horizon" as const)
+          : ("other" as const)
+      : null;
+  const payoutMismatch = nullCause === "payout";
 
   // The rollover choice is inert when interest has already been paid out.
   const compoundIgnored =
@@ -284,8 +344,134 @@ export function TermDepositCalculator({
     fields.bind("startDay").onValueChange(String(now.getDate()));
   };
 
+  // --- the cash-event panel: every figure from `result` or `plan` ---
+  const D = DEPOSIT_LEARNING;
+  const renew = fields.values.renew === "yes";
+  const termPrintable = termDisplayable(result, principal ?? 0);
+  const planPrintable = planDisplayable(plan);
+  const depositView = byDates
+    ? datesDepositView(plan, renew)
+    : termDepositView(result, {
+        principal: principal ?? 0,
+        termMonths: term ?? 0,
+        cycles: cycles ?? 1,
+        payout,
+        breakAfter,
+      });
+  /** The panel's reason for no figure — a bad field only when there is one. */
+  /*
+   * The DATE view's null, by cause: the engine's own term bound (shared with
+   * the months view as `MAX_DEPOSIT_TOTAL_MONTHS`) or, failing that, figures
+   * it could not compute — said as a possibility, never an invented cause.
+   */
+  const dateNullCause =
+    byDates && datesUsable && coreUsable && plan === null && !needBeforeStart
+      ? (term ?? 0) > MAX_DEPOSIT_TOTAL_MONTHS
+        ? ("term" as const)
+        : ("other" as const)
+      : null;
+  const dateTermLimitText = fill(C.form.dateTermLimitNotice, { limit: formatMoney(MAX_DEPOSIT_TOTAL_MONTHS, 0) });
+  const panelEmpty = byDates
+    ? !coreUsable || !datesUsable
+      ? { text: D.unknown, fix: true }
+      : needBeforeStart
+        ? { text: C.form.needBeforeStartNotice, fix: false }
+        : dateNullCause === "term"
+          ? { text: dateTermLimitText, fix: false }
+          : dateNullCause === "other"
+            ? { text: C.form.noResultNotice, fix: false }
+            : plan !== null && !planPrintable
+              ? { text: D.tooLarge, fix: false }
+              : { text: D.noResult, fix: false }
+    : !fieldsUsable
+      ? { text: D.unknown, fix: true }
+      : nullCause === "payout"
+        ? { text: C.form.payoutMismatchNotice, fix: false }
+        : nullCause === "horizon"
+          ? { text: fill(C.form.horizonLimitNotice, { limit: formatMoney(MAX_DEPOSIT_TOTAL_MONTHS, 0) }), fix: false }
+          : nullCause === "other"
+            ? { text: C.form.noResultNotice, fix: false }
+            : result !== null && !termPrintable
+              ? { text: D.tooLarge, fix: false }
+              : { text: D.noResult, fix: false };
+  // Why a trial is off. The dates presets need a readable deposit date and
+  // term; beyond that EACH preset is checked by running the engine on its own
+  // proposed need date (`datesTargetBlocked`) — so a need date before the
+  // deposit or past the supported terms is repairable, while an overflowing
+  // rate or an unsupported term, which no need date can fix, stays off.
+  const trialBlocked = byDates
+    ? !coreUsable || start.date === null
+      ? D.blocked.invalid
+      : null
+    : !fieldsUsable
+      ? D.blocked.invalid
+      : result === null
+        ? D.blocked.noResult
+        : !termPrintable
+          ? D.blocked.tooLarge
+          : null;
+  const trialCtx = {
+    termMonths: term ?? 0,
+    cycles: byDates ? 1 : (cycles ?? 1),
+    start: start.date,
+    blocked: trialBlocked,
+  };
+  const blockedFor = (key: DepositTrialKey): string | null =>
+    trialBlocked !== null
+      ? trialBlocked
+      : byDates && DATE_TRIAL_KEYS.includes(key) && start.date !== null
+        ? datesTargetBlocked(key, {
+            principal: principal as number,
+            annualRatePercent: rate as number,
+            earlyRatePercent: demandRate as number,
+            start: start.date,
+            termMonths: term as number,
+            renew,
+          })
+        : null;
+  const ctxFor = (key: DepositTrialKey) => ({ ...trialCtx, blocked: blockedFor(key) });
+  // Only real, distinct landmarks are rendered: no "tháng —" placeholder.
+  const trialKeys = visibleTrialKeys(byDates ? "dates" : "term", trialCtx);
+  const snapshot: DepositSnapshot = byDates
+    ? {
+        mode: "dates",
+        whenText: need.date === null ? "—" : dateText(need.date),
+        available: plan !== null && planPrintable ? plan.availableAtNeedDate : null,
+      }
+    : {
+        mode: "term",
+        whenText: breakRaw === "" ? D.impact.termNone : `tháng ${breakRaw}`,
+        available: null,
+      };
+  const latestTrial = learning.trials.at(-1) ?? null;
+  const trialImpact =
+    latestTrial !== null && depositView !== null ? depositImpactView(latestTrial, snapshot, depositView.state) : null;
+  const changedKeys = (before: Record<string, string>, after: Record<string, string>) =>
+    (Object.keys(after) as (keyof typeof initialValues)[]).filter((key) => before[key] !== after[key]);
+  const tryKey = (key: DepositTrialKey) => {
+    const trial = makeDepositTrial({ key, values: raw.values, revision: learning.state.revision, snapshot, ctx: ctxFor(key) });
+    if (trial === null) return;
+    learning.dispatch({ type: "apply", trial });
+    for (const field of changedKeys(trial.before, trial.after)) raw.bind(field).onValueChange(trial.after[field]);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    learning.dispatch({ type: "undo" });
+    for (const field of changedKeys(latestTrial.before, latestTrial.after)) {
+      raw.bind(field).onValueChange(latestTrial.before[field]);
+    }
+  };
+  const allKeys = [...TERM_TRIAL_KEYS, ...DATE_TRIAL_KEYS];
+  const trialLabels = Object.fromEntries(allKeys.map((key) => [key, trialLabel(key, trialCtx)])) as Record<
+    DepositTrialKey,
+    string
+  >;
+  const trialAvailability = Object.fromEntries(
+    allKeys.map((key) => [key, depositTrialAvailability(key, { ...ctxFor(key), values: raw.values })]),
+  ) as Record<DepositTrialKey, ReturnType<typeof depositTrialAvailability>>;
+
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <CalculatorLayout
         formId={FORM_ID}
         columns="split"
@@ -605,6 +791,18 @@ export function TermDepositCalculator({
                     {C.form.needBeforeStartNotice}
                   </p>
                 ) : null}
+                {/* The two remaining refusals, each with its recovery — the
+                    rows above are dashes, so the reason must be said here. */}
+                {dateNullCause === "term" ? (
+                  <p data-date-null="term" className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {dateTermLimitText}
+                  </p>
+                ) : null}
+                {dateNullCause === "other" ? (
+                  <p data-date-null="other" className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.noResultNotice}
+                  </p>
+                ) : null}
                 {byDates && !datesUsable ? (
                   <p className="mt-4 text-sm leading-relaxed text-ink-2">
                     {C.form.dateInvalidNotice}
@@ -633,6 +831,15 @@ export function TermDepositCalculator({
               </>
             ) : (
               <>
+                {/* Directly under the total it qualifies, before any other
+                    note: with interest paid out, the total is not one
+                    payment at the end. */}
+                {result !== null && payout !== "maturity" ? (
+                  <p data-paid-along-notice="true" className="mt-4 text-sm leading-relaxed text-ink-2">
+                    {C.form.paidAlongTotalNotice}
+                  </p>
+                ) : null}
+
                 {/* With interest paid out during the term, the early-exit
                     figures are interest EARNED, not a single payout — and this
                     tool does not model the bank's reconciliation of what it
@@ -665,8 +872,15 @@ export function TermDepositCalculator({
                       value={money(result.earlyForegoneInterest)}
                     />
                     <ResultRow
-                      label={C.form.earlyLossLabel}
-                      value={money(result.earlyLoss)}
+                      label={
+                        (result.earlyLoss ?? 0) < 0
+                          ? C.form.earlyGainLabel
+                          : result.earlyLoss === 0
+                            ? C.form.earlyNoDifferenceLabel
+                            : C.form.earlyLossLabel
+                      }
+                      // The magnitude under a name that carries the sign.
+                      value={money(result.earlyLoss === null ? null : Math.abs(result.earlyLoss))}
                     />
                   </ResultGroup>
                 ) : null}
@@ -675,6 +889,14 @@ export function TermDepositCalculator({
                   <p className="mt-4 text-sm leading-relaxed text-ink-3">
                     {C.form.payoutMismatchNotice}
                   </p>
+                ) : null}
+                {nullCause === "horizon" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-3">
+                    {fill(C.form.horizonLimitNotice, { limit: formatMoney(MAX_DEPOSIT_TOTAL_MONTHS, 0) })}
+                  </p>
+                ) : null}
+                {nullCause === "other" ? (
+                  <p className="mt-4 text-sm leading-relaxed text-ink-3">{C.form.noResultNotice}</p>
                 ) : null}
 
                 {compoundIgnored ? (
@@ -690,6 +912,24 @@ export function TermDepositCalculator({
               </>
             )}
           </>
+        }
+        learning={
+          <DepositLearningPanel
+            sample={pristine || onlyTried(learning.trials, initialValues)}
+            view={depositView}
+            emptyText={panelEmpty.text}
+            emptyFix={panelEmpty.fix}
+            formId={FORM_ID}
+            trial={{
+              keys: trialKeys,
+              labels: trialLabels,
+              availability: trialAvailability,
+              canUndo: latestTrial !== null,
+              onTry: tryKey,
+              onUndo: undoTrial,
+            }}
+            impact={trialImpact}
+          />
         }
         chart={
           byDates ? (
