@@ -3,44 +3,42 @@
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
+import { useTrialStack } from "@/components/calc/learning-trials";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import type { PercentMode } from "@/lib/calc/percent";
 import {
-  formatDecimal,
-  formatMoney,
-  formatPercent,
-  parseDecimal,
-  parseMoney,
-} from "@/lib/calc/number";
-import { computePercent, type PercentMode } from "@/lib/calc/percent";
+  moneyText,
+  numberText,
+  percentText,
+} from "@/components/arith-learning-display";
+import {
+  makePercentTrial,
+  PERCENT_MODES,
+  PERCENT_TRIAL_KEY,
+  percentAvailability,
+  percentEquation,
+  percentFormState,
+  percentImpact,
+  percentSnapshot,
+  type PercentSnapshot,
+  type PercentTrialKey,
+} from "@/components/percent-learning";
+import { PercentLearningPanel } from "@/components/percent-learning-panel";
 import { PERCENT as C } from "@/content/calculators/percent";
 
 /**
  * Which field keys and which parser each mode uses.
  *
- * Every mode owns its OWN pair of boxes. Sharing one pair would carry a
- * percentage typed in "of" mode into a box that means đồng in the next mode,
- * and the result would be wrong without looking wrong.
- *
- * `aIsPercent` also decides the parser: Vietnamese money grammar makes
- * "2.000.000" two million, while rate grammar makes "7,5" seven and a half.
- * See lib/calc/number.ts — mixing the two silently turns 500.000 into 500.
+ * Every mode owns its OWN pair of boxes; see `PERCENT_MODES` in
+ * `components/percent-learning.ts`, where the mapping and the per-field
+ * parser now live so the page and its living ruler read one state.
  */
-const MODES = {
-  of: { a: "ofPercent", b: "ofTotal", aIsPercent: true, bIsPercent: false },
-  share: { a: "sharePart", b: "shareWhole", aIsPercent: false, bIsPercent: false },
-  change: { a: "changeFrom", b: "changeTo", aIsPercent: false, bIsPercent: false },
-  // BOTH boxes are rates here, which is what makes "điểm phần trăm" a
-  // meaningful answer and money a meaningless one.
-  points: { a: "pointsFrom", b: "pointsTo", aIsPercent: true, bIsPercent: true },
-} as const satisfies Record<
-  PercentMode,
-  { a: string; b: string; aIsPercent: boolean; bIsPercent: boolean }
->;
+const MODES = PERCENT_MODES;
 
 /**
  * The two region ids the CTA contract runs on.
@@ -62,7 +60,7 @@ export const PERCENT_FORMATS = {
 } as const;
 
 export function PercentCalculator() {
-  const fields = useCalcFields({
+  const initial = {
     mode: "of",
     ofPercent: C.form.modes.of.defaultA,
     ofTotal: C.form.modes.of.defaultB,
@@ -72,7 +70,25 @@ export function PercentCalculator() {
     changeTo: C.form.modes.change.defaultB,
     pointsFrom: C.form.modes.points.defaultA,
     pointsTo: C.form.modes.points.defaultB,
-  }, PERCENT_FORMATS);
+  };
+  const raw = useCalcFields(initial, PERCENT_FORMATS);
+
+  // Every reader edit — the mode radio included — retires the trial stack;
+  // a press writes through the RAW binding.
+  const trials = useTrialStack<PercentTrialKey, PercentSnapshot>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initial) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          trials.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+  };
 
   const mode = fields.values.mode as PercentMode;
   const keys = MODES[mode];
@@ -81,13 +97,7 @@ export function PercentCalculator() {
   // The parser comes from the FIELD, per mode — docs §4. A rate box uses
   // `parseDecimal` (7,5 is seven and a half) and a money box uses
   // `parseMoney` (2.000.000 is two million); swapping them is a 1000× error.
-  const a = keys.aIsPercent
-    ? parseDecimal(fields.values[keys.a])
-    : parseMoney(fields.values[keys.a]);
-  const b = keys.bIsPercent
-    ? parseDecimal(fields.values[keys.b])
-    : parseMoney(fields.values[keys.b]);
-
+  //
   // "share" divides by b and "change" divides by a, so a zero in either
   // divisor is flagged on the field itself rather than silently blanking the
   // result.
@@ -96,13 +106,34 @@ export function PercentCalculator() {
   // introductory period — and the point difference from it is valid; only the
   // relative change is undefined, and the model returns that as null. Marking
   // the field invalid withheld both answers, which a review found on 0 → 7.
-  const aInvalid = a === null || (mode === "change" && a === 0);
-  const bInvalid = b === null || (mode === "share" && b === 0);
+  // All of it now in `percentFormState`, unchanged.
+  const state = percentFormState(fields.values);
+  const { aInvalid, bInvalid, result } = state;
 
-  const result =
-    aInvalid || bInvalid ? null : computePercent({ mode, a, b });
+  // Named past the print limit, never "— ₫".
+  const money = (value: number) => moneyText(value);
 
-  const money = (value: number) => `${formatMoney(value)} ₫`;
+  // The example is the example while the ACTIVE mode's two boxes are
+  // untouched; the mode is a question, not a figure.
+  const same = (v: Readonly<Record<string, string>>) =>
+    v[keys.a] === initial[keys.a] && v[keys.b] === initial[keys.b];
+  const sample =
+    same(fields.values) || (trials.trials[0] !== undefined && same(trials.trials[0].before));
+  const trialKey = PERCENT_TRIAL_KEY[mode];
+  const latest = trials.trials.at(-1) ?? null;
+  const now = percentSnapshot(state);
+  const impact = latest !== null && now !== null ? percentImpact(latest, now, mode) : null;
+  const tryKey = (key: PercentTrialKey) => {
+    const t = makePercentTrial(key, raw.values, trials.state.revision, state);
+    if (t === null) return;
+    trials.dispatch({ type: "apply", trial: t });
+    raw.bind(key).onValueChange(t.after[key]);
+  };
+  const undo = () => {
+    if (latest === null) return;
+    trials.dispatch({ type: "undo" });
+    raw.bind(latest.key).onValueChange(latest.before[latest.key]);
+  };
 
   /**
    * The one-line worked arithmetic original row 59 asks for.
@@ -111,29 +142,24 @@ export function PercentCalculator() {
    * and the answer cannot disagree — and formatted with the same formatters,
    * so the equation reads in the same grammar as the boxes above it.
    */
-  const equation =
-    result === null || a === null || b === null
-      ? null
-      : result.mode === "of"
-        ? `${formatDecimal(a)}% × ${formatMoney(b)} = ${formatMoney(result.amount)} ₫`
-        : result.mode === "share"
-          ? `${formatMoney(a)} ÷ ${formatMoney(b)} = ${formatPercent(result.sharePercent)}`
-          : result.mode === "change"
-            ? `(${formatMoney(b)} − ${formatMoney(a)}) ÷ ${formatMoney(Math.abs(a))} = ${formatPercent(result.changePercent)}`
-            : `${formatDecimal(b)} − ${formatDecimal(a)} = ${formatDecimal(result.differencePoints)} ${C.form.modes.points.pointsUnit}`;
+  //
+  // Built in `percentEquation`: compared terms share one precision, so
+  // near-equal operands (7,001 / 7,002) never both print as "7,00".
+  const equation = percentEquation(state);
 
   /*
    * A "Gọn" row in the audit's own classification (CSV row 61): its action is
    * "chọn phép tính trước, kết quả ngay dưới hai ô; không cần chart hoặc bảng
-   * phụ". Both halves are already true of this tool and are PRESERVED here
-   * rather than rebuilt — the mode radio is the first control, the result
-   * follows the two boxes, and there is no figure and no secondary table.
+   * phụ". The mode radio is still the first control and the result still
+   * follows the two boxes; there is still no chart, `<figure>` or secondary
+   * table.
    *
-   * So `columns="single"` and no `chart`: splitting four short controls across
-   * 40/60 would make two stub columns, and adding a plot to a percentage would
-   * be chart chrome for consistency, which docs §3 forbids outright. What this
-   * row was missing is the CTA and a shorter route to the first field, and
-   * that is all that changes.
+   * `columns="single"`: four short controls across 40/60 would make two stub
+   * columns. WHAT CHANGED (2026-09-30): the approved living-infographic draft
+   * adds a meaningful HTML ruler in the `learning` slot — the mode's two
+   * figures on one signed axis, their denominator named, a native focus
+   * picker and one-field tries. It is not a decorative plot, and it sits
+   * outside the one live region.
    */
   return (
     <CalculatorCard>
@@ -167,6 +193,7 @@ export function PercentCalculator() {
                 help={copy.aHelp}
                 error={copy.aInvalid}
                 invalid={aInvalid}
+                fieldKey={keys.a}
               />
               <NumberField
                 {...fields.bind(keys.b)}
@@ -175,6 +202,7 @@ export function PercentCalculator() {
                 help={copy.bHelp}
                 error={copy.bInvalid}
                 invalid={bInvalid}
+                fieldKey={keys.b}
               />
             </FieldGroup>
           </>
@@ -201,13 +229,13 @@ export function PercentCalculator() {
                     : result.mode === "of"
                       ? money(result.amount)
                       : result.mode === "share"
-                        ? formatPercent(result.sharePercent)
+                        ? percentText(result.sharePercent)
                         : result.mode === "change"
-                          ? formatPercent(result.changePercent)
+                          ? percentText(result.changePercent)
                           : // ĐIỂM phần trăm, with its unit spelled out: the
                             // whole point of the mode is that this is not a
                             // percentage.
-                            `${formatDecimal(result.differencePoints)} ${C.form.modes.points.pointsUnit}`
+                            numberText(result.differencePoints, 2, ` ${C.form.modes.points.pointsUnit}`)
                 }
               />
               {mode === "change" ? (
@@ -246,7 +274,7 @@ export function PercentCalculator() {
                             )
                             .replace(
                               "{percent}",
-                              formatPercent(Math.abs(result.relativePercent)),
+                              percentText(Math.abs(result.relativePercent)),
                             )
                   }
                   prose={
@@ -283,6 +311,22 @@ export function PercentCalculator() {
               </p>
             ) : null}
           </>
+        }
+        learning={
+          <PercentLearningPanel
+            sample={sample}
+            tried={sample && trials.trials.length > 0}
+            state={state}
+            formId={FORM_ID}
+            trial={{
+              key: trialKey,
+              availability: percentAvailability(trialKey, raw.values, state),
+              canUndo: latest !== null,
+              onTry: tryKey,
+              onUndo: undo,
+            }}
+            impact={impact}
+          />
         }
       />
     </CalculatorCard>

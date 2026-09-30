@@ -7,6 +7,7 @@ import {
   parseMoney,
 } from "@/lib/calc/number";
 import { adjustPrice, type PriceAdjustInput } from "@/lib/calc/price-adjust";
+import { priceAdjustFormState } from "@/components/price-adjust-learning";
 import { PRICE_ADJUST as C } from "@/content/calculators/price-adjust";
 
 /**
@@ -323,18 +324,42 @@ describe("giam-gia-va-thue states the basis for the tax rate it prefills", () =>
   });
 
   it("rejects a tax rate above 100, which the field used to accept", () => {
-    // Source-level, the way `tip.test.ts` guards the same bound: the predicate
-    // lives in the component and there is no render harness in this suite.
+    // BEHAVIOUR, not source text: the page's parse and guards moved unchanged
+    // into `priceAdjustFormState` (components/price-adjust-learning.ts), so
+    // the bound is asserted on the adapter itself, and the component is
+    // checked to read its state from that adapter.
     //
     // This is an inconsistency INSIDE ONE FILE rather than a deliberate
     // asymmetry — the two discount percentages in the same component have
     // enforced 0–100 all along — so both predicates are asserted together.
+    // Fixture strings: the content defaults are `as const` literals.
+    const base: Record<string, string> = {
+      price: F.defaultPrice,
+      tax: F.defaultTax,
+      taxIncluded: F.defaultTaxIncluded,
+      discountPercent: F.defaultDiscountPercent,
+      secondDiscountPercent: F.defaultSecondDiscountPercent,
+      discountAmount: F.defaultDiscountAmount,
+    };
+    const at = (patch: Record<string, string>) => priceAdjustFormState({ ...base, ...patch });
+    // Tax: 0–100 inclusive, and 101 / −1 are refused with no result.
+    expect(at({ tax: "101" })).toMatchObject({ taxInvalid: true, fieldsUsable: false, result: null });
+    expect(at({ tax: "-1" }).taxInvalid).toBe(true);
+    expect(at({ tax: "100" }).taxInvalid).toBe(false);
+    expect(at({ tax: "0" }).taxInvalid).toBe(false);
+    // Both discount percentages: the same 0–100 bound.
+    expect(at({ discountPercent: "101" })).toMatchObject({ discountPercentInvalid: true, result: null });
+    expect(at({ secondDiscountPercent: "101" })).toMatchObject({ secondDiscountPercentInvalid: true, result: null });
+    expect(at({ discountPercent: "100" }).discountPercentInvalid).toBe(false);
     const component = readFileSync(
       new URL("../../components/price-adjust-calculator.tsx", import.meta.url),
       "utf8",
     );
-    expect(component).toContain("tax === null || tax < 0 || tax > 100");
-    expect(component).toContain("discountPercent > 100");
+    // The page reads those guards from the adapter, not a second copy.
+    expect(component).toContain("priceAdjustFormState(fields.values)");
+    expect(component).toContain("invalid={taxInvalid}");
+    expect(component).toContain("invalid={discountPercentInvalid}");
+    expect(component).toContain("invalid={secondDiscountPercentInvalid}");
     expect(F.taxInvalid).toContain("0 đến 100");
     // Same wording as the discount fields, since it is now the same range.
     expect(F.taxInvalid).toBe(F.discountPercentInvalid);

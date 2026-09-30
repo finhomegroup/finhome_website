@@ -3,19 +3,26 @@
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { FieldGroup } from "@/components/calc/field-group";
+import { useTrialStack } from "@/components/calc/learning-trials";
 import { NumberField } from "@/components/calc/number-field";
 import { RadioGroupField } from "@/components/calc/radio-group-field";
 import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import type { MarginMode } from "@/lib/calc/margin";
+import { moneyText, percentText } from "@/components/arith-learning-display";
 import {
-  formatMoney,
-  formatPercent,
-  parseDecimal,
-  parseMoney,
-} from "@/lib/calc/number";
-import { computeMargin, type MarginMode } from "@/lib/calc/margin";
+  makeMarginTrial,
+  marginAvailability,
+  marginFormState,
+  marginImpact,
+  marginSnapshot,
+  marginTrialKeys,
+  type MarginSnapshot,
+  type MarginTrialKey,
+} from "@/components/margin-learning";
+import { MarginLearningPanel } from "@/components/margin-learning-panel";
 import { MARGIN as C } from "@/content/calculators/margin";
 
 /** The second box: a price in one mode, a percentage in the other two. */
@@ -67,49 +74,81 @@ export const MARGIN_FORMATS = {
  * ROW 63: "Một khối ngắn, hai nhãn margin và markup giải thích bằng tiếng
  * Việt; không cần chart."
  *
- * `columns="single"`, and there is no `detail` region and no chart at all —
- * four rows of arithmetic on two inputs do not earn a second column or a
- * picture. What the layout adds over the bare card is the region hooks and
- * the CTA, so a reader on a phone gets the same "xem kết quả" affordance as
- * every other tool rather than an unmarked scroll.
+ * `columns="single"`, no `detail` region and no chart: four rows of
+ * arithmetic on two inputs do not earn a second column or a plot. The layout
+ * adds the region hooks and the CTA, so a reader on a phone gets the same
+ * "xem kết quả" affordance as every other tool.
  *
  * THE EMPHASISED ROW FOLLOWS THE MODE, because the answer does. Somebody who
  * entered cost and price is asking what their margin is; somebody who entered
  * a target margin or markup is asking what to charge. Fixing the emphasis to
  * one row would headline the reader's own input back at them in two of the
  * three modes.
+ *
+ * THE LIVING TWO-FRAME PICTURE (2026-09-30) sits in the `learning` slot:
+ * the same profit over the price and over the cost, each on its own scale.
+ * Parse and guards moved unchanged into `marginFormState`; every figure is
+ * formatted safely (named at the print limit, sign kept).
  */
 export function MarginCalculator() {
-  const fields = useCalcFields({
+  const initial = {
     mode: C.form.defaultMode,
     cost: C.form.defaultCost,
     price: C.form.defaultPrice,
     margin: C.form.defaultMargin,
     markup: C.form.defaultMarkup,
-  }, MARGIN_FORMATS);
+  };
+  const raw = useCalcFields(initial, MARGIN_FORMATS);
+
+  // Every reader edit — the mode radio included — retires the trial stack.
+  const trials = useTrialStack<MarginTrialKey, MarginSnapshot>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initial) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          trials.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+  };
 
   const mode = fields.values.mode as MarginMode;
   const active = MODES[mode];
 
-  const cost = parseMoney(fields.values.cost);
-  const value = active.isPercent
-    ? parseDecimal(fields.values[active.key])
-    : parseMoney(fields.values[active.key]);
-
-  const costInvalid = cost === null || cost <= 0;
   // Each mode has its own impossible value: a free sale has no margin, a
   // margin of 100% implies a cost of zero, and a −100% markup zeroes the price.
-  const valueInvalid =
-    value === null ||
-    (mode === "price" && value === 0) ||
-    (mode === "margin" && value >= 100) ||
-    (mode === "markup" && value <= -100);
-
-  const result =
-    costInvalid || valueInvalid ? null : computeMargin({ mode, cost, value });
+  // Same guards, moved into `marginFormState`.
+  const state = marginFormState(fields.values);
+  const { costInvalid, valueInvalid, result } = state;
 
   const money = (figure: number | undefined) =>
-    figure === undefined ? null : `${formatMoney(figure)} ₫`;
+    figure === undefined ? null : moneyText(figure);
+
+  // The example is the example while cost and the ACTIVE second box are
+  // untouched; the mode is a question, not a figure.
+  const same = (v: Readonly<Record<string, string>>) =>
+    v.cost === initial.cost && v[active.key] === initial[active.key];
+  const sample =
+    same(fields.values) || (trials.trials[0] !== undefined && same(trials.trials[0].before));
+  const keys = marginTrialKeys(mode);
+  const latest = trials.trials.at(-1) ?? null;
+  const now = marginSnapshot(state);
+  const impact = latest !== null && now !== null ? marginImpact(latest, now) : null;
+  const tryKey = (key: MarginTrialKey) => {
+    const t = makeMarginTrial(key, raw.values, trials.state.revision, state);
+    if (t === null) return;
+    trials.dispatch({ type: "apply", trial: t });
+    raw.bind(key).onValueChange(t.after[key]);
+  };
+  const undo = () => {
+    if (latest === null) return;
+    trials.dispatch({ type: "undo" });
+    raw.bind(latest.key).onValueChange(latest.before[latest.key]);
+  };
 
   // The reader entered a price, so the price is not the answer; they entered
   // a rate, so the rate is not the answer.
@@ -143,6 +182,7 @@ export function MarginCalculator() {
                 help={C.form.costHelp}
                 error={C.form.costInvalid}
                 invalid={costInvalid}
+                fieldKey="cost"
               />
               <NumberField
                 key={mode}
@@ -152,6 +192,7 @@ export function MarginCalculator() {
                 help={active.help}
                 error={active.error}
                 invalid={valueInvalid}
+                fieldKey={active.key}
               />
             </FieldGroup>
           </>
@@ -176,14 +217,35 @@ export function MarginCalculator() {
             />
             <ResultRow
               label={C.form.marginResultLabel}
-              value={result ? formatPercent(result.marginPercent) : null}
+              value={result ? percentText(result.marginPercent) : null}
               emphasis={!answerIsPrice}
             />
             <ResultRow
               label={C.form.markupResultLabel}
-              value={result ? formatPercent(result.markupPercent) : null}
+              value={result ? percentText(result.markupPercent) : null}
             />
           </ResultGroup>
+        }
+        learning={
+          <MarginLearningPanel
+            sample={sample}
+            tried={sample && trials.trials.length > 0}
+            state={state}
+            formId={FORM_ID}
+            trial={{
+              keys,
+              availability: {
+                price: marginAvailability("price", raw.values, state),
+                cost: marginAvailability("cost", raw.values, state),
+                margin: marginAvailability("margin", raw.values, state),
+                markup: marginAvailability("markup", raw.values, state),
+              },
+              canUndo: latest !== null,
+              onTry: tryKey,
+              onUndo: undo,
+            }}
+            impact={impact}
+          />
         }
       />
     </CalculatorCard>
