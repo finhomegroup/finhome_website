@@ -9,13 +9,16 @@ import {
   INITIAL_LEARNING,
   learningReducer,
   TRIAL_KEYS,
+  type AffordabilitySceneView,
   type FormValues,
-  type IllustrationPart,
   type TrialAvailability,
   type TrialImpactView,
   type TrialKey,
 } from "@/components/affordability-learning";
+import { FILL, SceneDetails } from "@/components/calc/learning-scene";
+import { SplitBar, SplitLegend } from "@/components/calc/living-infographic";
 import { AFFORDABILITY_LEARNING as L } from "@/content/calculators/affordability-learning";
+import { fill } from "@/lib/calc/charts/labels";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 
@@ -58,13 +61,19 @@ const SECONDARY =
 const WRAP = "min-w-0 [overflow-wrap:anywhere]";
 
 /**
- * "Thử một thay đổi" on /cong-cu/kha-nang-mua-nha/, above the form.
+ * "Thử một thay đổi" on /cong-cu/kha-nang-mua-nha/ only, in
+ * `CalculatorLayout`'s opt-in `learning` slot: after the answer rows, before
+ * the actions and the charts (independent review, 2026-09-29 — it had sat
+ * above both columns). `nha-o-xa-hoi` renders none.
  *
  * THE CONTROLS COME FIRST, the card after. The status card's height changes
  * with the verdict — measured 577 px on a 390 px phone after a reserve try —
  * so it sits AFTER the tries in the DOM, where its growth cannot move the
- * button just pressed. From `lg` the controls are the left column and the
- * card the right, in that same DOM order; nothing is reordered by CSS.
+ * button just pressed. One column at every width: the slot is the result
+ * column, too narrow for the old two-column split. Nothing is reordered.
+ *
+ * THE SCENE SITS RIGHT UNDER THE BUTTONS (2026-09-28 repair: it was 900 px
+ * away on a phone); what a press did and the card follow it.
  *
  * THE CARD RENDERS ONCE, HERE; the result group keeps the rows and the ONE
  * live sentence. Nothing in this panel is live.
@@ -74,9 +83,13 @@ const WRAP = "min-w-0 [overflow-wrap:anywhere]";
  * reason — and what a press did appears below them: a rounded headline, two
  * bars on one axis from 0, the cause, and the exact đồng behind a disclosure.
  *
- * THE ILLUSTRATION COMES LAST, after the card: a restrained 3D picture whose
- * trays the HTML legend names, with the engine's rounded figures beside
- * them. It can only ever be below the controls, so it cannot move them.
+ * THE SCENE (living infographic F1, 2026-09-29): the 3D trays as unlabelled
+ * context — nothing is laid on the picture — then two code-drawn readings,
+ * each a bar whose 100% is named: the price, and the savings. It can only
+ * ever be below the controls, so it cannot move them.
+ *
+ * FRAMELESS BELOW `sm`, like the first pair: the page's card already frames
+ * it, and a second border and padding cost a 320 px phone its width.
  *
  * Presentational: every sentence and width arrives resolved from
  * `affordability-learning.ts`; nothing here computes a figure.
@@ -88,7 +101,7 @@ export function AffordabilityLearningPanel({
   availability,
   sharedReason,
   impact,
-  illustration,
+  scene,
   canUndo,
   onTry,
   onUndo,
@@ -103,8 +116,8 @@ export function AffordabilityLearningPanel({
   sharedReason: string | null;
   /** The latest press that still holds, or null. */
   impact: TrialImpactView | null;
-  /** The legend of the picture, figures resolved from the result on screen. */
-  illustration: readonly IllustrationPart[];
+  /** The integrated scene, figures resolved from the result on screen. */
+  scene: AffordabilitySceneView;
   canUndo: boolean;
   onTry: (key: TrialKey) => void;
   onUndo: () => void;
@@ -119,7 +132,7 @@ export function AffordabilityLearningPanel({
     <section
       aria-labelledby={titleId}
       data-affordability-learning="true"
-      className="mb-6 rounded-2xl border border-ink-4/20 bg-white p-4 lg:grid lg:grid-cols-2 lg:gap-x-6"
+      className="mt-6 sm:rounded-2xl sm:border sm:border-ink-4/20 sm:bg-white sm:p-4"
     >
       <div data-learning-controls="true" className="min-w-0">
         <h2 id={titleId} className="font-display text-base font-medium text-ink">
@@ -209,102 +222,161 @@ export function AffordabilityLearningPanel({
           })
         )}
 
-        {impact === null ? null : <TrialImpact impact={impact} />}
+        {/* The scene RIGHT UNDER the buttons that move it: on a 390 × 844
+            phone both fit one screen. Nothing above it can grow. */}
+        <AffordabilityScene scene={scene} />
       </div>
 
-      <div className="mt-4 min-w-0 lg:mt-0">
-        <ResultStatusCard status={status} formId={formId} className="lg:mt-0" />
-        <LearningIllustration parts={illustration} />
+      {/* What a press did, then the verdict — never between the buttons
+          and the scene. */}
+      <div className="mt-4 min-w-0">
+        {impact === null ? null : <TrialImpact impact={impact} />}
+        <ResultStatusCard status={status} formId={formId} />
       </div>
     </section>
   );
 }
 
-/** Concept A, 2026-09-28: `public/images/tools/affordability-trays-*.webp`. */
-const TRAYS = {
-  src: "/images/tools/affordability-trays-720.webp",
-  srcSet:
-    "/images/tools/affordability-trays-720.webp 720w, /images/tools/affordability-trays-1200.webp 1200w",
-  width: 1536,
-  height: 1024,
-} as const;
-
-/** Legend keys, matched by eye to the trays in the picture; text carries the meaning. */
-const SWATCH: Record<IllustrationPart["key"], string> = {
-  own: "border-[#2a6b49] bg-[#2a6b49]",
-  loan: "border-[#8fa878] bg-[#aac391]",
-  reserve: "border-ink-4 bg-[#f4ebdc]",
-};
+/** Concept A, 2026-09-28: apartment, two trays and a separate box. */
+const TRAYS_BASE = "/images/tools/affordability-trays";
 
 /**
- * The picture and its HTML legend. The image holds no figure and does not
- * change with the answer; every number is the legend's, from the engine.
+ * The trays at their intrinsic 3 : 2 (720 × 480 and 1200 × 800 WebP), then
+ * the two readings. Without a readable price, no figure is drawn — only the
+ * picture and the reason.
  */
-function LearningIllustration({ parts }: { parts: readonly IllustrationPart[] }) {
-  const I = L.illustration;
-  const withFigures = parts.some((part) => part.value !== null);
+function AffordabilityScene({ scene }: { scene: AffordabilitySceneView }) {
+  const S = L.scene;
   return (
     <figure
       data-learning-illustration="true"
-      className="mt-4 rounded-xl border border-ink-4/15 bg-bg-soft p-3 sm:grid sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)] sm:items-center sm:gap-4"
+      data-scene-state={scene.kind}
+      className="mt-3 rounded-xl border border-ink-4/15 bg-bg-soft p-3"
     >
-      <div className="relative mx-auto w-full max-w-[18rem] sm:max-w-none">
+      {/* Context: nothing is drawn on the picture. `width`/`height` reserve
+          its 3 : 2 box, so a missing image moves nothing. */}
+      <div data-scene-art="true" className="mx-auto w-full max-w-[22rem]">
         {/* A plain <img>: the static export has no image loader. */}
         <img
-          src={TRAYS.src}
-          srcSet={TRAYS.srcSet}
-          sizes="(min-width: 640px) 12rem, 18rem"
-          width={TRAYS.width}
-          height={TRAYS.height}
-          alt={I.alt}
+          src={`${TRAYS_BASE}-720.webp`}
+          srcSet={`${TRAYS_BASE}-720.webp 720w, ${TRAYS_BASE}-1200.webp 1200w`}
+          sizes="(min-width: 640px) 22rem, calc(100vw - 4rem)"
+          width={1200}
+          height={800}
+          alt={S.alt}
           loading="lazy"
           decoding="async"
           draggable={false}
           className="block h-auto w-full select-none rounded-lg"
         />
-        <span
-          data-illustration-badge="true"
-          className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-ink-2"
-        >
-          {I.badge}
-        </span>
       </div>
-      <figcaption className="mt-3 min-w-0 sm:mt-0">
-        <p className="text-sm font-medium text-ink">{I.title}</p>
-        <ul className="mt-2 space-y-1.5">
-          {parts.map((part) => (
-            <li
-              key={part.key}
-              data-illustration-part={part.key}
-              className="flex items-start gap-2 text-sm leading-snug"
-            >
-              <span
-                aria-hidden="true"
-                className={cn("mt-1 size-3 shrink-0 rounded-sm border", SWATCH[part.key])}
-              />
-              <span className={WRAP}>
-                <span className="font-medium text-ink">{part.label}:</span>{" "}
-                <span className="text-ink-2">{part.meaning}</span>
-                {part.value === null ? null : (
-                  <>
-                    {" — "}
-                    <span className="font-medium tabular-nums text-ink">{part.value}</span>
-                  </>
-                )}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p data-illustration-fees="true" className="mt-2 text-sm leading-snug text-ink-2">
-          {I.feesNote}
+      <figcaption className="mt-1 text-center text-sm font-medium leading-snug text-ink">{S.title}</figcaption>
+
+      {scene.kind !== "ready" ? (
+        <p data-scene-message={scene.kind} className="mt-2 text-sm leading-relaxed text-ink-2">
+          {S[scene.kind]}
         </p>
-        <p className="mt-2 text-xs leading-5 text-ink-2">
-          {withFigures ? I.figuresNote : I.noFigures} {I.caption}
-        </p>
-      </figcaption>
+      ) : (
+        <>
+          {/* Reading 1 — 100% is the reference price. */}
+          <div data-scene-reading="price" className="mt-3">
+            <p className="font-display text-xl font-medium tabular-nums text-brand-green-ink">
+              {fill(S.priceHeading, { price: scene.price.wholeText })}
+            </p>
+            <p className="text-sm leading-snug text-ink-2">{S.priceWhole}</p>
+            <SplitBar
+              marker="price"
+              className="mt-2"
+              segments={[
+                {
+                  key: "own",
+                  percent: scene.price.ownPercent,
+                  className: FILL.own,
+                  inside: scene.price.ownShareText,
+                  insideClassName: "text-white",
+                },
+                {
+                  key: "loan",
+                  percent: scene.price.loanPercent,
+                  className: FILL.loan,
+                  inside: scene.price.loanShareText,
+                  insideClassName: "text-ink",
+                },
+              ]}
+            />
+            <SplitLegend
+              items={[
+                { key: "own", swatch: FILL.own, label: S.priceOwn, value: scene.price.ownText, meaning: S.priceOwnMeaning },
+                { key: "loan", swatch: FILL.loan, label: S.priceLoan, value: scene.price.loanText, meaning: S.priceLoanMeaning },
+              ]}
+            />
+            {scene.noLoan === null ? null : (
+              <p data-scene-no-loan={scene.noLoan} className="mt-2 text-sm leading-snug text-ink">
+                {scene.noLoan === "ltv" ? S.noLoanLtv : S.noLoanCapacity}
+              </p>
+            )}
+          </div>
+
+          {/* Reading 2 — 100% is the savings. The reserve is here, not in the price. */}
+          <div data-scene-reading="savings" className="mt-4">
+            {scene.savings === null ? (
+              <p className="text-sm leading-relaxed text-ink-2">{S.noSavings}</p>
+            ) : (
+              <>
+                <p className="text-base font-medium tabular-nums text-ink">
+                  {fill(S.savingsHeading, { savings: scene.savings.wholeText })}
+                </p>
+                <p className="text-sm leading-snug text-ink-2">{S.savingsWhole}</p>
+                <SplitBar
+                  marker="savings"
+                  className="mt-2"
+                  segments={[
+                    { key: "toPrice", percent: scene.savings.toPricePercent, className: FILL.own },
+                    { key: "fees", percent: scene.savings.feesPercent, className: FILL.trade },
+                    { key: "unused", percent: scene.savings.unusedPercent, className: FILL.unused },
+                    { key: "reserve", percent: scene.savings.reservePercent, className: RESERVE },
+                  ]}
+                />
+                <SplitLegend
+                  items={[
+                    { key: "toPrice", swatch: FILL.own, label: S.savingsToPrice, value: scene.savings.toPriceText },
+                    { key: "fees", swatch: FILL.trade, label: S.savingsFees, value: scene.savings.feesText },
+                    ...(scene.savings.unusedText === null
+                      ? []
+                      : [{ key: "unused", swatch: FILL.unused, label: S.savingsUnused, value: scene.savings.unusedText }]),
+                    { key: "reserve", swatch: RESERVE, label: S.savingsReserve, value: scene.savings.reserveText },
+                  ]}
+                />
+                <p data-scene-tradeoff="true" className="mt-2 text-sm leading-snug text-ink">
+                  {scene.savings.reserveOverSavings
+                    ? fill(S.reserveOver, {
+                        typed: scene.savings.reserveTypedText,
+                        kept: scene.savings.reserveText,
+                      })
+                    : S.tradeoff}
+                </p>
+              </>
+            )}
+          </div>
+          <p className="mt-2 text-sm leading-snug text-ink-2">{S.roundedNote}</p>
+          <SceneDetails summary={S.details}>
+            <dl data-scene-exact="true" className="mt-1 grid grid-cols-1 gap-1 pb-1 min-[420px]:grid-cols-2">
+              {scene.exact.map((row) => (
+                <div key={row.key} data-exact-row={row.key} className="flex flex-wrap justify-between gap-x-3 text-ink-2">
+                  <dt>{row.label}</dt>
+                  <dd className={cn("font-medium tabular-nums text-ink", WRAP)}>{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </SceneDetails>
+        </>
+      )}
     </figure>
   );
 }
+
+/** The reserve: a sand tone AND a dotted texture, never colour alone. */
+const RESERVE = "bg-[radial-gradient(#8a7650_1px,#c9b58c_1px)] bg-[length:5px_5px]";
 
 /** What the latest press did: headline, bars, cause, then the exact figures. */
 function TrialImpact({ impact }: { impact: TrialImpactView }) {
