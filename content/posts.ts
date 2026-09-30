@@ -362,6 +362,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "nguoi-mua-can-ho-doi-chien-thuat",
+    title: "Người mua căn hộ thay đổi chiến thuật: Từ kỳ vọng tăng giá sang tính toán dòng tiền",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Lãi suất vay tăng, giá căn hộ neo cao nhưng nguồn cung đa dạng khiến người mua chuyển hướng từ kỳ vọng tăng giá sang tính toán khả năng trả nợ thực tế.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/nguoi-mua-can-ho-doi-chien-thuat.webp",
+    date: "2026-09-30",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/nguoi-mua-can-ho-doi-chien-thuat-188260930075504816.chn",
+        "accessed": "2026-09-30"
+      },
+  },
+  {
     slug: "bo-nong-nghiep-de-nghi-thao-go-vuong-mac-novaland-tphcm",
     title: "Bộ Nông nghiệp đề nghị tháo gỡ vướng mắc cho hai dự án Novaland 166 ha tại TP.HCM",
     category: "Chính sách",
