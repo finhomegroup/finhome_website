@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { AccumulationLearningPanel } from "@/components/accumulation-learning-panel";
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
@@ -17,6 +19,19 @@ import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { onlyTried, useTrialStack } from "@/components/calc/learning-trials";
+import {
+  makeSavingsTrial,
+  savingsDisplayable,
+  savingsImpactView,
+  savingsTimelineView,
+  savingsTrialAvailability,
+  savingsTrialField,
+  savingsTrialKeys,
+  type SavingsSnapshot,
+  type SavingsTrialKey,
+} from "@/components/savings-learning";
+import { SAVINGS_LEARNING } from "@/content/calculators/savings-learning";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
 import {
@@ -113,7 +128,7 @@ export function SavingsGoalCalculator({
   // Formats while typing, by the grammar each key is PARSED with below — see
   // `FieldFormats`. The month count, the date parts and the two selects
   // format nothing.
-  const fields = useCalcFields(initialValues, {
+  const raw = useCalcFields(initialValues, {
     initial: "money",
     target: "money",
     price: "money",
@@ -124,6 +139,34 @@ export function SavingsGoalCalculator({
     rate: "rate",
     higherContribution: "money",
   });
+
+  /*
+   * THE F3 TRIAL STACK (2026-09-29). A press writes one TYPED field through
+   * the RAW binding; everything the reader does — a keystroke, a mode switch,
+   * "Hôm nay", "Về ví dụ mẫu" — goes through `fields`, which retires every
+   * trial first. The solved figure is never written by a trial.
+   */
+  const learning = useTrialStack<SavingsTrialKey, SavingsSnapshot>(raw.values);
+  /** The schedule row the panel's cursor is on; null = the last row. */
+  const [pickedPoint, setPickedPoint] = useState<number | null>(null);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initialValues) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          learning.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+    reset: () => {
+      learning.dispatch({ type: "reset" });
+      setPickedPoint(null);
+      raw.reset();
+    },
+  };
 
   const pristine = (
     Object.keys(initialValues) as (keyof typeof initialValues)[]
@@ -313,6 +356,43 @@ export function SavingsGoalCalculator({
   const comparisonOneLeg =
     higherLeg !== null && plan !== null && plan.monthsEarlier === null;
 
+  // --- the F3 panel: every figure from `schedule` or a trial's record ---
+  const snapshot: SavingsSnapshot = {
+    mode,
+    contribution: planContribution,
+    fundedMonth: schedule?.fundedMonth ?? null,
+    balance: schedule && schedule.status !== "invalid" ? schedule.balance : null,
+    totalContributed: schedule && schedule.status !== "invalid" ? schedule.totalContributed : null,
+    interest: schedule && schedule.status !== "invalid" ? schedule.interest : null,
+  };
+  // Past the formatter's display boundary there is nothing printable to try on.
+  const printable = savingsDisplayable(schedule, needs.needsTarget ? target : null);
+  const trialUsable = fieldsUsable && schedule !== null && schedule.status !== "invalid" && printable;
+  const trialKeys = savingsTrialKeys(mode);
+  const latestTrial = learning.trials.at(-1) ?? null;
+  const trialImpact = latestTrial !== null && trialUsable ? savingsImpactView(latestTrial, snapshot) : null;
+  const tryKey = (key: SavingsTrialKey) => {
+    const trial = makeSavingsTrial({
+      key,
+      values: raw.values,
+      revision: learning.state.revision,
+      snapshot,
+      usable: trialUsable,
+    });
+    if (trial === null) return;
+    const field = savingsTrialField(key);
+    learning.dispatch({ type: "apply", trial });
+    raw.bind(field).onValueChange(trial.after[field]);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    const field = savingsTrialField(latestTrial.key);
+    learning.dispatch({ type: "undo" });
+    raw.bind(field).onValueChange(latestTrial.before[field]);
+  };
+  const timeline = savingsTimelineView(schedule, mode, needs.needsTarget ? target : null, pickedPoint);
+  const L = SAVINGS_LEARNING;
+
   const money = (figure: number | null | undefined) =>
     figure === null || figure === undefined ? null : `${formatMoney(figure)} ₫`;
 
@@ -411,7 +491,7 @@ export function SavingsGoalCalculator({
       : null;
 
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <ExampleNotice
         pristine={pristine}
         onReset={fields.reset}
@@ -781,6 +861,42 @@ export function SavingsGoalCalculator({
               </p>
             ) : null}
           </>
+        }
+        learning={
+          <AccumulationLearningPanel
+            marker="savings"
+            copy={L}
+            sample={pristine || onlyTried(learning.trials, initialValues)}
+            view={timeline}
+            // A bad field gets the fix; a valid form with no schedule gets its
+            // reason and no false "sửa ô đang báo lỗi".
+            emptyText={!fieldsUsable ? L.unknown : printable ? L.noAnswer : L.tooLarge}
+            emptyFix={!fieldsUsable}
+            onIndex={setPickedPoint}
+            formId={FORM_ID}
+            trial={{
+              keys: trialKeys,
+              labels: { contribution: L.trials.contribution.label, horizon: L.trials.horizon.label },
+              availability: {
+                contribution: savingsTrialAvailability("contribution", {
+                  usable: trialUsable,
+                  mode,
+                  values: raw.values,
+                  reason: !fieldsUsable ? L.blocked.invalid : printable ? L.blocked.noAnswer : L.blocked.tooLarge,
+                }),
+                horizon: savingsTrialAvailability("horizon", {
+                  usable: trialUsable,
+                  mode,
+                  values: raw.values,
+                  reason: !fieldsUsable ? L.blocked.invalid : printable ? L.blocked.noAnswer : L.blocked.tooLarge,
+                }),
+              },
+              canUndo: latestTrial !== null,
+              onTry: tryKey,
+              onUndo: undoTrial,
+            }}
+            impact={trialImpact}
+          />
         }
         chart={
           /* Both figures, outside every ResultGroup. When there is no answer
