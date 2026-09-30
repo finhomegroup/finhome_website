@@ -22,6 +22,8 @@ import { getEducationArticle } from "@/content/education/articles";
 import { chapterForGroup } from "@/content/education/chapters";
 import { POSTS, getPost, postKind } from "@/content/posts";
 import { postCover } from "@/content/post-cover";
+import { postDate } from "@/content/post-date";
+import { PostDate } from "@/components/post-date";
 import { canonicalPath, absUrl, articleSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 
@@ -159,6 +161,16 @@ export default async function Page({
                     <span>
                       Chương {chapter.number} · {chapter.label}
                     </span>
+                  </>
+                ) : null}
+                {/* News only: the day the report summary was published. The
+                    collection and guides keep their existing header. */}
+                {kind === "news" && postDate(post.date) ? (
+                  <>
+                    <span aria-hidden="true" className="text-ink-4">
+                      ·
+                    </span>
+                    <PostDate date={post.date} />
                   </>
                 ) : null}
                 <span aria-hidden="true" className="text-ink-4">

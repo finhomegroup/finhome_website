@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PostCardLink } from "@/components/post-card-link";
+import { PostDate } from "@/components/post-date";
 import { img } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import {
@@ -10,35 +11,24 @@ import {
   FH_POINTER,
 } from "@/lib/interaction-styles";
 import { postCover } from "@/content/post-cover";
-import type { Post, Topic } from "@/content/posts";
+import { postDate } from "@/content/post-date";
+import { BlogPagination } from "@/components/blog-pagination";
+import type { Post } from "@/content/posts";
 import { TOPICS, topicLabel } from "@/content/blog-topics";
+import {
+  createFeedNavigator,
+  feedParams,
+  feedUrl,
+  type FeedPage,
+  type TopicFilter,
+} from "@/components/blog-feed-navigation";
 
-type TopicFilter = Topic | "all";
-
-type BlogPostsResponse = {
-  posts: Post[];
-  page: number;
-  pageCount: number;
-  total: number;
-};
-
-const TOPIC_IDS = new Set<string>(TOPICS.map((t) => t.id));
-
-function paramsFromUrl(): { topic: TopicFilter; page: number } {
-  const search = new URLSearchParams(window.location.search);
-  const rawTopic = search.get("topic");
-  const topic: TopicFilter = rawTopic && TOPIC_IDS.has(rawTopic) ? (rawTopic as Topic) : "all";
-  const page = Math.max(Number(search.get("page")) || 1, 1);
-  return { topic, page };
-}
-
-function writeParamsToUrl(topic: TopicFilter, page: number) {
-  const url = new URL(window.location.href);
-  if (topic === "all") url.searchParams.delete("topic");
-  else url.searchParams.set("topic", topic);
-  if (page === 1) url.searchParams.delete("page");
-  else url.searchParams.set("page", String(page));
-  window.history.pushState(null, "", url);
+async function fetchFeedPage(topic: TopicFilter, page: number): Promise<FeedPage> {
+  const qs = new URLSearchParams({ page: String(page) });
+  if (topic !== "all") qs.set("topic", topic);
+  const res = await fetch(`/api/blog-posts?${qs.toString()}`);
+  if (!res.ok) throw new Error("Failed to load posts");
+  return res.json();
 }
 
 export function BlogPostGrid({
@@ -54,57 +44,44 @@ export function BlogPostGrid({
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
-  const requestIdRef = useRef(0);
 
-  async function load(nextTopic: TopicFilter, nextPage: number, { syncUrl = true, scroll = true } = {}) {
-    if (loading || (nextTopic === topic && nextPage === page)) return;
+  // One navigator for the component's lifetime. It owns the LIVE feed state,
+  // so the popstate listener below (registered once) never reads a stale
+  // render's topic/page — see components/blog-feed-navigation.ts.
+  const [nav] = useState(() =>
+    createFeedNavigator({
+      initial: { topic: "all", page: 1, pageCount: initialPageCount, posts: initialPosts },
+      fetchPage: fetchFeedPage,
+      onState: (s) => {
+        setTopic(s.topic);
+        setPage(s.page);
+        setPageCount(s.pageCount);
+        setPosts(s.posts);
+      },
+      onLoading: setLoading,
+      writeUrl: (t, p) => window.history.pushState(null, "", feedUrl(window.location.href, t, p)),
+    }),
+  );
 
-    if (nextTopic === "all" && nextPage === 1) {
-      setTopic("all");
-      setPage(1);
-      setPosts(initialPosts);
-      setPageCount(initialPageCount);
-      if (syncUrl) writeParamsToUrl("all", 1);
-      if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
-    const requestId = ++requestIdRef.current;
-    setLoading(true);
-    try {
-      const qs = new URLSearchParams({ page: String(nextPage) });
-      if (nextTopic !== "all") qs.set("topic", nextTopic);
-      const res = await fetch(`/api/blog-posts?${qs.toString()}`);
-      if (!res.ok) throw new Error("Failed to load posts");
-      const data: BlogPostsResponse = await res.json();
-      if (requestIdRef.current !== requestId) return;
-      setPosts(data.posts);
-      setPage(data.page);
-      setPageCount(data.pageCount);
-      setTopic(nextTopic);
-      if (syncUrl) writeParamsToUrl(nextTopic, data.page);
-      if (scroll) gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch {
-      // keep current state on failure
-    } finally {
-      if (requestIdRef.current === requestId) setLoading(false);
+  /** A user choice: pushes a history entry and scrolls to the grid when applied. */
+  async function load(nextTopic: TopicFilter, nextPage: number) {
+    if (await nav.go(nextTopic, nextPage)) {
+      gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
   useEffect(() => {
-    const initial = paramsFromUrl();
-    if (initial.topic !== "all" || initial.page !== 1) {
-      queueMicrotask(() => load(initial.topic, initial.page, { syncUrl: false, scroll: false }));
-    }
-
-    function onPopState() {
-      const next = paramsFromUrl();
-      queueMicrotask(() => load(next.topic, next.page, { syncUrl: false, scroll: false }));
-    }
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // Opening /blog/?page=… directly, and Back/Forward: follow the URL, never
+    // push a new entry, never scroll.
+    const followUrl = () => {
+      const { topic: t, page: p } = feedParams(window.location.search);
+      void nav.go(t, p, { fromHistory: true });
+    };
+    const initial = feedParams(window.location.search);
+    if (initial.topic !== "all" || initial.page !== 1) queueMicrotask(followUrl);
+    window.addEventListener("popstate", followUrl);
+    return () => window.removeEventListener("popstate", followUrl);
+  }, [nav]);
 
   return (
     <div ref={gridRef}>
@@ -188,6 +165,8 @@ export function BlogPostGrid({
                 {post.excerpt}
               </p>
               <span className="mt-4 text-xs text-ink-3">
+                <PostDate date={post.date} />
+                {postDate(post.date) ? " · " : ""}
                 {post.readingTime}
                 {post.source ? ` · Theo ${post.source.name}` : ""}
               </span>
@@ -206,55 +185,12 @@ export function BlogPostGrid({
         ))}
       </div>
 
-      {pageCount > 1 && (
-        <nav
-          aria-label="Điều hướng trang"
-          className="mt-12 flex items-center justify-center gap-2"
-        >
-          <button
-            type="button"
-            onClick={() => load(topic, page - 1)}
-            disabled={page === 1 || loading}
-            className={cn(
-              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink disabled:pointer-events-none disabled:opacity-40",
-              FH_POINTER,
-            )}
-          >
-            Trước
-          </button>
-
-          {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => load(topic, n)}
-              disabled={loading}
-              aria-current={n === page ? "page" : undefined}
-              className={cn(
-                "h-10 w-10 rounded-full text-sm font-medium transition-colors disabled:pointer-events-none",
-                FH_POINTER,
-                n === page
-                  ? "bg-brand-green-ink text-white"
-                  : "text-ink-2 hover:bg-brand-green/10",
-              )}
-            >
-              {n}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => load(topic, page + 1)}
-            disabled={page === pageCount || loading}
-            className={cn(
-              "rounded-full border border-ink-4/40 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:border-brand-green/40 hover:bg-brand-green/10 hover:text-brand-green-ink disabled:pointer-events-none disabled:opacity-40",
-              FH_POINTER,
-            )}
-          >
-            Sau
-          </button>
-        </nav>
-      )}
+      <BlogPagination
+        page={page}
+        pageCount={pageCount}
+        loading={loading}
+        onGo={(n) => load(topic, n)}
+      />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { BlogPostGrid } from "@/components/blog-post-grid";
 import { cn } from "@/lib/cn";
 import { FH_POINTER } from "@/lib/interaction-styles";
-import { newsPosts, POSTS, postKind } from "@/content/posts";
+import { newsPosts, POSTS, postKind, type Post } from "@/content/posts";
 import { EDUCATION_COLLECTION } from "@/content/education/collection";
 import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
 import { canonicalPath, pageMetadata } from "@/lib/seo";
@@ -16,6 +16,52 @@ export const metadata: Metadata = pageMetadata({
   title: "Bài viết về tài chính gia đình và bất động sản",
   description: "Hướng dẫn tài chính dễ hiểu qua ví dụ và công cụ, cùng tin thị trường, giá cả và chính sách nhà ở.",
 });
+
+/** Guides shown before "Xem tất cả …"; the rest stay one click away. */
+const GUIDE_PREVIEW = 3;
+
+/**
+ * Compact guide cards: a row with a small cover on a phone, a three-column
+ * card from `sm`. Title and CTA wording are unchanged from the stacked list
+ * they replace; the excerpt shows from `sm`, clamped to two lines.
+ */
+function GuideList({ posts }: { posts: Post[] }) {
+  return (
+    <ul className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-4">
+      {posts.map((post) => (
+        <li key={post.slug}>
+          <Link
+            href={`/blog/${post.slug}/`}
+            className={cn(
+              "flex h-full items-center gap-3 rounded-2xl border border-ink-4/15 bg-white p-3 text-left transition-colors hover:border-brand-green/40 sm:flex-col sm:items-stretch sm:gap-0 sm:p-4",
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+              FH_POINTER,
+            )}
+          >
+            {post.cover ? (
+              <img
+                src={post.cover}
+                alt=""
+                width={1200}
+                height={630}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[1200/630] w-24 shrink-0 rounded-lg object-cover sm:w-full sm:rounded-xl"
+              />
+            ) : null}
+            <span className="flex min-w-0 flex-1 flex-col sm:mt-3">
+              <span className="block font-display text-base leading-snug text-ink">{post.title}</span>
+              <span className="mt-1 hidden text-sm leading-relaxed text-ink-2 sm:line-clamp-2">{post.excerpt}</span>
+              <span className="mt-1.5 block text-sm font-medium text-brand-green-ink sm:mt-auto sm:pt-2">
+                Đọc và thử với số của bạn →
+              </span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 /**
  * NO `<Reveal>` ON THIS SURFACE, and it used to have it.
@@ -48,6 +94,7 @@ export default function BlogPage() {
   const news = newsPosts();
   const pageCount = Math.max(1, Math.ceil(news.length / BLOG_PAGE_SIZE));
   const initialPosts = news.slice(0, BLOG_PAGE_SIZE);
+  const guides = POSTS.filter((post) => postKind(post) === "guide");
   const pathCard = cn(
     "flex h-full flex-col rounded-2xl border border-ink-4/15 bg-white p-5 text-left transition-colors hover:border-brand-green/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
     FH_POINTER,
@@ -125,18 +172,42 @@ export default function BlogPage() {
               </ul>
             </nav>
 
-            <section aria-labelledby="tool-guides-title" className="mx-auto mt-12 max-w-3xl">
+            {/* Tool guides: the first GUIDE_PREVIEW as compact cards, the rest
+                behind a native <details>. Every link is in the server HTML;
+                the summary sits between the two lists, so opening and closing
+                never moves it or the focus away from where the reader is. */}
+            <section aria-labelledby="tool-guides-title" data-tool-guides="true" className="mx-auto mt-12 max-w-3xl">
               <h2 id="tool-guides-title" className="font-display text-2xl text-ink">Tính thử trước khi quyết định</h2>
-              {POSTS.filter((post) => postKind(post) === "guide").map((post) => (
-                <Link key={post.slug} href={`/blog/${post.slug}/`} className={cn(pathCard, "mt-4 sm:flex-row sm:items-center sm:gap-6")}>
-                  <img src={post.cover} alt="" width={1200} height={630} className="mb-4 aspect-[1200/630] w-full rounded-xl object-cover sm:mb-0 sm:w-56" />
-                  <span>
-                    <span className="block font-display text-xl text-ink">{post.title}</span>
-                    <span className="mt-2 block text-sm leading-relaxed text-ink-2">{post.excerpt}</span>
-                    <span className="mt-3 block text-sm font-medium text-brand-green-ink">Đọc và thử với số của bạn →</span>
-                  </span>
-                </Link>
-              ))}
+              <GuideList posts={guides.slice(0, GUIDE_PREVIEW)} />
+              {guides.length > GUIDE_PREVIEW ? (
+                <details className="group mt-3">
+                  <summary
+                    className={cn(
+                      "inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full text-sm font-medium text-brand-green-ink [&::-webkit-details-marker]:hidden",
+                      "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+                      FH_POINTER,
+                    )}
+                  >
+                    <span className="group-open:hidden">Xem tất cả {guides.length} bài hướng dẫn</span>
+                    <span className="hidden group-open:inline">Thu gọn</span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      className="transition-transform group-open:rotate-180"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </summary>
+                  <GuideList posts={guides.slice(GUIDE_PREVIEW)} />
+                </details>
+              ) : null}
             </section>
 
             <section
