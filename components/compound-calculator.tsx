@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { AccumulationLearningPanel } from "@/components/accumulation-learning-panel";
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { AreaChart } from "@/components/calc/chart/area-chart";
@@ -12,6 +14,19 @@ import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
 import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { onlyTried, useTrialStack } from "@/components/calc/learning-trials";
+import {
+  COMPOUND_TRIAL_KEYS,
+  compoundDisplayable,
+  compoundImpactView,
+  compoundTimelineView,
+  compoundTrialAvailability,
+  compoundTrialLabel,
+  makeCompoundTrial,
+  type CompoundSnapshot,
+  type CompoundTrialKey,
+} from "@/components/compound-learning";
+import { COMPOUND_LEARNING } from "@/content/calculators/compound-learning";
 import {
   formatDecimal,
   formatMoney,
@@ -21,7 +36,7 @@ import {
 } from "@/lib/calc/number";
 import { computeCompound, MAX_COMPOUND_YEARS } from "@/lib/calc/compound";
 import { compoundChartModel } from "@/lib/calc/charts/compound-chart";
-import type { Compounding } from "@/lib/calc/finance";
+import { periodsPerYear, type Compounding } from "@/lib/calc/finance";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { COMPOUND as C } from "@/content/calculators/compound";
 
@@ -58,15 +73,41 @@ export function CompoundCalculator({
 }) {
   // The second object formats while typing, by the grammar each key is PARSED
   // with below — see `FieldFormats`. The compounding select formats nothing.
-  const fields = useCalcFields(
-    {
-      principal: C.form.defaultPrincipal,
-      rate: C.form.defaultRate,
-      years: C.form.defaultYears,
-      compounding: C.form.defaultCompounding,
-      contribution: C.form.defaultContribution,
-    },
+  const initialValues = {
+    principal: C.form.defaultPrincipal,
+    rate: C.form.defaultRate,
+    years: C.form.defaultYears,
+    compounding: C.form.defaultCompounding,
+    contribution: C.form.defaultContribution,
+  };
+  const raw = useCalcFields(
+    initialValues,
     { principal: "money", rate: "rate", years: "rate", contribution: "money" },
+  );
+
+  /*
+   * THE F3 TRIAL STACK (2026-09-29): a press adds 1 triệu PER COMPOUNDING
+   * PERIOD through the raw binding; every reader action — a keystroke, the
+   * compounding select — goes through `fields` and retires the trials.
+   */
+  const learning = useTrialStack<CompoundTrialKey, CompoundSnapshot>(raw.values);
+  /** The snapshot the panel's cursor is on; null = the last one. */
+  const [pickedPoint, setPickedPoint] = useState<number | null>(null);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initialValues) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          learning.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+  };
+  const pristine = (Object.keys(initialValues) as (keyof typeof initialValues)[]).every(
+    (key) => raw.values[key] === initialValues[key],
   );
 
   const principal = parseMoney(fields.values.principal);
@@ -120,8 +161,47 @@ export function CompoundCalculator({
   const anyInvalid =
     principalInvalid || rateInvalid || yearsInvalid || contributionInvalid;
 
+  // --- the F3 panel: every figure from `result` or a trial's record ---
+  const compounding = fields.values.compounding as Compounding;
+  const latestTrial = learning.trials.at(-1) ?? null;
+  // Past the formatter's display boundary there is no printable figure: no
+  // vessel, no trial, no impact.
+  const printable = compoundDisplayable(result, principal ?? 0);
+  const trialImpact =
+    latestTrial !== null && result !== null && printable ? compoundImpactView(latestTrial, result, compounding) : null;
+  const tryContribution = () => {
+    const trial = makeCompoundTrial({ values: raw.values, revision: learning.state.revision, result });
+    if (trial === null) return;
+    learning.dispatch({ type: "apply", trial });
+    raw.bind("contribution").onValueChange(trial.after.contribution);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    learning.dispatch({ type: "undo" });
+    raw.bind("contribution").onValueChange(latestTrial.before.contribution);
+  };
+  const timeline = compoundTimelineView(result, principal ?? 0, contribution ?? 0, compounding, pickedPoint);
+  const L = COMPOUND_LEARNING;
+  /**
+   * Why the panel has no figure, from the state itself — never the broad
+   * "nothing to compute" predicate, which also covers a term shorter than one
+   * period and an unrepresentable growth. Only a real bad field gets the fix.
+   */
+  const empty =
+    result !== null
+      ? printable
+        ? null
+        : { text: L.tooLarge, fix: false, trial: L.blocked.tooLarge }
+      : anyInvalid
+        ? { text: L.unknown, fix: true, trial: L.blocked.invalid }
+        : principal === 0 && contribution === 0
+          ? { text: L.nothing, fix: false, trial: L.blocked.nothing }
+          : (years ?? 0) * periodsPerYear(compounding) < 1
+            ? { text: L.noPeriod, fix: false, trial: L.blocked.noPeriod }
+            : { text: L.noAnswer, fix: false, trial: L.blocked.noAnswer };
+
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <CalculatorLayout
         formId={FORM_ID}
         columns="split"
@@ -209,6 +289,27 @@ export function CompoundCalculator({
               </p>
             ) : null}
           </>
+        }
+        learning={
+          <AccumulationLearningPanel
+            marker="compound"
+            copy={L}
+            sample={pristine || onlyTried(learning.trials, initialValues)}
+            view={timeline}
+            emptyText={empty?.text ?? L.unknown}
+            emptyFix={empty?.fix ?? false}
+            onIndex={setPickedPoint}
+            formId={FORM_ID}
+            trial={{
+              keys: COMPOUND_TRIAL_KEYS,
+              labels: { contribution: compoundTrialLabel(compounding) },
+              availability: { contribution: compoundTrialAvailability(empty?.trial ?? null, raw.values) },
+              canUndo: latestTrial !== null,
+              onTry: tryContribution,
+              onUndo: undoTrial,
+            }}
+            impact={trialImpact}
+          />
         }
         chart={
           <ChartFigure model={chart}>
