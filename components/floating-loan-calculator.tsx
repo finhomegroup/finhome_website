@@ -39,6 +39,8 @@ import { fill } from "@/lib/calc/charts/labels";
 import type { DisclosedSetting } from "@/lib/calc/disclosed-settings";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { FLOATING_LOAN as C } from "@/content/calculators/floating-loan";
+import { floatingLesson } from "@/components/floating-learning";
+import { FloatingLearningPanel } from "@/components/floating-learning-panel";
 
 /*
  * CSV row 4 ("Hai cột"): "ưu tiên khoản trả trước/sau ưu đãi và tháng đổi lãi;
@@ -112,6 +114,13 @@ export function FloatingLoanCalculator({
    */
   const [stressPoints, setStressPoints] = useState<number>(initialStressPoints);
 
+  /**
+   * The month the learning panel LOOKS AT. A view state only: it never edits
+   * a field. Null means "the boundary" (or month 1 without a promotion); a
+   * pick outlives edits and is clamped to the term the schedule now has.
+   */
+  const [pickedMonth, setPickedMonth] = useState<number | null>(null);
+
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],
   );
@@ -180,7 +189,7 @@ export function FloatingLoanCalculator({
    * headline, the chart, the phase table and the detail figures all read the
    * SELECTED scenario, so they cannot describe three different assumptions.
    */
-  const stress =
+  const computed =
     fieldsUsable && amount !== null
       ? compareRateStress({
           amount,
@@ -198,6 +207,26 @@ export function FloatingLoanCalculator({
         })
       : null;
 
+  // Read from the SAME comparison the rows use; the budget only if typed.
+  // Invalid input, a calculation limit and a display limit are kept apart,
+  // so the panel never blames a field that every check accepted.
+  const lesson = floatingLesson(computed, pickedMonth, budgetInvalid ? null : budget, fieldsUsable);
+
+  /**
+   * ONE REASON FOR THE WHOLE TOOL. When the lesson reports a calculation,
+   * money-display or rate-display limit, every field is valid — so the page
+   * must neither blame a field nor print what it cannot show. The engine's
+   * result is then withheld from EVERY presentation below (rows, pinned
+   * answer, chart, detail table): `stress` is null exactly as on invalid
+   * input, but the result status and the chart name the lesson's own reason
+   * instead of "ô đang có lỗi". The engine, formulas and defaults are
+   * untouched; a valid ordinary result passes through unchanged.
+   */
+  const limitKind =
+    lesson.kind === "modelLimit" || lesson.kind === "displayLimit" || lesson.kind === "rateLimit"
+      ? lesson.kind
+      : null;
+  const stress = limitKind === null ? computed : null;
   const result = stress?.selected.loan ?? null;
   const stressed = stressPoints > 0;
 
@@ -222,6 +251,10 @@ export function FloatingLoanCalculator({
   const chart = floatingChartModel(result, budget, {
     ...CHART_UI.money,
     ...C.chart,
+    // A limit is not an input error: the chart names the same reason.
+    ...(limitKind === null
+      ? {}
+      : { unavailableReason: C.limits[limitKind].chart, unavailableRecovery: C.limits[limitKind].recovery }),
   });
 
   const scenarioSettings: DisclosedSetting[] = [
@@ -247,10 +280,13 @@ export function FloatingLoanCalculator({
   ];
 
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <ExampleNotice
         pristine={pristine}
-        onReset={fields.reset}
+        onReset={() => {
+          fields.reset();
+          setPickedMonth(null);
+        }}
         className="mb-6"
       />
 
@@ -267,6 +303,7 @@ export function FloatingLoanCalculator({
                 help={C.form.amountHelp}
                 error={C.form.amountInvalid}
                 invalid={amountInvalid}
+                fieldKey="amount"
               />
               <NumberField
                 {...fields.bind("term")}
@@ -292,6 +329,7 @@ export function FloatingLoanCalculator({
                 help={C.form.promoRateHelp}
                 error={C.form.promoRateInvalid}
                 invalid={promoRateInvalid}
+                fieldKey="promoRate"
               />
             </FieldGroup>
 
@@ -303,6 +341,7 @@ export function FloatingLoanCalculator({
                 help={C.form.postRateHelp}
                 error={C.form.postRateInvalid}
                 invalid={postRateInvalid}
+                fieldKey="postRate"
               />
               {/* Optional, and blank by default — see the parse above for why
                   the tool never guesses this. Kept in the core group because a
@@ -314,6 +353,7 @@ export function FloatingLoanCalculator({
                 help={C.form.budgetHelp}
                 error={C.form.budgetInvalid}
                 invalid={budgetInvalid}
+                fieldKey="budget"
               />
             </FieldGroup>
 
@@ -363,6 +403,7 @@ export function FloatingLoanCalculator({
                 help={C.form.adjustStepHelp}
                 error={C.form.adjustStepInvalid}
                 invalid={adjustStepInvalid}
+                fieldKey="adjustStep"
               />
               <NumberField
                 {...fields.bind("adjustEvery")}
@@ -379,6 +420,7 @@ export function FloatingLoanCalculator({
                 help={C.form.rateCapHelp}
                 error={C.form.rateCapInvalid}
                 invalid={rateCapInvalid}
+                fieldKey="rateCap"
               />
             </AdvancedFields>
           </>
@@ -402,7 +444,19 @@ export function FloatingLoanCalculator({
           <>
             {/* The promo instalment, the one after it, the month it changes and
                 the gap — which is the whole point of the page. */}
-            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+            <ResultGroup
+              title={C.form.resultTitle}
+              anchorId={RESULT_ID}
+              // Outside the live rows (see ResultGroup): the reason the rows
+              // below read "—", said once, never blaming a field.
+              status={
+                limitKind === null ? undefined : (
+                  <p data-floating-limit={limitKind} className="mt-2 text-sm leading-relaxed text-ink">
+                    {C.limits[limitKind].result} {C.limits[limitKind].recovery}
+                  </p>
+                )
+              }
+            >
               <ResultRow
                 label={C.form.firstPaymentLabel}
                 value={money(result?.firstPayment)}
@@ -559,6 +613,14 @@ export function FloatingLoanCalculator({
               </p>
             ) : null}
           </>
+        }
+        learning={
+          <FloatingLearningPanel
+            sample={pristine}
+            lesson={lesson}
+            onMonth={setPickedMonth}
+            formId={FORM_ID}
+          />
         }
         chart={
           /* Outside every ResultGroup: it must not be re-announced on each

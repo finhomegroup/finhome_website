@@ -250,6 +250,35 @@ export const FLOATING_LOAN = {
       "Ô đang có lỗi được tô đỏ kèm lời giải thích riêng. Thường là một trong năm ô: số tiền vay, kỳ hạn, số tháng ưu đãi (phải nhỏ hơn kỳ hạn), lãi suất ưu đãi, hoặc lãi suất sau ưu đãi.",
   },
 
+  // WHOLE-TOOL LIMIT STATES (2026-09-30). Every field passes its own check,
+  // so no field is red and the chart's "ô đang có lỗi" sentence would blame
+  // nothing real. The page reads the SAME reason the "Xem từng tháng" lesson
+  // computed and withholds every figure past its display range — result
+  // rows, the pinned answer, the chart and the detail table — instead of
+  // printing "— ₫", "—/năm" or rounded giant quantities.
+  limits: {
+    modelLimit: {
+      result:
+        "Chưa hiện được kết quả: các ô đều hợp lệ, nhưng với các số hiện tại, phép tính lịch trả nợ vượt giới hạn tính toán của công cụ.",
+      chart: "Chưa vẽ được biểu đồ: với các số hiện tại, phép tính lịch trả nợ vượt giới hạn tính toán của công cụ.",
+      recovery: "Không ô nào đang báo lỗi. Hãy xem lại các số đã nhập.",
+    },
+    displayLimit: {
+      result:
+        "Chưa hiện được các con số: lịch trả nợ vẫn được tính, nhưng có khoản tiền quá lớn để hiển thị (từ 10^18 ₫ trở lên), nên trang không in các con số đó để khỏi gây hiểu sai.",
+      chart: "Chưa vẽ được biểu đồ: có khoản tiền quá lớn để hiển thị (từ 10^18 ₫ trở lên).",
+      recovery:
+        "Không ô nào đang báo lỗi. Phần “Xem từng tháng quanh mốc hết ưu đãi” ở trên chỉ ra ô cần sửa: số tiền vay, ngân sách tháng, hoặc cả hai.",
+    },
+    rateLimit: {
+      result:
+        "Chưa hiện được các con số: lịch trả nợ vẫn được tính, nhưng có mức lãi suất quá lớn để hiển thị (từ 10^18 %/năm trở lên), nên trang không in các con số đó để khỏi gây hiểu sai.",
+      chart: "Chưa vẽ được biểu đồ: có mức lãi suất quá lớn để hiển thị (từ 10^18 %/năm trở lên).",
+      recovery:
+        "Không ô nào đang báo lỗi. Phần “Xem từng tháng quanh mốc hết ưu đãi” ở trên chỉ ra ô lãi suất cần sửa.",
+    },
+  },
+
   formula: {
     title: "Cách tính",
     body: [
