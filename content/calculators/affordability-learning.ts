@@ -37,31 +37,62 @@ export const AFFORDABILITY_LEARNING = {
   },
 
   /**
-   * The 3D picture beside the card (concept A, approved 2026-09-28). It holds
-   * NO quantity: the figures in the legend are the engine's, in HTML, rounded.
-   * The picture never changes with the answer, and names no price, area or
-   * lender's decision.
+   * The scene (living infographic F1, 2026-09-29). The raster — a miniature
+   * apartment, two trays and a box — is unlabelled CONTEXT: nothing is laid
+   * on it and tray volume means nothing. Below it, two code-drawn readings,
+   * each a bar whose 100% is named: the price (own money into it + the loan)
+   * and the savings (into the price, fees outside it, unused, and the
+   * reserve kept apart). The reserve is never part of the price.
    */
-  illustration: {
-    badge: "Hình minh họa",
-    title: "Tiền mua nhà và khoản giữ lại",
+  scene: {
     alt: "Hình minh họa 3D một căn hộ thu nhỏ. Phía trước có một khay xanh đậm và một khay xanh nhạt đựng tiền, bên cạnh là một hộp tiết kiệm đặt riêng.",
-    parts: {
-      own: { label: "Khay xanh đậm", meaning: "tiền của bạn trả vào giá nhà" },
-      loan: { label: "Khay xanh nhạt", meaning: "khoản vay ước tính" },
-      reserve: { label: "Hộp đặt riêng", meaning: "quỹ dự phòng, không dùng mua nhà" },
-    },
+    title: "Tiền mua nhà đến từ đâu, và phần nào được giữ lại",
+
+    /** Reading 1: 100% = the reference price. */
+    priceHeading: "Tầm giá tham khảo khoảng {price}",
+    priceWhole: "Cả thanh là tầm giá: tiền tự có vào giá cộng khoản vay.",
+    priceOwn: "Tiền tự có vào giá",
+    priceOwnMeaning: "phần giá trả bằng tiền của bạn",
+    priceLoan: "Khoản vay",
+    priceLoanMeaning: "theo giả định đã nhập, không có nghĩa ngân hàng đã duyệt",
+
+    /** Reading 2: 100% = the savings typed. */
+    savingsHeading: "Tiền tích lũy khoảng {savings}",
+    savingsWhole: "Cả thanh là tiền tích lũy bạn nhập. Phần dự phòng không vào giá nhà.",
+    savingsToPrice: "Vào giá nhà",
+    savingsFees: "Phí mua ngoài giá",
+    savingsUnused: "Chưa dùng tới",
+    savingsReserve: "Dự phòng giữ riêng",
+    /** The held-back trade-off, stated as the mechanism, not a prediction. */
+    tradeoff:
+      "Giữ thêm dự phòng thì tiền dùng được để mua ít đi: tầm giá có thể thấp hơn, đổi lại bạn có khoản đệm lớn hơn nếu thu nhập gián đoạn.",
+    reserveOver:
+      "Quỹ dự phòng bạn nhập là {typed}, lớn hơn tiền tích lũy, nên chỉ giữ riêng được {kept} — toàn bộ tiền tích lũy.",
+    /** Exact row, only when the typed reserve exceeds the savings. */
+    reserveTyped: "Dự phòng bạn nhập",
+    noSavings: "Chưa có tiền tích lũy nào để chia, nên tầm giá chỉ dựa vào khoản vay.",
+    roundedNote: "Số đã làm tròn; số chính xác ở phần kết quả và ngay bên dưới.",
+    /** A real price with no loan in it — said, not left as a plausible 0. */
+    noLoanLtv:
+      "Tầm giá này không có khoản vay: mức vay tối đa đang nhập là 0%, nên toàn bộ giá là tiền tự có.",
+    noLoanCapacity:
+      "Tầm giá này không có khoản vay: ngân sách tháng không còn phần nào để trả nợ, nên toàn bộ giá là tiền tự có.",
+
+    details: "Xem số chính xác (đồng)",
+    exactPrice: "Tầm giá tham khảo",
+    unknown: "Chưa vẽ được: có ô nhập đang báo lỗi. Sửa ô đó rồi xem lại.",
+    limited:
+      "Chưa vẽ tầm giá: hãy nhập chi phí sinh hoạt thiết yếu. Thiếu con số này, tầm giá chỉ là giới hạn trên.",
+    none: "Với các số này chưa có tầm giá khả thi, nên chưa có gì để chia. Xem lý do ở phần kết luận.",
     /**
-     * Own money plus the loan IS the price; the purchase costs are paid from
-     * own money too but sit in neither tray. Said once, beside the legend.
+     * A figure too large to print exactly, or a calculation past the tool's
+     * limit: nothing is drawn. No field is red; the card below this scene
+     * names the fields to check and jumps to each (`limits`).
      */
-    feesNote:
-      "Chi phí mua nhà ngoài giá cũng trả bằng tiền tự có, nhưng không nằm trong hai khay; xem ở kết quả chi tiết.",
-    /** Under the legend when it carries figures. */
-    figuresNote: "Số lấy từ kết quả đang hiển thị, đã làm tròn.",
-    /** When there is no readable price to divide. */
-    noFigures: "Số cho từng phần sẽ hiện khi công cụ có tầm giá đọc được.",
-    caption: "Hình không thể hiện giá, diện tích hay việc ngân hàng duyệt vay.",
+    display:
+      "Chưa vẽ được: có con số quá lớn để hiển thị chính xác (từ 10^18 trở lên). Các ô cần xem lại được nêu ở phần kết luận bên dưới.",
+    model:
+      "Chưa vẽ được: với các số hiện tại, phép tính vượt giới hạn tính toán của công cụ. Các ô cần xem lại được nêu ở phần kết luận bên dưới.",
   },
 
   undo: "Hoàn tác lần thử",
@@ -140,5 +171,46 @@ export const AFFORDABILITY_LEARNING = {
     /** A real change none of the named causes fits: say it happened, no invented cause. */
     changedOther:
       "Tầm giá đổi theo các giới hạn đang áp dụng với số của bạn. Xem số chính xác bên dưới và mục “Giới hạn đang chặn” ở phần kết quả.",
+  },
+
+  /**
+   * THE WHOLE-TOOL LIMIT (release repair, 2026-09-30), commercial route
+   * only. Every field passes its own check, so no field is red and "có ô
+   * lỗi" would blame nothing real. The page then prints NO figure — rows,
+   * pinned answer, charts, details, tries and the comparison — and says why
+   * once, in the card, with a jump to each field it names. Kept here, beside
+   * the panel that holds that card, so the six release files stay the only
+   * files changed.
+   */
+  limits: {
+    /** The card's and the pinned answer's word. */
+    label: "Chưa hiển thị được",
+    display: {
+      title: "Chưa hiển thị được tầm giá: có con số quá lớn để in chính xác.",
+      reason:
+        "Với số hiện tại có con số từ 10^18 trở lên, nên trang không in tầm giá, khoản vay hay khoản trả để khỏi gây hiểu sai. Hãy xem lại {fields}.",
+    },
+    model: {
+      title: "Chưa tính được tầm giá: phép tính vượt giới hạn của công cụ.",
+      reason:
+        "Với số hiện tại, phép tính tầm giá vượt giới hạn tính toán của công cụ, nên trang không đưa ra con số nào. Hãy xem lại {fields}.",
+    },
+    /** Between two field names in the reason. */
+    join: ", ",
+    /** In place of the result rows. */
+    rows: "Trang chưa in tầm giá, khoản vay hay khoản trả cho các số hiện tại. Lý do và các ô cần xem lại ở phần kết luận bên dưới.",
+    /** The pinned answer's value. */
+    cta: "Chưa hiển thị được",
+    /** In place of the charts. */
+    chart:
+      "Chưa vẽ biểu đồ: các số hiện tại vượt giới hạn hiển thị hoặc tính toán của công cụ. Các ô cần xem lại được nêu ở phần kết luận.",
+    /** A mốc already taken stays; the current side cannot be read. */
+    compare:
+      "Mốc đã ghi vẫn giữ nguyên, nhưng số hiện tại vượt giới hạn hiển thị hoặc tính toán nên chưa so được. Sửa ô được nêu ở phần kết luận là so lại được.",
+    /** Both tries, said once. */
+    blocked:
+      "Chưa thử được: số hiện tại vượt giới hạn hiển thị hoặc tính toán của công cụ. Sửa ô được nêu ở phần kết luận trước.",
+    /** An advanced setting's summary value that cannot be printed. */
+    settingTooLarge: "quá lớn để hiển thị",
   },
 } as const;
