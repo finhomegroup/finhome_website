@@ -181,7 +181,9 @@ export const TERM_DEPOSIT = {
     defaultBreak: "9",
 
     resultTitle: "Kết quả",
-    totalValueLabel: "Nhận được cuối kỳ",
+    // NARROWED 2026-09-29: a total if held to the end of the plan, not a
+    // promise of cash — interest paid out along the way is inside it.
+    totalValueLabel: "Tổng gốc và lãi nếu giữ đến hết kế hoạch",
     totalInterestLabel: "Tổng lãi",
     effectiveLabel: "Lãi suất thực theo năm",
 
@@ -324,8 +326,33 @@ export const TERM_DEPOSIT = {
     // that reconciliation, so it says so rather than implying a single payout.
     earlyPayoutScopeNotice:
       "Bạn đang nhận lãi hằng tháng hoặc hằng quý, nên các con số ở phần rút trước hạn là tổng lãi ĐƯỢC HƯỞNG cho thời gian đã gửi, không phải số tiền trả một lần khi tất toán: một phần trong đó bạn đã nhận trước rồi. Khi tất toán, ngân hàng còn tính lại phần lãi đã trả cho kỳ đang dở theo điều khoản hợp đồng — công cụ không mô phỏng việc đối trừ đó. Nếu cần con số chính xác cho một ngày cụ thể, hãy hỏi ngân hàng.",
+    /** Right under the primary rows, whenever interest is paid out during the term. */
+    paidAlongTotalNotice:
+      "Bạn nhận lãi hằng tháng hoặc hằng quý, nên tổng trên gồm cả lãi đã nhận dần, không phải một khoản trả một lần cuối kỳ.",
     payoutMismatchNotice:
-      "Kỳ hạn không chia hết cho chu kỳ trả lãi bạn chọn, nên không có sản phẩm nào như vậy. Ví dụ kỳ hạn 5 tháng không thể trả lãi hằng quý. Hãy đổi kỳ hạn hoặc đổi cách nhận lãi.",
+      // A MODEL limitation, not a claim about what banks offer (2026-09-29).
+      "Công cụ này chỉ tính được khi kỳ hạn chia hết cho chu kỳ trả lãi bạn chọn, ví dụ trả lãi hằng quý cần kỳ hạn 3, 6, 9 hoặc 12 tháng. Hãy đổi kỳ hạn hoặc đổi cách nhận lãi.",
+    // SPLIT 2026-09-29: the engine also returns nothing past its horizon or
+    // when the figures overflow, and calling those a payout mismatch sent the
+    // reader after the wrong field.
+    horizonLimitNotice:
+      "Kỳ hạn nhân số kỳ vượt quá {limit} tháng, giới hạn của công cụ. Hãy giảm số kỳ hoặc kỳ hạn.",
+    noResultNotice:
+      "Với các số này công cụ không tính được kết quả chính xác — ví dụ lãi suất quá lớn. Hãy thử với số nhỏ hơn.",
+    /**
+     * The date view's engine bound: ONE term longer than the supported
+     * horizon (`planDeposit` refuses it for every date). The date view has no
+     * cycle count, so this names the term alone.
+     */
+    dateTermLimitNotice:
+      "Kỳ hạn vượt quá {limit} tháng, giới hạn của công cụ, nên chưa tính được ngày nào. Hãy nhập kỳ hạn ngắn hơn.",
+    /**
+     * Sign-aware names for `earlyLoss` (term-rate interest − early interest).
+     * Negative when the early rate typed is ABOVE the term rate: that is more
+     * interest, not a loss, and the row says so with the magnitude.
+     */
+    earlyGainLabel: "Lãi nhiều hơn khi rút sớm (lãi rút sớm bạn nhập cao hơn lãi kỳ hạn)",
+    earlyNoDifferenceLabel: "Chênh lệch lãi do rút trước hạn",
   },
 
   // ORIGINAL ROW 20's figure: three bars over the same deposit, so the gap
