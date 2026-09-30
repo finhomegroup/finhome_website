@@ -204,15 +204,18 @@ describe("the layout wiring", () => {
       nextSteps: createElement("div", { "data-test": "next-steps" }),
     });
     const result = markupRegion(html, 'data-calc-region="result"');
-    // `<figure>` is the chart; an `<svg>` search would now find the status
-    // card's icon, which sits above the actions by design.
-    expect(result!).toContain("<figure");
-    expect(result!.indexOf('data-test="actions"')).toBeLessThan(
-      result!.indexOf("<figure"),
-    );
-    expect(result!.indexOf("<figure")).toBeLessThan(
-      result!.indexOf('data-test="next-steps"'),
-    );
+    // The budget chart's own `<figure>`, found by its title. The charts still
+    // follow the actions.
+    const chartAt = result!.lastIndexOf("<figure", result!.indexOf(AUTO_LOAN.chart.title));
+    expect(chartAt).toBeGreaterThan(-1);
+    expect(result!.indexOf('data-test="actions"')).toBeLessThan(chartAt);
+    expect(chartAt).toBeLessThan(result!.indexOf('data-test="next-steps"'));
+    // SUPERSEDED ORDER, changed on purpose (the user's later correction): the
+    // scene is no longer a hook above the form; it leads the result column,
+    // before the actions and charts.
+    expect(result!).toContain('data-auto-learning="true"');
+    expect(html.indexOf('data-auto-learning="true"')).toBeGreaterThan(html.indexOf('data-calc-region="form"'));
+    expect(result!.indexOf('data-auto-learning="true"')).toBeLessThan(result!.indexOf('data-test="actions"'));
   });
 });
 
@@ -330,7 +333,10 @@ describe("the semantic result status", () => {
 
   it("syncs the pinned summary, and keeps the CTA the brand's button", async () => {
     const html = await render({ defaultRunning: "5.000.000" });
-    const pinned = html.slice(html.indexOf('data-calc-answer="true"'), html.indexOf("<button"));
+    // Bounded by the CTA's OWN button, after the pin: since the 2026-09-29
+    // hook order the page's first button is the panel's entry above the form.
+    const pinAt = html.indexOf('data-calc-answer="true"');
+    const pinned = html.slice(pinAt, html.indexOf("<button", pinAt));
     expect(pinned).toContain('data-result-status="shortfall"');
     expect(pinned).toContain(C.statusLabels.shortfall);
     expect(html).toContain("bg-brand-green-ink");
@@ -346,9 +352,15 @@ describe("the semantic result status", () => {
 
   it("marks only the excess in the figure, and does not flag an input", async () => {
     const html = await render({ defaultRunning: "5.000.000" });
-    const figure = html.slice(html.indexOf("<figure"), html.indexOf("</figure>"));
+    // The budget chart's own figure, found by its title: since 2026-09-28 the
+    // learning scene — also a `<figure>` — comes first in the chart slot.
+    const start = html.lastIndexOf("<figure", html.indexOf(AUTO_LOAN.chart.title));
+    const figure = html.slice(start, html.indexOf("</figure>", start));
+    expect(figure).not.toContain("data-learning-illustration");
     expect(figure.split('data-chart-mark="shortfall"').length - 1).toBe(1);
     expect(figure).toContain(AUTO_LOAN.chart.shortfallMark);
+    // Only the chart marks a shortfall; the scene does not.
+    expect(html.split('data-chart-mark="shortfall"').length - 1).toBe(1);
     expect(html).not.toContain('aria-invalid="true"');
   });
 

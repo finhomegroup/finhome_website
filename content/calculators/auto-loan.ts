@@ -84,8 +84,9 @@ export const AUTO_LOAN = {
     termUnitYears: "Năm",
     termUnitMonths: "Tháng",
     defaultTermUnit: "years",
-    termHelp: "Nhập theo kỳ hạn trong báo giá của bạn.",
-    termInvalid: "Vui lòng nhập kỳ hạn là số nguyên lớn hơn 0.",
+    termHelp:
+      "Nhập theo kỳ hạn trong báo giá của bạn. Có thể nhập số năm lẻ; công cụ hỗ trợ từ 1 đến 1.200 tháng (100 năm) — giới hạn của công cụ, không phải kỳ hạn tối đa của ngân hàng.",
+    termInvalid: "Nhập kỳ hạn lớn hơn 0 mà khi quy ra (làm tròn) được từ 1 đến 1.200 tháng.",
     defaultTerm: "5",
 
     resultTitle: "Khoản vay xe",

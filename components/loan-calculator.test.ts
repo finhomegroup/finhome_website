@@ -18,12 +18,42 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { markupRegion } from "@/lib/markup-region";
 
 const CONTENT = "@/content/calculators/loan";
 
 /** Every `aria-live="polite"` in the markup, results-level and field-level. */
 function countPolite(html: string): number {
   return (html.match(/aria-live="polite"/g) ?? []).length;
+}
+
+/** The A2 learning panel's marker; it renders once, on every state here. */
+const LEARNING = 'data-mortgage-learning="true"';
+/** `ResultGroup`'s opt-in `visual` wrapper, which now holds that panel. */
+const VISUAL = 'data-result-visual="true"';
+
+/**
+ * The page without the A2 learning panel. The panel's own sub-headings are
+ * not result groups, and `resultGroups` below would read them as such.
+ *
+ * Since the visual-first correction (2026-09-29) the panel sits INSIDE the
+ * summary `ResultGroup`, in its `visual` wrapper directly after the group's
+ * `h2`. So the WHOLE wrapper element is removed — not only the `<section>` —
+ * otherwise the empty wrapper `<div>` would stand where `resultGroups`
+ * expects the group's live `<div>`, and the summary would read as not live.
+ * The wrapper must contain the panel, exactly once each; removing it leaves
+ * the `h2` adjacent to the live rows, as the group renders without a visual.
+ * The panel's own no-live contract is asserted in
+ * `mortgage-learning-render.test.ts` and `result-visual-first.test.ts`.
+ */
+function withoutLearning(html: string): string {
+  const wrapper = markupRegion(html, VISUAL, "div");
+  if (wrapper === null) throw new Error("no result visual wrapper");
+  if (wrapper.split(LEARNING).length - 1 !== 1) throw new Error("the visual wrapper does not hold exactly one learning panel");
+  const stripped = html.replace(`${wrapper}</div>`, "");
+  if (stripped.includes(LEARNING)) throw new Error("more than one learning panel");
+  if (stripped.includes(VISUAL)) throw new Error("more than one result visual");
+  return stripped;
 }
 
 /**
@@ -36,8 +66,9 @@ function countPolite(html: string): number {
  * wrappers' Tailwind classes keeps the test off their styling.
  */
 function resultGroups(html: string): { title: string; live: boolean }[] {
+  expect(html.split(LEARNING).length - 1).toBe(1);
   return [
-    ...html.matchAll(/<h([23])[^>]*>(.*?)<\/h\1>\s*<(?:div|dl)\b([^>]*)>/g),
+    ...withoutLearning(html).matchAll(/<h([23])[^>]*>(.*?)<\/h\1>\s*<(?:div|dl)\b([^>]*)>/g),
   ].map((match) => ({
     title: match[2],
     live: match[3].includes('aria-live="polite"'),

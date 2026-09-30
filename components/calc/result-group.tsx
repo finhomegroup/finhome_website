@@ -31,12 +31,23 @@ import { cn } from "@/lib/cn";
  * The heading id is DERIVED from `anchorId` rather than generated. `useId`
  * would make this a client component for no reason, and a derived id cannot
  * drift from the `id` the CTA was given.
+ *
+ * `visual` (OPT-IN, 2026-09-29, `vay-mua-nha` and `vay-mua-xe` only — the
+ * user's "Xem kết quả" should land on the picture, INSIDE the result card,
+ * with the numbers after it): the route's ONE living infographic, placed
+ * directly under the heading and ABOVE `status` and the rows. It is OUTSIDE
+ * the live region, so its controls (month steps, try/undo, form jumps) never
+ * sit inside `aria-live` and the page keeps its single announced region. The
+ * card surface is this group's own — the visual brings no second card — and
+ * below `sm` the side padding tightens so the figure keeps its 320 px width.
+ * Every other route passes nothing and renders exactly as before.
  */
 export function ResultGroup({
   title,
   className,
   live = true,
   anchorId,
+  visual,
   status,
   announcement,
   children,
@@ -47,6 +58,8 @@ export function ResultGroup({
   live?: boolean;
   /** Set on the ONE group `ResultCta` points at. See the note above. */
   anchorId?: string;
+  /** The route's living infographic, first in the card. See the note above. */
+  visual?: React.ReactNode;
   /**
    * The semantic result card (`ResultStatusCard`), placed under the heading
    * and ABOVE the live rows — the first thing read after arriving here, and
@@ -84,12 +97,18 @@ export function ResultGroup({
         // does take focus, even though it is never tabbed to.
         anchorId &&
           "scroll-mt-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green",
+        visual !== undefined && "max-sm:px-3",
         className,
       )}
     >
       <h2 id={titleId} className="font-display text-base font-medium text-ink">
         {title}
       </h2>
+      {visual !== undefined ? (
+        <div data-result-visual="true" className="mt-3">
+          {visual}
+        </div>
+      ) : null}
       {status}
       <div
         className="mt-2"

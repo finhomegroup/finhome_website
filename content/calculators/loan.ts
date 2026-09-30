@@ -49,8 +49,11 @@ export const LOAN = {
     defaultRate: "8,5",
 
     termLabel: "Kỳ hạn",
-    termHelp: "Thời gian vay. Kỳ hạn phổ biến ở Việt Nam là 15–25 năm.",
-    termInvalid: "Vui lòng nhập kỳ hạn là số nguyên lớn hơn 0.",
+    // 2026-09-29: the old error said "số nguyên" although 5,5 năm is accepted,
+    // and nothing named the upper bound the page now enforces.
+    termHelp:
+      "Thời gian vay. Kỳ hạn phổ biến ở Việt Nam là 15–25 năm. Có thể nhập số năm lẻ (ví dụ 5,5 năm = 66 tháng); công cụ hỗ trợ từ 1 đến 1.200 tháng (100 năm) — đây là giới hạn của công cụ, không phải kỳ hạn tối đa của ngân hàng.",
+    termInvalid: "Nhập kỳ hạn lớn hơn 0 mà khi quy ra (làm tròn) được từ 1 đến 1.200 tháng.",
     defaultTerm: "20",
     termUnitLabel: "Đơn vị kỳ hạn",
     termUnitYears: "Năm",

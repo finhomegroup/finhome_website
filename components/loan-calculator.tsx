@@ -20,8 +20,20 @@ import { ResultRow } from "@/components/calc/result-row";
 import { ResultTable } from "@/components/calc/result-table";
 import { SelectField } from "@/components/calc/select-field";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
+import { derivedTermMonths, termMonthsSupported } from "@/components/calc/term-months";
+import { onlyTried, useTrialStack } from "@/components/calc/learning-trials";
+import {
+  makeMortgageTrial,
+  mortgageAvailability,
+  mortgageImpactView,
+  mortgageRuler,
+  termTrialLabel,
+  type MortgageTrialKey,
+} from "@/components/mortgage-learning";
+import { MortgageLearningPanel } from "@/components/mortgage-learning-panel";
 import { CHART_UI } from "@/content/calculators/chart-ui";
 import { LOAN as C } from "@/content/calculators/loan";
+import { MORTGAGE_LEARNING } from "@/content/calculators/mortgage-learning";
 import { fill } from "@/lib/calc/charts/labels";
 import {
   loanChartModel,
@@ -39,6 +51,7 @@ import { DetailFigures } from "@/components/calc/detail-figures";
 import {
   computeLoan,
   yearlySummary,
+  type LoanResult,
   type PmiMode,
   type RepaymentMethod,
 } from "@/lib/calc/loan";
@@ -113,7 +126,7 @@ export function LoanCalculator({
   // Formats while typing, by the grammar each key is PARSED with below —
   // see `FieldFormats`. Money groups, a decimal takes a comma, the selects
   // format nothing.
-  const fields = useCalcFields(initial, {
+  const raw = useCalcFields(initial, {
     amount: "money",
     rate: "rate",
     term: "rate",
@@ -124,6 +137,35 @@ export function LoanCalculator({
     pmi: "rate",
     price: "money",
   });
+
+  /*
+   * THE 2026-09-28 A2 LEARNING PANEL. A press writes one field through the
+   * RAW binding; everything the READER does — every keystroke, every select,
+   * "Về ví dụ mẫu" — goes through `fields` below, which retires every trial
+   * first. So a trial never outlives the form it was made on, even when the
+   * reader types the same figure back, and undo never overwrites a typed
+   * value. See `components/calc/learning-trials.ts`.
+   */
+  const learning = useTrialStack<MortgageTrialKey, LoanResult>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initial) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          learning.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+    reset: () => {
+      learning.dispatch({ type: "reset" });
+      raw.reset();
+    },
+  };
+  /** The month the reader is reading; clamped to the schedule where it is used. */
+  const [selectedMonth, setSelectedMonth] = useState(1);
   const [granularity, setGranularity] = useState<LoanChartGranularity>("year");
 
   // "Still the worked example" is a plain comparison against the values the
@@ -131,6 +173,9 @@ export function LoanCalculator({
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],
   );
+  // A press on the example is still the example: the badge stays until the
+  // reader types.
+  const sample = pristine || onlyTried(learning.trials, initial);
 
   const amount = parseMoney(fields.values.amount);
   const rate = parseDecimal(fields.values.rate);
@@ -142,18 +187,17 @@ export function LoanCalculator({
   const pmi = parseDecimal(fields.values.pmi);
   const price = parseMoney(fields.values.price);
 
-  const termMonths =
-    term === null
-      ? null
-      : fields.values.termUnit === "years"
-        ? Math.round(term * 12)
-        : Math.round(term);
+  // The DERIVED whole-month count, checked against the site's 1 … 1.200-month
+  // support range BEFORE `computeLoan` is called (see `term-months.ts`): an
+  // enormous typed term used to ask the schedule for billions of rows. The
+  // fractional conversion is unchanged — 5,5 năm is 66 months.
+  const termMonths = derivedTermMonths(term, fields.values.termUnit);
 
   // Per-field validity, so each field can show its own message rather than one
   // banner for the whole form.
   const amountInvalid = amount === null || amount <= 0;
   const rateInvalid = rate === null || rate < 0;
-  const termInvalid = term === null || term <= 0;
+  const termInvalid = term === null || term <= 0 || !termMonthsSupported(termMonths);
   const extraInvalid = extra === null || extra < 0;
   const taxInvalid = tax === null || tax < 0;
   const insuranceInvalid = insurance === null || insurance < 0;
@@ -178,7 +222,7 @@ export function LoanCalculator({
     pmiInvalid;
 
   const result =
-    anyInvalid || termMonths === null
+    anyInvalid || !termMonthsSupported(termMonths)
       ? null
       : computeLoan({
           amount,
@@ -196,6 +240,31 @@ export function LoanCalculator({
 
   const money = (value: number | null | undefined) =>
     value === null || value === undefined ? null : `${formatMoney(value)} ₫`;
+
+  // --- the learning panel: every figure from `result` or a trial's record --
+  const latestTrial = learning.trials.at(-1) ?? null;
+  // The latest trial against the result on screen: because it holds, this IS
+  // the result for its `after` values.
+  const trialImpact =
+    latestTrial !== null && result !== null
+      ? mortgageImpactView(latestTrial, result, MORTGAGE_LEARNING.unitWords)
+      : null;
+  const tryKey = (key: MortgageTrialKey) => {
+    const trial = makeMortgageTrial({
+      key,
+      values: raw.values,
+      revision: learning.state.revision,
+      result,
+    });
+    if (trial === null) return;
+    learning.dispatch({ type: "apply", trial });
+    raw.bind(key).onValueChange(trial.after[key]);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    learning.dispatch({ type: "undo" });
+    raw.bind(latestTrial.key).onValueChange(latestTrial.before[latestTrial.key]);
+  };
   /**
    * The same figure as a RAW cell, for the expanded detail.
    *
@@ -288,14 +357,14 @@ export function LoanCalculator({
    * CTA, and one emphasised main answer.
    */
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <CalculatorLayout
         formId={FORM_ID}
         columns="split"
         form={
           <>
             <ExampleNotice
-              pristine={pristine}
+              pristine={sample}
               onReset={fields.reset}
               className="mb-6"
             />
@@ -454,6 +523,8 @@ export function LoanCalculator({
             // instalment leaves the screen while the lower ones are edited.
             // `money()` is the SAME formatter the primary row uses.
             sticky
+            // The result card opens with the tall scene: land on its TOP.
+            align="start"
             answer={{
               label: C.form.monthlyPaymentLabel,
               value: money(result?.monthlyPayment),
@@ -473,8 +544,36 @@ export function LoanCalculator({
               and the total always carries a value. When the loan clears inside
               the first month there is no full month to report, so the total
               switches to the one real payment rather than an invented one.
+
+              VISUAL FIRST (2026-09-29, the user's latest correction): the
+              learning scene is this group's `visual` — first in the result
+              card, OUTSIDE the live rows — so "Xem kết quả" lands on the
+              picture and the instalment follows it. It used to sit after the
+              answer in the layout's `learning` slot.
             */}
-            <ResultGroup title={C.form.resultTitle} anchorId={RESULT_ID}>
+            <ResultGroup
+              title={C.form.resultTitle}
+              anchorId={RESULT_ID}
+              visual={
+                <MortgageLearningPanel
+                  sample={sample}
+                  // The reference is the result before the latest press, so the
+                  // marks move on a stable axis while that press holds.
+                  ruler={mortgageRuler(result, selectedMonth, latestTrial?.beforeResult ?? null)}
+                  onMonth={setSelectedMonth}
+                  availability={{
+                    term: mortgageAvailability("term", raw.values, result),
+                    extra: mortgageAvailability("extra", raw.values, result),
+                  }}
+                  termLabel={termTrialLabel(raw.values.termUnit)}
+                  impact={trialImpact}
+                  canUndo={latestTrial !== null}
+                  formId={FORM_ID}
+                  onTry={tryKey}
+                  onUndo={undoTrial}
+                />
+              }
+            >
               <ResultRow
                 label={C.form.monthlyPaymentLabel}
                 // "Trả bao nhiêu mỗi tháng?" is this page's own title, so the

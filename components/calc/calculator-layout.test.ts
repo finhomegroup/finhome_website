@@ -66,6 +66,7 @@ function render(
     invalid?: boolean;
     detail?: boolean;
     sticky?: boolean;
+    learning?: boolean;
   } = {},
 ): string {
   const {
@@ -73,6 +74,7 @@ function render(
     invalid = false,
     detail = true,
     sticky = false,
+    learning = false,
   } = options;
 
   return renderToStaticMarkup(
@@ -104,6 +106,7 @@ function render(
           emphasis: true,
         }),
       ),
+      learning: learning ? createElement("div", { "data-test": "learning" }) : undefined,
       actions: createElement("div", { "data-test": "actions" }),
       chart: createElement("div", { "data-test": "chart" }),
       nextSteps: createElement("div", { "data-test": "next-steps" }),
@@ -196,6 +199,32 @@ describe("the three layout regions", () => {
     expect(at('data-test="next-steps"')).toBeLessThan(
       at('data-calc-region="detail"'),
     );
+  });
+
+  it("the opt-in learning slot sits between the answer and the actions, in both modes", () => {
+    // The 2026-09-29 living-infographic pilots: a 1440 × 1000 browser pass
+    // found "Làm gì tiếp" between the answer and the approved visual. The
+    // slot fixes that by SOURCE order — nothing is reordered by CSS.
+    for (const columns of ["split", "single"] as const) {
+      const html = render({ columns, learning: true });
+      const at = (needle: string) => html.indexOf(needle);
+      expect(at(`id="${RESULT_ID}"`)).toBeLessThan(at('data-test="learning"'));
+      expect(at('data-test="learning"')).toBeLessThan(at('data-test="actions"'));
+      expect(at('data-test="actions"')).toBeLessThan(at('data-test="chart"'));
+      expect(at('data-test="chart"')).toBeLessThan(at('data-test="next-steps"'));
+      // Inside the result region, outside the live announcement.
+      expect(subtreeOf(html, 'data-calc-region="result"')).toContain('data-test="learning"');
+      expect(subtreeOf(html, 'data-results-live="true"')).not.toContain('data-test="learning"');
+      expect(html).not.toMatch(/\border-(?:first|last|none|\d)/);
+    }
+  });
+
+  it("a route that passes no learning slot keeps the original order, with no slot at all", () => {
+    const html = render();
+    expect(html).not.toContain('data-test="learning"');
+    const at = (needle: string) => html.indexOf(needle);
+    expect(at(`id="${RESULT_ID}"`)).toBeLessThan(at('data-test="actions"'));
+    expect(at('data-test="actions"')).toBeLessThan(at('data-test="chart"'));
   });
 
   it("keeps the actions OUT of the live announcement", () => {

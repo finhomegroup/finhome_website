@@ -6,6 +6,21 @@ import { CalculatorLayout } from "@/components/calc/calculator-layout";
 import { ResultCta } from "@/components/calc/result-cta";
 import { BarChart } from "@/components/calc/chart/bar-chart";
 import { ChartFigure } from "@/components/calc/chart/chart-figure";
+import { LineChart } from "@/components/calc/chart/line-chart";
+import {
+  autoAvailability,
+  autoBalanceModel,
+  autoFlowView,
+  autoImpactView,
+  autoScene,
+  autoTermLabel,
+  makeAutoTrial,
+  type AutoTrialKey,
+} from "@/components/auto-learning";
+import { AutoLearningPanel } from "@/components/auto-learning-panel";
+import { AUTO_LEARNING as AL } from "@/content/calculators/auto-learning";
+import { onlyTried, useTrialStack } from "@/components/calc/learning-trials";
+import { derivedTermMonths, termMonthsSupported } from "@/components/calc/term-months";
 import {
   ExampleNotice,
   ExampleNoticeDetail,
@@ -167,10 +182,7 @@ export function autoLoanFormState(
   const tradeInInvalid = tradeIn === null || tradeIn < 0;
   const rateInvalid = rate === null || rate < 0;
 
-  const termMonths =
-    term === null
-      ? null
-      : Math.round(values.termUnit === "years" ? term * 12 : term);
+  const termMonths = derivedTermMonths(term, values.termUnit);
 
   // Gate the DERIVED month count, not only the entered term: `Math.round(0,4)`
   // is 0 and `computeLoan` rejects `termMonths <= 0`, so any 0 < term < 0,5
@@ -178,8 +190,12 @@ export function autoLoanFormState(
   // page then blamed on the deposit. A non-integer term stays legal on
   // purpose — 5,5 năm is 66 months, a real loan — which is why this gates
   // `termMonths`, not `Number.isInteger(term)`.
+  //
+  // And the UPPER end (2026-09-29): the count must also be within the site's
+  // 1 … 1.200-month support range, finite and a safe integer, before
+  // `computeAutoLoan` is called — never clamped. See `term-months.ts`.
   const termInvalid =
-    term === null || term <= 0 || termMonths === null || termMonths < 1;
+    term === null || term <= 0 || !termMonthsSupported(termMonths);
 
   const fieldsUsable =
     !priceInvalid &&
@@ -446,7 +462,33 @@ export function AutoLoanCalculator({
     reserve: C.form.defaultReserve,
     running: C.form.defaultRunning,
   };
-  const fields = useCalcFields(initial, AUTO_LOAN_FORMATS);
+  const raw = useCalcFields(initial, AUTO_LOAN_FORMATS);
+
+  /*
+   * THE 2026-09-28 A3 LEARNING PANEL. A press writes one field through the
+   * RAW binding; everything the READER does goes through `fields`, which
+   * retires every trial first — so a trial never outlives the form it was
+   * made on, even when the same figure is typed back, and undo never
+   * overwrites a typed value. See `components/calc/learning-trials.ts`.
+   */
+  const learning = useTrialStack<AutoTrialKey, AutoLoanFormState>(raw.values);
+  const fields = {
+    values: raw.values,
+    bind: (key: keyof typeof initial) => {
+      const binding = raw.bind(key);
+      return {
+        ...binding,
+        onValueChange: (next: string) => {
+          learning.dispatch({ type: "edit" });
+          binding.onValueChange(next);
+        },
+      };
+    },
+    reset: () => {
+      learning.dispatch({ type: "reset" });
+      raw.reset();
+    },
+  };
 
   // Whether anything on the page is still the worked example. `ExampleNotice`
   // turns this into a visible badge and a reset, which is the repair for a
@@ -455,7 +497,10 @@ export function AutoLoanCalculator({
   const pristine = (Object.keys(initial) as (keyof typeof initial)[]).every(
     (key) => fields.values[key] === initial[key],
   );
+  // A press on the example is still the example until the reader types.
+  const sample = pristine || onlyTried(learning.trials, initial);
 
+  const form = autoLoanFormState(fields.values);
   const {
     priceInvalid,
     downInvalid,
@@ -472,7 +517,7 @@ export function AutoLoanCalculator({
     totalCost,
     tradeInActive,
     budget,
-  } = autoLoanFormState(fields.values);
+  } = form;
 
   // The CTA's help wording only: the destination comes from the first
   // `aria-invalid="true"` field inside the form region.
@@ -513,21 +558,60 @@ export function AutoLoanCalculator({
   // The semantic state, once: the card, the pinned summary, the announcement
   // and the figure's annotation all read `vehicleBudgetStatus`.
   const statusView = autoLoanStatusView(vehicleBudgetStatus(budget), budget);
-  const announcement = useSettledText(announcementOf(statusView));
+
+  // --- the learning panel: every figure from `form` or a trial's record ----
+  const latestTrial = learning.trials.at(-1) ?? null;
+  const trialImpact =
+    latestTrial === null ? null : autoImpactView(latestTrial, form, labelOf(statusView));
+  const tryKey = (key: AutoTrialKey) => {
+    const trial = makeAutoTrial({
+      key,
+      values: raw.values,
+      revision: learning.state.revision,
+      state: form,
+      label: labelOf(statusView),
+    });
+    if (trial === null) return;
+    learning.dispatch({ type: "apply", trial });
+    raw.bind(key).onValueChange(trial.after[key]);
+  };
+  const undoTrial = () => {
+    if (latestTrial === null) return;
+    learning.dispatch({ type: "undo" });
+    raw.bind(latestTrial.key).onValueChange(latestTrial.before[latestTrial.key]);
+  };
+
+  // The ONE live sentence: what the latest press did, then the conclusion —
+  // so a press that leaves the verdict alone is still heard.
+  const announcement = useSettledText(
+    trialImpact === null
+      ? announcementOf(statusView)
+      : `${trialImpact.said} ${announcementOf(statusView)}`,
+  );
+  const balanceChart = autoBalanceModel(result);
 
   return (
-    <CalculatorCard>
-      <ExampleNotice
-        pristine={pristine}
-        onReset={fields.reset}
-        className="mb-6"
-      />
-
+    <CalculatorCard compact>
+      {/* VISUAL FIRST, INSIDE THE RESULT (2026-09-29, the user's latest
+          correction, superseding the full-width hook that stood above both
+          columns): the mortgage structure — form left, result card right —
+          with the ONE learning panel as the budget group's `visual`, at the
+          top of that card, and the numeric summary after it. Same component,
+          figures and trials; DOM order, no CSS reorder. The example notice
+          leads the form column, as on the mortgage page. */}
       <CalculatorLayout
         formId={FORM_ID}
         columns="split"
         form={
           <>
+            <ExampleNotice
+              pristine={sample}
+              onReset={fields.reset}
+              className="mb-6"
+            />
+            <h2 data-auto-form-heading="true" className="mb-4 font-display text-lg font-medium text-ink">
+              {AL.formHeading}
+            </h2>
             <FieldGroup title={C.form.vehicleGroup}>
               <NumberField
                 {...fields.bind("price")}
@@ -662,6 +746,8 @@ export function AutoLoanCalculator({
             // carries the ONE figure — same formatted string as the row below,
             // never a second rounding of it — and not the result column.
             sticky
+            // The result card opens with the tall scene: land on its TOP.
+            align="start"
             answer={{
               label: C.form.withCarLabel,
               value: money(budget?.withCar),
@@ -672,10 +758,36 @@ export function AutoLoanCalculator({
         primary={
           <>
             {/* THE ANSWER. Live now, and the loan group below is not: docs §4
-                allows exactly one announced region per page. */}
+                allows exactly one announced region per page. The scene is the
+                group's `visual`: first in the card, OUTSIDE the live region,
+                above the status card and the rows. */}
             <ResultGroup
               title={C.form.budgetTitle}
               anchorId={RESULT_ID}
+              visual={
+                <AutoLearningPanel
+                  sample={sample}
+                  flow={autoFlowView(form)}
+                  scene={autoScene(
+                    raw.values,
+                    form,
+                    latestTrial === null
+                      ? null
+                      : { values: latestTrial.before, state: latestTrial.beforeResult },
+                  )}
+                  availability={{
+                    down: autoAvailability("down", raw.values, form),
+                    term: autoAvailability("term", raw.values, form),
+                    running: autoAvailability("running", raw.values, form),
+                  }}
+                  termLabel={autoTermLabel(raw.values.termUnit)}
+                  impact={trialImpact}
+                  canUndo={latestTrial !== null}
+                  formId={FORM_ID}
+                  onTry={tryKey}
+                  onUndo={undoTrial}
+                />
+              }
               status={<ResultStatusCard status={statusView} formId={FORM_ID} />}
               announcement={announcement}
             >
@@ -711,9 +823,16 @@ export function AutoLoanCalculator({
         }
         actions={actions ? <div className="mt-8">{actions}</div> : null}
         chart={
-          <ChartFigure model={chart}>
-            <BarChart model={chart} />
-          </ChartFigure>
+          <>
+            <ChartFigure model={chart}>
+              <BarChart model={chart} />
+            </ChartFigure>
+            {/* The debt still owed, from the actual schedule — not the
+                car's value. */}
+            <ChartFigure model={balanceChart}>
+              <LineChart model={balanceChart} />
+            </ChartFigure>
+          </>
         }
         nextSteps={nextSteps ? <div className="mt-8">{nextSteps}</div> : null}
         detail={

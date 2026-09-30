@@ -60,6 +60,7 @@ export function CalculatorLayout({
   form,
   cta,
   primary,
+  learning,
   actions,
   chart,
   nextSteps,
@@ -87,6 +88,23 @@ export function CalculatorLayout({
   cta?: React.ReactNode;
   /** ONE main answer plus two or three supporting figures. */
   primary: React.ReactNode;
+  /**
+   * OPT-IN, the 2026-09-29 living-infographic routes only (`lai-suat-tha-noi`,
+   * `kha-nang-mua-nha`, the comparison
+   * pair `so-sanh-khoan-vay` / `lai-co-dinh-hay-tha-noi`, and the savings pair
+   * `muc-tieu-tiet-kiem` / `lai-kep`): the immediate learning response,
+   * directly AFTER the answer and BEFORE `actions`. A browser pass at
+   * 1440 × 1000 found the tall "Làm gì tiếp" block standing between the
+   * answer and the approved visual; this puts the reader's control and the
+   * figure it moves next to the answer. Plain DOM order at every width — no
+   * CSS `order`, nothing sticky. A route that passes nothing keeps the
+   * original form → CTA → primary → actions → chart → nextSteps order.
+   *
+   * `vay-mua-nha` and `vay-mua-xe` no longer use this slot: by the user's
+   * later correction their visual comes FIRST, inside the result card, via
+   * `ResultGroup`'s `visual` — see that component.
+   */
+  learning?: React.ReactNode;
   /**
    * ONE OR TWO COMPACT ACTIONS, immediately after the answer and before the
    * figure — P2 of the audit: "đưa 1–2 hành động phù hợp ngay sau câu trả lời,
@@ -133,6 +151,7 @@ export function CalculatorLayout({
         className={cn("mt-8 min-w-0", split && "lg:col-span-3 lg:mt-0")}
       >
         {primary}
+        {learning}
         {actions}
         {chart}
         {nextSteps}
