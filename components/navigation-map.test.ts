@@ -149,10 +149,12 @@ describe("app discovery goes to the real app section, never to a download (N04, 
 });
 
 describe("/blog/ offers two clear reading paths without a new hub (B01, B02)", () => {
-  it("links Hướng dẫn dễ hiểu to the collection and Tin thị trường to the feed on the same page", async () => {
+  it("links the named home collection to itself and Tin thị trường to the feed on the same page", async () => {
     const page = await blog();
     const chooser = page.slice(page.indexOf('data-blog-paths="true"'));
-    expect(chooser).toMatch(new RegExp(`href="${EDUCATION_COLLECTION.slug}/?"[^>]*>[\\s\\S]*?Hướng dẫn dễ hiểu`));
+    // Named for its destination, so a car-guide reader does not pick it.
+    expect(chooser).toMatch(new RegExp(`href="${EDUCATION_COLLECTION.slug}/?"[^>]*>[\\s\\S]*?${EDUCATION_COLLECTION.name}`));
+    expect(chooser).not.toContain("Hướng dẫn dễ hiểu</span>");
     expect(chooser).toMatch(/href="#tin-thi-truong"[^>]*>[\s\S]*?Tin thị trường/);
     // The anchor is the feed itself, headed so the jump lands on a label.
     expect(page).toMatch(/<section[^>]*id="tin-thi-truong"[^>]*aria-labelledby="tin-thi-truong-title"/);
@@ -163,9 +165,9 @@ describe("/blog/ offers two clear reading paths without a new hub (B01, B02)", (
     expect(existsSync(file("app/blog/tin-thi-truong/page.tsx"))).toBe(false);
   });
 
-  it("keeps the page's SEO metadata and lets the collection link back to the feed anchor", async () => {
+  it("describes the broader article index and keeps the collection backlink to news", async () => {
     const { metadata } = await import("@/app/blog/page");
-    expect(metadata.title).toContain("Tin tức bất động sản");
+    expect(metadata.title).toContain("Bài viết về tài chính gia đình và bất động sản");
     expect(read("app/blog/mua-nha-bang-con-so/page.tsx")).toContain('href="/blog/#tin-thi-truong"');
   });
 });

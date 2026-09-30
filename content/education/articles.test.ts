@@ -786,7 +786,8 @@ describe("the collection sits beside the news feed, not inside it", () => {
     // entry keeps at least one market topic, which is what the four filters
     // operate on. Cover and source are checked per entry by the seo-blog rules
     // rather than here — some legacy entries predate both conventions.
-    expect(newsPosts().length).toBe(POSTS.length - EDUCATION_ARTICLES.length);
+    const guideCount = POSTS.filter((post) => postKind(post) === "guide").length;
+    expect(newsPosts().length).toBe(POSTS.length - EDUCATION_ARTICLES.length - guideCount);
     for (const post of newsPosts()) {
       expect(post.topics.length, post.slug).toBeGreaterThan(0);
     }

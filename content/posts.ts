@@ -26,7 +26,8 @@ export type Topic = "gia-cung" | "cau-thanh-khoan" | "khu-vuc-ha-tang" | "chinh-
  * Undefined means `"news"`, so every existing entry keeps its behaviour with
  * no edit.
  */
-export type PostKind = "news" | "education";
+// Standalone tool guides do not belong to the home-buying collection or news.
+export type PostKind = "news" | "education" | "guide";
 
 export type Post = {
   slug: string;
@@ -47,6 +48,12 @@ export type Post = {
   date?: string; // ISO YYYY-MM-DD publish date (for Article schema + sitemap lastmod)
   /** Defaults to `"news"`. */
   kind?: PostKind;
+  /**
+   * OPT-IN: one primary action in the article header, above the cover, for a
+   * tool guide whose first screen would otherwise be title and image only.
+   * Body links stay contextual. Absent on every other post.
+   */
+  headerCta?: { label: string; href: string };
   source?: {
     name: string;
     url: string;
@@ -361,6 +368,18 @@ const EDUCATION_ENTRIES: Post[] = [
 ];
 
 export const POSTS: Post[] = [
+  {
+    slug: "vay-mua-xe-con-du-bao-nhieu",
+    title: "Vay mua xe: trả góp xong, mỗi tháng còn bao nhiêu?",
+    kind: "guide",
+    headerCta: { label: "Tính với số của tôi", href: "/cong-cu/vay-mua-xe/" },
+    category: "Tài chính gia đình",
+    topics: [],
+    excerpt: "Vay mua xe không chỉ có tiền trả góp. Cùng tính tiền nuôi xe, khoản để dành và số còn lại mỗi tháng qua ví dụ dễ hiểu, rồi thử với số của bạn.",
+    readingTime: "6 phút đọc",
+    date: "2026-09-30",
+    cover: "/images/blog/auto-budget-cover.png",
+  },
   {
     slug: "nguoi-mua-can-ho-doi-chien-thuat",
     title: "Người mua căn hộ thay đổi chiến thuật: Từ kỳ vọng tăng giá sang tính toán dòng tiền",

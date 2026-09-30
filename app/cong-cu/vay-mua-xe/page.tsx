@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   CalculatorPage,
   calculatorMetadata,
 } from "@/components/calc/calculator-page";
 import { AutoLoanCalculator } from "@/components/auto-loan-calculator";
+import { AutoLoanRelated } from "@/components/auto-loan-related";
+import { getPost } from "@/content/posts";
 import { AUTO_LOAN as C } from "@/content/calculators/auto-loan";
 import { calculatorPath, getCalculator } from "@/content/calculators/registry";
 
@@ -31,6 +32,19 @@ const RELATED = C.relatedTools.items.map((item) => {
   }
   return { ...item, href: `${calculatorPath(item.slug)}/`, title: entry.title };
 });
+
+// The article links (explainer and every named example's source) are checked
+// the same way: a guide that moves or is retitled fails the build rather than
+// leaving the tool naming an article that is not there.
+for (const { href, title } of [
+  { href: C.explainer.href, title: null },
+  ...Object.values(C.namedExamples).map((e) => ({ href: e.articleHref, title: e.articleTitle })),
+]) {
+  const post = getPost(href.replace(/^\/blog\/|\/$/g, ""));
+  if (!post || (title !== null && post.title !== title)) {
+    throw new Error(`app/cong-cu/${SLUG}/page.tsx: "${href}" is not the article it names.`);
+  }
+}
 
 /**
  * Migrated onto `CalculatorPage` in the P3 buyer-support unit.
@@ -60,29 +74,9 @@ export default function AutoLoanPage() {
       intro={C.table.intro}
       prose={C.formula}
       faq={C.faq}
-      afterCalculator={
-        <section>
-          <h2 className="font-display text-xl font-medium text-ink md:text-2xl">
-            {C.relatedTools.title}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-2">
-            {C.relatedTools.intro}
-          </p>
-          <ul className="mt-3 space-y-3">
-            {RELATED.map((tool) => (
-              <li key={tool.slug} className="text-sm leading-relaxed">
-                <Link
-                  href={tool.href}
-                  className="font-medium text-brand-green-ink underline decoration-brand-green-ink/40 underline-offset-2"
-                >
-                  {tool.title}
-                </Link>
-                <span className="text-ink-2"> — {tool.why}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      }
+      afterCalculator={<AutoLoanRelated related={RELATED} />}
+      // The catalogue link, named for what it opens (journey review step 6).
+      backLabel={C.hubLinkLabel}
       // ROW 33 is a "Hai cột" row and this tool now has eleven inputs, a
       // chart and a yearly schedule, so the card is widened. Unverified
       // visually — see the recap.
