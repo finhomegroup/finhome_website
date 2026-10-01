@@ -508,12 +508,15 @@ export const ARTICLES_1: EducationArticle[] = [
     // stock photo it was composed from is recorded in that library's manifest.
     illustration: {
       src: "/images/education/ai-library-01-home-planning-720.jpg",
-      srcSet: "/images/education/ai-library-01-home-planning-720.jpg 720w, /images/education/ai-library-01-home-planning-1200.jpg 1200w",
+      // 1536w added for the full-column layout on high-density screens.
+      srcSet: "/images/education/ai-library-01-home-planning-720.jpg 720w, /images/education/ai-library-01-home-planning-1200.jpg 1200w, /images/education/ai-library-01-home-planning-1536.jpg 1536w",
       width: 1536,
       height: 1024,
       alt: "Ảnh minh họa AI: một người phụ nữ ngồi xếp bằng trên sofa, mỉm cười nhìn người đàn ông bên cạnh đang dùng laptop, trong căn phòng sáng có cây xanh.",
       // No badge: one small tagline under the image (user direction 2026-10-01).
       caption: "Ảnh minh họa AI",
+      // Full article-column width, aligned with the CTA and contents.
+      layout: "full",
     },
     // OWN NUMBERS ONLY. Reproducing the article's example is its own section
     // above ("Tính lại đúng ví dụ của bài trên công cụ"), because the tool

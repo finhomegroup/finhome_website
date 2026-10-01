@@ -128,6 +128,14 @@ export type EducationArticle = {
      */
     badge?: string;
     caption: string;
+    /**
+     * `"inset"` (default, C01): a centred figure narrower than the column, with
+     * a full sentence caption. `"full"` (C05, C11 — 2026-10-01): the full width
+     * of the article column, aligned with the answer, CTA and contents, and a
+     * single small tagline caption. Explicit, so the look never depends on
+     * whether a badge happens to be set.
+     */
+    layout?: "inset" | "full";
   };
 
   /** Do it with your own numbers, on the real tool. */

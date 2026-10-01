@@ -115,4 +115,43 @@ h1{font-size:51px;line-height:1.21;letter-spacing:-1.8px;margin:0 0 24px}
 .flow .legend{display:flex;gap:22px;font-size:16px;color:#333;margin-top:8px}
 .flow .legend i{display:inline-block;width:16px;height:16px;border-radius:3px;vertical-align:-2px;margin-right:6px}
 .flow .flow-key{font-size:18px;margin:4px 0 20px;flex-wrap:wrap;gap:8px 26px}
+/* ---- ?hd: 2160 x 2700, opt-in (body[data-hd="true"]) ----
+   EXPLICIT 2x values — every length below is exactly double its base rule
+   above — so text, the SVG logo and the photo lay out natively at 2160 x 2700.
+   No zoom/transform: explicit 2x lengths avoid any scaling ambiguity. (The
+   in-app browser's full-page capture still composited a half-size duplicate
+   without zoom, so export uses the &part=top|bottom slices below.) Only rules
+   the opted-in posters use are doubled; unitless
+   line-heights and % gradients scale by themselves. Base rules are unchanged,
+   and only body.hd (set by poster.js on an opted-in page) matches these. */
+html.hd,body.hd{margin:0;width:2160px;height:2700px;overflow:hidden;background:#f7fcf7}
+body.hd main{width:2160px;height:2700px;margin:0}
+body.hd header{height:252px;padding:0 128px}
+body.hd .brand{width:560px}
+body.hd .series{font-size:38px}
+body.hd .hero{height:890px}
+body.hd .lead{padding:96px 128px;width:1210px}
+body.hd h1{font-size:102px;letter-spacing:-3.6px;margin:0 0 48px}
+body.hd .dek{font-size:44px;max-width:860px}
+body.hd .photo-note{bottom:24px;right:40px;padding:10px 18px;font-size:26px}
+body.hd .photo-box{width:1360px}
+body.hd .photo-box img{left:calc(var(--x) * 2);top:calc(var(--y) * 2);width:calc(var(--w) * 2)}
+body.hd .body{padding:68px 128px}
+body.hd .hook{font-size:50px;margin:0 0 36px}
+body.hd .math{border-width:2px;border-radius:40px;padding:16px 60px}
+body.hd .row{padding:34px 0;font-size:52px;gap:40px}
+body.hd .row b{font-size:66px}
+body.hd .row + .row{border-top-width:2px}
+body.hd .result{border-top-width:2px}
+body.hd .result b{font-size:86px}
+body.hd .note{font-size:42px;margin:38px 0 30px}
+body.hd .assumptions{font-size:34px}
+body.hd .footer{bottom:64px;left:128px;right:128px;border-top-width:2px;padding-top:38px;gap:50px}
+body.hd .footer a{font-size:44px}
+body.hd .footer small{font-size:28px}
+/* ?hd&part=top|bottom — export-only slicing (no scale): a 2160 x 1350 window
+   onto the unchanged 2160 x 2700 scene, which is shifted up by 0 or 1350px. */
+html.hd-part,body.hd-part{height:1350px;overflow:hidden}
+body.hd-part-top main{top:0}
+body.hd-part-bottom main{top:-1350px}
 @media print{body{background:white}main{margin:0}@page{size:1080px 1350px;margin:0}}

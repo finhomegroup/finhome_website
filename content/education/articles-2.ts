@@ -658,12 +658,15 @@ export const ARTICLES_2: EducationArticle[] = [
     // labelled as AI on the page; plain sips resizes, no further edits.
     illustration: {
       src: "/images/education/ai-library-02-couple-calm-confidence-720.jpg",
-      srcSet: "/images/education/ai-library-02-couple-calm-confidence-720.jpg 720w, /images/education/ai-library-02-couple-calm-confidence-1200.jpg 1200w",
+      // 1536w added for the full-column layout on high-density screens.
+      srcSet: "/images/education/ai-library-02-couple-calm-confidence-720.jpg 720w, /images/education/ai-library-02-couple-calm-confidence-1200.jpg 1200w, /images/education/ai-library-02-couple-calm-confidence-1536.jpg 1536w",
       width: 1536,
       height: 1024,
       alt: "Ảnh minh họa AI: một người phụ nữ ngồi sát, chỉ vào màn hình laptop mà người đàn ông bên cạnh đang cầm; cả hai mỉm cười trên chiếc sofa sáng màu.",
       // No badge: one small tagline under the image (user direction 2026-10-01).
       caption: "Ảnh minh họa AI",
+      // Full article-column width, aligned with the CTA and contents.
+      layout: "full",
     },
     // OWN NUMBERS ONLY; reproducing the example is the section above.
     exercise: {

@@ -32,6 +32,61 @@ native full gate. Data of record: `LOAN_DECISION_SERIES`, `LOAN_DECISION_PENDING
   inspection and merge authorization. Not deployed until the PR is merged and the Vercel
   production deployment succeeds. No social post has been made.
 
+- **Post-release (PR #228 merged as `d17494d`; production deployment was still pending
+  when last observed):** HD poster export in progress, local only. `?hd` renders these two
+  posters at a true 2160 × 2700 with EXPLICIT 2x CSS — every length of every rule they use
+  doubled under `body.hd`, the photo's inline crop vars doubled with
+  `calc(var(--x) * 2)`; no zoom/transform (the first `zoom: 2` attempt broke full-page
+  capture: half-size content and a duplicated body). A test proves each used length is
+  exactly 2x, including shorthand lengths, and was shown to fail on a 1px deviation.
+  Because the in-app browser's full-page capture still composites a half-size duplicate
+  and its viewport capture caps height near 1410px, `?hd&part=top` / `&part=bottom` show a
+  2160 × 1350 window onto the same unscaled 2160 × 2700 scene (`top:0` / `top:-1350px`,
+  `html,body` 1350px tall, overflow hidden; ready metadata `data-export-part`,
+  `data-export-size="2160x1350"`, `data-export-offset-y`). The two native viewport captures
+  are joined with the already-installed `sharp` (local tool
+  `.superpowers/blog-preview/join-hd.mjs`: decoded pixels stacked, no resize, no 1080 input).
+  The captures are JPEG, so the joined PNG is a FRESH 2x render from JPEG frames — not a
+  lossless native PNG. Opt-in via `body[data-hd="true"]` on these two pages only — every other poster
+  and the normal 1080 mode are unchanged. The poster photo layer is now the exact generated
+  PNG (`public/images/education/ai-library-0N-…-original.png`, SHA-256 asserted equal to
+  the record); article JPEGs unchanged. Limit: the source is 1536 px wide, so at 2x the
+  photo crop is still enlarged ≈1.5x — text and logo are truly 2x. The exported 1080
+  `poster.png` files and their size assertions are unchanged until the HD capture.
+
+- **Follow-up release (after PR #228, merged as `d17494d`) — VERIFIED, PR being prepared:**
+  parent full native check PASSED (exit 0): 364 files / 8.136 tests, tsc clean, lint 0 new
+  (3 baseline), build and markup — all contracts hold. Codex viewed both final 2160 × 2700
+  PNGs (no seam, duplicate or missing band) and confirmed the served files' dimensions;
+  full-width C05/C11 article images verified on desktop and mobile. After that proof only a
+  `poster.css` COMMENT changed (it no longer blames CSS zoom as the cause: the full-page
+  capture problem persisted without zoom, so export uses the slices). Scope of the
+  follow-up: full-width article image, `?hd` 2x poster mode + slices, exact PNG photo
+  layer, the two 2160 × 2700 posters, their tests and this recap.
+- **2x posters EXPORTED (2026-10-01):** Codex captured native 2160 × 1350 viewport
+  JPEGs `artifacts/loan-decision-series/c05-hd-{top,bottom}.jpg` and `c11-hd-{top,bottom}.jpg`
+  (DOM ready, offsets 0 / 1350, main 2160 × 2700, no scale — verified by Codex with sips).
+  Joined with `.superpowers/blog-preview/join-hd.mjs` (sharp, decoded pixels stacked, no
+  resize) into `public/social/so-sanh-khoan-vay/poster.png` (2.025.810 B) and
+  `public/social/lai-co-dinh-hay-tha-noi/poster.png` (2.162.456 B), both PNG 2160 × 2700 8-bit
+  RGB; seam at y = 1350 checked by eye, continuous. **Limitation:** the frames are JPEG, so the
+  PNG holds JPEG-decoded pixels — a fresh true-2x render (live text, logo and the original
+  1536 PNG photo layer), not a lossless native PNG; the photo crop is still enlarged ≈1.5x
+  from its 1536-px source. `/social/` cards for these two now show 2160 × 2700 and “Tải PNG
+  2160 × 2700”; caption handoffs record the method. The ten original posters stay
+  1080 × 1350 (their tests unchanged). Checks: poster + series suites 81/81, tsc clean,
+  lint 0 new, build ok, markup ok. No poster source changed after the captures. No Git.
+- **Full-width article image — VERIFIED by Codex:** C05 desktop figure and contents at
+  x 336, width 768 (1440 viewport); C05 and C11 mobile x 20, width 350 (390), no overflow;
+  C11 desktop and mobile also verified.
+- **(Was: pending independent UI verification) Full-width article image:**
+  C05 and C11's illustration now spans the full article column (`max-w-3xl`, 48rem),
+  aligned with the answer, CTA and contents, via an explicit `illustration.layout: "full"`
+  (`w-full`, `sizes="(min-width: 768px) 48rem, 100vw"`, srcSet 720/1200/1536 JPEG; natural
+  3:2, no crop). Same placement and the same single small tagline. C01 keeps
+  `layout` unset = `"inset"` (centred `max-w-xl`, overlay badge, sentence caption),
+  asserted. Posters untouched this round.
+
 Sections below are the working log, oldest first. Where marked HISTORICAL or
 SUPERSEDED they describe the state at the time, not now.
 

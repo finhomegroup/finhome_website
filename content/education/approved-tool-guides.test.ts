@@ -164,6 +164,15 @@ describe("C01's illustration opens the article, beside — never in place of —
     expect(figure).toContain("<figcaption");
     expect(figure).toContain(art.caption);
     expect(art.badge).toBe("Hình minh họa");
+    // C01 keeps the INSET layout (default): narrower centred figure, overlay
+    // badge and full sentence caption — unaffected by C05/C11's "full" layout.
+    expect(art.layout ?? "inset").toBe("inset");
+    expect(html.slice(html.lastIndexOf("<figure", at), at + 120)).toContain(
+      'data-illustration-layout="inset" class="mx-auto w-full max-w-xl"',
+    );
+    expect(figure).toContain('sizes="(min-width: 640px) 36rem, 100vw"');
+    expect(figure).toContain("absolute left-3 top-3");
+    expect(figure).toContain('<figcaption class="mt-3 text-sm leading-relaxed text-ink-3">');
     // Explains the metaphor and the reserve, qualifies briefly, and — now
     // that it opens the article — points at nothing "above" it.
     expect(art.caption).toContain("khoản dự phòng");
