@@ -107,7 +107,11 @@ describe("the chapter 01 illustration", () => {
 
 describe("chapter hub typography", () => {
   // Scoped to the hub's own files; the shared header is not read or changed.
-  const sources = ["app/blog/mua-nha-bang-con-so/page.tsx", "components/education/chapter-nav.tsx"].map(
+  const sources = [
+    "app/blog/mua-nha-bang-con-so/page.tsx",
+    "components/education/chapter-nav.tsx",
+    "components/education/collection-hero.tsx",
+  ].map(
     (file) => readFileSync(join(process.cwd(), file), "utf8"),
   );
 

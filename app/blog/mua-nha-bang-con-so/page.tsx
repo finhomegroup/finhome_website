@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChapterNav } from "@/components/education/chapter-nav";
+import { CollectionHero } from "@/components/education/collection-hero";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/education/icons";
 import { EDUCATION_COLLECTION as C } from "@/content/education/collection";
 import { educationChapters, type EducationChapter } from "@/content/education/chapters";
@@ -66,12 +67,7 @@ export default function EducationCollectionPage() {
               {C.toNewsCta}
             </Link>
 
-            <h1 className={cn("mt-1 text-[36px] leading-[1.05] sm:text-[44px] lg:text-[54px] xl:text-[58px]", HEADING)}>
-              {C.pageTitle}
-            </h1>
-            <p className="mt-2 text-[17px] leading-snug text-ink-2 md:text-2xl">
-              {C.lede}
-            </p>
+            <CollectionHero start={chapters[0]} />
 
             <ChapterNav
               label={C.chaptersLabel}
@@ -159,8 +155,6 @@ function Chapter({
                   width={C.budgetIllustration.width}
                   height={C.budgetIllustration.height}
                   unoptimized
-                  loading="eager"
-                  fetchPriority="high"
                   className="aspect-[1600/733] h-auto w-full object-cover"
                 />
               </div>
