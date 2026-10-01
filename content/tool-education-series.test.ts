@@ -482,8 +482,10 @@ describe("social packages", () => {
     for (const [, tool, card] of cards) {
       const png = `public/social/${tool}/poster.png`;
       expect(existsSync(png), png).toBe(true);
-      expect(card).toContain(`<img src="${tool}/poster.png" width="1080" height="1350" loading="lazy"`);
-      expect(card).toContain(`<a class="download" href="${tool}/poster.png" download>Tải PNG</a>`);
+      // Wave 2's two posters are true 2x exports (2160 × 2700); every original card stays 1080 × 1350.
+      const [w, h, label] = wave2.includes(tool) ? [2160, 2700, "Tải PNG 2160 × 2700"] : [1080, 1350, "Tải PNG"];
+      expect(card).toContain(`<img src="${tool}/poster.png" width="${w}" height="${h}" loading="lazy"`);
+      expect(card).toContain(`<a class="download" href="${tool}/poster.png" download>${label}</a>`);
       if (wave2.includes(tool)) expect(card).toContain('<p class="credit">Ảnh minh họa AI</p>');
       else expect(card).toMatch(/Ảnh: .+ \/ Pexels/);
       expect(card).toContain(`href="/cong-cu/${tool}/"`);

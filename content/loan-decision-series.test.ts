@@ -510,12 +510,21 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
       const faces = FACES[e.tool];
       expect(html).not.toContain("data-photo-pending");
       // Every public derivative the data names exists at its declared size.
-      const files: [string, number][] = [[d.web.poster, 1536], [d.web.article[0], 720], [d.web.article[1], 1200], [d.web.share, 1200]];
+      const files: [string, number][] = [[d.web.article[0], 720], [d.web.article[1], 1200], [d.web.article[2], 1536], [d.web.share, 1200]];
       for (const [path, w] of files) {
         const file = `public${path}`;
         expect(existsSync(file), file).toBe(true);
         expect(jpegSize(file), file).toEqual({ w, h: Math.round((w * d.size.h) / d.size.w) });
       }
+      // The poster photo layer is the EXACT generated PNG: same bytes, no resave.
+      const posterFile = `public${d.web.poster}`;
+      expect(posterFile).toMatch(/-original\.png$/);
+      const posterBytes = readFileSync(posterFile);
+      expect(posterBytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect({ w: posterBytes.readUInt32BE(16), h: posterBytes.readUInt32BE(20) }).toEqual(d.size);
+      expect(createHash("sha256").update(posterBytes).digest("hex")).toBe(d.generatedSha256);
+      // Opt-in 2x export: only these packages declare it.
+      expect(html).toContain('<body data-hd="true">');
       // The poster shows the AI image, never a stock photo or its photographer as author.
       expect(heroIds(html), e.tool).toEqual([]);
       for (const id of EXCLUDED) expect(html + caption).not.toContain(id);
@@ -561,7 +570,8 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
       const art = article(e.article).illustration!;
       expect(art, e.article).toBeDefined();
       expect(art.src).toBe(d.web.article[0]);
-      expect(art.srcSet).toBe(`${d.web.article[0]} 720w, ${d.web.article[1]} 1200w`);
+      expect(art.srcSet).toBe(`${d.web.article[0]} 720w, ${d.web.article[1]} 1200w, ${d.web.article[2]} 1536w`);
+      expect(art.layout).toBe("full");
       expect([art.width, art.height]).toEqual([d.size.w, d.size.h]);
       // No overlay badge and no provenance paragraph: one discreet tagline.
       expect(art.badge).toBeUndefined();
@@ -579,6 +589,11 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
       expect(at).toBeLessThan(html.indexOf(">Trong bài này</h2>"));
       const figure = html.slice(at, html.indexOf("</figure>", at));
       expect(figure).not.toContain("absolute left-3"); // no overlay on the photo
+      // FULL article-column width (user request 2026-10-01): no narrower cap than
+      // the answer/CTA/contents siblings, sized for the 48rem column.
+      expect(html.slice(html.lastIndexOf("<figure", at), at + 120)).toMatch(/data-education-illustration="true" data-illustration-layout="full" class="w-full"/);
+      expect(figure).not.toMatch(/max-w-/);
+      expect(figure).toContain('sizes="(min-width: 768px) 48rem, 100vw"');
       expect(figure).toContain('<figcaption class="mt-2 text-xs text-ink-3">Ảnh minh họa AI</figcaption>');
       // Shown at its natural aspect, full width of the figure: no crop at any viewport.
       expect(figure).toMatch(/<img[^>]*class="block h-auto w-full rounded-xl[^"]*"/);
@@ -589,6 +604,101 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
   it("gives the two packages different images", () => {
     expect(new Set(LOAN_DECISION_AI_IMAGES.map((d) => d.web.poster)).size).toBe(2);
     expect(new Set(LOAN_DECISION_AI_IMAGES.map((d) => d.libraryImage.file)).size).toBe(2);
+  });
+});
+
+describe("?hd: an opt-in true 2x export for these two posters only", () => {
+  const js = read("public/social/poster.js");
+  const css = read("public/social/poster.css");
+
+  it("activates only with ?hd AND body[data-hd=true], and declares the 2160 × 2700 size", () => {
+    expect(js).toContain('mode.has("hd") && document.body.dataset.hd === "true"');
+    expect(js).toContain('root.dataset.exportSize = "2160x2700"');
+  });
+
+  /** `selector → { property → value }` for every rule outside @media. */
+  const parse = (text: string) => {
+    const body = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/@media[^{]*\{(?:[^{}]*\{[^}]*\})*[^}]*\}/g, "");
+    const out = new Map<string, Record<string, string>>();
+    for (const [, sel, decls] of body.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+      const props: Record<string, string> = {};
+      for (const d of decls.split(";").map((x) => x.trim()).filter(Boolean)) {
+        const i = d.indexOf(":");
+        props[d.slice(0, i).trim()] = d.slice(i + 1).trim();
+      }
+      out.set(sel.trim(), props);
+    }
+    return out;
+  };
+  const px = (value: string) => [...value.matchAll(/(-?[\d.]+)px/g)].map((m) => Number(m[1]));
+  /** Where a base shorthand's length lives in its hd counterpart. */
+  const HD_PROPERTY: Record<string, string> = { font: "font-size", border: "border-width", "border-top": "border-top-width" };
+  /** The base rules the two opted-in posters actually use. */
+  const USED = [
+    "main", "header", ".brand", ".series", ".hero", ".lead", "h1", ".dek", ".photo-note", ".photo-box",
+    ".body", ".hook", ".math", ".row", ".row b", ".row + .row", ".result", ".result b", ".note",
+    ".assumptions", ".footer", ".footer a", ".footer small",
+  ];
+
+  it("doubles EVERY length of every rule the posters use — explicit 2x, no zoom or transform", () => {
+    const rules = parse(css);
+    expect(rules.get("html.hd,body.hd")).toEqual({ margin: "0", width: "2160px", height: "2700px", overflow: "hidden", background: "#f7fcf7" });
+    for (const sel of USED) {
+      const base = rules.get(sel);
+      const hd = rules.get(`body.hd ${sel}`);
+      expect(base, sel).toBeDefined();
+      expect(hd, `body.hd ${sel}`).toBeDefined();
+      for (const [prop, value] of Object.entries(base!)) {
+        const lengths = px(value);
+        if (lengths.length === 0) continue;
+        const target = hd![prop] ?? hd![HD_PROPERTY[prop] ?? ""];
+        expect(target, `${sel} ${prop} has no 2x counterpart`).toBeDefined();
+        const doubled = px(target!);
+        // A shorthand (font, border) carries one length; the rest compare position by position.
+        expect(doubled, `${sel} ${prop}`).toEqual(HD_PROPERTY[prop] ? [lengths[0] * 2] : lengths.map((n) => n * 2));
+      }
+    }
+    // The photo's inline crop variables are doubled in place; the HTML is unchanged.
+    expect(rules.get("body.hd .photo-box img")).toEqual({
+      left: "calc(var(--x) * 2)", top: "calc(var(--y) * 2)", width: "calc(var(--w) * 2)",
+    });
+    // No zoom or transform anywhere in the hd rules.
+    for (const [sel, props] of rules) {
+      if (!/\.hd\b/.test(sel)) continue;
+      expect(sel.split(",").every((s) => /\.hd\b/.test(s)), sel).toBe(true);
+      expect(Object.keys(props).filter((p) => p === "zoom" || p === "transform"), sel).toEqual([]);
+    }
+    // The normal 1080 scene is unchanged.
+    expect(rules.get("main")).toEqual({
+      width: "1080px", height: "1350px", overflow: "hidden", background: "#f7fcf7", position: "relative", margin: "auto",
+    });
+  });
+
+  it("&part=top|bottom slices the unscaled 2x scene into two 2160 × 1350 frames, export-only", () => {
+    // Only inside the opted-in ?hd branch, and only for the two exact values.
+    const hdBranch = js.slice(js.indexOf('if (mode.has("hd")'), js.indexOf("Promise.all"));
+    expect(hdBranch).toContain('var part = mode.get("part");');
+    expect(hdBranch).toContain('if (part === "top" || part === "bottom")');
+    expect(hdBranch).toContain('root.dataset.exportPart = part;');
+    expect(hdBranch).toContain('root.dataset.exportSize = "2160x1350";');
+    expect(hdBranch).toContain('root.dataset.exportOffsetY = part === "top" ? "0" : "1350";');
+    const rules = parse(css);
+    expect(rules.get("html.hd-part,body.hd-part")).toEqual({ height: "1350px", overflow: "hidden" });
+    expect(rules.get("body.hd-part-top main")).toEqual({ top: "0" });
+    expect(rules.get("body.hd-part-bottom main")).toEqual({ top: "-1350px" });
+    // The scene itself stays 2160 × 2700 and unscaled; the two offsets cover it exactly.
+    expect(rules.get("body.hd main")).toEqual({ width: "2160px", height: "2700px", margin: "0" });
+    expect(rules.get("main")!.position).toBe("relative");
+    expect(0 + 1350 + 1350).toBe(2700);
+  });
+
+  it("is declared by the two loan packages and no other poster", () => {
+    const declaring = readdirSync("public/social", { withFileTypes: true })
+      .filter((d) => d.isDirectory() && existsSync(`public/social/${d.name}/index.html`))
+      .filter((d) => read(`public/social/${d.name}/index.html`).includes('data-hd="true"'))
+      .map((d) => d.name)
+      .sort();
+    expect(declaring).toEqual(LOAN_DECISION_SERIES.map((e) => e.tool).sort());
   });
 });
 
@@ -619,7 +729,10 @@ describe("exports and the delivery index: nothing claimed before it exists", () 
         expect(index).not.toContain(`data-package="${e.tool}"`);
         return;
       }
-      expect(png(file)).toEqual({ sig: "89504e470d0a1a0a", w: 1080, h: 1350 });
+      // True 2x export (2026-10-01): joined from two 2160 × 1350 ?hd&part= captures.
+      expect(png(file)).toEqual({ sig: "89504e470d0a1a0a", w: 2160, h: 2700 });
+      expect(read(`public/social/${e.tool}/caption.md`)).toContain("(2160 × 2700, bản 2x)");
+      expect(read(`public/social/${e.tool}/caption.md`)).toContain("không phải PNG gốc không nén mất dữ liệu");
       expect(index).toContain(`<li class="card" data-package="${e.tool}">`);
       expect(index).not.toContain(`data-pending="${e.tool}"`);
     });

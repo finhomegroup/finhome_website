@@ -24,16 +24,21 @@ export type LoanDecisionAiImage = {
   generatedSha256: string;
   /** Pixel size of the generated PNG and of the 1536 derivative. */
   size: { w: number; h: number };
-  /** Public derivatives (sips JPEG resizes, no other edits). */
-  web: { poster: string; article: readonly [string, string]; share: string };
+  /**
+   * Public files. `poster` is the EXACT generated PNG (byte-identical, same
+   * SHA-256 — no JPEG resave), used by the social poster in 1080 and ?hd 2x
+   * modes; `article` and `share` are sips JPEG resizes, no other edits.
+   */
+  web: { poster: string; article: readonly [string, string, string]; share: string };
   /** The stock photo used ONLY as a composition reference — not the output's author. */
   compositionReference: { pexelsId: string; url: string; creator: string; licence: string; licenceRecorded: string };
   approvedOn: string;
 };
 
 const web = (base: string) => ({
-  poster: `/images/education/${base}-1536.jpg`,
-  article: [`/images/education/${base}-720.jpg`, `/images/education/${base}-1200.jpg`] as const,
+  poster: `/images/education/${base}-original.png`,
+  // 720 / 1200 / 1536 widths for the full-column article figure.
+  article: [`/images/education/${base}-720.jpg`, `/images/education/${base}-1200.jpg`, `/images/education/${base}-1536.jpg`] as const,
   share: `/images/education/${base}-1200.jpg`,
 });
 

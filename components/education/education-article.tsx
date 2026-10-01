@@ -125,12 +125,18 @@ export function EducationArticleBody({
           <img>: the static export has no image loader. Not lazy: it is near
           the top of the page. */}
       {article.illustration ? (
-        <figure data-education-illustration="true" className="mx-auto w-full max-w-xl">
+        <figure
+          data-education-illustration="true"
+          data-illustration-layout={article.illustration.layout ?? "inset"}
+          // "full": the article column's own width (max-w-3xl, 48rem), aligned
+          // with the answer, CTA and contents. "inset" (default): unchanged.
+          className={article.illustration.layout === "full" ? "w-full" : "mx-auto w-full max-w-xl"}
+        >
           <div className="relative">
             <img
               src={article.illustration.src}
               srcSet={article.illustration.srcSet}
-              sizes="(min-width: 640px) 36rem, 100vw"
+              sizes={article.illustration.layout === "full" ? "(min-width: 768px) 48rem, 100vw" : "(min-width: 640px) 36rem, 100vw"}
               width={article.illustration.width}
               height={article.illustration.height}
               alt={article.illustration.alt}
@@ -143,13 +149,13 @@ export function EducationArticleBody({
               </span>
             ) : null}
           </div>
-          {/* With a badge (C01) the caption explains the picture; without one
-              (C05, C11) it is a single discreet tagline. */}
+          {/* "inset" (C01): the caption explains the picture. "full" (C05,
+              C11): a single discreet tagline. */}
           <figcaption
             className={
-              article.illustration.badge
-                ? "mt-3 text-sm leading-relaxed text-ink-3"
-                : "mt-2 text-xs text-ink-3"
+              article.illustration.layout === "full"
+                ? "mt-2 text-xs text-ink-3"
+                : "mt-3 text-sm leading-relaxed text-ink-3"
             }
           >
             {article.illustration.caption}
