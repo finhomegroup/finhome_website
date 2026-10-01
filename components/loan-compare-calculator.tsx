@@ -1,5 +1,6 @@
 "use client";
 
+import { displayable } from "@/components/calc/accumulation";
 import { AdvancedFields } from "@/components/calc/advanced-fields";
 import { CalculatorCard } from "@/components/calc/calculator-card";
 import { CalculatorLayout } from "@/components/calc/calculator-layout";
@@ -16,6 +17,7 @@ import { NumberField } from "@/components/calc/number-field";
 import { ResultCta } from "@/components/calc/result-cta";
 import { ResultGroup } from "@/components/calc/result-group";
 import { ResultRow } from "@/components/calc/result-row";
+import { ResultStatusCard, type StatusView } from "@/components/calc/result-status";
 import { ResultTable } from "@/components/calc/result-table";
 import { useCalcFields } from "@/components/calc/use-calc-fields";
 import { CHART_UI } from "@/content/calculators/chart-ui";
@@ -48,6 +50,16 @@ import {
 } from "@/lib/calc/loan-compare";
 import { LOAN_COMPARE as C } from "@/content/calculators/loan-compare";
 import { FIXED_VS_FLOATING as F } from "@/content/calculators/fixed-vs-floating";
+import { LOAN_COMPARE_LEARNING as LL } from "@/content/calculators/loan-compare-learning";
+import {
+  compareLimit,
+  compareGuard,
+  compareLanesView,
+  lowestFirstPayment,
+  namesOf,
+  type CompareLimitKey,
+} from "@/components/loan-compare-learning";
+import { LoanCompareLearningPanel } from "@/components/loan-compare-learning-panel";
 
 /**
  * Which question the comparison is being used for.
@@ -74,6 +86,7 @@ const OPTION_KEYS = [
     promoRate: "promoRateA",
     flatFee: "flatFeeA",
     exitFee: "exitFeeA",
+    unknownFees: "unknownFeesA",
   },
   {
     rate: "rateB",
@@ -83,6 +96,7 @@ const OPTION_KEYS = [
     promoRate: "promoRateB",
     flatFee: "flatFeeB",
     exitFee: "exitFeeB",
+    unknownFees: "unknownFeesB",
   },
   {
     rate: "rateC",
@@ -92,6 +106,7 @@ const OPTION_KEYS = [
     promoRate: "promoRateC",
     flatFee: "flatFeeC",
     exitFee: "exitFeeC",
+    unknownFees: "unknownFeesC",
   },
 ] as const;
 
@@ -203,10 +218,18 @@ const REGION_IDS: Record<
 // from a page or a test. React always supplies a props object.
 export function LoanCompareCalculator({
   perspective = "offers",
+  initialUnknownFees,
   actions,
   nextSteps,
 }: {
   perspective?: ComparePerspective;
+  /**
+   * Which offers open marked "Chưa biết đủ phí". TEST-ONLY, like the floating
+   * tool's `initialStressPoints`: the static page renders every offer known,
+   * and a server render is the only way to assert the ticked state's real
+   * markup. No route passes it.
+   */
+  initialUnknownFees?: readonly boolean[];
   /** Compact actions immediately after the answer — `<ResultActions>`. */
   actions?: React.ReactNode;
   /** The route's longer next-step block, below the figure. */
@@ -248,6 +271,12 @@ export function LoanCompareCalculator({
     promoRateC: defaults[2].promoRate,
     flatFeeC: defaults[2].flatFee,
     exitFeeC: defaults[2].exitFee,
+    // "Chưa biết đủ phí", per offer: "1" when ticked. Not a figure and not a
+    // content default — every example opens KNOWN under its visible no-fee
+    // assumption, and "Về ví dụ mẫu" clears it with every other key.
+    unknownFeesA: initialUnknownFees?.[0] ? "1" : "",
+    unknownFeesB: initialUnknownFees?.[1] ? "1" : "",
+    unknownFeesC: initialUnknownFees?.[2] ? "1" : "",
   };
   // Formats while typing, by the grammar each key is PARSED with below — see
   // `FieldFormats`. `optionalMoney` keys group, `optionalDecimal` keys take a
@@ -395,12 +424,73 @@ export function LoanCompareCalculator({
       ] as const
     ).some((key) => text(fields.values[key]).trim() !== ""),
   );
+
+  /** In use, no unreadable box, and both a rate and a term: the engine should price it. */
+  const complete = parsed.map(
+    (option, index) =>
+      inUse[index] && !malformed[index] && option.rate.value !== null && option.term.value !== null,
+  );
+  /**
+   * One complete offer priced on its own through the SAME engine — only when
+   * the comparison itself was refused, to tell "the engine cannot price this"
+   * from "fewer than two offers". No second calculation of any figure.
+   */
+  const probe = (index: number) =>
+    amount === null || horizon === null
+      ? null
+      : (compareLoans({ amount, options: [options[index], options[index]], horizonMonths: horizon })?.rows[0] ??
+        null);
+  /*
+   * ONE LIMIT FOR THE WHOLE TOOL, both routes (release repair, 2026-10-01).
+   * The boxes parse, yet the engine priced a complete offer as nothing or
+   * as a non-finite figure, or returned a figure ≥ 10^18 ₫. Then no ranking,
+   * spread, cost, risk row, chart, table, APR or lane is printed — never a
+   * "— ₫" read as an answer — and one card says why, with a jump to each box
+   * that is itself the cause. Invalid, incomplete, too-few and unknown-fee
+   * states are unchanged; an ordinary valid comparison passes through.
+   */
+  const limit =
+    amountInvalid || horizonInvalid
+      ? null
+      : compareLimit({
+          amount,
+          columns: parsed.map((option, index) => ({
+            complete: complete[index],
+            row: !complete[index] ? null : result !== null ? (result.rows[index] ?? null) : probe(index),
+            typed: {
+              rate: option.rate.value,
+              termMonths: option.term.value === null ? null : Math.round(option.term.value * 12),
+              fee: option.fee.value,
+              flatFee: option.flatFee.value,
+              exitFee: option.exitFee.value,
+              promoRate: option.promoRate.value,
+            },
+          })),
+          spreads: result === null ? [] : [result.spread, result.fullTermSpread],
+        });
+  // An offer the ENGINE could not price is a limit, not an unreadable box:
+  // only malformed or incomplete offers are "unusable" (and blame a field).
   const unusableInUse =
     result === null
       ? malformed.some((bad, index) => bad && inUse[index])
-      : result.unusableIndexes.some((index) => inUse[index]);
+      : result.unusableIndexes.some((index) => inUse[index] && !complete[index]);
+
+  /**
+   * THE GUARD (F5, 2026-09-29). A cheapest option, a spread, a winner change
+   * or any ranking is stated ONLY when every offer in use priced, none is
+   * marked "Chưa biết đủ phí", and at least two are complete. An unused
+   * third column blocks nothing; an exact tie is a tie. Every fee-dependent
+   * figure below reads this one object.
+   */
+  const unknownFees = OPTION_KEYS.map((keys) => fields.values[keys.unknownFees] === "1");
+  const columnFacts = { inUse, malformed, unknownFees };
+  const guard = compareGuard(result, columnFacts);
+  const ranked = guard.ranked && result !== null && limit === null;
 
   const money = (value: number) => `${formatMoney(value)} ₫`;
+  /** The spread as the page may state it. */
+  const spreadText =
+    !ranked || result === null ? LL.notRanked : guard.allTied ? LL.noSpread : money(result.spread);
 
   /**
    * What each column is CALLED.
@@ -428,6 +518,44 @@ export function LoanCompareCalculator({
       })
     : C.form.optionLabels;
 
+  /** The short names the limit card uses: "Bên A" on fixed/floating. */
+  const sideNames = fixedFloating ? F.compare.sideNames : optionLabels;
+  const LIMIT_LABEL: Record<CompareLimitKey, string> = {
+    amount: C.form.amountLabel,
+    rate: C.form.rateLabel,
+    term: C.form.termLabel,
+    fee: C.form.feeLabel,
+    flatFee: C.form.flatFeeLabel,
+    exitFee: C.form.exitFeeLabel,
+    promoRate: C.form.promoRateLabel,
+  };
+  /** The card: neutral, no figure, the reason once, a jump per causal box. */
+  const limitView: StatusView | null = (() => {
+    if (limit === null) return null;
+    const copy = LL.limits[limit.kind];
+    const jumps = limit.fields.map((field) =>
+      field.column === null || field.key === "amount"
+        ? { key: "amount", label: LIMIT_LABEL.amount }
+        : {
+            key: OPTION_KEYS[field.column][field.key],
+            label: `${sideNames[field.column]} — ${LIMIT_LABEL[field.key]}`,
+          },
+    );
+    const options = limit.columns.length > 0 ? namesOf(limit.columns, sideNames) : LL.limits.allOptions;
+    return {
+      tone: "unknown" as const,
+      label: LL.limits.label,
+      title: copy.title,
+      reasons: [
+        fill(jumps.length > 0 ? copy.reason : copy.neutral, {
+          options,
+          fields: jumps.map((jump) => `“${jump.label}”`).join(LL.limits.join),
+        }),
+      ],
+      actions: jumps.map((jump) => ({ field: jump.key, label: jump.label })),
+    };
+  })();
+
   /**
    * The offer columns the detail table shows.
    *
@@ -451,11 +579,14 @@ export function LoanCompareCalculator({
   const metricRow = (
     label: string,
     cell: (row: LoanComparisonRow) => TableCell,
+    /** Depends on the fees: withheld for an offer whose fees are unknown. */
+    feeDependent = false,
   ): TableCell[] => [
     label,
     ...shownOffers.map((index) => {
       const row = result?.rows[index] ?? null;
-      return row === null ? null : cell(row);
+      if (row === null) return null;
+      return feeDependent && guard.feesUnknown[index] ? LL.feeUnknownValue : cell(row);
     }),
   ];
 
@@ -463,7 +594,7 @@ export function LoanCompareCalculator({
   const rateCell = (value: number | null): TableCell =>
     value === null ? C.form.aprUnavailable : percentCell(value, 2);
 
-  const tableRows: TableCell[][] = result
+  const tableRows: TableCell[][] = result && limit === null
     ? [
         metricRow(C.table.rows.monthly, (row) => moneyCell(row.monthlyPayment)),
         metricRow(C.table.rows.resetPayment, (row) =>
@@ -478,7 +609,7 @@ export function LoanCompareCalculator({
         metricRow(C.table.rows.horizonInterest, (row) =>
           moneyCell(row.horizonInterest),
         ),
-        metricRow(C.table.rows.fee, (row) => moneyCell(row.upfrontFee)),
+        metricRow(C.table.rows.fee, (row) => moneyCell(row.upfrontFee), true),
         metricRow(C.table.rows.horizonBalance, (row) =>
           moneyCell(row.horizonBalance),
         ),
@@ -486,13 +617,18 @@ export function LoanCompareCalculator({
         // horizon block and never in the full-term one.
         metricRow(C.table.rows.exitFee, (row) =>
           moneyCell(row.exitFeeAtHorizon),
-        ),
+        true),
         metricRow(C.table.rows.horizonCost, (row) =>
           moneyCell(row.horizonCost),
-        ),
-        metricRow(C.table.rows.extraVsBest, (row) =>
-          moneyCell(row.extraVsBest),
-        ),
+        true),
+        // A distance from "the cheapest" exists only when there is one.
+        ...(ranked
+          ? [
+              metricRow(C.table.rows.extraVsBest, (row) =>
+                moneyCell(row.extraVsBest),
+              ),
+            ]
+          : []),
         // The full-term block, kept separate because it answers a different
         // question from the one above.
         metricRow(C.table.rows.totalInterest, (row) =>
@@ -500,20 +636,25 @@ export function LoanCompareCalculator({
         ),
         metricRow(C.table.rows.costOfBorrowing, (row) =>
           moneyCell(row.costOfBorrowing),
-        ),
+        true),
         metricRow(C.table.rows.totalOutlay, (row) =>
           moneyCell(row.totalOutlay),
-        ),
+        true),
         // Rates, never scaled to the table's money unit.
-        metricRow(C.table.rows.apr, (row) => rateCell(row.aprPercent)),
+        metricRow(C.table.rows.apr, (row) => rateCell(row.aprPercent), true),
         metricRow(C.table.rows.horizonApr, (row) =>
           rateCell(row.horizonAprPercent),
-        ),
+        true),
       ]
     : [];
 
-  const bestLabel =
-    result === null ? null : optionLabels[result.bestIndex];
+  const bestLabel = !ranked
+    ? result === null
+      ? null
+      : LL.notRanked
+    : guard.best.length > 1
+      ? `${LL.tieValue}: ${namesOf(guard.best, optionLabels)}`
+      : optionLabels[guard.best[0]];
 
   /**
    * The winner's own cost at the chosen horizon — ROW 6's base for the spread.
@@ -523,7 +664,7 @@ export function LoanCompareCalculator({
    * Read off the ranked row, so it is the same figure the table reports.
    */
   const bestHorizonCost =
-    result === null ? null : (result.rows[result.bestIndex]?.horizonCost ?? null);
+    !ranked || result === null ? null : (result.rows[guard.best[0]]?.horizonCost ?? null);
 
   /**
    * ROW 15's per-side block: the instalment after the ưu đãi ends and the cost
@@ -536,7 +677,7 @@ export function LoanCompareCalculator({
    * under its own name instead: printing "sau ưu đãi" for a loan that never
    * had one would invent a phase.
    */
-  const riskRows = shownOffers.flatMap((index) => {
+  const riskRows = (limit === null ? shownOffers : []).flatMap((index) => {
     const row = result?.rows[index] ?? null;
     if (row === null) return [];
     const phased = row.resetMonth !== null;
@@ -557,7 +698,7 @@ export function LoanCompareCalculator({
         : []),
       {
         label: `${optionLabels[index]} — ${C.table.rows.horizonCost}`,
-        value: money(row.horizonCost),
+        value: guard.feesUnknown[index] ? LL.feeUnknownValue : money(row.horizonCost),
       },
     ];
   });
@@ -572,6 +713,7 @@ export function LoanCompareCalculator({
         help={C.form.rateHelp}
         error={C.form.rateInvalid}
         invalid={parsed[index].rate.invalid}
+        fieldKey={OPTION_KEYS[index].rate}
       />
       <NumberField
         {...fields.bind(OPTION_KEYS[index].term)}
@@ -580,6 +722,7 @@ export function LoanCompareCalculator({
         help={C.form.termHelp}
         error={C.form.termInvalid}
         invalid={parsed[index].term.invalid}
+        fieldKey={OPTION_KEYS[index].term}
       />
     </>
   );
@@ -595,23 +738,26 @@ export function LoanCompareCalculator({
   const offerFeeFields = (index: number) => {
     const option = parsed[index];
     const keys = OPTION_KEYS[index];
+    // A summary never echoes "—%" or "— ₫" for a value it cannot print.
+    const printable = (value: number | null, shown: string) =>
+      displayable([value ?? 0]) ? shown : LL.limits.settingTooLarge;
     const settings: DisclosedSetting[] = [
       {
         key: "fee",
         label: C.form.feeLabel,
-        value: `${formatDecimal(option.fee.value ?? 0, 2)}%`,
+        value: printable(option.fee.value, `${formatDecimal(option.fee.value ?? 0, 2)}%`),
         active: option.fee.invalid || (option.fee.value ?? 0) > 0,
       },
       {
         key: "flatFee",
         label: C.form.flatFeeLabel,
-        value: money(option.flatFee.value ?? 0),
+        value: printable(option.flatFee.value, money(option.flatFee.value ?? 0)),
         active: option.flatFee.invalid || (option.flatFee.value ?? 0) > 0,
       },
       {
         key: "exitFee",
         label: C.form.exitFeeLabel,
-        value: money(option.exitFee.value ?? 0),
+        value: printable(option.exitFee.value, money(option.exitFee.value ?? 0)),
         active: option.exitFee.invalid || (option.exitFee.value ?? 0) > 0,
       },
       {
@@ -620,10 +766,13 @@ export function LoanCompareCalculator({
         value:
           option.promoMonths.value === null || option.promoRate.value === null
             ? C.form.promoNeedsBoth
-            : `${formatDecimal(option.promoRate.value, 2)}% · ${formatDecimal(
-                option.promoMonths.value,
-                0,
-              )} ${C.form.promoMonthsUnit}`,
+            : printable(
+                option.promoRate.value,
+                `${formatDecimal(option.promoRate.value, 2)}% · ${formatDecimal(
+                  option.promoMonths.value,
+                  0,
+                )} ${C.form.promoMonthsUnit}`,
+              ),
         active:
           option.promoMonths.invalid ||
           option.promoRate.invalid ||
@@ -646,6 +795,7 @@ export function LoanCompareCalculator({
           help={C.form.feeHelp}
           error={C.form.feeInvalid}
           invalid={option.fee.invalid}
+          fieldKey={keys.fee}
         />
         <NumberField
           {...fields.bind(keys.flatFee)}
@@ -654,6 +804,7 @@ export function LoanCompareCalculator({
           help={C.form.flatFeeHelp}
           error={C.form.flatFeeInvalid}
           invalid={option.flatFee.invalid}
+          fieldKey={keys.flatFee}
         />
         {/* Paid at the horizon, not at origination — its own box for that
             reason, and never folded into the one above. */}
@@ -664,6 +815,7 @@ export function LoanCompareCalculator({
           help={C.form.exitFeeHelp}
           error={C.form.exitFeeInvalid}
           invalid={option.exitFee.invalid}
+          fieldKey={keys.exitFee}
         />
         <NumberField
           {...fields.bind(keys.promoMonths)}
@@ -672,6 +824,7 @@ export function LoanCompareCalculator({
           help={C.form.promoMonthsHelp}
           error={C.form.promoMonthsInvalid}
           invalid={option.promoMonths.invalid || promoTooLong[index]}
+          fieldKey={keys.promoMonths}
         />
         <NumberField
           {...fields.bind(keys.promoRate)}
@@ -680,6 +833,7 @@ export function LoanCompareCalculator({
           help={C.form.promoRateHelp}
           error={C.form.promoRateInvalid}
           invalid={option.promoRate.invalid}
+          fieldKey={keys.promoRate}
         />
         {promoPartial[index] ? (
           <p className="text-sm leading-relaxed text-ink-2">
@@ -699,24 +853,27 @@ export function LoanCompareCalculator({
    */
   const ratePercent = (value: number | null) =>
     value === null ? C.form.aprUnavailable : formatPercent(value, 2);
+  // An APR is fee-dependent: withheld for an offer whose fees are unknown.
+  const aprOf = (index: number, value: number | null) =>
+    guard.feesUnknown[index] ? LL.feeUnknownValue : ratePercent(value);
   const aprFigures = (result?.rows ?? []).flatMap((row, index) =>
     row === null
       ? []
       : [
           {
             label: `${optionLabels[index]} — ${C.form.aprLabel}`,
-            value: ratePercent(row.aprPercent),
+            value: aprOf(index, row.aprPercent),
           },
           {
             label: `${optionLabels[index]} — ${C.form.aprEffectiveLabel}`,
-            value: ratePercent(row.aprEffectivePercent),
+            value: aprOf(index, row.aprEffectivePercent),
           },
           {
             label: `${optionLabels[index]} — ${fill(
               C.form.horizonAprLabel,
               { n: formatDecimal(result?.horizonMonths ?? 0, 0) },
             )}`,
-            value: ratePercent(row.horizonAprPercent),
+            value: aprOf(index, row.horizonAprPercent),
           },
         ],
   );
@@ -738,17 +895,96 @@ export function LoanCompareCalculator({
   // Two charts, because the two questions have different answers: the bars
   // rank by what borrowing costs, the lines show what each month costs. They
   // routinely point at different options, which is the page's whole lesson.
-  const costChart = costBarsModel(result, optionLabels, {
-    ...CHART_UI.money,
-    ...C.costChart,
-  });
-  const paymentChart = paymentTimelineModel(result, optionLabels, {
+  //
+  // THE GUARD REACHES BOTH. Unranked: no cost bars at all (their emphasis and
+  // summary ARE a ranking), with the reason and the recovery in their place.
+  // Tied: the bars, with no emphasis and a tie sentence. The payment chart is
+  // fee-independent and stays, but names no cheapest option unless one is.
+  const blockedNames = namesOf(guard.blocking, optionLabels);
+  const costChart = !ranked
+    ? costBarsModel(null, optionLabels, {
+        ...CHART_UI.money,
+        ...C.costChart,
+        ...(guard.reason === "invalid"
+          ? { unavailableReason: fill(LL.chartInvalid, { options: blockedNames }), unavailableRecovery: LL.recoveryInvalid }
+          : guard.reason === "unknownFees"
+            ? { unavailableReason: fill(LL.chartUnknown, { options: blockedNames }), unavailableRecovery: LL.recoveryUnknown }
+            : {}),
+      })
+    : guard.best.length > 1
+      ? costBarsModel({ ...result, bestIndex: -1, horizonChangesWinner: false }, optionLabels, {
+          ...CHART_UI.money,
+          ...C.costChart,
+          summary: fill(LL.chartTied, {
+            horizon: formatDecimal(result.horizonMonths, 0),
+            options: namesOf(guard.best, optionLabels),
+            cost: money(result.rows[guard.best[0]]?.horizonCost ?? 0),
+          }),
+        })
+      : costBarsModel(result, optionLabels, {
+          ...CHART_UI.money,
+          ...C.costChart,
+        });
+  // Equal OPENING instalments are acknowledged as equal: the model's summary
+  // would otherwise name the first of them "the lowest". Presentation only.
+  // At a limit neither chart is drawn, so neither reads the engine's figures.
+  const lowestFirst = lowestFirstPayment(limit === null ? result : null, inUse);
+  const paymentChart = paymentTimelineModel(limit === null ? result : null, optionLabels, {
     ...CHART_UI.money,
     ...C.paymentChart,
+    ...(lowestFirst !== null && lowestFirst.indexes.length > 1
+      ? {
+          summary: fill(LL.paymentSummaryTied, {
+            options: namesOf(lowestFirst.indexes, optionLabels),
+            lowest: money(lowestFirst.value),
+          }),
+        }
+      : ranked && guard.best.length === 1
+        ? {}
+        : { summary: LL.paymentSummaryNoRank }),
   });
 
+  /** The living panel's lanes, from the same result and the same guard. */
+  const lanesView =
+    amountInvalid || horizonInvalid || limit !== null
+      ? null
+      : // The panel's lanes print each side's ENGINE-derived structure under
+        // its name, so fixed/floating passes the short stable side names
+        // there ("Bên A"); the rows, charts and table keep the full labels.
+        compareLanesView(result, guard, columnFacts, fixedFloating ? F.compare.sideNames : optionLabels);
+  const setHorizon = (months: number) => fields.bind("horizon").onValueChange(String(months));
+
+  /**
+   * "Chưa biết đủ phí" for one offer: a native checkbox, 44 px tall, whose
+   * state lives in the form so the example reset clears it. Ticking it never
+   * touches the fee boxes.
+   */
+  const unknownFeesSwitch = (index: number) => {
+    const key = OPTION_KEYS[index].unknownFees;
+    const inputId = `${ids.form}-${key}`;
+    const helpId = `${inputId}-help`;
+    return (
+      <div data-unknown-fees={index} className="mt-4">
+        <label htmlFor={inputId} className="flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium text-ink">
+          <input
+            id={inputId}
+            type="checkbox"
+            checked={unknownFees[index]}
+            aria-describedby={helpId}
+            onChange={(event) => fields.bind(key).onValueChange(event.target.checked ? "1" : "")}
+            className="size-5 shrink-0 accent-brand-green-ink"
+          />
+          {LL.unknownFeesLabel}
+        </label>
+        <p id={helpId} className="text-sm leading-relaxed text-ink-2">
+          {LL.unknownFeesHelp}
+        </p>
+      </div>
+    );
+  };
+
   return (
-    <CalculatorCard>
+    <CalculatorCard compact>
       <ExampleNotice
         pristine={pristine}
         onReset={fields.reset}
@@ -792,6 +1028,7 @@ export function LoanCompareCalculator({
                 help={C.form.amountHelp}
                 error={C.form.amountInvalid}
                 invalid={amountInvalid}
+                fieldKey="amount"
               />
             </FieldGroup>
 
@@ -806,6 +1043,7 @@ export function LoanCompareCalculator({
                 help={C.form.horizonHelp}
                 error={C.form.horizonInvalid}
                 invalid={horizonInvalid}
+                fieldKey="horizon"
               />
             </FieldGroup>
 
@@ -839,6 +1077,7 @@ export function LoanCompareCalculator({
                 ) : null}
                 {offerCoreFields(index)}
                 {offerFeeFields(index)}
+                {unknownFeesSwitch(index)}
               </FieldGroup>
             ))}
 
@@ -854,6 +1093,7 @@ export function LoanCompareCalculator({
               >
                 {offerCoreFields(2)}
                 {offerFeeFields(2)}
+                {unknownFeesSwitch(2)}
               </AdvancedFields>
             )}
           </>
@@ -869,7 +1109,7 @@ export function LoanCompareCalculator({
             invalid={amountInvalid || horizonInvalid || unusableInUse}
             answer={{
               label: C.form.spreadLabel,
-              value: result === null ? null : money(result.spread),
+              value: limit !== null ? LL.limits.cta : result === null ? null : spreadText,
             }}
             sticky
           />
@@ -879,14 +1119,26 @@ export function LoanCompareCalculator({
             {/* The only live region on the page: three rows a screen reader
                 can hear re-announced on every keystroke. The comparison table
                 below carries 21 cells and is deliberately not live. */}
-            <ResultGroup title={C.form.resultTitle} anchorId={ids.result}>
+            <ResultGroup
+              title={C.form.resultTitle}
+              anchorId={ids.result}
+              // Outside the live rows: the limit's reason and its jumps.
+              status={limitView === null ? undefined : <ResultStatusCard status={limitView} formId={ids.form} />}
+            >
+              {limit !== null ? (
+                // One sentence instead of three rows of placeholders.
+                <p data-compare-limit={limit.kind} className="text-sm leading-relaxed text-ink">
+                  {LL.limits.rows}
+                </p>
+              ) : (
+              <>
               {/* ROW 6: the DIFFERENCE is the answer, not the winner's name.
                   A reader who only reads the big figure learns what choosing
                   wrongly costs them; a reader who only read "Phương án B"
                   learned nothing about whether the choice mattered. */}
               <ResultRow
                 label={C.form.spreadLabel}
-                value={result === null ? null : money(result.spread)}
+                value={result === null ? null : spreadText}
                 emphasis
               />
               <ResultRow label={C.form.bestLabel} value={bestLabel} />
@@ -895,6 +1147,8 @@ export function LoanCompareCalculator({
                 label={C.form.horizonCostLabel}
                 value={bestHorizonCost === null ? null : money(bestHorizonCost)}
               />
+              </>
+              )}
             </ResultGroup>
 
             {/* ROW 15, this route only: both metrics the reader has to weigh
@@ -916,7 +1170,8 @@ export function LoanCompareCalculator({
               </ResultGroup>
             ) : null}
 
-            {result === null &&
+            {limit === null &&
+            result === null &&
             !amountInvalid &&
             !horizonInvalid &&
             !unusableInUse ? (
@@ -937,14 +1192,20 @@ export function LoanCompareCalculator({
               </p>
             ) : null}
 
+            {limit === null && guard.reason === "unknownFees" ? (
+              <p data-unknown-fees-notice="true" className="mt-4 text-sm leading-relaxed text-ink-2">
+                {fill(C.form.unknownFeesNotice, { options: blockedNames })}
+              </p>
+            ) : null}
+
             {/* When the horizon winner and the full-term winner differ, the
                 page says so instead of letting one ranking stand for both
                 questions. */}
-            {result?.horizonChangesWinner ? (
+            {result !== null && limit === null && guard.winnerChanges ? (
               <p className="mt-4 text-sm leading-relaxed text-ink-2">
                 {fill(C.form.winnerChangesNotice, {
-                  horizonOption: optionLabels[result.bestIndex],
-                  fullTermOption: optionLabels[result.bestFullTermIndex],
+                  horizonOption: optionLabels[guard.best[0]],
+                  fullTermOption: optionLabels[guard.bestFullTerm[0]],
                 })}
               </p>
             ) : null}
@@ -954,9 +1215,33 @@ export function LoanCompareCalculator({
             </p>
           </>
         }
+        learning={
+          <LoanCompareLearningPanel
+            sample={pristine}
+            view={lanesView}
+            emptyText={
+              limit !== null
+                ? LL.limits.scene[limit.kind]
+                : amountInvalid || horizonInvalid
+                  ? LL.unknown
+                  : guard.reason === "invalid"
+                    ? fill(LL.verdictInvalid, { options: blockedNames })
+                    : LL.verdictTooFew
+            }
+            emptyState={limit === null ? "unknown" : limit.kind}
+            fixLabel={limit === null ? undefined : LL.limits.fix}
+            onHorizon={setHorizon}
+            formId={ids.form}
+          />
+        }
         chart={
           /* Both charts sit outside every ResultGroup: neither may be
              re-announced on each keystroke. */
+          limit !== null ? (
+            <p data-compare-limit-chart={limit.kind} className="text-sm leading-relaxed text-ink-2">
+              {LL.limits.chart}
+            </p>
+          ) : (
           <>
             <ChartFigure model={costChart}>
               <BarChart model={costChart} />
@@ -966,6 +1251,7 @@ export function LoanCompareCalculator({
               <LineChart model={paymentChart} />
             </ChartFigure>
           </>
+          )
         }
         actions={actions}
         nextSteps={nextSteps}

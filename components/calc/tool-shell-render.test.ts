@@ -27,7 +27,7 @@ import { markupRegion } from "@/lib/markup-region";
  */
 const ILLUSTRATION = 'data-learning-illustration="true"';
 /** The routes whose learning panel carries ONE labelled illustration. */
-const ILLUSTRATED = new Set(["kha-nang-mua-nha", "vay-mua-nha", "vay-mua-xe", "muc-tieu-tiet-kiem", "lai-kep", "tien-gui-co-ky-han", "lai-suat-tha-noi"]);
+const ILLUSTRATED = new Set(["kha-nang-mua-nha", "vay-mua-nha", "vay-mua-xe", "muc-tieu-tiet-kiem", "lai-kep", "tien-gui-co-ky-han", "lai-suat-tha-noi", "so-sanh-khoan-vay"]);
 function chartsOnly(html: string): string {
   const region = markupRegion(html, ILLUSTRATION, "figure");
   const stripped = region === null ? html : html.replace(`${region}</figure>`, "");
