@@ -23,7 +23,12 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-import { PENDING_EXPORTS, TOOL_EDUCATION_SERIES } from "@/content/tool-education-series";
+import {
+  LOAN_DECISION_PENDING_EXPORTS,
+  LOAN_DECISION_SERIES,
+  PENDING_EXPORTS,
+  TOOL_EDUCATION_SERIES,
+} from "@/content/tool-education-series";
 import { POSTS, getPost, postKind } from "@/content/posts";
 import { getEducationArticle } from "@/content/education/articles";
 import { getCalculator } from "@/content/calculators/registry";
@@ -470,13 +475,17 @@ describe("social packages", () => {
   it("is a thumbnail grid: every card previews and downloads a PNG that exists", () => {
     const index = read("public/social/index.html");
     const cards = [...index.matchAll(/<li class="card" data-package="([a-z-]+)">([\s\S]*?)<\/li>/g)];
-    expect(cards.map((c) => c[1]).sort()).toEqual([...TOOL_EDUCATION_SERIES.map((e) => e.tool), "vay-mua-xe"].sort());
+    // Wave 2 (2026-10-01) adds its two packages once their PNGs exist; they use
+    // the user-approved AI illustrations, credited as such, not a Pexels photo.
+    const wave2 = LOAN_DECISION_SERIES.filter((e) => !LOAN_DECISION_PENDING_EXPORTS.includes(e.tool)).map((e) => e.tool);
+    expect(cards.map((c) => c[1]).sort()).toEqual([...TOOL_EDUCATION_SERIES.map((e) => e.tool), "vay-mua-xe", ...wave2].sort());
     for (const [, tool, card] of cards) {
       const png = `public/social/${tool}/poster.png`;
       expect(existsSync(png), png).toBe(true);
       expect(card).toContain(`<img src="${tool}/poster.png" width="1080" height="1350" loading="lazy"`);
       expect(card).toContain(`<a class="download" href="${tool}/poster.png" download>Tải PNG</a>`);
-      expect(card).toMatch(/Ảnh: .+ \/ Pexels/);
+      if (wave2.includes(tool)) expect(card).toContain('<p class="credit">Ảnh minh họa AI</p>');
+      else expect(card).toMatch(/Ảnh: .+ \/ Pexels/);
       expect(card).toContain(`href="/cong-cu/${tool}/"`);
       expect(existsSync(`app/cong-cu/${tool}/page.tsx`), tool).toBe(true);
       const article = card.match(/href="\/blog\/([a-z0-9-]+)\/"/)![1];

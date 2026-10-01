@@ -45,6 +45,13 @@ export type Post = {
    * back to the site share card for `og:image`.
    */
   cover?: string;
+  /**
+   * OPT-IN share/schema image for a post that has NO page cover (public path).
+   * Used only by `postCover()` for og:image and Article schema; never rendered
+   * on the page, so an education article that shows its picture as an
+   * `illustration` does not show it twice. Absent everywhere else.
+   */
+  ogImage?: string;
   date?: string; // ISO YYYY-MM-DD publish date (for Article schema + sitemap lastmod)
   /** Defaults to `"news"`. */
   kind?: PostKind;
@@ -159,7 +166,10 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Cùng một cặp báo giá, hai thước đo, hai người thắng khác nhau. Bài chỉ ra thước đo nào trả lời câu hỏi nào.",
-    readingTime: "6 phút đọc",
+    // Re-derived 2026-10-01 after the wave-2 upgrade (round(words / 200)).
+    readingTime: "8 phút đọc",
+    // Share image = the article's labelled AI illustration (library image 01).
+    ogImage: "/images/education/ai-library-01-home-planning-1200.jpg",
     date: "2026-09-14",
   },
   {
@@ -225,7 +235,10 @@ const EDUCATION_ENTRIES: Post[] = [
     kind: "education",
     excerpt:
       "Khoản trả giữ nguyên và khoản trả đổi theo lãi suất ảnh hưởng thế nào đến gia đình? Thử một kịch bản trước khi so báo giá thực tế.",
-    readingTime: "6 phút đọc",
+    // Re-derived 2026-10-01 after the wave-2 upgrade (round(words / 200)).
+    readingTime: "10 phút đọc",
+    // Share image = the article's labelled AI illustration (library image 02).
+    ogImage: "/images/education/ai-library-02-couple-calm-confidence-1200.jpg",
     date: "2026-09-14",
   },
   {

@@ -119,7 +119,14 @@ export type EducationArticle = {
     width: number;
     height: number;
     alt: string;
-    badge: string;
+    /**
+     * Overlay label on the image (C01). OMITTED for C05 and C11 (2026-10-01,
+     * user direction): their `caption` is then a single small tagline under
+     * the image — "Ảnh minh họa AI" — with no overlay and no provenance
+     * paragraph on the page (provenance lives in the recap and the library
+     * manifest).
+     */
+    badge?: string;
     caption: string;
   };
 

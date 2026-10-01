@@ -30,6 +30,14 @@ const SRC_CFPB_COMPARE = {
     "Khái niệm dùng ở đây: so các báo giá trên cùng số tiền vay, cùng khoảng thời gian và cùng phạm vi chi phí; lãi suất thấp hơn hay khoản trả tháng nhỏ hơn chưa phải là toàn bộ quyết định. Số liệu thống kê trong trang đó là của Hoa Kỳ và không được dùng ở đây.",
 };
 
+// Read and checked 2026-10-01 for the C05 upgrade (concept only).
+const SRC_CFPB_OWNING_COMPARE = {
+  label: "CFPB — Compare loan offers (Owning a Home)",
+  url: "https://www.consumerfinance.gov/owning-a-home/compare/",
+  note:
+    "Khái niệm dùng ở đây: đặt các báo giá vay cạnh nhau rồi so cả lãi, phí và khoản trả, thay vì chỉ nhìn một con số. Đây là tài liệu của cơ quan bảo vệ người tiêu dùng Hoa Kỳ; quy định, mẫu giấy tờ và số liệu trong đó không áp dụng tại Việt Nam.",
+};
+
 const SRC_TCB_TRA_GOP = {
   label: "Techcombank — Vay mua nhà trả góp (nội dung giáo dục của ngân hàng)",
   url: "https://techcombank.com/thong-tin/blog/vay-mua-nha-tra-gop",
@@ -351,14 +359,23 @@ export const ARTICLES_1: EducationArticle[] = [
     group: "CHOICE",
     planId: "C05",
     question: "Hai gói vay: trả ít mỗi tháng có thật sự rẻ hơn?",
+    // UPGRADED 2026-10-01 (series wave 2): the same two offers, now read at
+    // TWO horizons — month 60 and the full 300 months — with monthly cash,
+    // interest + fees and the debt still owed kept apart. Every figure below
+    // is recomputed by `content/loan-decision-series.test.ts` with
+    // `compareLoans`.
+    // ONE PLAIN IDEA FIRST (editorial repair 2026-10-01): the short answer
+    // carries one illustrative amount; the quantified evidence for both
+    // horizons lives in the sections below.
     shortAnswer: [
-      "Không nhất thiết. Trong ví dụ của bài, gói có khoản trả hằng tháng thấp nhất lại là gói tốn nhiều lãi nhất, vì nó kéo dài kỳ hạn thêm 5 năm.",
-      "Hãy đặt hai báo giá cạnh nhau với cùng số tiền vay và cùng thời điểm đánh giá. Xem cả chi phí vay — lãi cộng phí — lẫn khoản trả hằng tháng: một con số cho biết tốn bao nhiêu, con số kia cho biết ngân sách có chịu được không.",
+      "Không nhất thiết. Khi hai gói cùng số tiền vay và cùng lãi suất, gói trả ít hơn mỗi tháng thường là gói trả trong nhiều năm hơn — và trả lâu hơn thì tốn thêm tiền lãi. Trong ví dụ của bài, gói B nhẹ hơn khoảng 1,25 triệu mỗi tháng, nhưng gói có khoản trả hằng tháng thấp nhất lại là gói tốn nhiều lãi nhất.",
+      "Vì vậy hãy hỏi hai câu riêng: “nhà mình có trả nổi khoản này mỗi tháng không?”, và “đến lúc mình định bán nhà hoặc đổi khoản vay, gói nào tốn ít lãi và phí hơn?”. Bài cho thấy câu trả lời ở mốc 5 năm và khi giữ đến hết.",
     ],
-    // "Smaller instalment" is not "cheaper loan". The three conditions that
-    // make a comparison mean anything are emphasised with it.
+    // "Smaller instalment" is not "cheaper loan", and the verdict is bound to
+    // the horizon the reader plans for.
     shortAnswerEmphasis: [
       "gói có khoản trả hằng tháng thấp nhất lại là gói tốn nhiều lãi nhất",
+      "đến lúc mình định bán nhà hoặc đổi khoản vay",
     ],
     household: {
       title: "Hai báo giá giả lập trong bài",
@@ -368,34 +385,80 @@ export const ARTICLES_1: EducationArticle[] = [
         { label: "Phương án B", value: "8,5%/năm, 25 năm, phí thu xếp 1%" },
         { label: "Cách trả ở cả hai", value: "Trả góp đều, lãi giữ nguyên" },
         { label: "Phí 1% của phương án B", value: "20.000.000 ₫, trả khi giải ngân" },
+        { label: "Hai mốc đọc kết quả", value: "Tháng 60 (5 năm) và tháng 300 (cả hai gói đã trả xong)" },
       ],
       note:
-        "Hai báo giá giả lập, chọn sao cho chỉ khác nhau ở kỳ hạn và phí — để thấy rõ hai yếu tố đó làm gì. Không phải báo giá của ngân hàng nào.",
+        "Hai báo giá giả lập, chọn sao cho chỉ khác nhau ở kỳ hạn và phí — để thấy rõ hai yếu tố đó làm gì. Lãi giữ nguyên suốt kỳ hạn cũng là giả định để dễ so. Không phải báo giá của ngân hàng nào.",
     },
     sections: [
       {
-        heading: "Cùng số tiền vay và mốc thời gian giúp so báo giá rõ hơn",
+        heading: "Khoản trả hằng tháng gồm tiền gốc và tiền lãi",
         paragraphs: [
-          "Để tách riêng tác động của lãi, phí và kỳ hạn, hai gói phải được tính trên cùng số tiền vay. Báo giá 1,8 tỷ có thể trả ít hơn báo giá 2 tỷ đơn giản vì bạn vay ít hơn; nếu muốn so hai kế hoạch đó, cần tính thêm phần tiền tự có phải bù.",
-          "Công cụ So sánh khoản vay vì vậy chỉ có một ô số tiền vay dùng chung cho mọi phương án. Nếu ngân hàng cho bạn vay ít hơn mức bạn cần, đó là một thông tin riêng và quan trọng, nhưng nó không thuộc phép so sánh này.",
-          "Điều kiện thứ hai: nói rõ khoảng thời gian đánh giá. Biểu đồ của bài cộng lãi và phí DANH NGHĨA đến cuối kỳ hạn riêng của từng gói, tức 20 năm so với 25 năm. Nó chưa so chi phí đến cùng một ngày thoát khoản vay và chưa chiết khấu; muốn bán nhà sau 5 năm, cần so lãi, phí đã trả và dư nợ — phần gốc còn nợ — tại đúng mốc đó.",
+          "Gốc là số tiền bạn mượn, ở đây là 2 tỷ. Lãi là tiền bạn trả để được dùng số tiền đó, tính trên phần gốc còn nợ. Dư nợ là phần gốc chưa trả. Khi bán nhà hoặc chuyển khoản vay, số tiền để đóng khoản vay là dư nợ đó, có thể cộng thêm tiền lãi phát sinh đến ngày trả và phí theo hợp đồng.",
+          "Hai gói trong ví dụ đều trả góp đều: mỗi tháng cùng một khoản, cùng lãi 8,5%/năm. Với hai gói này, những năm đầu phần lớn khoản trả là tiền lãi, chỉ một phần nhỏ trả bớt gốc. Gói có kỳ hạn dài hơn trả bớt gốc mỗi tháng ít hơn, nên dư nợ giảm chậm hơn và tiền lãi được tính trên một khoản nợ lớn hơn, trong nhiều tháng hơn.",
+          "Để so công bằng, hai gói phải được tính trên cùng số tiền vay. Báo giá 1,8 tỷ có thể trả ít hơn báo giá 2 tỷ đơn giản vì bạn vay ít hơn; khi đó còn phải tính phần tiền tự có phải bù. Vì vậy công cụ So sánh khoản vay chỉ có một ô số tiền vay dùng chung cho mọi phương án.",
         ],
         emphasis: [
+          "Dư nợ là phần gốc chưa trả",
+          "dư nợ giảm chậm hơn",
           "hai gói phải được tính trên cùng số tiền vay",
-          "nói rõ khoảng thời gian đánh giá",
         ],
       },
       {
-        heading: "Hai biểu đồ, hai câu trả lời trái ngược",
+        heading: "Gói B nhẹ hơn khoảng 1,25 triệu mỗi tháng",
         paragraphs: [
-          "Biểu đồ cột trong bài xếp hạng theo chi phí vay: lãi cộng phí thu một lần. Theo thước đo này, phương án A rẻ hơn.",
-          "Nếu đổi sang xem khoản trả hằng tháng, phương án B nhẹ hơn — vì trả trong 300 tháng thay vì 240. Cùng một cặp báo giá, hai thước đo, hai người thắng khác nhau.",
-          "Không có thước đo nào sai. Nhưng chúng trả lời hai câu hỏi khác nhau: “gói nào tốn ít tiền hơn” và “gói nào tôi thu xếp được mỗi tháng”. Trong ví dụ cùng số tiền, cùng lãi dương và cùng cách trả này, kéo dài kỳ hạn làm khoản trả nhỏ hơn nhưng tổng lãi cao hơn. Nếu lãi suất hoặc phí khác nhau, không thể dùng kỳ hạn để kết luận gói nào rẻ hơn.",
-          "Cách dùng thực dụng: lấy chi phí vay để biết cái giá, lấy khoản trả hằng tháng để biết mình có sống được với nó không. Nếu gói rẻ hơn có khoản trả bạn không gánh được thì nó không phải lựa chọn, dù nó rẻ.",
+          "Hai gói cùng lãi 8,5%/năm và cùng vay 2 tỷ. Chỉ khác hai chỗ: gói B trả trong 25 năm thay vì 20, và thu phí 1% — 20 triệu — ngay khi giải ngân.",
+          "Vì chia ra 300 tháng thay vì 240, khoản trả mỗi tháng của gói B nhỏ hơn. Với ngân sách gia đình, đó là một khoản dễ thở hơn mỗi tháng. Nhưng khoản trả nhỏ hơn mới chỉ trả lời câu “có trả nổi không”, chưa trả lời câu “gói nào rẻ hơn”.",
         ],
+        results: {
+          caption: "Khoản trả hằng tháng của hai gói",
+          rows: [
+            { label: "Gói A — 20 năm", value: "17.356.465 ₫" },
+            { label: "Gói B — 25 năm", value: "16.104.542 ₫" },
+          ],
+        },
+        emphasis: ["mới chỉ trả lời câu “có trả nổi không”"],
+      },
+      {
+        heading: "Sau 5 năm, gói B trả ra ít tiền hơn nhưng còn nợ nhiều hơn",
+        paragraphs: [
+          "Nếu gia đình dự định bán nhà, đổi nhà hoặc chuyển khoản vay sau 5 năm, mốc cần nhìn là tháng thứ 60.",
+          "Đến lúc đó, chọn gói B thì cộng lại gia đình giữ trong tay khoảng 55,1 triệu so với gói A, đã tính cả 20 triệu phí. Nhưng gói B trả bớt gốc chậm hơn nên còn nợ nhiều hơn khoảng 93,2 triệu. Tính tiền lãi cộng phí đến tháng 60, gói B tốn hơn khoảng 38,1 triệu.",
+          "Nghĩa là nếu bán nhà hoặc đổi khoản vay ở tháng 60, gia đình phải tất toán — trả hết phần còn nợ và đóng khoản vay — và với gói B, khoản phải tất toán lớn hơn. Lãi phát sinh đến ngày trả và phí trả nợ trước hạn, nếu hợp đồng có, còn cộng thêm; ví dụ này chưa tính khoản phí đó.",
+        ],
+        results: {
+          caption: "Đến tháng 60 (5 năm)",
+          rows: [
+            { label: "Tiền đã trả — gói A", value: "1.041.387.880 ₫" },
+            { label: "Tiền đã trả — gói B, gồm cả phí", value: "986.272.500 ₫" },
+            { label: "Còn nợ — gói A", value: "1.762.543.662 ₫" },
+            { label: "Còn nợ — gói B", value: "1.855.739.862 ₫" },
+            { label: "Gói B tốn hơn gói A (lãi + phí)", value: "38.080.819 ₫" },
+          ],
+        },
         emphasis: [
-          "hai thước đo, hai người thắng khác nhau",
-          "Không có thước đo nào sai",
+          "gói B tốn hơn khoảng 38,1 triệu",
+          "với gói B, khoản phải tất toán lớn hơn",
+        ],
+      },
+      {
+        heading: "Giữ đến hết, khoảng cách lên khoảng 685,8 triệu",
+        paragraphs: [
+          "Biểu đồ của bài đặt mốc ở tháng 300, khi cả hai gói đã trả xong và không còn nợ. Gói A trả xong ở tháng 240 với khoảng 2.165,6 triệu tiền lãi. Gói B trả thêm 5 năm, khoảng 2.831,4 triệu tiền lãi, cộng 20 triệu phí.",
+          "Ở đây tiền của nhiều năm được cộng thẳng với nhau, chưa quy về giá trị hôm nay (thuật ngữ gọi là chưa chiết khấu): một đồng trả ở năm thứ 25 được tính như một đồng trả hôm nay. Con số này trả lời câu “giữ đến hết thì gói nào tốn ít hơn”, không phải câu “gói nào hợp với kế hoạch 5 năm của tôi”.",
+          "Trong ví dụ cùng số tiền, cùng lãi dương và cùng cách trả này, kéo dài kỳ hạn làm khoản trả nhỏ hơn nhưng tổng lãi cao hơn. Nếu lãi suất hoặc phí khác nhau, không thể chỉ nhìn kỳ hạn để kết luận gói nào rẻ hơn.",
+        ],
+        results: {
+          caption: "Giữ đến hết (tháng 300)",
+          rows: [
+            { label: "Gói A — lãi cả kỳ hạn", value: "2.165.551.520 ₫" },
+            { label: "Gói B — lãi cả kỳ hạn", value: "2.831.362.501 ₫" },
+            { label: "Gói B — phí trả một lần", value: "20.000.000 ₫" },
+            { label: "Gói B tốn hơn gói A (lãi + phí)", value: "685.810.981 ₫" },
+          ],
+        },
+        emphasis: [
+          "chưa chiết khấu",
           "kéo dài kỳ hạn làm khoản trả nhỏ hơn nhưng tổng lãi cao hơn",
         ],
       },
@@ -403,29 +466,24 @@ export const ARTICLES_1: EducationArticle[] = [
         heading: "Phí thu một lần là tiền thật, và nó không nằm trong lãi suất",
         paragraphs: [
           "Phương án B thu phí 1% số tiền vay, tức 20.000.000 ₫ trả ngay khi giải ngân. Con số đó không xuất hiện trong lãi suất niêm yết và không xuất hiện trong khoản trả hằng tháng.",
-          "Đây là lý do một gói lãi suất thấp hơn vẫn có thể đắt hơn: phần chênh nằm ở phí. Công cụ cộng phí vào chi phí vay nên nó không trốn được.",
-          // CORRECTED. This used to say the tool could not model a promotional
-          // rate, a one-off fee or an early-settlement fee. It now models all
-          // three — the promo pair per offer, the origination fee, and the
-          // settlement fee at the horizon you choose.
-          "Công cụ nhận cả lãi ưu đãi và lãi sau ưu đãi của từng phương án, phí trả khi giải ngân, và phí trả nợ trước hạn tính tại mốc bạn chọn. Những khoản còn lại — bảo hiểm khoản vay, và bất kỳ phí nào bạn chưa nhập — thì không có trong kết quả: khi so báo giá thật, hãy hỏi từng khoản, ghi ra, rồi nhập vào đúng ô của nó.",
+          "Đây là lý do một gói lãi suất thấp hơn vẫn có thể đắt hơn: phần chênh nằm ở phí. Công cụ cộng phí bạn nhập vào chi phí vay.",
+          "Nếu định tất toán ở một mốc, hãy hỏi ngân hàng phí trả nợ trước hạn ở đúng mốc đó và nhập vào ô “Phí trả nợ trước hạn tại mốc so sánh”. Ô để trống được tính là 0 ₫. Nếu chưa biết đủ phí, hãy đánh dấu “Chưa biết đủ phí của báo giá này”: công cụ tạm không xếp hạng, vì xếp hạng khi còn thiếu phí có thể chọn sai gói.",
+          "Bảo hiểm khoản vay và các khoản bạn chưa nhập thì không có trong kết quả. Khi so báo giá thật, hãy hỏi từng khoản bằng văn bản, ghi ra, rồi nhập vào đúng ô của nó.",
         ],
         emphasis: [
           "Con số đó không xuất hiện trong lãi suất niêm yết",
           "một gói lãi suất thấp hơn vẫn có thể đắt hơn",
+          "Ô để trống được tính là 0 ₫",
         ],
       },
       {
-        heading: "Mốc so sánh quyết định gói nào rẻ hơn",
+        heading: "Tính lại đúng ví dụ của bài trên công cụ",
         paragraphs: [
-          "Biểu đồ của bài đặt mốc so sánh ở tháng thứ 300 — tức cả hai gói đã tất toán xong, đã trả hết phần còn nợ và đóng khoản vay — nên nó cộng lãi và phí DANH NGHĨA của trọn kỳ hạn mỗi gói. Đó là câu trả lời cho “giữ đến hết thì gói nào tốn ít hơn”.",
-          "Nếu bạn dự định bán nhà hoặc đổi khoản vay sau 5 năm, hãy đặt mốc ở tháng thứ 60. Công cụ so tổng khoản đã trả, phí và dư nợ còn lại tại mốc đó — thứ tự có thể đổi khi lãi, phí hoặc kỳ hạn khác nhau. Phần dư nợ giúp bạn thấy một khoản trả nhẹ hơn có đi kèm nhiều nợ còn lại hơn hay không.",
-          "Hãy chạy cả hai mốc: mốc bạn thật sự dự kiến giữ, và cả kỳ hạn. Nếu hai mốc cho hai người thắng khác nhau, công cụ sẽ nói ra — và lựa chọn của bạn nên theo mốc gần với kế hoạch thật của bạn.",
+          "Công cụ So sánh khoản vay mở sẵn số mẫu khác với bài: gói thứ hai là 9,2%/năm trong 20 năm. Để ra đúng số của bài, chỉ cần sửa “Phương án B”; phần còn lại giữ nguyên.",
+          "Giữ “Số tiền vay” là 2.000.000.000, và giữ “Phương án A” với “Lãi suất” 8,5, “Kỳ hạn” 20. Ở “Phương án B”, đổi “Lãi suất” thành 8,5 và “Kỳ hạn” thành 25, rồi mở “Phí và lãi ưu đãi của báo giá này” và nhập 1 vào “Phí thu xếp”.",
+          "Ô “So sánh tại tháng thứ” đang là 60, nên bạn thấy ngay kết quả sau 5 năm. Đổi ô đó thành 300 để ra số cả kỳ hạn như biểu đồ. Số chính xác nằm trong “Xem bảng so sánh từng chỉ tiêu”.",
         ],
-        emphasis: [
-          "Nếu bạn dự định bán nhà hoặc đổi khoản vay sau 5 năm",
-          "thứ tự có thể đổi",
-        ],
+        emphasis: ["chỉ cần sửa “Phương án B”"],
       },
     ],
     visual: {
@@ -443,41 +501,60 @@ export const ARTICLES_1: EducationArticle[] = [
       horizonMonths: 300,
     },
     visualReading:
-      "Hai cột, mỗi cột một phương án tại tháng thứ 300, xếp từ gốc đã trả, lãi đã trả, phí trả một lần, rồi phần dư nợ còn lại. Cột được dựng như vậy để một gói chỉ trả chậm gốc không trông rẻ hơn; ở mốc này cả hai gói đã tất toán nên phần dư nợ bằng 0. Phương án A thấp hơn 685,8 triệu — nhưng đó là xếp hạng theo LÃI CỘNG PHÍ, không phải theo khoản trả hằng tháng, thước đo mà phương án B lại nhẹ hơn.",
+      "Hai cột, mỗi cột một phương án tại tháng thứ 300, xếp từ gốc đã trả, lãi đã trả, phí trả một lần, rồi phần dư nợ còn lại. Cột được dựng như vậy để một gói chỉ trả chậm gốc không trông rẻ hơn; ở mốc này cả hai gói đã tất toán nên phần dư nợ bằng 0. Phương án A thấp hơn 685,8 triệu — nhưng đó là xếp hạng theo tiền lãi cộng phí, không phải theo khoản trả hằng tháng, thước đo mà phương án B lại nhẹ hơn.",
+    // EDITORIAL EXCEPTION (user-approved 2026-10-01, C05 and C11 only): an AI
+    // illustration from artifacts/ai-people-library-2026-10-01 (image 01),
+    // labelled as AI on the page; plain sips resizes, no further edits. The
+    // stock photo it was composed from is recorded in that library's manifest.
+    illustration: {
+      src: "/images/education/ai-library-01-home-planning-720.jpg",
+      srcSet: "/images/education/ai-library-01-home-planning-720.jpg 720w, /images/education/ai-library-01-home-planning-1200.jpg 1200w",
+      width: 1536,
+      height: 1024,
+      alt: "Ảnh minh họa AI: một người phụ nữ ngồi xếp bằng trên sofa, mỉm cười nhìn người đàn ông bên cạnh đang dùng laptop, trong căn phòng sáng có cây xanh.",
+      // No badge: one small tagline under the image (user direction 2026-10-01).
+      caption: "Ảnh minh họa AI",
+    },
+    // OWN NUMBERS ONLY. Reproducing the article's example is its own section
+    // above ("Tính lại đúng ví dụ của bài trên công cụ"), because the tool
+    // opens on a different sample and the two tasks need different steps.
     exercise: {
-      title: "Thử với số của bạn",
+      title: "Thử với báo giá của bạn",
       intro:
-        "Mở công cụ So sánh khoản vay. Các bước dùng đúng tên ô nhập trên công cụ.",
+        "Khi đã có báo giá thật, mở lại công cụ So sánh khoản vay. Các bước dùng đúng tên ô trên công cụ. Phép tính chạy ngay trên trình duyệt; công cụ không tự lưu lại số bạn nhập khi tải lại trang.",
       steps: [
-        "Nhập “Số tiền vay” một lần — ô này dùng chung cho mọi phương án.",
-        "Đặt “So sánh tại tháng thứ” bằng 300 để ra đúng con số của bài: ở mốc đó cả hai gói đã tất toán, nên đây là so sánh trọn kỳ hạn.",
-        "Với “Phương án A”, nhập “Lãi suất” và “Kỳ hạn” theo báo giá thứ nhất.",
-        "Mở “Phí và lãi ưu đãi của báo giá này” để nhập “Phí thu xếp”, “Phí khác trả khi giải ngân”, và — nếu báo giá có ưu đãi — cả “Số tháng ưu đãi” với “Lãi ưu đãi”. Ô “Lãi suất” ở trên là mức SAU ưu đãi.",
-        "Làm tương tự cho “Phương án B”. Nếu bạn có báo giá thứ ba, mở “Thêm phương án thứ ba”.",
-        "Đọc hai biểu đồ: cột chi phí tại mốc đã chọn, rồi đường khoản trả hằng tháng. Mở “Xem bảng so sánh từng chỉ tiêu” khi cần số chính xác.",
+        "Nhập “Số tiền vay” bạn thật sự cần — một ô dùng chung cho mọi phương án, để lãi và phí so được với nhau.",
+        "Đặt “So sánh tại tháng thứ” bằng số tháng bạn dự kiến giữ khoản vay, ví dụ 60 nếu định đổi nhà sau 5 năm.",
+        "Ở “Phương án A” và “Phương án B”, nhập “Lãi suất” và “Kỳ hạn” theo từng báo giá. Nếu báo giá có ưu đãi, “Lãi suất” là mức SAU ưu đãi.",
+        "Mở “Phí và lãi ưu đãi của báo giá này” của từng phương án để nhập “Phí thu xếp”, “Phí khác trả khi giải ngân”, “Phí trả nợ trước hạn tại mốc so sánh”, và nếu có thì “Số tháng ưu đãi” với “Lãi ưu đãi”.",
+        "Nếu ngân hàng chưa nói hết các khoản phí, đánh dấu “Chưa biết đủ phí của báo giá này” cho báo giá đó, rồi hỏi lại trước khi so.",
+        // The cost and balance headings are composed with the chosen month
+        // ("Còn nợ tại tháng 60"), so they are described, not quoted.
+        "Đọc “Rẻ nhất tại mốc bạn chọn”, rồi xem chi phí lãi cộng phí và số tiền còn nợ tại tháng bạn chọn ngay bên dưới; mở “Xem bảng so sánh từng chỉ tiêu” khi cần số chính xác. Có báo giá thứ ba thì mở “Thêm phương án thứ ba”.",
       ],
       toolSlug: "so-sanh-khoan-vay",
       change:
-        "Đổi “So sánh tại tháng thứ” từ 300 xuống 60 — mốc gần với thời gian nhiều người thật sự giữ khoản vay. Chi phí của cả hai gói giảm đi, nhưng phần dư nợ còn lại xuất hiện, và thứ tự có thể đảo. Nếu nó đảo, công cụ sẽ nói rõ mốc nào cho gói nào rẻ hơn.",
+        "Đổi “So sánh tại tháng thứ” giữa mốc bạn định giữ khoản vay và hết kỳ hạn dài nhất. Nếu gói rẻ hơn đổi theo mốc, công cụ sẽ nói rõ; hãy chọn theo mốc gần với kế hoạch thật của gia đình.",
       check:
-        "Trong hai báo giá của bạn, gói có khoản trả hằng tháng thấp hơn có phải gói có chi phí thấp hơn tại mốc bạn chọn không? Nếu không, bạn chọn theo thước đo nào?",
+        "Gói có khoản trả hằng tháng thấp hơn có còn rẻ hơn tại mốc bạn chọn không? Và ở mốc đó, gói nào để lại nhiều nợ hơn cho gia đình bạn?",
     },
     limits: {
       title: "Đối chiếu trước khi quyết định",
       items: [
-        "Lãi suất sau ưu đãi sẽ thật sự là bao nhiêu. Công cụ nhận cả hai giai đoạn, nhưng mức sau ưu đãi là kịch bản bạn nhập — hợp đồng thường gắn nó với lãi cơ sở, và lãi cơ sở thì thay đổi.",
-        "Bảo hiểm khoản vay, và bất kỳ khoản phí nào bạn không nhập vào ô của nó.",
-        "Ngân hàng nào duyệt cho bạn, và duyệt bao nhiêu.",
+        "Lãi suất sau ưu đãi thật sự là bao nhiêu. Công cụ nhận cả hai giai đoạn, nhưng mức sau ưu đãi là kịch bản bạn nhập — hợp đồng thường gắn nó với lãi cơ sở, và lãi cơ sở có thể thay đổi.",
+        "Bảo hiểm khoản vay, phí trả nợ trước hạn ở mốc bạn chọn, và bất kỳ khoản phí nào bạn không nhập vào ô của nó.",
+        "Ngân hàng nào duyệt cho bạn, và duyệt bao nhiêu — bài không nói điều đó.",
+        "Bạn có thật sự bán nhà hoặc đổi khoản vay được ở tháng 60 không: đó là kế hoạch của gia đình, không phải điều chắc chắn.",
         "Chất lượng dịch vụ, thời gian giải ngân và các điều khoản phi lãi suất — những thứ này không phải con số nhưng có thể quan trọng hơn vài triệu đồng.",
       ],
     },
     sources: {
       title: "Nguồn tham khảo cho khái niệm",
       intro: "Dùng cho KHÁI NIỆM, không phải cho số liệu thị trường.",
-      items: [SRC_CFPB_COMPARE],
+      items: [SRC_CFPB_COMPARE, SRC_CFPB_OWNING_COMPARE],
     },
     provenance:
-      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ; cập nhật ngày 01/10/2026 để thêm mốc 5 năm và cách tính lại đúng ví dụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: ["vay-20-nam-hay-25-nam", "lai-co-dinh-hay-tha-noi", "lai-suat-quang-cao-va-chi-phi-vay-that"],
   },
 

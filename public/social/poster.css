@@ -47,6 +47,10 @@ h1{font-size:51px;line-height:1.21;letter-spacing:-1.8px;margin:0 0 24px}
 /* Mirror only where a photo has no readable text and both faces would
    otherwise sit under the headline wash; offsets are in mirrored coordinates. */
 .photo-box img.flip{transform:scaleX(-1)}
+/* A package whose photo is still being sourced (wave 2, 2026-10-01): a plain,
+   visibly unfinished box — never exported in this state. */
+.photo-box.photo-pending{background:#0d6a2d;display:flex;align-items:center;justify-content:flex-end;padding-right:48px}
+.photo-box.photo-pending span{color:#fff;font:500 24px MaisonMedium,Inter,sans-serif;border:2px dashed rgba(255,255,255,.7);border-radius:12px;padding:18px 22px;max-width:300px;text-align:center}
 
 .body{padding:34px 64px}
 .hook{font-size:25px;line-height:1.6;margin:0 0 18px}

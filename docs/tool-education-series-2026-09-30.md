@@ -90,6 +90,9 @@ capture, so no optimised derivatives exist.)
 
 ## Delivery map
 
+Second wave (2026-10-01, in progress): so-sanh-khoan-vay (C05) and
+lai-co-dinh-hay-tha-noi (C11) — see `docs/loan-decision-education-2026-10-01.md`.
+
 | Tool | Canonical article | Kind | Social package |
 |---|---|---|---|
 | ke-hoach-huu-tri | `/blog/de-danh-huu-tri-tien-du-den-bao-nhieu-tuoi/` | new | `/social/ke-hoach-huu-tri/` |

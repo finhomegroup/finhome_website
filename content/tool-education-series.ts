@@ -48,3 +48,40 @@ export const TOOL_EDUCATION_SERIES: readonly SeriesEntry[] = [
  * to stay empty, so a new package must ship its exports with it.
  */
 export const PENDING_EXPORTS: readonly string[] = [];
+
+/**
+ * SECOND WAVE (2026-10-01): the two loan-decision tools, each REUSING its
+ * structured "Mua nhà bằng con số" article (C05, C11), upgraded in place —
+ * no duplicate post. Reuse means no cover and no flow diagram: a collection
+ * article renders its own computed visual and has no cover slot, so the only
+ * export is each package's `poster.png` (1080 × 1350).
+ *
+ * Kept OUT of `TOOL_EDUCATION_SERIES` on purpose: that list's release gates
+ * (ten distinct shipped photos, 22 exported files, nothing pending) describe
+ * a released set and stay exactly as strict. This wave has its own gates in
+ * `content/loan-decision-series.test.ts`.
+ */
+export const LOAN_DECISION_SERIES: readonly SeriesEntry[] = [
+  { tool: "so-sanh-khoan-vay", article: "hai-goi-vay-thang-thap-co-re-hon", kind: "reuse", exports: [] },
+  { tool: "lai-co-dinh-hay-tha-noi", article: "lai-co-dinh-hay-tha-noi", kind: "reuse", exports: [] },
+];
+
+/**
+ * Packages whose hero PHOTO is not chosen yet (Codex is sourcing two new
+ * Pexels photos). While listed, the package HTML must carry no photo file,
+ * ID, photographer or credit — only the visible "pending" placeholder. Remove
+ * a tool from here in the same change that adds its photo, provenance and
+ * credit; the test then requires all three.
+ */
+// Photos handed over by Codex 2026-10-01: Pexels 7592743 and 7593066 (Miriam
+// Alonso). Wired into both packages; the files must be in public/images/people/.
+export const LOAN_DECISION_PENDING_PHOTOS: readonly string[] = [];
+
+/**
+ * Packages whose `poster.png` is not exported yet. A package cannot leave
+ * this list before its photo is in (an export without the final hero would
+ * be the wrong poster). Release requires both lists empty.
+ */
+// Emptied 2026-10-01: both posters exported (Codex browser captures,
+// 1080 × 1350 JPEG, converted to PNG with sips). Draft-ready, not deployed.
+export const LOAN_DECISION_PENDING_EXPORTS: readonly string[] = [];

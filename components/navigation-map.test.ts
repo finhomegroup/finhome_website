@@ -58,7 +58,10 @@ describe("homepage: hero and question cards open the right destinations (H01–H
       "/cong-cu/vay-mua-nha/",
       "/cong-cu/muc-tieu-tiet-kiem/",
     ]);
-  });
+    // First homepage import in this file: the cold module graph loads inside
+    // the test and, under the full parallel run, exceeds the 5 s default.
+    // Same assertions; explicit allowance as for other page-render tests.
+  }, 60_000);
 });
 
 describe("no dead or fake controls (H08, N07, N08)", () => {
