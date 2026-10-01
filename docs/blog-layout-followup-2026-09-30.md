@@ -2,7 +2,9 @@
 
 Owner: Claude Code (implementation, tests). Codex: native full check
 (`aiws native check finhome-website --task auto-education-20260930 --mode full`)
-and browser proof. Not committed, pushed or deployed by Claude.
+and browser proof. **Released 2026-10-01 as PR #224** (see "Release" below);
+statements further down that nothing was committed or deployed describe the
+state at the time they were written.
 
 ## What changed
 
@@ -133,7 +135,33 @@ clean; `pnpm check:lint` 3 total, 3 baseline, 0 new. No build.
   `06-mobile-pagination-final.jpg`, `07-desktop-guides-final.jpg`,
   `08-article-date-final.jpg`.
 - The local preview on 127.0.0.1:3272 is intentionally still running for
-  review. Nothing committed, pushed or deployed.
+  review. At that point (historical) nothing was committed, pushed or
+  deployed; the release followed on 2026-10-01.
+
+## Release 2026-10-01
+
+- **PR #224 squash-merged** as `96ce98a66bdaf2aa2793cc63227b1734414c482e`
+  (source fix `4349c68`; tested merge head `9728fd3`, base `8d95f23`, exactly
+  11 files). Merged with `--match-head-commit`, normal protections, no admin
+  override, branch kept.
+- **Final full gate** on the merged tree after integrating main #223: 360 files
+  / 8.018 tests, types, lint 3 baseline / 0 new, build, markup — passed. PR
+  checks `gate`, Vercel preview and Preview Comments passed.
+- **Post-merge (parent, GitHub status):** CI on main succeeded; Vercel
+  production deployment `4TWk1Ws3Z3mMpBU2QENhcxyUHHQu` SUCCESS.
+- **Real production UI (parent), https://www.finhome.group/blog/ at 390×844
+  and 1440×900:** compact guide block expands and collapses; page 1 (first
+  card 30/09) → page 2 (28/09) → Back to 1 → Forward to 2, correct; no
+  horizontal overflow; news article `nguoi-mua-can-ho-doi-chien-thuat` shows
+  30/09/2026 with ISO `2026-09-30`; console error/warning log empty.
+  Screenshots: `artifacts/blog-layout-followup/09-production-mobile.jpg`,
+  `10-production-article.jpg`.
+- **Not verified:** Vercel team logs returned 403, so no server-side error
+  scan is claimed; log drains and monitoring were not audited.
+- **Local state:** hero originals untracked and excluded from the Git
+  deployment, preserved locally; the 127.0.0.1:3272 preview is retained for
+  comparison. This documentation update is local only — not committed,
+  pushed or deployed.
 
 ## Local preview for the browser pass (git-ignored, not production)
 
@@ -171,5 +199,7 @@ The partial hero is preserved as `artifacts/collection-hero/pending-hero.patch`
 was also gated). `page.tsx` and `collection.ts` are back to HEAD. The two
 downloaded originals `public/images/people/pexels-{8055092,8055525}-original.jpg`
 are untracked and referenced nowhere. Left in place on instruction; their
-removal is PENDING and outside this scope. `public/` ships as-is, so they must
-be deleted or moved before any release — none is requested now.
+removal is PENDING and outside this scope. They were never staged or
+committed, so the Git-based Vercel deployment of PR #224 excluded them; they
+remain preserved locally only. A future release that deploys from a local
+build (not from Git) would need them removed from `public/` first.
