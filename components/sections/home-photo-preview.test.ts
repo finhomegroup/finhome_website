@@ -46,8 +46,13 @@ const steps = () => renderToStaticMarkup(createElement(Steps));
 const routeExists = (href: string) =>
   existsSync(fileURLToPath(new URL(`../../app${href}page.tsx`, import.meta.url)));
 
-/** The real Pexels photo 7593053 (Miriam Alonso), original JPEG, 3805×2352. */
-const PHOTO = "/images/home/pexels-7593053-original.jpg";
+/**
+ * The hero image (2026-10-01): an AI illustration, 1595×986, keeping Pexels
+ * 7593053's composition. `src` is the 1200 WebP; srcSet 800/1200/1595.
+ */
+const PHOTO = "/images/home/ai-hero-couple-1200.webp";
+/** The stock photo it replaced on the homepage (still used by the car social package). */
+const STOCK = "/images/home/pexels-7593053-original.jpg";
 /** The superseded AI preview image: retained on disk, referenced nowhere. */
 const OBSOLETE_AI_PHOTO = "/images/home/buyer-couple-preview.png";
 /** The `<img>` itself — React 19 also hoists a `<link rel="preload">` for it. */
@@ -90,19 +95,54 @@ describe("the hero", () => {
     expect(html).toContain("Miễn phí trên web · Không cần đăng nhập");
   });
 
-  it("shows the couple photo as decoration, not as an endorsement", () => {
+  it("shows the AI couple illustration as decoration, labelled, not as an endorsement", () => {
     const html = hero();
     expect(HERO.photo).toBe(PHOTO);
     expect(html).toMatch(new RegExp(`<img\\b[^>]*src="${PHOTO}"[^>]*alt=""|<img\\b[^>]*alt=""[^>]*src="${PHOTO}"`));
     expect(html).not.toContain(OBSOLETE_AI_PHOTO);
-    // The source is recorded beside the path, and the file is really there.
+    expect(html).not.toContain(STOCK);
+    // Provenance beside the path: generated, hashed, approved; the stock photo
+    // is recorded ONLY as the composition reference, not as the image's author.
     expect(HERO.photoSource).toEqual({
-      author: "Miriam Alonso",
-      page: "https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/",
-      width: 3805,
-      height: 2352,
+      kind: "ai-generated",
+      width: 1595,
+      height: 986,
+      generatedSha256: "4eec3eb89ee4a4ad2d05c4c476b3ae43c25707ef0f7fd502af82ba4d82455ceb",
+      approvedOn: "2026-10-01",
+      compositionReference: {
+        pexelsId: "7593053",
+        author: "Miriam Alonso",
+        page: "https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/",
+      },
     });
-    expect(existsSync(fileURLToPath(new URL(`../../public${PHOTO}`, import.meta.url)))).toBe(true);
+    expect(html).not.toMatch(/Miriam Alonso|\/ Pexels/);
+    // Same composition, same aspect as the reference (≈1,618), so the framing ratios hold.
+    expect(Math.abs(HERO.photoSource.width / HERO.photoSource.height - 3805 / 2352)).toBeLessThan(0.001);
+    // Responsive WebP files exist at their declared widths; none wider than the source.
+    expect(HERO.photoSources.map((s) => s.width)).toEqual([800, 1200, 1595]);
+    for (const s of HERO.photoSources) {
+      const bytes = readFileSync(fileURLToPath(new URL(`../../public${s.src}`, import.meta.url)));
+      expect(bytes.subarray(0, 4).toString("ascii") + bytes.subarray(8, 12).toString("ascii"), s.src).toBe("RIFFWEBP");
+      expect(bytes.readUInt16LE(26) & 0x3fff, s.src).toBe(s.width);
+      expect(s.width).toBeLessThanOrEqual(HERO.photoSource.width);
+    }
+    expect(HERO.photoSources[1].src).toBe(PHOTO);
+    const tag = html.match(new RegExp(`<img\\b[^>]*src="${PHOTO}"[^>]*>`))![0];
+    expect(tag).toMatch(new RegExp(`srcset="${HERO.photoSources.map((s) => `${s.src} ${s.width}w`).join(", ")}"`, "i"));
+    expect(tag).toContain('sizes="(min-width: 1280px) 80vw, 100vw"');
+    expect(tag).toMatch(/fetchpriority="high"/i);
+    // One small AI label inside the photo box, after the copy and CTAs.
+    expect(HERO.photoLabel).toBe("Ảnh minh họa AI");
+    const label = html.match(/<span[^>]*data-hero-ai-label="true"[^>]*>([^<]*)<\/span>/)!;
+    expect(label[1]).toBe(HERO.photoLabel);
+    expect(label[0]).toMatch(/text-\[11px\]/);
+    expect(label[0]).toContain("pointer-events-none");
+    expect(label[0]).toMatch(/\bbottom-2\b[^"]*\bright-2\b/);
+    const box = html.indexOf('data-hero-photo="true"');
+    expect(html.indexOf("data-hero-ai-label")).toBeGreaterThan(box);
+    expect(html.indexOf("data-hero-ai-label")).toBeGreaterThan(html.indexOf(HERO.reassurance));
+    // The stock JPEG is kept on disk for the car social package.
+    expect(existsSync(fileURLToPath(new URL(`../../public${STOCK}`, import.meta.url)))).toBe(true);
   });
 
   it("drops the store badge / QR panel and does not show the phone artwork", () => {
@@ -123,8 +163,8 @@ describe("the hero", () => {
     expect(html.indexOf("<h1")).toBeLessThan(html.indexOf(PHOTO_IMG));
     const start = html.lastIndexOf("<img", html.indexOf(PHOTO_IMG));
     const tag = html.slice(start, html.indexOf(">", start) + 1);
-    expect(tag).toContain('width="3805"');
-    expect(tag).toContain('height="2352"');
+    expect(tag).toContain(`width="${HERO.photoSource.width}"`);
+    expect(tag).toContain(`height="${HERO.photoSource.height}"`);
     const box = classesOf(html, 'data-hero-photo="true"');
     // No card: no rounding on the box or the image, no padding/max-width.
     expect([...box, ...classesOf(html, `src="${PHOTO}"`)].some((c) => /(^|:)rounded/.test(c))).toBe(false);

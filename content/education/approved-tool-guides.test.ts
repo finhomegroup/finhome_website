@@ -124,28 +124,48 @@ function webpDimensions(bytes: Buffer) {
   throw new Error(`Unexpected WebP chunk ${chunk}`);
 }
 
-describe("C01's illustration opens the article, beside — never in place of — the computed visual", () => {
+describe("C01's balance illustration sits in its explanatory section, beside — never in place of — the computed visual", () => {
   const art = APPROVED_C01.illustration!;
   const html = renderToStaticMarkup(createElement(EducationArticleBody, { article: APPROVED_C01 }));
   const at = html.indexOf('data-education-illustration="true"');
+  const SECTION = "Có 600 triệu, không có nghĩa dùng cả 600 triệu trả trước";
 
-  it("renders once, after the short answer and early tool link, before the contents", () => {
+  it("renders once: the AI hero opens the article, the illustration follows the reserve-kept-separate text", () => {
     expect(art).toBeDefined();
     expect(html.split('data-education-illustration="true"').length - 1).toBe(1);
-    // The answer's heading (its paragraphs carry emphasis markup) and the
-    // early tool link that closes the answer section.
+    // Opening (2026-10-01): answer → early tool link → AI web hero → contents.
     const answer = html.indexOf(`>${C.article.answerTitle}</h2>`);
     const earlyTool = html.indexOf(C.article.earlyToolLead);
+    const hero = html.indexOf('data-article-hero="true"');
     const contents = html.indexOf(`>${C.article.contentsTitle}</h2>`);
-    for (const before of [answer, earlyTool]) {
-      expect(before).toBeGreaterThan(-1);
-      expect(before).toBeLessThan(at);
+    for (const i of [answer, earlyTool, hero, contents]) expect(i).toBeGreaterThan(-1);
+    expect(answer).toBeLessThan(earlyTool);
+    expect(earlyTool).toBeLessThan(hero);
+    expect(hero).toBeLessThan(contents);
+    // Body: the illustration is no longer in the opening; it renders inside
+    // the section that keeps the 100 triệu reserve separate, after ALL of its
+    // paragraphs and before that section's tool capture and the next section.
+    expect(art.inSection).toBe(SECTION);
+    const section = APPROVED_C01.sections.find((s) => s.heading === SECTION)!;
+    expect(section.paragraphs.join(" ")).toContain("Khoản dự phòng 100 triệu vẫn được giữ riêng");
+    const heading = html.indexOf(`>${SECTION}</h2>`);
+    const lastParagraph = html.indexOf("Nó là điểm bắt đầu để bạn loại bớt");
+    const capture = html.indexOf(section.media!.src);
+    const next = APPROVED_C01.sections[APPROVED_C01.sections.indexOf(section) + 1];
+    expect(contents).toBeLessThan(html.indexOf(`>${APPROVED_C01.household.title}</h2>`));
+    expect(html.indexOf(`>${APPROVED_C01.household.title}</h2>`)).toBeLessThan(heading);
+    expect(heading).toBeLessThan(lastParagraph);
+    expect(lastParagraph).toBeLessThan(at);
+    expect(at).toBeLessThan(capture);
+    expect(capture).toBeLessThan(html.indexOf(`>${next.heading}</h2>`));
+    // All of that section's financial text is still rendered (emphasis aside).
+    for (const p of section.paragraphs) {
+      expect(html.replace(/<\/?strong[^>]*>/g, ""), p.slice(0, 40)).toContain(p);
     }
-    expect(at).toBeLessThan(contents);
-    expect(at).toBeLessThan(html.indexOf(`>${APPROVED_C01.household.title}</h2>`));
-    // The computed visual is still rendered, further down, unchanged.
-    expect(html.indexOf("<svg")).toBeGreaterThan(at);
-    expect(html.indexOf("<table")).toBeGreaterThan(at);
+    // The computed visual is still rendered, further down, unchanged (icons
+    // in the opening and contents are SVGs too, so search after the figure).
+    expect(html.indexOf("<svg", at)).toBeGreaterThan(at);
+    expect(html.indexOf("<table", at)).toBeGreaterThan(at);
     expect(html.lastIndexOf(APPROVED_C01.visual.title)).toBeGreaterThan(at);
     // The two observed captures are unchanged and still JPEG screenshots.
     const media = APPROVED_C01.sections.flatMap((s) => (s.media ? [s.media] : []));
@@ -164,17 +184,19 @@ describe("C01's illustration opens the article, beside — never in place of —
     expect(figure).toContain("<figcaption");
     expect(figure).toContain(art.caption);
     expect(art.badge).toBe("Hình minh họa");
-    // C01 keeps the INSET layout (default): narrower centred figure, overlay
-    // badge and full sentence caption — unaffected by C05/C11's "full" layout.
-    expect(art.layout ?? "inset").toBe("inset");
+    // FULL article-column width (2026-10-01, user preference: an informative
+    // figure is not narrower than the text), keeping the overlay badge and
+    // the full sentence caption that explains the metaphor.
+    expect(art.layout).toBe("full");
     expect(html.slice(html.lastIndexOf("<figure", at), at + 120)).toContain(
-      'data-illustration-layout="inset" class="mx-auto w-full max-w-xl"',
+      'data-illustration-layout="full" class="w-full"',
     );
-    expect(figure).toContain('sizes="(min-width: 640px) 36rem, 100vw"');
+    expect(figure).toContain('sizes="(min-width: 768px) 48rem, 100vw"');
+    expect(figure).not.toContain("max-w-xl");
     expect(figure).toContain("absolute left-3 top-3");
     expect(figure).toContain('<figcaption class="mt-3 text-sm leading-relaxed text-ink-3">');
-    // Explains the metaphor and the reserve, qualifies briefly, and — now
-    // that it opens the article — points at nothing "above" it.
+    // Explains the metaphor and the reserve, qualifies briefly, and points at
+    // nothing "above" it.
     expect(art.caption).toContain("khoản dự phòng");
     expect(art.caption).toContain("không dùng để mua nhà");
     expect(art.caption).toContain("không thể hiện giá nhà hay mức vay");

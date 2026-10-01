@@ -26,16 +26,15 @@ export const EDUCATION_COLLECTION = {
 
   /**
    * The hero around the H1, in the social posters' pattern: a brand-green
-   * text block beside a real photograph, credit visible. Title and lede above
+   * text block beside a photograph-style illustration. Title and lede above
    * are unchanged; this adds one short line and two existing ways in —
    * chapter 01 and the affordability tool.
    *
-   * Photo: Pexels 7592756 by Miriam Alonso. The source page's own alt text
-   * and description call the subjects an "Asian couple"; nothing about them
-   * is inferred here, and the alt text below says only what is in frame.
-   * `original` is the unmodified download; `sources` are plain resizes of it
-   * (sips, no crop or retouch). The people are illustrative, not a customer,
-   * an example household or an endorsement.
+   * Image (2026-10-01, user-approved): AI illustration 03 of fictional
+   * people; files, alt text and provenance in content/education-web-heroes.ts.
+   * It replaced the earlier stock photograph (docs/ai-web-heroes-2026-10-01.md). `label` is the small visible
+   * tagline; the people are illustrative, not a customer, an example
+   * household or an endorsement.
    */
   hero: {
     eyebrow: "Bộ bài hướng dẫn tự tính",
@@ -43,20 +42,7 @@ export const EDUCATION_COLLECTION = {
     startCta: "Bắt đầu từ chương 01",
     toolCta: "Mở công cụ Khả năng mua nhà",
     photo: {
-      pexelsId: "7592756",
-      original: "/images/people/pexels-7592756-original.jpg",
-      width: 5040,
-      height: 3360,
-      sources: [
-        { src: "/images/education/hub-hero-pexels-7592756-1280.jpg", width: 1280, height: 853 },
-        { src: "/images/education/hub-hero-pexels-7592756-2400.jpg", width: 2400, height: 1600 },
-      ],
-      alt: "Một người phụ nữ và một người đàn ông ngồi trên sàn gỗ cạnh bức tường trắng có vệt nắng, mỉm cười nhìn nhau; người đàn ông cầm một cuốn sách",
-      author: "Miriam Alonso",
-      page: "https://www.pexels.com/photo/young-asian-couple-looking-at-each-other-7592756/",
-      license: "https://www.pexels.com/license/",
-      checked: "2026-10-01",
-      credit: "Ảnh minh họa: Miriam Alonso / Pexels",
+      label: "Ảnh minh họa AI",
       note: "Người trong ảnh chỉ để minh họa, không phải nhân vật trong các ví dụ.",
     },
   },

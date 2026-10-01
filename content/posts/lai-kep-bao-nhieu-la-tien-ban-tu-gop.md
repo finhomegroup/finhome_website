@@ -68,5 +68,3 @@ Nếu bạn đang để dành cho một mục tiêu có hạn cụ thể, như t
 - [Investor.gov: Risk and return](https://www.investor.gov/additional-resources/information/youth/teachers-classroom-resources/risk-and-return) — lạm phát làm giảm sức mua của tiền theo thời gian.
 
 *Các nguồn của cơ quan quản lý chứng khoán Hoa Kỳ chỉ dùng cho khái niệm, không đại diện cho lãi suất, sản phẩm hay quy định tại Việt Nam. Ví dụ do FinHome xây dựng; mọi con số được đối chiếu với công cụ ngày 30/09/2026 và làm tròn đến đồng. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định, không phải tư vấn tài chính.*
-
-*Ảnh bìa: [Kampus Production / Pexels](https://www.pexels.com/photo/a-man-using-a-laptop-7490459/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*

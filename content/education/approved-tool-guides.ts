@@ -89,8 +89,9 @@ export const APPROVED_C01: EducationArticle = {
     totalDebtRatioPercent: 50, annualRatePercent: 8.5, termMonths: 240,
   } },
   visualReading: "Hai thanh nói về hai khoản khác nhau. Thanh trên là giá nhà khoảng 1,94 tỷ: một phần dùng tiền của bạn, phần còn lại đi vay. Thanh dưới là khoảng 58,2 triệu chi phí mua ngoài giá nhà. Tiền dự phòng 100 triệu được giữ riêng, không nằm trong hai thanh. Đây là kết quả từ các số trong ví dụ, không phải mức ngân hàng đã duyệt.",
-  // Concept B, approved 2026-09-28, opening the article; resized WebP of the
-  // generated source, no edits.
+  // Concept B, approved 2026-09-28; resized WebP of the generated source, no
+  // edits. Since 2026-10-01 the AI web hero opens the article, so this figure
+  // sits full-width in the section whose text keeps the reserve separate.
   illustration: {
     src: "/images/education/c01-home-cash-balance-720.webp",
     srcSet: "/images/education/c01-home-cash-balance-720.webp 720w, /images/education/c01-home-cash-balance-1200.webp 1200w",
@@ -98,6 +99,8 @@ export const APPROVED_C01: EducationArticle = {
     alt: "Hình minh họa 3D: một căn hộ thu nhỏ và một chiếc ví xanh cùng tiền xu đặt ở hai đầu tấm ván thăng bằng. Một hộp tiết kiệm có hình chiếc khiên đặt riêng dưới đất, bên ngoài tấm ván.",
     badge: "Hình minh họa",
     caption: "Căn nhà ở một đầu cân, tiền gia đình dành để mua ở đầu kia. Hộp nhỏ đứng ngoài cân là khoản dự phòng: giữ riêng cho lúc cần, không dùng để mua nhà. Hình chỉ gợi ý cách nghĩ, không thể hiện giá nhà hay mức vay.",
+    layout: "full",
+    inSection: "Có 600 triệu, không có nghĩa dùng cả 600 triệu trả trước",
   },
   exercise: {
     title: "Tự tính ngân sách và tầm giá nhà",

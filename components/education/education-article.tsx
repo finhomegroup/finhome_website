@@ -8,6 +8,8 @@ import { LineChart } from "@/components/calc/chart/line-chart";
 import { ResultTable } from "@/components/calc/result-table";
 import { ProseText } from "@/components/ui/prose-text";
 import { ArrowRightIcon } from "@/components/education/icons";
+import { ArticleHero } from "@/components/education/web-hero";
+import { articleHero } from "@/content/education-web-heroes";
 import { chapterForGroup } from "@/content/education/chapters";
 import { EDUCATION_COLLECTION as C } from "@/content/education/collection";
 import { educationGroup } from "@/content/education/groups";
@@ -48,6 +50,13 @@ export function EducationArticleBody({
       ? { ...resolved, model: { ...resolved.model, assumptions: [...article.visualAssumptions] } }
       : { ...resolved, assumptions: [...article.visualAssumptions] }
     : resolved;
+  const hero = articleHero(article.slug);
+  const placed = article.illustration?.inSection;
+  if (placed !== undefined && !article.sections.some((s) => s.heading === placed)) {
+    throw new Error(
+      `components/education/education-article.tsx: "${article.slug}" places its illustration in "${placed}", which is not one of its section headings.`,
+    );
+  }
   const tool = getCalculator(article.exercise.toolSlug);
   if (!tool) {
     throw new Error(
@@ -119,48 +128,16 @@ export function EducationArticleBody({
         </div>
       </section>
 
-      {/* An illustration that opens the article's question, after the answer
-          and the tool, before the contents. Labelled on the page; it holds no
-          figure, and the computed visual further down is unchanged. A plain
-          <img>: the static export has no image loader. Not lazy: it is near
-          the top of the page. */}
-      {article.illustration ? (
-        <figure
-          data-education-illustration="true"
-          data-illustration-layout={article.illustration.layout ?? "inset"}
-          // "full": the article column's own width (max-w-3xl, 48rem), aligned
-          // with the answer, CTA and contents. "inset" (default): unchanged.
-          className={article.illustration.layout === "full" ? "w-full" : "mx-auto w-full max-w-xl"}
-        >
-          <div className="relative">
-            <img
-              src={article.illustration.src}
-              srcSet={article.illustration.srcSet}
-              sizes={article.illustration.layout === "full" ? "(min-width: 768px) 48rem, 100vw" : "(min-width: 640px) 36rem, 100vw"}
-              width={article.illustration.width}
-              height={article.illustration.height}
-              alt={article.illustration.alt}
-              decoding="async"
-              className="block h-auto w-full rounded-xl border border-ink-4/15"
-            />
-            {article.illustration.badge ? (
-              <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-ink-2">
-                {article.illustration.badge}
-              </span>
-            ) : null}
-          </div>
-          {/* "inset" (C01): the caption explains the picture. "full" (C05,
-              C11): a single discreet tagline. */}
-          <figcaption
-            className={
-              article.illustration.layout === "full"
-                ? "mt-2 text-xs text-ink-3"
-                : "mt-3 text-sm leading-relaxed text-ink-3"
-            }
-          >
-            {article.illustration.caption}
-          </figcaption>
-        </figure>
+      {/* The article's AI web hero (2026-10-01), where one is registered —
+          C05/C11 use their approved illustration below instead. */}
+      {hero ? <ArticleHero hero={hero} /> : null}
+
+      {/* An illustration that opens the article's question (C05/C11), after
+          the answer and the tool, before the contents — unless it declares
+          `inSection`, in which case it renders inside that body section
+          (C01). */}
+      {article.illustration && !article.illustration.inSection ? (
+        <IllustrationFigure illustration={article.illustration} />
       ) : null}
 
       {/* In-page contents: ordinary anchors to the headings below. */}
@@ -204,6 +181,11 @@ export function EducationArticleBody({
               </p>
             ))}
           </div>
+          {article.illustration?.inSection === section.heading ? (
+            <div className="mt-5">
+              <IllustrationFigure illustration={article.illustration} />
+            </div>
+          ) : null}
           {section.results ? (
             <div className="mt-5 rounded-xl bg-bg-soft p-4">
               <h3 className="font-medium text-ink">{section.results.caption}</h3>
@@ -425,6 +407,48 @@ export function EducationArticleBody({
       ) : null}
       </section>
     </div>
+  );
+}
+
+/**
+ * An article's own illustration (not the AI web hero). Labelled on the page;
+ * it holds no figure, and the computed visual further down is unchanged. A
+ * plain <img>: the static export has no image loader. Not lazy.
+ *
+ * "full": the article column's width (max-w-3xl, 48rem). "inset" (default):
+ * a centred 36rem figure. The caption is a single discreet tagline only when
+ * the figure has no badge (C05, C11); a badged concept figure (C01) keeps its
+ * sentence caption, which explains the metaphor.
+ */
+function IllustrationFigure({ illustration }: { illustration: NonNullable<EducationArticle["illustration"]> }) {
+  const full = illustration.layout === "full";
+  return (
+    <figure
+      data-education-illustration="true"
+      data-illustration-layout={illustration.layout ?? "inset"}
+      className={full ? "w-full" : "mx-auto w-full max-w-xl"}
+    >
+      <div className="relative">
+        <img
+          src={illustration.src}
+          srcSet={illustration.srcSet}
+          sizes={full ? "(min-width: 768px) 48rem, 100vw" : "(min-width: 640px) 36rem, 100vw"}
+          width={illustration.width}
+          height={illustration.height}
+          alt={illustration.alt}
+          decoding="async"
+          className="block h-auto w-full rounded-xl border border-ink-4/15"
+        />
+        {illustration.badge ? (
+          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-ink-2">
+            {illustration.badge}
+          </span>
+        ) : null}
+      </div>
+      <figcaption className={illustration.badge ? "mt-3 text-sm leading-relaxed text-ink-3" : "mt-2 text-xs text-ink-3"}>
+        {illustration.caption}
+      </figcaption>
+    </figure>
   );
 }
 

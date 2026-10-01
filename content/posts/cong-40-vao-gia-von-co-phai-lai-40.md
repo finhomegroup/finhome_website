@@ -56,5 +56,3 @@ Công cụ chỉ tính cho một món hàng với giá vốn bạn nhập. Để
 - [OpenStax Prealgebra 2e: Solve general applications of percent](https://openstax.org/books/prealgebra-2e/pages/6-2-solve-general-applications-of-percent) — mỗi phần trăm đều tính trên một cơ số.
 
 *Nguồn nước ngoài chỉ dùng cho khái niệm, không đại diện cho quy định kế toán hay thuế tại Việt Nam. Ví dụ do FinHome xây dựng; con số được đối chiếu với công cụ ngày 30/09/2026. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định, không phải tư vấn kinh doanh hay thuế.*
-
-*Ảnh bìa: [Amina Filkins / Pexels](https://www.pexels.com/photo/cheerful-asian-woman-working-in-floral-shop-5410107/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome; các con số không phải số liệu kinh doanh của họ.*

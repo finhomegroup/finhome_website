@@ -129,13 +129,19 @@ export type EducationArticle = {
     badge?: string;
     caption: string;
     /**
-     * `"inset"` (default, C01): a centred figure narrower than the column, with
-     * a full sentence caption. `"full"` (C05, C11 — 2026-10-01): the full width
-     * of the article column, aligned with the answer, CTA and contents, and a
-     * single small tagline caption. Explicit, so the look never depends on
-     * whether a badge happens to be set.
+     * `"inset"` (default): a centred figure narrower than the column. `"full"`
+     * (C01, C05, C11 — 2026-10-01): the full width of the article column. The
+     * caption is a sentence when the figure has a badge (C01) and a single
+     * small tagline otherwise (C05, C11).
      */
     layout?: "inset" | "full";
+    /**
+     * OPT-IN: render inside the body section with exactly this heading,
+     * after its paragraphs, instead of opening the article. C01 (2026-10-01):
+     * its balance figure illustrates the reserve-kept-separate point, and the
+     * AI web hero now opens the article. Absent: the opening slot (C05, C11).
+     */
+    inSection?: string;
   };
 
   /** Do it with your own numbers, on the real tool. */

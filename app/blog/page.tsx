@@ -8,6 +8,8 @@ import { FH_POINTER } from "@/lib/interaction-styles";
 import { newsPosts, POSTS, postKind, type Post } from "@/content/posts";
 import { EDUCATION_COLLECTION } from "@/content/education/collection";
 import { BLOG_PAGE_SIZE } from "@/content/blog-pagination";
+import { guideHero } from "@/content/education-web-heroes";
+import { WebHeroThumb } from "@/components/education/web-hero";
 import { canonicalPath, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 
@@ -23,7 +25,8 @@ const GUIDE_PREVIEW = 3;
 /**
  * Compact guide cards: a row with a small cover on a phone, a three-column
  * card from `sm`. Title and CTA wording are unchanged from the stacked list
- * they replace; the excerpt shows from `sm`, clamped to two lines.
+ * they replace; the excerpt shows from `sm`, clamped to two lines. The image
+ * is the guide's web hero (responsive WebP), not its exported social cover.
  */
 function GuideList({ posts }: { posts: Post[] }) {
   return (
@@ -38,7 +41,13 @@ function GuideList({ posts }: { posts: Post[] }) {
               FH_POINTER,
             )}
           >
-            {post.cover ? (
+            {guideHero(post.slug) ? (
+              <WebHeroThumb
+                hero={guideHero(post.slug)!}
+                sizes="(min-width: 640px) 15rem, 6rem"
+                className="aspect-[1200/630] w-24 shrink-0 rounded-lg sm:w-full sm:rounded-xl"
+              />
+            ) : post.cover ? (
               <img
                 src={post.cover}
                 alt=""

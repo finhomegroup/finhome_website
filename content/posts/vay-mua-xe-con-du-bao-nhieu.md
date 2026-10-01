@@ -89,5 +89,3 @@ FinHome giúp bạn mô phỏng và hiểu các con số; kết quả không ph�
 - [FTC: Tìm hiểu tài trợ mua xe](https://consumer.ftc.gov/articles/financing-or-leasing-car) — vì sao cần tính cả chi phí sử dụng và đọc điều kiện vay.
 
 *Hai nguồn giáo dục tiêu dùng của Hoa Kỳ hỗ trợ nguyên tắc so sánh, không đại diện cho lãi suất, điều kiện hay pháp luật Việt Nam. Ví dụ do FinHome xây dựng và đối chiếu với công cụ ngày 30/09/2026; số tiền làm tròn đến đồng.*
-
-*Ảnh bìa: [Miriam Alonso / Pexels](https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*
