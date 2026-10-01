@@ -33,6 +33,14 @@ const SRC_TCB_TRA_GOP = {
     "Khái niệm dùng ở đây: có nhiều cấu trúc trả nợ khác nhau, và khả năng trả nợ được xét trên thu nhập, chi phí và các khoản nợ đang có. Nội dung do một ngân hàng viết, không phải ngưỡng áp dụng chung.",
 };
 
+// Read and checked 2026-10-01 for the C11 upgrade (concept only).
+const SRC_CFPB_FIXED_ARM = {
+  label: "CFPB — What is the difference between a fixed-rate and adjustable-rate mortgage (ARM) loan?",
+  url: "https://www.consumerfinance.gov/ask-cfpb/what-is-the-difference-between-a-fixed-rate-and-adjustable-rate-mortgage-arm-loan-en-100/",
+  note:
+    "Khái niệm dùng ở đây: với lãi cố định, lãi và khoản trả giữ nguyên trong thời gian cố định; với lãi điều chỉnh, lãi và khoản trả có thể thay đổi, và không nên giả định sẽ kịp chuyển khoản vay hay bán nhà trước khi lãi đổi. Đây là tài liệu của Hoa Kỳ; cấu trúc sản phẩm, trần lãi và quy định trong đó không áp dụng tại Việt Nam.",
+};
+
 export const ARTICLES_2: EducationArticle[] = [
   // ------------------------------------------------------------------ C07
   {
@@ -491,7 +499,7 @@ export const ARTICLES_2: EducationArticle[] = [
     question: "Lãi cố định hay thả nổi: tôi đang đánh đổi điều gì?",
     shortAnswer: [
       "Bạn đang so mức độ biết trước khoản trả với rủi ro lãi thay đổi. Lãi cố định giữ một mức trong thời gian đã thỏa thuận; lãi thả nổi được đặt lại theo chu kỳ trong hợp đồng, nên khoản trả hằng tháng có thể thay đổi.",
-      "Trong ví dụ vay 2 tỷ trong 20 năm, phương án cố định trả khoảng 20 triệu mỗi tháng; phương án ưu đãi trả khoảng 16,1 triệu lúc đầu rồi lên khoảng 20,5 triệu nếu lãi sau ưu đãi là 11%/năm. Đây là kịch bản, không phải quy luật giá của thị trường: hãy so cả khoản trả sau ưu đãi với ngân sách của bạn.",
+      "Trong ví dụ của bài, phương án cố định trả khoảng 20 triệu mỗi tháng; phương án có ưu đãi trả ít hơn trong năm đầu, rồi khoản trả đổi theo mức lãi mới — khoảng 20,5 triệu nếu lãi sau ưu đãi là 11%/năm. Đây là kịch bản, không phải quy luật giá của thị trường hay dự báo lãi suất: hãy so khoản trả sau ưu đãi với ngân sách của bạn trước.",
     ],
     // The trade-off itself, and the fact that the example's price ordering is
     // an assumption rather than a market rule.
@@ -514,11 +522,29 @@ export const ARTICLES_2: EducationArticle[] = [
           label: "Các kịch bản sau ưu đãi khác được nêu",
           value: "9%/năm và 13%/năm",
         },
+        { label: "Hai mốc đọc kết quả", value: "Tháng 60 (5 năm) và tháng 240 (hết kỳ hạn)" },
       ],
       note:
-        "Mọi mức lãi ở đây là giả định để minh họa phép so, không phải báo giá của ngân hàng nào, không phải dự báo và không mang xác suất. Cùng số tiền vay và cùng kỳ hạn ở cả hai phương án. Biểu đồ vẽ phương án cố định cùng hai kịch bản 11% và 13%; bảng số liệu liệt kê đủ cả ba kịch bản sau ưu đãi.",
+        "Mọi mức lãi ở đây là giả định để minh họa phép so, không phải báo giá của ngân hàng nào, không phải dự báo và không mang xác suất. Cố định suốt 20 năm cũng là giả định để làm đối chứng, không phải xác nhận có sản phẩm như vậy. Cùng số tiền vay và cùng kỳ hạn ở cả hai phương án. Biểu đồ vẽ phương án cố định cùng hai kịch bản 11% và 13%; bảng số liệu liệt kê đủ cả ba kịch bản sau ưu đãi.",
     },
+    // UPGRADED 2026-10-01 (series wave 2): a plain opener, the two horizons
+    // (month 60 and month 240) for all three named scenarios, the input
+    // pattern for a fixed-for-N-months quote on EITHER side, and a separate
+    // reproduce-the-example section — the tool opens on a 9,5% sample, not
+    // this article's 10,5%. The horizon figures are prose, not `results`
+    // rows: `results` here must be the declared chart's own cells
+    // (core-reader-first.test.ts), and the chart is full-term. They are
+    // recomputed with `compareLoans` in content/loan-decision-series.test.ts.
     sections: [
+      {
+        heading: "Lãi cố định và lãi thả nổi, nói đơn giản",
+        paragraphs: [
+          "Với khoản vay trả góp đều, mỗi tháng bạn trả một phần lãi và một phần gốc. Gốc là số tiền bạn mượn; lãi được tính trên phần gốc còn nợ, gọi là dư nợ.",
+          "Lãi cố định: mức lãi giữ nguyên trong thời gian đã thỏa thuận, nên trong thời gian đó khoản trả hằng tháng biết trước. Thời gian cố định có thể chỉ vài năm; hết thời gian đó, lãi đổi theo hợp đồng. Mức cố định suốt 20 năm trong bài là giả định để làm đối chứng. Lãi thả nổi: sau thời gian ưu đãi, mức lãi được đặt lại theo công thức trong hợp đồng — thường là một lãi cơ sở cộng biên độ — nên khoản trả có thể lên hoặc xuống.",
+          "Không bên nào luôn rẻ hơn. Câu hỏi thực tế là: nếu lãi đổi theo hướng bất lợi, gia đình bạn còn trả được không, và bạn sẵn sàng trả thêm bao nhiêu để biết trước khoản trả.",
+        ],
+        emphasis: ["Không bên nào luôn rẻ hơn"],
+      },
       {
         heading: "Khoản trả nào gia đình bạn có thể theo được lâu dài?",
         paragraphs: [
@@ -537,6 +563,15 @@ export const ARTICLES_2: EducationArticle[] = [
         ],
       },
       {
+        heading: "Ở tháng 60 và khi giữ đến hết, câu trả lời có thể khác nhau",
+        paragraphs: [
+          "Công cụ so hai bên tại một mốc chung, mặc định là tháng 60. Trong kịch bản sau ưu đãi 11%/năm, đến tháng 60 phương án ưu đãi tốn ít lãi hơn khoảng 26,3 triệu, vì 12 tháng đầu trả lãi thấp. Nhưng giữ đến tháng 240, phương án cố định lại tốn ít lãi hơn khoảng 70,4 triệu, vì suốt 228 tháng còn lại phương án kia chịu 11%.",
+          "Ở kịch bản 9%/năm, phương án ưu đãi tốn ít hơn ở cả hai mốc; ở kịch bản 13%/năm, phương án cố định tốn ít hơn ở cả hai mốc. Vì vậy kết luận phụ thuộc vào hai điều không ai biết chắc: mức lãi sau ưu đãi, và việc bạn giữ khoản vay bao lâu.",
+          "Trong kịch bản 11%/năm, ở tháng 60 dư nợ hai bên chênh nhau không nhiều — khoảng 1.806,4 triệu ở bên cố định và 1.801,8 triệu ở bên ưu đãi — nên ở kịch bản này, khác biệt chủ yếu nằm ở tiền lãi đã trả, không phải ở khoản nợ còn lại.",
+        ],
+        emphasis: ["kết luận phụ thuộc vào hai điều không ai biết chắc"],
+      },
+      {
         heading: "Sự chắc chắn có giá, và giá đó không phải luôn đáng trả",
         paragraphs: [
           "Trong ví dụ, cố định 10,5% cao hơn ưu đãi 7,5%; không suy ra mọi báo giá đều như vậy. Với sản phẩm thật, cần so mức lãi, thời gian cố định, phí và điều kiện đi kèm.",
@@ -553,7 +588,7 @@ export const ARTICLES_2: EducationArticle[] = [
         heading: "Đọc kỹ “cố định” nghĩa là cố định bao lâu",
         paragraphs: [
           "Trước hết hỏi ngân hàng thời gian cố định thực tế. Bảng giả lập cố định suốt 240 tháng để làm đối chứng, không xác nhận có sản phẩm 20 năm như vậy tại Việt Nam. Cố định vài năm rồi đổi lãi là cấu trúc khác.",
-          "Nếu hợp đồng của bạn thuộc loại thứ hai, thì nó thực chất là một phương án thả nổi với giai đoạn ưu đãi dài hơn — hãy mô hình hóa nó bằng công cụ Khoản vay lãi thả nổi, với số tháng ưu đãi bằng thời gian cố định.",
+          "Nếu hợp đồng của bạn thuộc loại thứ hai, thì nó thực chất là một phương án thả nổi với giai đoạn ưu đãi dài hơn. Trên công cụ Lãi cố định hay thả nổi, bên nào cũng nhập được kiểu này: số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi ưu đãi”, và mức sau đó vào “Lãi suất” — ví dụ cố định 36 tháng rồi đổi. Mức sau đó là kịch bản bạn tự đặt.",
           "Câu hỏi cần đặt cho ngân hàng: cố định trong bao nhiêu tháng, sau đó tính theo công thức nào, và có trần hay không.",
         ],
         emphasis: [
@@ -562,9 +597,18 @@ export const ARTICLES_2: EducationArticle[] = [
         ],
       },
       {
+        heading: "Tính lại đúng ví dụ của bài trên công cụ",
+        paragraphs: [
+          "Công cụ Lãi cố định hay thả nổi mở sẵn số mẫu gần giống bài: vay 2.000.000.000 trong 20 năm, và “Bên B” đã là 7,5%/năm trong 12 tháng rồi 11%/năm. Khác một chỗ: “Bên A” điền sẵn 9,5%/năm, còn bài dùng 10,5%.",
+          "Để ra đúng số của bài, đổi “Lãi suất” của “Bên A” từ 9,5 thành 10,5 và giữ nguyên mọi ô khác. Ô “So sánh tại tháng thứ” đang là 60; đổi thành 240 để xem cả kỳ hạn. Muốn thử kịch bản 9% hay 13%, đổi “Lãi suất” của “Bên B”.",
+          "Mức cố định 10,5% suốt 20 năm trong bài, và mức 9,5% điền sẵn trên công cụ, đều là số giả định để minh họa, không phải báo giá hay xác nhận có sản phẩm như vậy.",
+        ],
+        emphasis: ["đổi “Lãi suất” của “Bên A” từ 9,5 thành 10,5"],
+      },
+      {
         heading: "Dùng mức lãi tương đương để hiểu thêm tổng chi phí",
         paragraphs: [
-          "Sau khi kiểm tra ngân sách tháng, bạn có thể xem dòng lãi cố định tương đương trong bảng. Phép tính giữ nguyên kịch bản thả nổi đã nhập rồi tìm mức lãi CỐ ĐỊNH có tổng lãi bằng nó; bảng không tự tìm ngưỡng lãi thả nổi tương lai.",
+          "Phần này là chi tiết thêm cho ai muốn đi sâu; có thể bỏ qua. Sau khi kiểm tra ngân sách tháng, bạn có thể xem dòng lãi cố định tương đương trong bảng. Phép tính giữ nguyên kịch bản thả nổi đã nhập rồi tìm mức lãi CỐ ĐỊNH có tổng lãi bằng nó; bảng không tự tìm ngưỡng lãi thả nổi tương lai.",
           "Nếu mức cố định được báo thấp hơn mức tương đương, phương án cố định tốn ít tổng lãi hơn trong kịch bản này, trước khi xét chênh lệch phí. Đổi kịch bản thì con số đó cũng đổi.",
           "Lưu ý: con số này so TỔNG LÃI CẢ KỲ HẠN. Công cụ ở phần bài tập còn so tại mốc bạn dự kiến giữ khoản vay, ví dụ 60 tháng. Hai thước đo có thể cho hai kết luận khác nhau; hãy dùng mốc phù hợp với kế hoạch của mình.",
         ],
@@ -609,20 +653,34 @@ export const ARTICLES_2: EducationArticle[] = [
     // enters a phased quote. The steps now name the stable side plus the
     // current descriptor, and the promotional rate field is "Lãi ưu đãi",
     // not "Lãi suất ưu đãi".
+    // EDITORIAL EXCEPTION (user-approved 2026-10-01, C05 and C11 only): an AI
+    // illustration from artifacts/ai-people-library-2026-10-01 (image 02),
+    // labelled as AI on the page; plain sips resizes, no further edits.
+    illustration: {
+      src: "/images/education/ai-library-02-couple-calm-confidence-720.jpg",
+      srcSet: "/images/education/ai-library-02-couple-calm-confidence-720.jpg 720w, /images/education/ai-library-02-couple-calm-confidence-1200.jpg 1200w",
+      width: 1536,
+      height: 1024,
+      alt: "Ảnh minh họa AI: một người phụ nữ ngồi sát, chỉ vào màn hình laptop mà người đàn ông bên cạnh đang cầm; cả hai mỉm cười trên chiếc sofa sáng màu.",
+      // No badge: one small tagline under the image (user direction 2026-10-01).
+      caption: "Ảnh minh họa AI",
+    },
+    // OWN NUMBERS ONLY; reproducing the example is the section above.
     exercise: {
-      title: "Thử với số của bạn",
+      title: "Thử với báo giá của bạn",
       intro:
-        "Mở công cụ Lãi cố định hay thả nổi — đó là công cụ so sánh khoản vay ở góc nhìn hai cấu trúc lãi — và nhập hai báo giá bạn thực sự có.",
+        "Khi đã có hai báo giá thật, mở lại công cụ Lãi cố định hay thả nổi — đó là công cụ so sánh khoản vay ở góc nhìn hai cấu trúc lãi. Phép tính chạy ngay trên trình duyệt; công cụ không tự lưu lại số bạn nhập khi tải lại trang.",
       steps: [
-        "Nhập “Số tiền vay”, dùng chung cho cả hai bên.",
+        "Nhập “Số tiền vay” theo khoản bạn cần, dùng chung cho cả hai bên.",
         "Nhập “So sánh tại tháng thứ” bằng số tháng bạn dự kiến thực sự giữ khoản vay, ví dụ 60.",
-        "Ở khối “Bên A” — công cụ gọi nó là “Bên A — một mức lãi suốt kỳ hạn” khi bạn để trống hai ô ưu đãi: nhập “Lãi suất” là mức cố định được báo và “Kỳ hạn” theo năm.",
-        "Ở khối “Bên B”: nhập “Lãi suất” là mức sau ưu đãi, rồi mở “Phí và lãi ưu đãi của báo giá này” để điền “Số tháng ưu đãi” và “Lãi ưu đãi”. Sau khi điền, tiêu đề khối đổi thành “Bên B — giữ một mức lãi 12 tháng rồi đổi” theo đúng số tháng bạn nhập.",
-        "Đọc “Rẻ nhất tại mốc bạn chọn” và “Chênh lệch với phương án đắt nhất”, rồi mở bảng chi tiết để xem cả chi phí đến mốc đó và chi phí cả kỳ hạn.",
+        "Ở khối “Bên A”: nhập “Lãi suất” và “Kỳ hạn” theo báo giá cố định bạn có. Để trống hai ô ưu đãi thì khối có tên “Bên A — một mức lãi suốt kỳ hạn”. Nếu báo giá chỉ cố định vài năm rồi đổi, mở “Phí và lãi ưu đãi của báo giá này”, nhập số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi ưu đãi”, và mức sau đó vào “Lãi suất”.",
+        "Ở khối “Bên B”: nhập “Lãi suất” là mức sau ưu đãi, rồi mở “Phí và lãi ưu đãi của báo giá này” để điền “Số tháng ưu đãi” và “Lãi ưu đãi”. Với 12 tháng, tiêu đề khối đổi thành “Bên B — giữ một mức lãi 12 tháng rồi đổi”.",
+        "Nhập phí của từng bên: “Phí thu xếp”, “Phí khác trả khi giải ngân” — giải ngân là lúc tiền vay được chuyển ra thực tế — và “Phí trả nợ trước hạn tại mốc so sánh” nếu bạn định tất toán, tức trả hết phần còn nợ và đóng khoản vay, ở mốc đó. Nếu chưa biết đủ phí, hãy đánh dấu ô báo chưa biết đủ phí của báo giá đó.",
+        "Đọc “Rẻ nhất tại mốc bạn chọn” và “Chênh lệch với phương án đắt nhất”, rồi mở “Xem bảng so sánh từng chỉ tiêu” để xem “Trả hằng tháng sau ưu đãi” và “Chi phí vay cả kỳ hạn (lãi + phí)”.",
       ],
       toolSlug: "lai-co-dinh-hay-tha-noi",
       change:
-        "Tăng “Lãi suất” của Bên B thêm 2 điểm phần trăm rồi đọc lại. Nếu kết luận đổi chiều, quyết định của bạn đang phụ thuộc vào một mức lãi không ai biết trước — và khi đó nên chọn theo mức chịu đựng rủi ro.",
+        "Tăng “Lãi suất” của “Bên B” thêm 2 điểm phần trăm rồi đọc lại. Nếu kết luận đổi chiều, quyết định của bạn đang phụ thuộc vào một mức lãi không ai biết trước — khi đó hãy chọn theo khoản trả cao nhất mà gia đình gánh được.",
       check:
         "Đổi “So sánh tại tháng thứ” từ 60 sang 240: phương án rẻ nhất có đổi không? Nếu có, công cụ sẽ nói rõ là hai mốc cho hai câu trả lời khác nhau, và mốc đúng là mốc bạn thực sự giữ khoản vay.",
     },
@@ -633,15 +691,17 @@ export const ARTICLES_2: EducationArticle[] = [
         "“Cố định” trong hợp đồng của bạn là bao lâu — đây là điều khoản, không phải phép tính.",
         "Phí thu xếp, bảo hiểm khoản vay và phí trả nợ trước hạn, có thể khác nhau giữa hai phương án.",
         "Việc chuyển từ thả nổi sang cố định giữa kỳ hạn có được phép hay không.",
+        "Bạn có kịp trả nợ trước hạn, chuyển khoản vay hay bán nhà đúng lúc lãi đổi không — không nên giả định trước điều đó.",
+        "Ngân hàng nào duyệt cho bạn, duyệt bao nhiêu và ở mức lãi nào — bài không nói điều đó.",
       ],
     },
     sources: {
       title: "Nguồn tham khảo cho khái niệm",
       intro: "Dùng cho KHÁI NIỆM, không phải cho một mức lãi.",
-      items: [SRC_CFPB_COMPARE, SRC_TCB_TRA_GOP],
+      items: [SRC_CFPB_COMPARE, SRC_TCB_TRA_GOP, SRC_CFPB_FIXED_ARM],
     },
     provenance:
-      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
+      "Bài giáo dục FinHome được soạn với hỗ trợ AI, dùng ví dụ giả lập và biểu đồ tính từ công cụ; cập nhật ngày 01/10/2026 để thêm hai mốc so sánh và cách tính lại đúng ví dụ. Bài chưa được chuyên gia độc lập thẩm định và không thay thế tư vấn cho hồ sơ cụ thể.",
     nextSlugs: [
       "het-uu-dai-khoan-tra-tang-bao-nhieu",
       "doi-sang-khoan-vay-lai-thap-hon-khi-nao-bu-duoc-chi-phi",

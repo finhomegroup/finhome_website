@@ -125,7 +125,7 @@ export const FIXED_VS_FLOATING = {
      */
     riskTitle: "Khoản trả sau ưu đãi và chi phí tại mốc bạn chọn",
     fixedSideHint:
-      "Để trống hai ô ưu đãi và điền một mức lãi duy nhất, thì cả kỳ hạn chạy ở mức đó. Nếu báo giá của bạn cố định vài năm rồi đổi lãi, hãy nhập số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi suất ưu đãi”, và mức sau đó vào “Lãi suất” — tên của bên này sẽ đổi theo đúng cấu trúc bạn vừa nhập.",
+      "Để trống hai ô ưu đãi và điền một mức lãi duy nhất, thì cả kỳ hạn chạy ở mức đó. Nếu báo giá của bạn cố định vài năm rồi đổi lãi, hãy nhập số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi ưu đãi”, và mức sau đó vào “Lãi suất” — tên của bên này sẽ đổi theo đúng cấu trúc bạn vừa nhập.",
   },
 
   pageTitle: "Lãi cố định hay thả nổi?",
@@ -180,7 +180,7 @@ export const FIXED_VS_FLOATING = {
         // against any source. The useful part is what to ASK and what to
         // enter, and that needs no market claim at all.
         q: "“Lãi cố định” trong báo giá của tôi là cố định bao lâu?",
-        a: "Đó là câu phải hỏi ngân hàng trước khi so, vì “cố định” có thể là cố định suốt kỳ hạn hoặc cố định một số năm đầu rồi đổi lãi — hai cấu trúc rất khác nhau. Hãy hỏi ba điều bằng văn bản: cố định trong bao nhiêu tháng, sau đó lãi tính theo công thức nào, và có trần hay không. Mức cố định 20 năm điền sẵn trong công cụ là số giả định để minh họa, không phải xác nhận rằng có sản phẩm như vậy. Nếu báo giá của bạn cố định 3 hoặc 5 năm, hãy nhập nó như một giai đoạn ưu đãi: số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi suất ưu đãi”, mức sau đó vào “Lãi suất”. Hai bên dùng cùng một phép tính nên so được trực tiếp.",
+        a: "Đó là câu phải hỏi ngân hàng trước khi so, vì “cố định” có thể là cố định suốt kỳ hạn hoặc cố định một số năm đầu rồi đổi lãi — hai cấu trúc rất khác nhau. Hãy hỏi ba điều bằng văn bản: cố định trong bao nhiêu tháng, sau đó lãi tính theo công thức nào, và có trần hay không. Mức cố định 20 năm điền sẵn trong công cụ là số giả định để minh họa, không phải xác nhận rằng có sản phẩm như vậy. Nếu báo giá của bạn cố định 3 hoặc 5 năm, hãy nhập nó như một giai đoạn ưu đãi: số tháng cố định vào “Số tháng ưu đãi”, mức cố định vào “Lãi ưu đãi”, mức sau đó vào “Lãi suất”. Hai bên dùng cùng một phép tính nên so được trực tiếp.",
       },
       {
         q: "Vì sao một năm ưu đãi lại ít giá trị hơn cảm nhận?",

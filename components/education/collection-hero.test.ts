@@ -89,14 +89,22 @@ describe("hero photo provenance", () => {
       }
     };
     roots.forEach(walk);
-    // The data, the component that documents its crop, and this test only.
+    // The data, the component that documents its crop, and this test only —
+    // plus ONE other test, `content/loan-decision-series.test.ts`, which names
+    // this ID solely as a shipped photo its packages must NOT reuse (a guard,
+    // not a use). Any runtime file outside the first two still fails here.
     expect(hits.sort()).toEqual(
       [
         "components/education/collection-hero.test.ts",
         "components/education/collection-hero.tsx",
         "content/education/collection.ts",
+        "content/loan-decision-series.test.ts",
       ].sort(),
     );
+    // Keep that exception honest: the other test may only list the ID as excluded.
+    const guard = readFileSync("content/loan-decision-series.test.ts", "utf8");
+    expect(guard.match(new RegExp(P.pexelsId, "g"))).toHaveLength(1);
+    expect(guard).toMatch(new RegExp(`for \\(const id of \\[[^\\]]*"${P.pexelsId}"[^\\]]*\\]\\) expect\\(ids\\.has\\(id\\)`));
   });
 
   it("does not reference the rejected or excluded photos", () => {

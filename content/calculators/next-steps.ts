@@ -228,6 +228,12 @@ export const TOOL_NEXT_STEPS: Record<string, ToolNextSteps> = {
         why: "Có ba báo giá thật — gói nào rẻ hơn khi tính cả phí tại cùng một mốc?",
       },
     ],
+    // Added 2026-10-01 (series wave 2): the route had no explanation link.
+    education: {
+      href: "/blog/lai-co-dinh-hay-tha-noi/",
+      label: "Lãi cố định hay thả nổi: tôi đang đánh đổi điều gì?",
+      why: "Bài tập đặt khoản trả sau ưu đãi cạnh ngân sách, rồi so tại tháng 60 và khi giữ đến hết.",
+    },
   },
 
   // Original row 6. The plan's own next step is "quay về phương án vay đang

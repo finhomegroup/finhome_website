@@ -123,5 +123,9 @@ describe("its place on the homepage", () => {
     expect([...at].sort((a, b) => a - b)).toEqual(at);
     expect(page.split(PHONE).length - 1).toBe(1);
     expect(page.split(A.caption).length - 1).toBe(1);
-  });
+    // The first `import("@/app/page")` in this file loads and transforms the
+    // whole homepage graph inside the test; under the full parallel run that
+    // cold import alone exceeds vitest's 5 s default. Same assertions; same
+    // allowance the /blog/ render in tool-education-series.test.ts declares.
+  }, 60_000);
 });

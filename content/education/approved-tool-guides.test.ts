@@ -182,9 +182,13 @@ describe("C01's illustration opens the article, beside — never in place of —
     }
   });
 
-  it("is C01's alone: no other article gains a picture", () => {
+  it("is C01's, plus the two AI illustrations the user approved for C05 and C11 — no other article", () => {
+    // 2026-10-01: user-approved editorial exception, tested in
+    // content/loan-decision-series.test.ts. Any further article still fails here.
     expect(EDUCATION_ARTICLES.filter((a) => a.illustration).map((a) => a.slug)).toEqual([
       "co-600-trieu-nen-tim-nha-tam-gia-nao",
+      "hai-goi-vay-thang-thap-co-re-hon",
+      "lai-co-dinh-hay-tha-noi",
     ]);
   });
 });

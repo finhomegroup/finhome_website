@@ -11,7 +11,10 @@ import { SITE } from "./site";
  * Education articles have no photograph — their visual is a rendered SVG built
  * from the calculator's own engine — so they fall back to the site card rather
  * than to an invented stock cover. Pass the result through `img()`.
+ *
+ * Exception (2026-10-01, C05 and C11 only): a post may declare `ogImage`, the
+ * share image of the labelled AI illustration its article already shows.
  */
 export function postCover(post: Post): string {
-  return post.cover ?? SITE.ogImage;
+  return post.cover ?? post.ogImage ?? SITE.ogImage;
 }

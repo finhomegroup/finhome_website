@@ -137,11 +137,21 @@ export function EducationArticleBody({
               decoding="async"
               className="block h-auto w-full rounded-xl border border-ink-4/15"
             />
-            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-ink-2">
-              {article.illustration.badge}
-            </span>
+            {article.illustration.badge ? (
+              <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-ink-2">
+                {article.illustration.badge}
+              </span>
+            ) : null}
           </div>
-          <figcaption className="mt-3 text-sm leading-relaxed text-ink-3">
+          {/* With a badge (C01) the caption explains the picture; without one
+              (C05, C11) it is a single discreet tagline. */}
+          <figcaption
+            className={
+              article.illustration.badge
+                ? "mt-3 text-sm leading-relaxed text-ink-3"
+                : "mt-2 text-xs text-ink-3"
+            }
+          >
             {article.illustration.caption}
           </figcaption>
         </figure>
