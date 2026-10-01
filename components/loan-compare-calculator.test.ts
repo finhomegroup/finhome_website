@@ -18,6 +18,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LOAN_COMPARE } from "@/content/calculators/loan-compare";
 import { FIXED_VS_FLOATING } from "@/content/calculators/fixed-vs-floating";
+import { LOAN_COMPARE_LEARNING } from "@/content/calculators/loan-compare-learning";
 import { APR } from "@/content/calculators/apr";
 import { APR_ADVANCED } from "@/content/calculators/apr-advanced";
 import { MAX_COMPARE_MONTHS } from "@/lib/calc/loan-compare";
@@ -411,13 +412,18 @@ describe("what the comparison refuses to hide", () => {
     expect(html).not.toContain(C.unusableNotice);
   });
 
-  it("states that an early-settlement fee is unknown, not zero", async () => {
+  it("says a blank fee box is 0, and that an unknown fee has its own switch", async () => {
     const html = await compare();
     expect(html).toContain(C.settlementFeeNotice);
     // It is charged AT THE HORIZON, in its own field, and the copy no longer
     // tells readers to fold a future penalty into an origination fee.
     expect(C.settlementFeeNotice).toContain("ĐÚNG THỜI ĐIỂM");
-    expect(C.settlementFeeNotice).toContain("không phải khoản bằng 0");
+    // STRONGER 2026-09-29: blank is PARSED as 0, so the copy says so and
+    // sends "unknown" to the per-offer switch instead of to a blank box.
+    expect(C.settlementFeeNotice).toContain("được tính là 0 ₫");
+    expect(C.settlementFeeNotice).toContain("Chưa biết đủ phí");
+    expect(C.settlementFeeNotice).not.toContain("không phải khoản bằng 0");
+    expect(C.exitFeeHelp).not.toContain("Để trống nếu bạn chưa biết");
     expect(C.exitFeeHelp).toContain("KHÔNG cộng vào ô phí giải ngân");
     expect(C.flatFeeHelp).not.toContain("trả nợ trước hạn");
   });
@@ -1387,5 +1393,59 @@ describe("the two APR routes keep their own scope and their own URLs", () => {
     expect(APR_ADVANCED.form.termInvalid).toContain("1.200");
     expect(MAX_APR_MONTHS).toBe(1200);
     expect(MAX_COMPARE_MONTHS).toBe(1200);
+  });
+});
+
+describe("the whole-tool limit: hooks, summaries and no false blame (2026-10-01)", () => {
+  const blank = { rate: "", term: "", fee: "", promoMonths: "", promoRate: "", flatFee: "", exitFee: "" };
+  const HUGE = "10000000000000000000";
+
+  it("every amount, horizon and offer box carries the key a limit jump lands on", async () => {
+    const html = await compare();
+    for (const key of [
+      "amount",
+      "horizon",
+      "rateA",
+      "termA",
+      "feeA",
+      "flatFeeA",
+      "exitFeeA",
+      "promoMonthsA",
+      "promoRateA",
+      "rateB",
+      "termB",
+      "rateC",
+      "termC",
+    ]) {
+      expect(html, key).toContain(`data-calc-field="${key}"`);
+    }
+  });
+
+  it("a fee summary never echoes a placeholder for a value it cannot print", async () => {
+    const html = await compare({
+      defaults: [
+        { ...blank, rate: "8,5", term: "20", flatFee: HUGE, exitFee: HUGE },
+        { ...blank, rate: "9,2", term: "20", fee: HUGE },
+        blank,
+      ],
+    });
+    expect(html).not.toContain(`${PLACEHOLDER} ₫`);
+    expect(html).not.toContain(`${PLACEHOLDER}%`);
+    expect(html).toContain(LOAN_COMPARE_LEARNING.limits.settingTooLarge);
+    expect(html).toContain('data-compare-limit="display"');
+  });
+
+  it("an offer the engine cannot price is a limit, never an unreadable box", async () => {
+    const html = await compare({
+      defaults: [
+        { ...blank, rate: `1${"0".repeat(308)}`, term: "20" },
+        { ...blank, rate: "9,2", term: "20" },
+        { ...blank, rate: "8,5", term: "20" },
+      ],
+    });
+    expect(html).not.toContain('aria-invalid="true"');
+    expect(html).not.toContain(C.unusableNotice);
+    expect(html).toContain('data-compare-limit="model"');
+    expect(html).toContain('data-calc-jump="rateA"');
   });
 });

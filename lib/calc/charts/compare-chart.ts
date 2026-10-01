@@ -22,11 +22,13 @@
  * states what it is ranked on. Nothing in this module says an option is
  * "best", and nothing names a lender.
  *
- * FEES THIS MODEL DOES NOT SUPPORT ARE EXCLUDED IN WORDS. `compareLoans`
- * prices one upfront arrangement fee per option and a single fixed rate for
- * the whole term. Promotional periods, post-promotional rates, insurance and
- * early-settlement charges are not in it, so `exclusionNote` is appended to
- * every summary rather than left to a page to remember.
+ * FEES, BY THE DATE THEY ARE PAID. `compareLoans` prices an upfront fee at
+ * origination and an early-settlement fee AT THE HORIZON (0 once the loan
+ * has matured). The bars keep the two as separate segments — "fee" and
+ * "exit" — so a bar totals `amount + horizonCost` exactly, the identity the
+ * engine states (2026-09-29 review: the exit fee was in `horizonCost` but
+ * missing from the bar). Insurance is not modelled, and `exclusionNote` says
+ * so on every summary.
  */
 
 import type { LoanComparison } from "@/lib/calc/loan-compare";
@@ -57,6 +59,8 @@ export type CompareCostLabels = MoneyWords & {
   principalSegment: string;
   interestSegment: string;
   feeSegment: string;
+  /** The early-settlement fee charged AT THE HORIZON; never the upfront one. */
+  exitSegment: string;
   /** Debt still owed at the horizon. A segment, never an omission. */
   balanceSegment: string;
   /** `{unit}` substituted. */
@@ -74,6 +78,7 @@ export type CompareCostLabels = MoneyWords & {
   optionColumn: string;
   interestColumn: string;
   feeColumn: string;
+  exitColumn: string;
   balanceColumn: string;
   costColumn: string;
   fullTermCostColumn: string;
@@ -129,6 +134,7 @@ function emptyBars(labels: CompareCostLabels): BarChartModel {
         { label: labels.optionColumn, nowrap: true },
         { label: labels.interestColumn, numeric: true },
         { label: labels.feeColumn, numeric: true },
+        { label: labels.exitColumn, numeric: true },
         { label: labels.balanceColumn, numeric: true },
         { label: labels.costColumn, numeric: true },
         { label: labels.fullTermCostColumn, numeric: true },
@@ -214,6 +220,16 @@ export function costBarsModel(
         valueLabel: fullMoney(row.upfrontFee, labels),
       });
     }
+    // Charged at the horizon, and only where a balance is settled there —
+    // the engine already returns 0 for a loan that has matured.
+    if (row.exitFeeAtHorizon > 0) {
+      segments.push({
+        key: "exit",
+        label: labels.exitSegment,
+        value: row.exitFeeAtHorizon,
+        valueLabel: fullMoney(row.exitFeeAtHorizon, labels),
+      });
+    }
     if (row.horizonBalance > 0) {
       segments.push({
         key: "balance",
@@ -272,6 +288,9 @@ export function costBarsModel(
       { key: "interest", label: labels.interestSegment },
       { key: "fee", label: labels.feeSegment },
       { key: "balance", label: labels.balanceSegment },
+      // LAST in the legend, so the existing keys keep their colour slots;
+      // the fifth key takes its own texture.
+      { key: "exit", label: labels.exitSegment },
     ],
     table: {
       caption: labels.tableCaption,
@@ -301,6 +320,7 @@ export function costBarsModel(
         { label: labels.optionColumn, nowrap: true },
         { label: labels.interestColumn, numeric: true },
         { label: labels.feeColumn, numeric: true },
+        { label: labels.exitColumn, numeric: true },
         { label: labels.balanceColumn, numeric: true },
         { label: labels.costColumn, numeric: true },
         { label: labels.fullTermCostColumn, numeric: true },
@@ -315,6 +335,7 @@ export function costBarsModel(
                 optionLabels[index] ?? `#${index + 1}`,
                 moneyCell(row.horizonInterest),
                 moneyCell(row.upfrontFee),
+                moneyCell(row.exitFeeAtHorizon),
                 moneyCell(row.horizonBalance),
                 moneyCell(row.horizonCost),
                 moneyCell(row.costOfBorrowing),

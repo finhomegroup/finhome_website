@@ -17,6 +17,7 @@ const COST: CompareCostLabels = {
   principalSegment: "Số tiền vay",
   interestSegment: "Lãi",
   feeSegment: "Phí thu trước",
+  exitSegment: "Phí tất toán tại mốc",
   balanceSegment: "Dư nợ còn lại",
   axis: "Tiền ({unit})",
   summary: "Tháng {horizon}: {option} rẻ nhất ({cost}); chênh {spread}.",
@@ -28,6 +29,7 @@ const COST: CompareCostLabels = {
   optionColumn: "Phương án",
   interestColumn: "Lãi",
   feeColumn: "Phí",
+  exitColumn: "Phí tất toán",
   balanceColumn: "Dư nợ",
   costColumn: "Chi phí đến mốc",
   fullTermCostColumn: "Chi phí cả kỳ hạn",
@@ -113,6 +115,44 @@ describe("the fee-only acceptance scenario", () => {
 
 describe("costBarsModel", () => {
   const model = costBarsModel(TERM_TRADE, OPTIONS, COST);
+
+  it("carries a 100 triệu exit fee at month 60 as its own segment, in the total", () => {
+    const exit = compareLoans({
+      amount: AMOUNT,
+      options: [
+        { annualRatePercent: 8.5, termMonths: 240, exitFee: 100_000_000 },
+        { annualRatePercent: 9.2, termMonths: 240 },
+      ],
+      horizonMonths: 60,
+    })!;
+    const bars = costBarsModel(exit, OPTIONS, COST).bars;
+    const segment = bars[0].segments.find((s) => s.key === "exit");
+    expect(segment?.value).toBe(100_000_000);
+    expect(segment?.label).toBe(COST.exitSegment);
+    // Paid at the horizon, never folded into the upfront fee.
+    expect(bars[0].segments.some((s) => s.key === "fee")).toBe(false);
+    for (const [index, bar] of bars.entries()) {
+      expect(bar.total).toBeCloseTo(AMOUNT + exit.rows[index]!.horizonCost, 4);
+    }
+    // The table has its own column for it.
+    const table = costBarsModel(exit, OPTIONS, COST).table;
+    expect(table.columns.map((c) => c.label)).toContain(COST.exitColumn);
+  });
+
+  it("draws no exit fee at maturity, where the engine charges none", () => {
+    const held = compareLoans({
+      amount: AMOUNT,
+      options: [
+        { annualRatePercent: 8.5, termMonths: 240, exitFee: 100_000_000 },
+        { annualRatePercent: 9.2, termMonths: 240 },
+      ],
+      horizonMonths: 240,
+    })!;
+    expect(held.rows[0]!.exitFeeAtHorizon).toBe(0);
+    const bar = costBarsModel(held, OPTIONS, COST).bars[0];
+    expect(bar.segments.some((s) => s.key === "exit")).toBe(false);
+    expect(bar.total).toBeCloseTo(AMOUNT + held.rows[0]!.horizonCost, 4);
+  });
 
   it("shows the principal repaid so a bar is not read as a smaller loan", () => {
     // Measured at the horizon now. `TERM_TRADE` has no horizon of its own, so
@@ -203,15 +243,20 @@ describe("costBarsModel", () => {
         kind: "money",
         value: row.upfrontFee,
       });
+      // The exit fee at the horizon, its own column since 2026-09-29.
       expect(model.table.rows[index][3]).toEqual({
         kind: "money",
-        value: row.horizonBalance,
+        value: row.exitFeeAtHorizon,
       });
       expect(model.table.rows[index][4]).toEqual({
         kind: "money",
-        value: row.horizonCost,
+        value: row.horizonBalance,
       });
       expect(model.table.rows[index][5]).toEqual({
+        kind: "money",
+        value: row.horizonCost,
+      });
+      expect(model.table.rows[index][6]).toEqual({
         kind: "money",
         value: row.costOfBorrowing,
       });
