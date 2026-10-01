@@ -86,7 +86,9 @@ export const LOAN_COMPARE = {
     exitFeeLabel: "Phí trả nợ trước hạn tại mốc so sánh",
     exitFeeUnit: "₫",
     exitFeeHelp:
-      "Nếu bạn tất toán ở mốc so sánh, hợp đồng có thể thu phí trả nợ trước hạn. Nhập mức phí đó ở đây, KHÔNG cộng vào ô phí giải ngân: hai khoản trả ở hai thời điểm khác nhau nên ảnh hưởng tới APR cũng khác nhau. Để trống nếu bạn chưa biết hoặc không tất toán sớm.",
+      // CORRECTED 2026-09-29: a blank box is PARSED AS 0. "Để trống nếu bạn
+      // chưa biết" told readers an unknown fee would be treated as unknown.
+      "Nếu bạn tất toán ở mốc so sánh, hợp đồng có thể thu phí trả nợ trước hạn. Nhập mức phí đó ở đây, KHÔNG cộng vào ô phí giải ngân: hai khoản trả ở hai thời điểm khác nhau nên ảnh hưởng tới APR cũng khác nhau. Để trống thì công cụ tính là 0 ₫. Nếu chưa biết mức phí, hãy đánh dấu “Chưa biết đủ phí của báo giá này”.",
     exitFeeInvalid: "Vui lòng nhập một số tiền từ 0 trở lên, hoặc để trống.",
 
     optionalFeesTitle: "Phí và lãi ưu đãi của báo giá này",
@@ -169,7 +171,11 @@ export const LOAN_COMPARE = {
     // field used to be priced as a DIFFERENT contract and ranked. It is now
     // excluded, and the reader is told which one and why.
     unusableNotice:
-      "Một phương án bạn đã nhập có ô chưa đọc được, nên công cụ KHÔNG xếp hạng nó: nếu tính tiếp, con số sẽ là của một hợp đồng khác hợp đồng bạn đang có. Bảng và biểu đồ phía trên chỉ so giữa các phương án còn hợp lệ. Hãy sửa ô đang báo lỗi để đưa phương án đó trở lại so sánh.",
+      // STRONGER 2026-09-29: no ranking among the remaining offers either —
+      // the reader asked to compare every offer they typed.
+      "Một phương án bạn đã nhập có ô chưa đọc được, nên công cụ KHÔNG tính nó và chưa xếp hạng phương án nào: nếu tính tiếp, con số sẽ là của một hợp đồng khác hợp đồng bạn đang có. Khoản trả và dư nợ của các phương án hợp lệ vẫn hiện để bạn đối chiếu. Hãy sửa ô đang báo lỗi để so lại.",
+    unknownFeesNotice:
+      "{options} đang được đánh dấu “Chưa biết đủ phí”, nên công cụ chưa xếp hạng phương án nào và không hiện tổng chi phí hay APR của báo giá đó như một con số chắc chắn. Khoản trả và dư nợ không phụ thuộc phí nên vẫn đọc được.",
     unusableBlockedNotice:
       "Phương án bạn đã nhập có ô chưa đọc được nên bị loại khỏi so sánh, và không còn đủ hai phương án hợp lệ. Công cụ để trống kết quả thay vì xếp hạng một hợp đồng mà bạn không nhập. Hãy sửa ô đang báo lỗi.",
 
@@ -177,7 +183,9 @@ export const LOAN_COMPARE = {
       "Cần ít nhất hai phương án có đủ lãi suất và kỳ hạn để so sánh. Hãy điền lại phương án còn thiếu, hoặc dùng công cụ tính khoản vay nếu bạn chỉ có một phương án.",
 
     settlementFeeNotice:
-      "Phí trả nợ trước hạn được tính ĐÚNG THỜI ĐIỂM tất toán, không phải lúc giải ngân — mỗi phương án có ô riêng cho nó trong phần phí. Nếu bạn để trống ô đó, chi phí tại mốc so sánh KHÔNG bao gồm phí trả nợ trước hạn: đó là khoản công cụ chưa biết, không phải khoản bằng 0. Hãy hỏi ngân hàng mức phí và số năm bị áp phí rồi nhập vào ô đó.",
+      // CORRECTED 2026-09-29: blank is parsed as 0, so blank cannot also be
+      // "unknown". Unknown now has its own per-offer switch.
+      "Phí trả nợ trước hạn được tính ĐÚNG THỜI ĐIỂM tất toán, không phải lúc giải ngân — mỗi phương án có ô riêng cho nó trong phần phí. Ô để trống được tính là 0 ₫. Nếu bạn chưa biết mức phí này hay phí nào khác, hãy đánh dấu “Chưa biết đủ phí của báo giá này”: công cụ sẽ không xếp hạng cho tới khi bạn có đủ phí. Hãy hỏi ngân hàng mức phí và số năm bị áp phí.",
   },
 
   table: {
@@ -226,10 +234,11 @@ export const LOAN_COMPARE = {
     principalSegment: "Gốc đã trả",
     interestSegment: "Lãi đã trả",
     feeSegment: "Phí trả một lần",
+    exitSegment: "Phí trả nợ trước hạn (trả tại mốc)",
     balanceSegment: "Dư nợ còn lại",
     axis: "Tiền đã trả cộng dư nợ còn lại ({unit})",
     summary:
-      "Tại tháng thứ {horizon}, {option} có chi phí thấp nhất, {cost}. Khoảng cách giữa phương án rẻ nhất và đắt nhất là {spread}. Cột được xếp từ gốc đã trả, lãi đã trả, phí, rồi phần dư nợ còn nợ lại — nên một phương án chỉ trả chậm gốc không trông rẻ hơn.",
+      "Tại tháng thứ {horizon}, {option} có chi phí thấp nhất, {cost}. Khoảng cách giữa phương án rẻ nhất và đắt nhất là {spread}. Cột được xếp từ gốc đã trả, lãi đã trả, phí trả lúc giải ngân, phí trả nợ trước hạn nếu tất toán ở mốc đó, rồi phần dư nợ còn nợ lại — nên một phương án chỉ trả chậm gốc không trông rẻ hơn.",
     rankedOnNote:
       "Xếp theo lãi cộng phí đến mốc đã chọn, không theo khoản trả hằng tháng.",
     winnerChangesNote:
@@ -245,6 +254,7 @@ export const LOAN_COMPARE = {
     optionColumn: "Phương án",
     interestColumn: "Lãi đến mốc đó",
     feeColumn: "Phí trả một lần",
+    exitColumn: "Phí trả nợ trước hạn tại mốc",
     balanceColumn: "Dư nợ còn lại",
     costColumn: "Chi phí đến mốc đó",
     fullTermCostColumn: "Chi phí cả kỳ hạn",
@@ -260,9 +270,13 @@ export const LOAN_COMPARE = {
     summary:
       "{lowestOption} có khoản trả hằng tháng thấp nhất lúc đầu, {lowest}. Nhưng phương án rẻ nhất tại mốc bạn chọn là {cheapestOption}.",
     monthlyIsNotCostNote:
-      "Đường nào kết thúc muộn hơn là kỳ hạn dài hơn: trả nhẹ hơn mỗi tháng nhưng trả trong nhiều năm hơn, và tổng lãi cao hơn.",
+      // QUALIFIED 2026-09-29: "tổng lãi cao hơn" holds for the same amount, a
+      // positive rate and the same repayment method, not unconditionally.
+      "Đường nào kết thúc muộn hơn là kỳ hạn dài hơn: trả nhẹ hơn mỗi tháng nhưng trả trong nhiều năm hơn. Với cùng số tiền, cùng lãi suất dương và cùng cách trả, tổng lãi khi đó cao hơn.",
     resetNote:
-      "{count} phương án có bậc: khoản trả giữ một mức trong thời gian ưu đãi rồi nhảy lên mức sau ưu đãi — đường vẽ theo bậc vì cú nhảy đó xảy ra trong một tháng, không tăng dần.",
+      // CORRECTED 2026-09-29: a post rate BELOW the promotion is supported,
+      // so the step can go either way.
+      "{count} phương án có bậc: khoản trả giữ một mức trong thời gian ưu đãi rồi đổi sang mức sau ưu đãi — cao hơn hay thấp hơn tùy mức lãi bạn nhập. Đường vẽ theo bậc vì thay đổi đó xảy ra trong một tháng, không dần dần.",
     horizonMarker: "Tháng {n}: mốc so sánh",
     exclusionNote:
       "Chưa tính bảo hiểm khoản vay và phí trả nợ trước hạn trừ khi bạn nhập vào ô phí.",
@@ -291,7 +305,8 @@ export const LOAN_COMPARE = {
       "XẾP HẠNG THEO CHI PHÍ ĐẾN MỐC BẠN CHỌN, không theo cả kỳ hạn: lãi phát sinh đến tháng đó, cộng các khoản phí trả ngay lúc giải ngân, cộng phí tất toán nếu ở mốc đó bạn tất toán và còn dư nợ. Dư nợ còn lại tại mốc đó được hiện ngay bên cạnh, nên một phương án chỉ hoãn trả gốc không thể trông rẻ hơn thật.",
       "Phí thu xếp tính trên số tiền vay tại thời điểm giải ngân, không tính trên tổng số tiền trả. Phí tất toán thì tính ở MỐC bạn chọn chứ không phải lúc giải ngân — hai khoản trả ở hai thời điểm khác nhau, nên chúng có hai ô riêng và ảnh hưởng tới APR cũng khác nhau.",
       "Bảng chi tiết còn có hai thước đo cả kỳ hạn: tổng lãi, và chi phí vay cả kỳ hạn bằng tổng lãi cộng phí trả ngay (không gồm phí tất toán, vì một khoản vay giữ đến hết kỳ hạn thì không tất toán sớm). Hai thước đo này có thể chọn ra phương án khác với thước đo tại mốc — khi điều đó xảy ra, trang nói rõ thay vì để một thứ tự đại diện cho cả hai câu hỏi.",
-      "Khi hai phương án có chi phí bằng nhau tại mốc so, công cụ giữ phương án đứng trước làm phương án rẻ nhất, để không tạo ra một chênh lệch không tồn tại.",
+      // CORRECTED 2026-09-29: ties are shown as ties, not as the first option.
+      "Khi hai phương án có chi phí bằng nhau tại mốc so, công cụ nói là bằng nhau và không chọn phương án nào rẻ hơn. Chi phí bằng nhau không có nghĩa là giống nhau: khoản trả hằng tháng và dư nợ còn lại vẫn có thể khác.",
     ],
     // The distinction this page exists to protect: the ranking is at a CHOSEN
     // month and includes the debt still owed, so a cheaper instalment is not
@@ -327,7 +342,7 @@ export const LOAN_COMPARE = {
         // CORRECTED 2026-09-26. The form has a dedicated exit-fee box, charged
         // at the horizon; this answer still said the tool does not count it
         // and told the reader to add it by hand.
-        a: "Có ô riêng cho nó: “Phí trả nợ trước hạn tại mốc so sánh” trong phần phí của từng báo giá, và công cụ tính khoản đó đúng tại tháng bạn tất toán chứ không phải lúc giải ngân. Nếu bạn để trống, chi phí tại mốc so sánh CHƯA gồm phí này — đó là khoản công cụ chưa biết, không phải bằng 0. Mức phí và số năm bị áp phí do hợp đồng quy định, thường giảm dần theo số năm đã vay, nên hãy hỏi ngân hàng rồi nhập vào ô đó.",
+        a: "Có ô riêng cho nó: “Phí trả nợ trước hạn tại mốc so sánh” trong phần phí của từng báo giá, và công cụ tính khoản đó đúng tại tháng bạn tất toán chứ không phải lúc giải ngân. Ô để trống được tính là 0 ₫. Nếu bạn chưa biết mức phí, hãy đánh dấu “Chưa biết đủ phí của báo giá này” thay vì để trống: công cụ sẽ không xếp hạng cho tới khi có đủ phí. Mức phí và số năm bị áp phí do hợp đồng quy định, thường giảm dần theo số năm đã vay, nên hãy hỏi ngân hàng rồi nhập vào ô đó.",
       },
       {
         q: "Tôi chỉ muốn so sánh hai phương án, phải làm gì với phương án C?",

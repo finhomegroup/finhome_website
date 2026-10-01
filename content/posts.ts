@@ -369,6 +369,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "tp-ho-chi-minh-phe-duyet-quy-hoach-tod-nam-2027",
+    title: "TP.HCM đẩy nhanh quy hoạch TOD quanh các ga metro: Cơ hội và lưu ý cho người mua nhà",
+    category: "Chính sách",
+    topics: ["khu-vuc-ha-tang"],
+    excerpt: "TP.HCM dự kiến phê duyệt loạt quy hoạch TOD gắn với metro năm 2027. Người mua nhà cần nắm cơ hội và rủi ro khi chọn khu vực gần ga tàu điện.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/tp-ho-chi-minh-phe-duyet-quy-hoach-tod-nam-2027.jpg",
+    date: "2026-10-01",
+    source: {
+        "name": "vneconomy.vn",
+        "url": "https://vneconomy.vn/tp-ho-chi-minh-du-kien-phe-duyet-loat-quy-hoach-tod-trong-nam-2027.htm",
+        "accessed": "2026-10-01"
+      },
+  },
+  {
     slug: "vay-mua-xe-con-du-bao-nhieu",
     title: "Vay mua xe: trả góp xong, mỗi tháng còn bao nhiêu?",
     kind: "guide",
