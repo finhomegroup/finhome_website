@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "diem-tin-thi-truong-bat-dong-san-tuan-1-thang-10-2025",
+    title: "Tin tức bất động sản tuần 1 tháng 10/2025: Thị trường chờ động lực mới từ chính sách và hạ tầng",
+    category: "Thị trường",
+    topics: ["chinh-sach-su-kien","khu-vuc-ha-tang"],
+    excerpt: "Tổng hợp tin tức bất động sản tuần đầu tháng 10/2025 với các điểm nổi bật về chính sách, hạ tầng và diễn biến thị trường đáng chú ý cho người mua nhà.",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/diem-tin-thi-truong-bat-dong-san-tuan-1-thang-10-2025.png",
+    date: "2026-10-01",
+    source: {
+        "name": "senvangdata.com.vn",
+        "url": "https://senvangdata.com.vn/diem-tin-thi-truong-bat-dong-san-viet-nam-tuan-1-thang-10-2025.html",
+        "accessed": "2026-10-01"
+      },
+  },
+  {
     slug: "tp-ho-chi-minh-phe-duyet-quy-hoach-tod-nam-2027",
     title: "TP.HCM đẩy nhanh quy hoạch TOD quanh các ga metro: Cơ hội và lưu ý cho người mua nhà",
     category: "Chính sách",
