@@ -1,6 +1,6 @@
 /**
- * The /blog/mua-nha-bang-con-so/ hero: photo provenance, asset files, credit,
- * links and heading structure.
+ * The /blog/mua-nha-bang-con-so/ hero: image provenance, AI tagline, crop
+ * geometry, links and heading structure.
  *
  * Server-rendered markup and file headers only. It cannot judge the crop,
  * contrast over the photo or the layout at 390/1440 px — that is the browser
@@ -8,7 +8,7 @@
  * the copy does not claim one.
  */
 import { describe, expect, it, vi } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -19,118 +19,97 @@ import { COLLECTION_HERO_OVERLAY, CollectionHero } from "@/components/education/
 import { EDUCATION_COLLECTION as C } from "@/content/education/collection";
 import { educationChapters } from "@/content/education/chapters";
 import { HERO as HOME_HERO } from "@/content/home";
+import { WEB_HERO_TAGLINE, collectionHero } from "@/content/education-web-heroes";
 
 const P = C.hero.photo;
-const pub = (src: string) => join(process.cwd(), "public", src);
-
-/** Width and height from a baseline/progressive JPEG's SOF segment. */
-function jpegSize(bytes: Buffer) {
-  expect(bytes[0]).toBe(0xff);
-  expect(bytes[1]).toBe(0xd8);
-  let i = 2;
-  while (i < bytes.length) {
-    if (bytes[i] !== 0xff) throw new Error(`bad marker at ${i}`);
-    const marker = bytes[i + 1];
-    const length = bytes.readUInt16BE(i + 2);
-    if (marker >= 0xc0 && marker <= 0xc3) {
-      return { width: bytes.readUInt16BE(i + 7), height: bytes.readUInt16BE(i + 5) };
-    }
-    i += 2 + length;
-  }
-  throw new Error("no SOF segment");
-}
+const IMAGE = collectionHero();
+/** The retired stock photo this hero replaced on 2026-10-01. */
+const RETIRED_PEXELS_ID = "7592756";
 
 const heroHtml = () => renderToStaticMarkup(createElement(CollectionHero, { start: educationChapters()[0] }));
 const pageHtml = async () =>
   renderToStaticMarkup(createElement((await import("@/app/blog/mua-nha-bang-con-so/page")).default));
 
-describe("hero photo provenance", () => {
-  it("records source, photographer, licence and check date for Pexels 7592756", () => {
-    expect(P.pexelsId).toBe("7592756");
-    expect(P.author).toBe("Miriam Alonso");
-    expect(P.page).toBe("https://www.pexels.com/photo/young-asian-couple-looking-at-each-other-7592756/");
-    expect(P.license).toBe("https://www.pexels.com/license/");
-    expect(P.checked).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(P.credit).toBe(`Ảnh minh họa: ${P.author} / Pexels`);
-    expect(P.note).toMatch(/minh họa/);
+describe("hero image provenance (AI illustration 03, user-approved 2026-10-01)", () => {
+  it("is the registered collection hero: library image 03, hashed, with its composition reference", () => {
+    expect(IMAGE.surface).toBe("collection");
+    expect(IMAGE.slug).toBe("mua-nha-bang-con-so");
+    expect(IMAGE.origin).toEqual({ set: "library", n: 3, file: "images/03-first-home-conversation.png" });
+    expect(IMAGE.generatedSha256).toBe("585dddb87d67cf224ff268d21853b3b5680facbcbef327b2639b1a69f34d68e6");
+    expect(IMAGE.compositionReference?.pexelsId).toBe("7417519");
+    expect(IMAGE.approvedOn).toBe("2026-10-01");
+    // Dimensions, formats and byte budgets of the files: content/education-web-heroes.test.ts.
+    expect(IMAGE.sources.map((s) => s.width)).toEqual([720, 1200, 1536]);
   });
 
-  it("ships the unmodified original at the source's size, and plain resizes of it", () => {
-    expect(P.original).toBe(`/images/people/pexels-${P.pexelsId}-original.jpg`);
-    expect(jpegSize(readFileSync(pub(P.original)))).toEqual({ width: P.width, height: P.height });
-    expect([P.width, P.height]).toEqual([5040, 3360]);
-    for (const s of P.sources) {
-      expect(s.src).toContain(P.pexelsId);
-      expect(jpegSize(readFileSync(pub(s.src))), s.src).toEqual({ width: s.width, height: s.height });
-      // Same aspect as the original (a resize, not a crop), within rounding.
-      expect(Math.abs(s.width / s.height - P.width / P.height), s.src).toBeLessThan(0.01);
-    }
-    // Ascending widths for srcSet; the small one is meaningfully lighter.
-    expect(P.sources.map((s) => s.width)).toEqual([1280, 2400]);
-    expect(statSync(pub(P.sources[0].src)).size).toBeLessThan(statSync(pub(P.sources[1].src)).size);
+  it("labels the image as AI with one small tagline and keeps the illustrative note; no stock credit", () => {
+    expect(P.label).toBe(WEB_HERO_TAGLINE);
+    expect(P.note).toMatch(/minh họa/);
+    expect(JSON.stringify(C.hero)).not.toMatch(/Pexels|pexels/);
   });
 
   it("describes only what is in frame: no ethnicity, nationality or figures in the alt text", () => {
-    expect(P.alt).not.toMatch(/châu Á|Á Đông|Asian|Hàn|Việt|Trung|Nhật|người Á/i);
-    expect(P.alt).not.toMatch(/\d/);
-    expect(P.alt).toMatch(/người phụ nữ/);
-    expect(P.alt).toMatch(/người đàn ông/);
+    expect(IMAGE.alt.startsWith(`${WEB_HERO_TAGLINE}: `)).toBe(true);
+    expect(IMAGE.alt).not.toMatch(/châu Á|Á Đông|Asian|Hàn|Việt|Trung|Nhật|người Á/i);
+    expect(IMAGE.alt).not.toMatch(/\d/);
+    expect(IMAGE.alt).toMatch(/người phụ nữ/);
+    expect(IMAGE.alt).toMatch(/người đàn ông/);
   });
 
-  it("is a different photograph from the homepage hero and from every other post or package", () => {
-    expect(HOME_HERO.photo).not.toContain(P.pexelsId);
+  it("is a different image from the homepage hero, and only the registry names its files", () => {
+    // The library name token: the registry builds the file paths from it.
+    const file = IMAGE.origin.file.replace(/^images\/\d+-|\.png$/g, "");
+    expect(file).toBe("first-home-conversation");
+    expect(IMAGE.sources[2].src).toContain(file);
+    expect(HOME_HERO.photo).not.toContain(file);
     const roots = ["app", "components", "content", "public/social"];
     const hits: string[] = [];
     const walk = (dir: string) => {
       for (const entry of readdirSync(dir, { withFileTypes: true })) {
         const path = join(dir, entry.name);
         if (entry.isDirectory()) walk(path);
-        else if (/\.(tsx?|md|html|css)$/.test(entry.name) && readFileSync(path, "utf8").includes(P.pexelsId)) hits.push(path);
+        else if (/\.(tsx?|md|html|css)$/.test(entry.name) && !entry.name.endsWith(".test.ts") && readFileSync(path, "utf8").includes(file)) hits.push(path);
       }
     };
     roots.forEach(walk);
-    // The data, the component that documents its crop, and this test only —
-    // plus ONE other test, `content/loan-decision-series.test.ts`, which names
-    // this ID solely as a shipped photo its packages must NOT reuse (a guard,
-    // not a use). Any runtime file outside the first two still fails here.
-    expect(hits.sort()).toEqual(
-      [
-        "components/education/collection-hero.test.ts",
-        "components/education/collection-hero.tsx",
-        "content/education/collection.ts",
-        "content/loan-decision-series.test.ts",
-      ].sort(),
-    );
-    // Keep that exception honest: the other test may only list the ID as excluded.
-    const guard = readFileSync("content/loan-decision-series.test.ts", "utf8");
-    expect(guard.match(new RegExp(P.pexelsId, "g"))).toHaveLength(1);
-    expect(guard).toMatch(new RegExp(`for \\(const id of \\[[^\\]]*"${P.pexelsId}"[^\\]]*\\]\\) expect\\(ids\\.has\\(id\\)`));
+    expect(hits).toEqual(["content/education-web-heroes.ts"]);
   });
 
-  it("does not reference the rejected or excluded photos", () => {
+  it("no longer ships the retired stock photo, and references no rejected or excluded photo", () => {
     const sources = [
       readFileSync("content/education/collection.ts", "utf8"),
       readFileSync("components/education/collection-hero.tsx", "utf8"),
       readFileSync("app/blog/mua-nha-bang-con-so/page.tsx", "utf8"),
     ];
     for (const text of sources) {
+      expect(text).not.toContain(RETIRED_PEXELS_ID);
+      expect(text).not.toMatch(/hub-hero-pexels/);
       for (const banned of ["8055525", "8055092", "6818113", "8374288", "8374269"]) expect(text).not.toContain(banned);
     }
+    // The retired photo stays guarded against reuse by the loan packages' test.
+    expect(readFileSync("content/loan-decision-series.test.ts", "utf8")).toMatch(
+      new RegExp(`RETIRED_RELEASED = \\["${RETIRED_PEXELS_ID}"\\]`),
+    );
   });
 });
 
 describe("hero markup", () => {
-  it("renders the page title as live text with the photo, credit and illustrative note", () => {
+  it("renders the page title as live text with the image, tagline and illustrative note", () => {
     const html = heroHtml();
     expect(html).toMatch(new RegExp(`<h1[^>]*id="bo-bai-tieu-de"[^>]*>${C.pageTitle}</h1>`));
     expect(html).toContain(C.lede);
     expect(html).toContain(C.hero.body);
-    expect(html).toContain(`alt="${P.alt}"`);
-    expect(html).toContain(`src="${P.sources[1].src}"`);
-    expect(html).toMatch(new RegExp(`srcset="${P.sources[0].src} 1280w, ${P.sources[1].src} 2400w"`, "i"));
+    expect(html).toContain(`alt="${IMAGE.alt}"`);
+    expect(html).toContain(`src="${IMAGE.sources[1].src}"`);
+    expect(html).toMatch(new RegExp(`srcset="${IMAGE.sources.map((s) => `${s.src} ${s.width}w`).join(", ")}"`, "i"));
     expect(html).toMatch(/fetchpriority="high"/i);
-    // Credit is visible in both layouts: on the photo from lg, in the text below lg.
-    expect(html.match(new RegExp(P.credit, "g"))?.length).toBe(2);
+    // Mirrored by CSS (the frame has no text), as the registry declares.
+    expect(IMAGE.mirror).toBe(true);
+    const img = html.match(/<img\b[^>]*>/)![0];
+    expect(img).toContain("-scale-x-100");
+    // Tagline is visible in both layouts: on the image from lg, in the text below lg.
+    const visible = html.replace(/\salt="[^"]*"/g, "");
+    expect(visible.match(new RegExp(P.label, "g"))?.length).toBe(2);
     expect(html).toContain(P.note);
   });
 
@@ -153,8 +132,9 @@ describe("desktop overlay: one full-hero gradient, photo edge inside the solid z
   const source = readFileSync("components/education/collection-hero.tsx", "utf8");
 
   /**
-   * Where the leftmost person (the woman's hair, ≈37% of the source width)
-   * lands, in % of the hero, for a hero of `width` × `height` px: the photo
+   * Where the leftmost FACE (the man's hair, ≈37% of the mirrored source
+   * width; his shoulder at ≈30% may touch the ramp's nearly clear end) lands,
+   * in % of the hero, for a hero of `width` × `height` px: the photo
    * box is the right (100 − photoStart)% at full height, `object-cover` with
    * `object-position: 50% 50%` on a 3:2 image.
    */
@@ -180,6 +160,26 @@ describe("desktop overlay: one full-hero gradient, photo edge inside the solid z
     ["1440 viewport", 1260, [520, 560]],
   ] as const)("both people are past the ramp at %s", (_label, width, heights) => {
     for (const h of heights) expect(leftmostPersonPct(width, h), `height ${h}`).toBeGreaterThan(O.clearAt);
+  });
+
+  it("below lg shows the WHOLE mirrored 3:2 frame — box ratio equals the image's, no zoom, no negative offset", () => {
+    const html = heroHtml();
+    const box = html.match(/<div[^>]*data-hero-photo="true"[^>]*>/)![0];
+    const img = html.match(/<img\b[^>]*>/)![0];
+    const cls = (tag: string) => tag.match(/class="([^"]*)"/)![1].split(/\s+/);
+    const base = (tag: string) => cls(tag).filter((c) => !c.startsWith("lg:"));
+    // The box's base aspect is the source's own 1536 × 1024 = 3:2, so the frame fits exactly.
+    expect(IMAGE.size.w / IMAGE.size.h).toBe(3 / 2);
+    expect(base(box)).toContain("aspect-[3/2]");
+    expect(box).not.toContain("aspect-[5/3]");
+    // The image fills the box at 100%: no zoom width, no offsets, no crop rule.
+    expect(base(img)).toEqual(expect.arrayContaining(["absolute", "inset-0", "h-full", "w-full", "-scale-x-100"]));
+    for (const c of base(img)) {
+      expect(c, c).not.toMatch(/^(-?(left|top|right|bottom)-\[|w-\[|h-\[|max-w-none$|object-)/);
+    }
+    // Desktop geometry unchanged: the right 64% at full height, cover at 50% 30%.
+    expect(cls(box)).toEqual(expect.arrayContaining(["lg:absolute", "lg:inset-y-0", "lg:right-0", "lg:aspect-auto", `lg:w-[${100 - O.photoStart}%]`]));
+    expect(cls(img)).toEqual(expect.arrayContaining(["lg:object-cover", "lg:object-[50%_30%]"]));
   });
 
   it("renders ONE overlay over the whole hero, from the token, and no wash inside the photo box", () => {
@@ -223,8 +223,8 @@ describe("the collection page with the hero", { timeout: 120_000 }, () => {
     // eager hero image; count the images themselves.
     const priority = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]).filter((t) => /fetchpriority="high"/i.test(t));
     expect(priority).toHaveLength(1);
-    expect(priority[0]).toContain(P.sources[1].src);
-    expect(html).toMatch(/<link rel="preload" as="image"[^>]*hub-hero-pexels-7592756-1280\.jpg/i);
+    expect(priority[0]).toContain(IMAGE.sources[1].src);
+    expect(html).toMatch(new RegExp(`<link rel="preload" as="image"[^>]*${IMAGE.sources[0].src.replace(/\./g, "\\.")}`, "i"));
     const budget = html.slice(html.indexOf(C.budgetIllustration.src) - 400, html.indexOf(C.budgetIllustration.src) + 400);
     expect(budget).not.toMatch(/fetchpriority/i);
   });

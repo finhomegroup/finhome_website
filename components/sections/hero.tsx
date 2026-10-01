@@ -69,12 +69,14 @@ const OVERLAY_BACKGROUND = `linear-gradient(to right, var(--color-brand-green-in
  * solid to 20% of the hero width, transparent at 60% (the user's exact
  * boundaries), a native two-stop linear gradient.
  *
- * THE PHOTO (Pexels 7593053, 3805×2352, file unmodified) is CSS-mirrored at
- * every width so its empty wall faces the overlay, shown WHOLE at its natural
- * aspect, right-aligned at `HERO_PHOTO.widthPct` (80%) of the width, so it
- * sits behind the entire ramp. The same positions hold at 390 and 1920: the
- * man's face ≈56,8% (≈8% green), his left body from ≈47,2% (up to ≈32%),
- * the woman clear.
+ * THE PHOTO (2026-10-01: an AI illustration, 1595×986, that keeps Pexels
+ * 7593053's composition and aspect — see `HERO` in content/home.ts) is
+ * CSS-mirrored at every width so its empty wall faces the overlay, shown
+ * WHOLE at its natural aspect, right-aligned at `HERO_PHOTO.widthPct` (80%)
+ * of the width, so it sits behind the entire ramp. The same positions hold
+ * at 390 and 1920: the man's face ≈56,8% (≈8% green), his left body from
+ * ≈47,2% (up to ≈32%), the woman clear. The crop aspects below are the
+ * SOURCE's dimensions × (1 − crop): 1595 × 0,84 ≈ 1340 and × 0,88 ≈ 1404.
  *
  * - `xl`+: a one-cell GRID. The copy and the natural-ratio photo share that
  *   cell, so the row is as tall as the taller of the two: normally the
@@ -130,14 +132,27 @@ export function Hero() {
       >
         <img
           src={HERO.photo}
+          srcSet={HERO.photoSources.map((s) => `${s.src} ${s.width}w`).join(", ")}
+          // Desktop: 80% of the width. Tablet: at least the full width (see
+          // HERO_TABLET). Phone: full width.
+          sizes="(min-width: 1280px) 80vw, 100vw"
           alt=""
           width={HERO.photoSource.width}
           height={HERO.photoSource.height}
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="block h-auto w-full select-none -scale-x-100 max-md:aspect-[3196/2352] max-md:object-cover max-md:object-left md:max-xl:aspect-[3348/2352] md:max-xl:h-full md:max-xl:object-cover md:max-xl:object-right"
+          className="block h-auto w-full select-none -scale-x-100 max-md:aspect-[1340/986] max-md:object-cover max-md:object-left md:max-xl:aspect-[1404/986] md:max-xl:h-full md:max-xl:object-cover md:max-xl:object-right"
         />
+        {/* The AI label: small, in the photo's lower-right corner — the
+            mirrored frame's bare floor at every width, past the 60% clear
+            point, away from faces, copy and CTAs. */}
+        <span
+          data-hero-ai-label="true"
+          className="pointer-events-none absolute bottom-2 right-2 z-10 rounded bg-black/60 px-1.5 py-0.5 text-[11px] leading-none text-white md:bottom-3 md:right-3"
+        >
+          {HERO.photoLabel}
+        </span>
         {/* Phone only: the photo's wall melts into the matching pale base; ends above the hair. */}
         <div
           aria-hidden="true"

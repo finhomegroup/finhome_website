@@ -616,12 +616,15 @@ describe("people-first social imagery (user rule, 2026-09-30)", () => {
     expect(existsSync("public/images/people/pexels-6818113-original.jpg")).toBe(false);
   });
 
-  it("credits the photo each new guide's cover is exported with", () => {
+  it("credits each package's photo in its export handoff; the guide page no longer shows that cover", () => {
+    // Since 2026-10-01 a guide's PAGE hero is a scoped AI illustration
+    // (content/education-web-heroes.test.ts), so its body carries no stock
+    // credit. The exported cover/poster keep their Pexels photo and credit.
     for (const e of TOOL_EDUCATION_SERIES.filter((x) => x.kind === "new")) {
       const photo = PHOTOS[HERO_PHOTO[e.tool]];
-      const b = body(e.article);
-      expect(b, e.article).toContain(`*Ảnh bìa: [${photo.name} / Pexels](${photo.url})`);
-      expect(b, e.article).toContain("Người trong ảnh chỉ minh họa");
+      expect(body(e.article), e.article).not.toMatch(/Ảnh bìa:|\/ Pexels/);
+      expect(pkg(e.tool).caption, e.tool).toContain(photo.url);
+      expect(pkg(e.tool).html, e.tool).toContain(`Ảnh minh họa: ${photo.name} / Pexels`);
     }
   });
 

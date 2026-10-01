@@ -3,6 +3,7 @@ import { ArrowRightIcon } from "@/components/education/icons";
 import { EDUCATION_COLLECTION as C } from "@/content/education/collection";
 import type { EducationChapter } from "@/content/education/chapters";
 import { calculatorPath } from "@/content/calculators/registry";
+import { collectionHero, webHeroSrcSet } from "@/content/education-web-heroes";
 import { cn } from "@/lib/cn";
 import { FH_LINK_ARROW, FH_POINTER } from "@/lib/interaction-styles";
 
@@ -24,12 +25,14 @@ const FOCUS_ON_GREEN =
  * Now the photo edge (`photoStart`) lies inside the opaque zone, so no edge
  * can show, and the ramp is ~1.5× wider.
  *
- * `clearAt` is set from the photo, not copied from the homepage's 20/60: the
- * leftmost person (the woman's hair, ≈37% of the source width) begins at
- * ≈57% of the hero at 1024px (taller boxes crop more and move her left),
- * ≈58–59% at 1280 and ≈59.7% at 1440, so both people are always past the
- * ramp. Modelled in collection-hero.test.ts. `textEnd` is the text column's
- * width: all copy sits on solid green.
+ * `clearAt` is set from the image, not copied from the homepage's 20/60. The
+ * AI illustration 03 (2026-10-01) is shown MIRRORED (no text in frame): in
+ * mirrored coordinates the leftmost face (the man's hair, ≈37% of the source
+ * width) lands at ≈57% of the hero at 1024px, ≈58–59% at 1280 and ≈59% at
+ * 1440, so both faces are past the ramp; only the man's shoulder (≈30%)
+ * reaches the ramp's last, nearly clear part. Modelled in
+ * collection-hero.test.ts. `textEnd` is the text column's width: all copy
+ * sits on solid green.
  */
 export const COLLECTION_HERO_OVERLAY = { photoStart: 36, solidUntil: 40, clearAt: 56, textEnd: 40 } as const;
 
@@ -40,22 +43,26 @@ const OVERLAY_BACKGROUND = `linear-gradient(to right, var(--color-brand-green-in
  * as live HTML on a solid brand-green-ink block (contrast held by the solid
  * colour, never by the photo), the photograph beside it.
  *
- * CROP, CSS only, from the photo's own composition (Pexels 7592756): the
- * left quarter is empty sunlit wall; the woman's face sits near 44% of the
- * width, the man's near 71%, heads at 40–51% of the height, feet near 87%.
+ * CROP, CSS only, from the image's own composition (AI illustration 03,
+ * content/education-web-heroes.ts), described in MIRRORED coordinates: the
+ * man's face sits near 37–43% of the width, the woman's near 70–74%, heads at
+ * 12–30% of the height, the woman's back reaches ≈86%.
  *
- * - From `lg` the whole frame shows (object-cover in a box close to 3:2) at
- *   the right 64% of the hero, under ONE full-hero overlay (see
- *   `COLLECTION_HERO_OVERLAY`), as on the homepage hero.
- * - Below `lg` the photo stacks ABOVE the text in a 5:3 box, zoomed to the
- *   source region x 22–88%, y 31–91% so the faces are not tiny; nothing is
- *   drawn over it, and the credit moves into the text block.
+ * - From `lg` the whole frame shows (object-cover in a box close to 3:2,
+ *   focal 50% 30%) at the right 64% of the hero, under ONE full-hero overlay
+ *   (see `COLLECTION_HERO_OVERLAY`), as on the homepage hero.
+ * - Below `lg` the image stacks ABOVE the text in a 3:2 box — the frame's own
+ *   ratio — so the WHOLE mirrored frame shows: no zoom, no negative offset,
+ *   both complete heads with the frame's own headroom (heads start ≈12% down).
+ *   (2026-10-01: a 143% zoom at −31%/−10% cropped both heads at 390 px.)
+ *   Nothing is drawn over it, and the tagline moves into the text block.
  *
  * The reading font is the page's Inter 400/700; no class asks for 500/600.
  */
 export function CollectionHero({ start }: { start: EducationChapter }) {
   const H = C.hero;
-  const [small, large] = H.photo.sources;
+  const image = collectionHero();
+  const [, medium, large] = image.sources;
   return (
     <section
       aria-labelledby="bo-bai-tieu-de"
@@ -64,19 +71,19 @@ export function CollectionHero({ start }: { start: EducationChapter }) {
     >
       <div
         data-hero-photo="true"
-        className="relative aspect-[5/3] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[64%]"
+        className="relative aspect-[3/2] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[64%]"
       >
         <img
-          src={large.src}
-          srcSet={`${small.src} ${small.width}w, ${large.src} ${large.width}w`}
+          src={medium.src}
+          srcSet={webHeroSrcSet(image)}
           sizes="(min-width: 1024px) 64vw, 100vw"
           width={large.width}
           height={large.height}
-          alt={H.photo.alt}
+          alt={image.alt}
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="absolute left-[-33%] top-[-53%] h-auto w-[152%] max-w-none select-none lg:left-0 lg:top-0 lg:h-full lg:w-full lg:max-w-full lg:object-cover lg:object-[50%_50%]"
+          className="absolute inset-0 h-full w-full -scale-x-100 select-none lg:object-cover lg:object-[50%_30%]"
         />
       </div>
 
@@ -89,7 +96,7 @@ export function CollectionHero({ start }: { start: EducationChapter }) {
         style={{ backgroundImage: OVERLAY_BACKGROUND }}
       />
       <span className="absolute bottom-3 right-3 hidden rounded bg-black/70 px-2 py-1 text-xs leading-none text-white lg:block">
-        {H.photo.credit}
+        {H.photo.label}
       </span>
 
       <div className="relative px-6 pb-7 pt-6 sm:px-10 sm:pb-9 lg:w-[40%] lg:py-12 lg:pl-12 lg:pr-4 xl:py-14 xl:pl-14">
@@ -131,7 +138,7 @@ export function CollectionHero({ start }: { start: EducationChapter }) {
           </Link>
         </div>
         <p className="mt-5 text-[13px] leading-snug">
-          <span className="lg:hidden">{H.photo.credit}. </span>
+          <span className="lg:hidden">{H.photo.label}. </span>
           {H.photo.note}
         </p>
       </div>

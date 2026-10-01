@@ -61,5 +61,3 @@ Công cụ chỉ so hai con số bạn nhập, không cho biết lãi suất c�
 - [OpenStax Prealgebra 2e: Sales tax, commission and discount](https://openstax.org/books/prealgebra-2e/pages/6-3-solve-sales-tax-commission-and-discount-applications) — mỗi phần trăm đều tính trên một con số làm mốc.
 
 *Ví dụ do FinHome xây dựng; con số được đối chiếu với công cụ ngày 30/09/2026. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định, không phải tư vấn tài chính.*
-
-*Ảnh bìa: [cottonbro studio / Pexels](https://www.pexels.com/photo/a-woman-sitting-at-the-table-6538435/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*

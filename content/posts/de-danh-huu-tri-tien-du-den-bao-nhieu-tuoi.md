@@ -80,5 +80,3 @@ Kết quả chưa tính thuế, phí, chi phí y tế bất thường và thay �
 - [Tra cứu tuổi nghỉ hưu theo năm sinh](https://xaydungchinhsach.chinhphu.vn/tra-cuu-tuoi-nghi-huu-thoi-diem-nghi-huu-cua-nguoi-lao-dong-theo-nam-sinh-119241029170451525.htm) — tuổi nghỉ hưu trong ví dụ là lựa chọn của người dùng, hãy đối chiếu với quy định cho năm sinh của bạn.
 
 *Ví dụ do FinHome xây dựng; mọi con số được đối chiếu với công cụ ngày 30/09/2026, làm tròn đến đồng. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định, không phải tư vấn tài chính.*
-
-*Ảnh bìa: [Rhea Jabagat / Pexels](https://www.pexels.com/photo/an-elderly-couple-smiling-at-the-camera-7937885/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*

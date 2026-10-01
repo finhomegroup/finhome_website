@@ -132,10 +132,14 @@ describe.each(EDUCATION_ARTICLES.map((a) => [a.slug, a] as const))("%s contents"
   });
 });
 
-it("keeps C01's illustration after the tool link and before the contents", () => {
+it("opens C01 with its AI hero before the contents; the balance illustration moved into the body, after the contents", () => {
   const c01 = EDUCATION_ARTICLES.find((a) => a.slug === "co-600-trieu-nen-tim-nha-tam-gia-nao")!;
   const html = render(c01);
+  const hero = html.indexOf('data-article-hero="true"');
   const figure = html.indexOf('data-education-illustration="true"');
-  expect(html.indexOf(C.article.earlyToolLead)).toBeLessThan(figure);
-  expect(figure).toBeLessThan(html.indexOf('data-education-contents="true"'));
+  const contents = html.indexOf('data-education-contents="true"');
+  expect(html.indexOf(C.article.earlyToolLead)).toBeLessThan(hero);
+  expect(hero).toBeLessThan(contents);
+  // Exactly one image opens the article; the concept figure follows the contents.
+  expect(figure).toBeGreaterThan(contents);
 });

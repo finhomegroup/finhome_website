@@ -60,5 +60,3 @@ Công cụ không dự báo lãi suất. Khi tái tục, lãi suất kỳ mới 
 - [Công báo: Văn bản hợp nhất 34/VBHN-NHNN (2024)](https://congbao.chinhphu.vn/van-ban/van-ban-hop-nhat-so-34-vbhn-nhnn-42871/52043.htm) — trang chính thức của văn bản hợp nhất về tiền gửi có kỳ hạn. Toàn văn cập nhật chưa được đọc lại cho bài này, nên bài không trích quy định cụ thể; điều khoản áp dụng cho bạn nằm trong thỏa thuận tiền gửi.
 
 *Ví dụ do FinHome xây dựng; mọi con số được đối chiếu với công cụ ngày 30/09/2026, làm tròn đến đồng. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định, không phải tư vấn tài chính hay pháp lý.*
-
-*Ảnh bìa: [Tima Miroshnichenko / Pexels](https://www.pexels.com/photo/a-woman-using-her-laptop-6545334/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*

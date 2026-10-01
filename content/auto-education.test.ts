@@ -84,14 +84,16 @@ describe("article header action and poster wording (repair 2026-09-30)", () => {
     return renderToStaticMarkup(await Page({ params: Promise.resolve({ slug: s }) }));
   };
 
-  it("puts one primary Tính với số của tôi button in this guide's header, before the cover", async () => {
+  it("puts one primary Tính với số của tôi button in this guide's header, before the hero", async () => {
     const html = await renderArticle(slug);
     const at = html.indexOf('data-article-header-cta="true"');
     expect(at).toBeGreaterThan(html.indexOf("<h1"));
-    // The cover `<img>`, not the JSON-LD image URL at the top of the page.
-    const cover = html.indexOf(`<img src="${getPost(slug)!.cover!}"`);
-    expect(cover).toBeGreaterThan(-1);
-    expect(at).toBeLessThan(cover);
+    // The page hero (2026-10-01: the scoped AI web hero, which replaced the
+    // exported cover on the page; the cover remains the share image).
+    const hero = html.indexOf('data-guide-hero="true"');
+    expect(hero).toBeGreaterThan(-1);
+    expect(at).toBeLessThan(hero);
+    expect(html).not.toContain(`<img src="${getPost(slug)!.cover!}"`);
     const block = html.slice(at, html.indexOf("</a>", at));
     // The existing primary button primitive, to the unchanged default route.
     expect(block).toContain("btn-cta-surface");

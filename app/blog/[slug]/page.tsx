@@ -18,6 +18,8 @@ import {
   FH_POINTER,
 } from "@/lib/interaction-styles";
 import { EducationArticleBody } from "@/components/education/education-article";
+import { GuideHero, WebHeroThumb } from "@/components/education/web-hero";
+import { guideHero } from "@/content/education-web-heroes";
 import { getEducationArticle } from "@/content/education/articles";
 import { chapterForGroup } from "@/content/education/chapters";
 import { POSTS, getPost, postKind } from "@/content/posts";
@@ -113,6 +115,7 @@ export default async function Page({
     ? []
     : POSTS.filter((p) => p.slug !== slug && postKind(p) === kind).slice(0, 3);
   const chapter = education ? chapterForGroup(education.group) : null;
+  const hero = kind === "guide" ? guideHero(post.slug) : undefined;
 
   return (
     <>
@@ -207,8 +210,11 @@ export default async function Page({
             {/* A cover only where one exists. Collection articles have no
                 cover: their visual is a rendered SVG from the calculator's own
                 engine, and a stock image would be the only invented thing on
-                the page. */}
-            {post.cover ? (
+                the page. A guide with a web hero shows that INSTEAD of its
+                exported social cover (still its share image), never both. */}
+            {hero ? (
+              <GuideHero hero={hero} />
+            ) : post.cover ? (
               <div className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl">
                 <img
                   src={img(post.cover)}
@@ -246,7 +252,15 @@ export default async function Page({
                     FH_CLICKABLE_CARD,
                   )}
                 >
-                  {p.cover ? (
+                  {guideHero(p.slug) ? (
+                    <div className="overflow-hidden rounded-xl">
+                      <WebHeroThumb
+                        hero={guideHero(p.slug)!}
+                        sizes="(min-width: 768px) 24rem, 100vw"
+                        className={cn("aspect-[3/2] w-full", FH_CARD_IMAGE_ZOOM)}
+                      />
+                    </div>
+                  ) : p.cover ? (
                     <div className="overflow-hidden rounded-xl">
                       <img
                         src={img(p.cover)}

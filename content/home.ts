@@ -11,12 +11,17 @@
  * image) and the green marquee band are gone from the hero, and the phone
  * artwork moved to the app-download preview section (`APP_DOWNLOAD_PREVIEW`).
  *
- * `photo` is the REAL Pexels photo 7593053 by Miriam Alonso — the original
- * 3805×2352 JPEG, downloaded unmodified (no resampling, no generative
- * editing). Decorative (`alt=""`): not a customer and not an endorsement.
- * `photoSource` records where it came from; the licence note is in
- * `docs/homepage-photo-preview.md`. It replaced an AI-generated preview image
- * (`buyer-couple-preview.png`), which is retained on disk but unreferenced.
+ * `photo` (2026-10-01, user-approved): an AI-GENERATED illustration of
+ * fictional people, made by Codex's built-in image generation as an edit of
+ * Pexels photo 7593053 (Miriam Alonso). It keeps that photo's composition —
+ * wall, sofa, light, head and body positions — and its aspect (1595×986 vs
+ * 3805×2352, both ≈1,618), so every framing ratio in hero.tsx holds. The
+ * stock photo is recorded as a COMPOSITION REFERENCE only: its photographer
+ * did not make this image and the people are not the photo's subjects.
+ * Decorative (`alt=""`), labelled by the small `photoLabel`; not a customer
+ * and not an endorsement. Files: plain WebP resizes, no upscale (source and
+ * prompt summary: artifacts/homepage-ai-hero-2026-10-01/, docs/homepage-photo-preview.md).
+ * The stock JPEG stays in public/ — the released car social package uses it.
  */
 export const HERO = {
   /**
@@ -29,12 +34,25 @@ export const HERO = {
   primaryCta: { label: "Khám phá công cụ", href: "/cong-cu/" },
   secondaryCta: { label: "Xem ví dụ dễ hiểu", href: "/blog/mua-nha-bang-con-so/" },
   reassurance: "Miễn phí trên web · Không cần đăng nhập",
-  photo: "/images/home/pexels-7593053-original.jpg",
+  photo: "/images/home/ai-hero-couple-1200.webp",
+  /** 800 / 1200 / 1595 WebP, ascending; 1595 is the source width. */
+  photoSources: [
+    { src: "/images/home/ai-hero-couple-800.webp", width: 800 },
+    { src: "/images/home/ai-hero-couple-1200.webp", width: 1200 },
+    { src: "/images/home/ai-hero-couple-1595.webp", width: 1595 },
+  ],
+  photoLabel: "Ảnh minh họa AI",
   photoSource: {
-    author: "Miriam Alonso",
-    page: "https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/",
-    width: 3805,
-    height: 2352,
+    kind: "ai-generated",
+    width: 1595,
+    height: 986,
+    generatedSha256: "4eec3eb89ee4a4ad2d05c4c476b3ae43c25707ef0f7fd502af82ba4d82455ceb",
+    approvedOn: "2026-10-01",
+    compositionReference: {
+      pexelsId: "7593053",
+      author: "Miriam Alonso",
+      page: "https://www.pexels.com/photo/man-and-woman-sitting-on-a-sofa-7593053/",
+    },
   },
 };
 

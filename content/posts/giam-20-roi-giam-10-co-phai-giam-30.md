@@ -66,5 +66,3 @@ Mức 8% điền sẵn dựa trên Nghị định 174/2025/NĐ-CP, áp dụng đ
 - [Nghị định 174/2025/NĐ-CP (Công báo)](https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2025/6/45374/57334-1-2025895-896174-2025-nd-cp.pdf) — nguồn của mức 8% công cụ điền sẵn và mốc hết hiệu lực; không phải danh sách đầy đủ hay tư vấn thuế.
 
 *Ví dụ do FinHome xây dựng; mọi con số được đối chiếu với công cụ ngày 30/09/2026, làm tròn đến đồng. Bài soạn với hỗ trợ AI, chưa được chuyên gia độc lập thẩm định.*
-
-*Ảnh bìa: [Sam Lion / Pexels](https://www.pexels.com/photo/positive-asian-woman-choosing-goods-in-vintage-boutique-5710149/), sử dụng theo [giấy phép Pexels](https://www.pexels.com/license/). Người trong ảnh chỉ minh họa, không phải nhân vật của ví dụ hoặc khách hàng giới thiệu FinHome.*

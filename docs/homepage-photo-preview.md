@@ -1,5 +1,45 @@
 # Homepage and navigation — release handoff
 
+## CURRENT — homepage hero image replaced by an AI illustration, 1 Oct 2026 (local, not released)
+
+User scope: replace the homepage hero photo with AI-generated fictional people, keeping the same gradient pattern.
+Implementation: Claude Code. Browser review at 1440, 1024, 390 and 320: Codex, after the final code.
+Claude ran no browser. Not committed, pushed or deployed.
+
+- **Source:** a Codex built-in image-generation edit of Pexels 7593053 (Miriam Alonso).
+  - The brief, as relayed: keep the exact composition (wall, sofa, light, head and body positions);
+    show a fictional Asian young-adult couple in a sage athletic set and an ivory knit polo; unbranded laptop; no text or logos.
+  - Copied byte-for-byte to `artifacts/homepage-ai-hero-2026-10-01/homepage-hero-original.png`.
+  - Measured 1595×986 PNG (aspect 1.6176; the stock is 3805×2352, 1.6178).
+    SHA-256 `4eec3eb89ee4a4ad2d05c4c476b3ae43c25707ef0f7fd502af82ba4d82455ceb`.
+  - `manifest.json` there holds the source path, prompt summary and measured sizes; Codex retained the exact built-in imagegen prompt in `prompt.md` beside it.
+  - The stock photo is recorded only as the composition reference, not as the image's author or subjects.
+- **Web files:** `public/images/home/ai-hero-couple-{800,1200,1595}.webp` (29 / 55 / 83 KB).
+  These are plain sharp resizes of the full frame, with no upscale (1595 is the source width), made by `derive.mjs`.
+  - `src` is the 1200 file, with srcset 800/1200/1595 and `sizes="(min-width: 1280px) 80vw, 100vw"`.
+  - Intrinsic `width`/`height` are 1595/986. It stays eager and high priority; React hoists its preload.
+- **Unchanged:**
+  - `HERO_OVERLAY` 20/60, `HERO_PHOTO` 80, `HERO_TABLET` 12, `HERO_PHONE` wash 0.12 / crop 16.
+  - The mirror, the fades, the layout, the copy and the CTAs.
+  - Only the source-dimension-derived crop aspects changed: phone `aspect-[1340/986]` (1595 × 0.84) and tablet `aspect-[1404/986]` (1595 × 0.88), replacing 3196/2352 and 3348/2352.
+  - Faces sit at the same fractions in the new image, so the face-tint geometry tests are unchanged.
+- **Label:** a small "Ảnh minh họa AI" chip (11 px, `bg-black/60`) in the photo's lower-right corner.
+  That corner is the mirrored frame's bare floor, past the 60% clear point and away from faces, copy and CTAs. It ignores the pointer. The image stays decorative (`alt=""`).
+- **Kept:** `public/images/home/pexels-7593053-original.jpg` stays on disk, because the released car social package (`/social/vay-mua-xe/`) uses it.
+- **Tests:** `components/sections/home-photo-preview.test.ts` replaces the stock-provenance assertion. It now checks:
+  - AI kind, hash, approval date and composition reference; no photographer credit on the page;
+  - same aspect as the reference;
+  - each WebP's real width, none wider than the source;
+  - srcset, sizes and priority; the label's text, size and position.
+  All geometry, contrast and CTA checks are kept.
+- **Full native gate PASSED:** `aiws native check finhome-website --task auto-education-20260930 --mode full`.
+  - Run: Node 24.21, 2026-10-01T13:54:29Z–13:55:18Z, exit 0.
+  - 365 files / 8,154 tests, `tsc` clean, lint 0 new, `next build` 310 pages, `check:markup` all contracts hold.
+  - Log: `/tmp/finhome-homepage-ai-hero-full.log`.
+  - Only this document changed after the gate.
+- **Not verified by Claude:** any rendered view, the label's legibility over the floor, or the 320 px layout. Codex owns those checks.
+- **Independently verified by Codex after implementation:** local homepage at measured CSS viewports 1440×952, 1024×852, 390×796 and 320×852. The browser's requested outer heights included 48 px of chrome. All four load the new responsive AI WebP, have no horizontal overflow, preserve complete faces and keep the small label readable and clear of text/CTAs. Computed horizontal gradient remains exactly `linear-gradient(to right, rgb(17, 127, 54) 20%, rgba(0, 0, 0, 0) 60%)`; opacity remains 1 on desktop/tablet and 0.12 on phones. Existing CTA labels and destinations remain `/cong-cu/` and `/blog/mua-nha-bang-con-so/`. Screenshots: `artifacts/homepage-ai-hero-2026-10-01/homepage-{desktop,tablet,mobile,small-mobile}.jpg`. This proves scoped local appearance, not production deployment or a formal contrast/accessibility certification. Source PNG and prior stock are intentionally retained for provenance and existing social consumers.
+
 ## Release authorization — 28 Sep 2026
 
 The user requested commit, push, a pull request, then merge only when checks are green.

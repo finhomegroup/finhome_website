@@ -474,9 +474,15 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
     }
     throw new Error(`no SOF in ${file}`);
   };
+  /**
+   * Released photos no longer on a page but still never to be reused: the
+   * collection hero's Pexels photo, replaced by an AI illustration on
+   * 2026-10-01 (content/education-web-heroes.ts).
+   */
+  const RETIRED_RELEASED = ["7592756"];
   /** Every Pexels ID already shipped anywhere else: other packages, homepage, collection hero. */
   const shipped = () => {
-    const ids = new Set<string>();
+    const ids = new Set<string>(RETIRED_RELEASED);
     for (const dir of readdirSync("public/social", { withFileTypes: true })) {
       if (!dir.isDirectory() || LOAN_DECISION_SERIES.some((e) => e.tool === dir.name)) continue;
       const file = `public/social/${dir.name}/index.html`;
@@ -494,7 +500,11 @@ describe("images: the user-approved AI illustrations, disclosed, traceable and d
 
   it("finds the shipped photos it guards against (non-vacuous)", () => {
     const ids = shipped();
-    for (const id of ["7593053", "7592756", "8297072", "7671364"]) expect(ids.has(id), id).toBe(true);
+    // Read from live files, not from the retired list.
+    for (const id of ["7593053", "8297072", "7671364"]) expect(ids.has(id), id).toBe(true);
+    for (const id of RETIRED_RELEASED) expect(ids.has(id), id).toBe(true);
+    // The retired photo really is off the collection page now.
+    expect(read("content/education/collection.ts")).not.toMatch(/pexels-\d+/);
   });
 
   for (const e of LOAN_DECISION_SERIES) {
