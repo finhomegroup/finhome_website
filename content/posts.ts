@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "lai-suat-huy-dong-ngan-hang-len-105-nam",
+    title: "Lãi suất huy động ngân hàng lên tới 10,5%/năm: Dấu hiệu gì cho người mua nhà?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Một ngân hàng phát hành trái phiếu kỳ hạn 10 năm với lãi suất năm đầu 10,5%/năm - mức cao nhất trong nhiều năm. Điều này phản ánh xu hướng lãi suất hiện tại ra sao và tác động thế nào đến quyết định mua nhà.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/lai-suat-huy-dong-ngan-hang-len-105-nam.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "m.cafef.vn",
+        "url": "https://m.cafef.vn/ngan-hang-huy-dong-von-voi-lai-suat-len-toi-105-nam-188261001235428064.chn?cpa_tid=42TBELOGGI0053XXW4YBT7J81MJ1FSBR3RXG&dmn=s.biz.vn&fbclid=IwZnRzaAUsU5lleHRuA2FlbQExAHBkb2YFZmRpZBZQ-JangDMu2qQ4PS4prb0ee6acpyy1c3J0YwZhcHBfaWQKNjYyODU2ODM3OQABHj2AG2nrPsnbnJILHwfbJZTNflHySqX2KFneSFTSDlUzaYHzRBOUG4D1mIik_aem_1MyfqVge_LMq2ATEJcGo5g",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "doanh-thu-bat-dong-san-tp-hcm-tang-8-4",
     title: "Doanh thu bất động sản TP.HCM tăng 8,4%: Thị trường đang phục hồi hay chỉ là con số kỷ lục?",
     category: "Thị trường",
