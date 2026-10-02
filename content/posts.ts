@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-xu-ly-300-du-an-cham-trien-khai-giai-phong-nguon-luc-dat-dai",
+    title: "Hà Nội rà soát 300 dự án chậm triển khai: 10 dự án bị loại khỏi danh mục, 290 dự án được định hướng xử lý",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Hà Nội đã rà soát 300 dự án ngoài ngân sách chậm triển khai, đưa 10 dự án ra khỏi danh mục và xác định hướng xử lý cho 290 dự án còn lại nhằm giải phóng nguồn lực đất đai.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-xu-ly-300-du-an-cham-trien-khai-giai-phong-nguon-luc-dat-dai.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/khong-de-du-an-cham-trien-khai-tiep-tuc-giam-nguon-luc-dat-dai-188261002090144879.chn",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "de-xuat-bo-sung-ba-truong-hop-thu-hoi-dat-nha-o-cho-thue",
     title: "Chính phủ đề xuất bổ sung 3 trường hợp thu hồi đất: Người mua nhà cần biết gì?",
     category: "Chính sách",
