@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "du-thao-luat-dat-dai-phuong-an-tai-dinh-cu",
+    title: "Dự thảo Luật Đất đai bổ sung phương án tái định cư: Người bị thu hồi đất được lựa chọn bố trí tại chỗ",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Dự thảo Luật Đất đai sửa đổi đề xuất thêm phương án tái định cư cho người bị thu hồi đất ở, bao gồm bố trí tại chỗ hoặc hoán đổi sang phần đất còn lại.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/du-thao-luat-dat-dai-phuong-an-tai-dinh-cu.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/sua-luat-dat-dai-de-xuat-them-phuong-an-tai-dinh-cu-cho-nguoi-bi-thu-hoi-dat-188261002061413811.chn",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "tp-ho-chi-minh-phe-duyet-quy-hoach-tod-nam-2027",
     title: "TP.HCM đẩy nhanh quy hoạch TOD quanh các ga metro: Cơ hội và lưu ý cho người mua nhà",
     category: "Chính sách",
