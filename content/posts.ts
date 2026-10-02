@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "no-xau-ngan-hang-cuoi-nam-noi-lo",
+    title: "Nợ xấu ngân hàng tăng nhanh cuối năm: Người mua nhà chịu tác động thế nào?",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Nợ xấu ngân hàng tăng nhanh trong khi tỷ lệ bao phủ suy giảm, gây áp lực lên tín dụng bất động sản và khả năng vay mua nhà của người mua.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/no-xau-ngan-hang-cuoi-nam-noi-lo.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "vietnamfinance.vn",
+        "url": "https://vietnamfinance.vn/no-xau-ngan-hang-cuoi-nam-noi-lo-cang-lon-d151452.html?fbclid=IwZnRzaAUsmiJleHRuA2FlbQIxMQBwZG9mBWZkaWQWUPiRFIMi5pjro3TI1K2F4GHuWb-VvnNydGMGYXBwX2lkCjY2Mjg1NjgzNzkAAR5UlMrCOMSEI_MmJepZErV8MEbejpHh-HFHbnPNa_0n1JDZ2bzIt0ZNyw-Thw_aem_i5zrefbWJoynmSgVHRPkhw",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "trai-phieu-doanh-nghiep-chiu-ap-luc-dao-han",
     title: "Trái phiếu doanh nghiệp chịu áp lực đáo hạn cuối năm: Rủi ro lan tỏa đến thị trường bất động sản",
     category: "Tài chính",
