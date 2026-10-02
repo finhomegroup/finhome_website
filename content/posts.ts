@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "de-xuat-bo-sung-ba-truong-hop-thu-hoi-dat-nha-o-cho-thue",
+    title: "Chính phủ đề xuất bổ sung 3 trường hợp thu hồi đất: Người mua nhà cần biết gì?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Chính phủ đề xuất bổ sung 3 trường hợp Nhà nước thu hồi đất để phát triển kinh tế-xã hội, trong đó có dự án nhà ở cho thuê. Đây có phải tín hiệu mở rộng nguồn cung nhà giá phù hợp?",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/de-xuat-bo-sung-ba-truong-hop-thu-hoi-dat-nha-o-cho-thue.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/de-xuat-bo-sung-ba-truong-hop-nha-nuoc-thu-hoi-dat-de-phat-trien-kinh-te-xa-hoi-5127201.html",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "du-thao-luat-dat-dai-phuong-an-tai-dinh-cu",
     title: "Dự thảo Luật Đất đai bổ sung phương án tái định cư: Người bị thu hồi đất được lựa chọn bố trí tại chỗ",
     category: "Chính sách",
