@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "trai-phieu-doanh-nghiep-chiu-ap-luc-dao-han",
+    title: "Trái phiếu doanh nghiệp chịu áp lực đáo hạn cuối năm: Rủi ro lan tỏa đến thị trường bất động sản",
+    category: "Tài chính",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Khối lượng lớn trái phiếu đến hạn trong quý cuối năm, trong đó bất động sản chiếm tỷ trọng đáng kể. Nhiều doanh nghiệp đàm phán gia hạn, tạo áp lực lên dòng vốn thị trường.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/trai-phieu-doanh-nghiep-chiu-ap-luc-dao-han.webp",
+    date: "2026-10-02",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/trai-phieu-doanh-nghiep-chiu-ap-luc-dao-han-vao-quy-cuoi-nam-188261002060705139.chn",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "lai-suat-huy-dong-ngan-hang-len-105-nam",
     title: "Lãi suất huy động ngân hàng lên tới 10,5%/năm: Dấu hiệu gì cho người mua nhà?",
     category: "Tài chính",
