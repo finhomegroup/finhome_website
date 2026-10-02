@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "doanh-thu-bat-dong-san-tp-hcm-tang-8-4",
+    title: "Doanh thu bất động sản TP.HCM tăng 8,4%: Thị trường đang phục hồi hay chỉ là con số kỷ lục?",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan"],
+    excerpt: "Doanh thu địa ốc TP.HCM đạt hơn 322.000 tỷ đồng trong 9 tháng, tăng 8,4% so với cùng kỳ. Con số này phản ánh điều gì về thị trường bất động sản hiện nay.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/doanh-thu-bat-dong-san-tp-hcm-tang-8-4.jpg",
+    date: "2026-10-02",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/doanh-thu-bat-dong-san-tp-hcm-tang-dat-hon-322-000-ty-dong-5127669.html",
+        "accessed": "2026-10-02"
+      },
+  },
+  {
     slug: "ha-noi-xu-ly-300-du-an-cham-trien-khai-giai-phong-nguon-luc-dat-dai",
     title: "Hà Nội rà soát 300 dự án chậm triển khai: 10 dự án bị loại khỏi danh mục, 290 dự án được định hướng xử lý",
     category: "Chính sách",
