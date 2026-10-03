@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "bo-cong-an-canh-bao-thu-doan-lua-dao-mua-nha",
+    title: "Bộ Công an cảnh báo hàng loạt thủ đoạn 'bẫy' người mua nhà: Làm sao nhận diện và phòng tránh?",
+    category: "Chính sách",
+    topics: ["chinh-sach-su-kien"],
+    excerpt: "Cục An ninh Kinh tế (Bộ Công an) vừa phát thông báo khuyến cáo người dân và doanh nghiệp nâng cao ý thức trước các thủ đoạn lừa đảo trong mua bán bất động sản đang diễn ra phổ biến.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/bo-cong-an-canh-bao-thu-doan-lua-dao-mua-nha.jpg",
+    date: "2026-10-03",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/bo-cong-an-canh-bao-hang-loat-thu-doan-bay-nguoi-mua-nha-188261002144558919.chn",
+        "accessed": "2026-10-03"
+      },
+  },
+  {
     slug: "ha-noi-chuyen-doi-6000m2-dat-gan-cau-vinh-tuy-xay-du-an",
     title: "Hà Nội chuyển đổi hơn 6.000m2 đất gần cầu Vĩnh Tuy xây tổ hợp cao tầng",
     category: "Thị trường",
