@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "ha-noi-chuyen-doi-6000m2-dat-gan-cau-vinh-tuy-xay-du-an",
+    title: "Hà Nội chuyển đổi hơn 6.000m2 đất gần cầu Vĩnh Tuy xây tổ hợp cao tầng",
+    category: "Thị trường",
+    topics: ["khu-vuc-ha-tang","gia-cung"],
+    excerpt: "Hà Nội chấp thuận chuyển đổi 6.140m2 đất tại khu vực gần cầu Vĩnh Tuy để xây dựng tổ hợp nhà ở cao tầng, thương mại dịch vụ UDIC Riverside 2. Đây là tín hiệu mở rộng nguồn cung khu vực Long Biên.",
+    readingTime: "3 phút đọc",
+    cover: "/images/blog/ha-noi-chuyen-doi-6000m2-dat-gan-cau-vinh-tuy-xay-du-an.webp",
+    date: "2026-10-03",
+    source: {
+        "name": "cafef.vn",
+        "url": "https://cafef.vn/ha-noi-chuyen-doi-muc-dich-hon-6000m2-dat-gan-chan-cau-vinh-tuy-lam-cao-oc-188261002202924717.chn",
+        "accessed": "2026-10-03"
+      },
+  },
+  {
     slug: "no-xau-ngan-hang-cuoi-nam-noi-lo",
     title: "Nợ xấu ngân hàng tăng nhanh cuối năm: Người mua nhà chịu tác động thế nào?",
     category: "Tài chính",
