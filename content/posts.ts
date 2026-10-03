@@ -382,6 +382,21 @@ const EDUCATION_ENTRIES: Post[] = [
 
 export const POSTS: Post[] = [
   {
+    slug: "nhieu-nha-dau-tu-tim-cach-thoat-hang-chung-cu-tp-hcm-binh-duong",
+    title: "Nhà đầu tư TP.HCM, Bình Dương tìm cách thoát hàng chung cư: Cơ hội cho người mua thực sự?",
+    category: "Thị trường",
+    topics: ["cau-thanh-khoan","gia-cung"],
+    excerpt: "Thanh khoản chậm, chi phí vốn cao khiến nhà đầu tư tại TP.HCM và Bình Dương rao bán căn hộ, chấp nhận thu hẹp lợi nhuận. Đây có phải thời điểm người mua ở thực sự xuống tiền?",
+    readingTime: "4 phút đọc",
+    cover: "/images/blog/nhieu-nha-dau-tu-tim-cach-thoat-hang-chung-cu-tp-hcm-binh-duong.jpg",
+    date: "2026-10-03",
+    source: {
+        "name": "vnexpress.net",
+        "url": "https://vnexpress.net/nhieu-nha-dau-tu-tim-cach-thoat-hang-chung-cu-5127085.html",
+        "accessed": "2026-10-03"
+      },
+  },
+  {
     slug: "bo-cong-an-canh-bao-thu-doan-lua-dao-mua-nha",
     title: "Bộ Công an cảnh báo hàng loạt thủ đoạn 'bẫy' người mua nhà: Làm sao nhận diện và phòng tránh?",
     category: "Chính sách",
